@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.espboards.dev)",
+      "WebFetch(domain:www.mdpi.com)",
+      "WebFetch(domain:oa.upm.es)",
+      "WebFetch(domain:opus.lib.uts.edu.au)",
+      "WebFetch(domain:www.theseus.fi)",
+      "WebFetch(domain:mmwave-radar.dev)",
+      "WebFetch(domain:esp32.co.uk)",
+      "WebFetch(domain:www.rfwireless-world.com)",
+      "WebFetch(domain:www.tastethecode.com)",
+      "WebFetch(domain:www.hlktech.net)",
+      "WebFetch(domain:drive.google.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:community.home-assistant.io)",
+      "WebFetch(domain:esphome.io)"
+    ]
+  }
+}

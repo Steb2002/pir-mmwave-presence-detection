@@ -1,0 +1,250 @@
+# Analisi progettuale — Web UI (Obiettivo 5)
+
+> Requisiti dall'obiettivo 5: *"l'ESP32 pubblica i dati → sito web per visualizzazione
+> in tempo reale → la stessa app salva i dati con statistiche → export CSV → analisi
+> numerica in Excel"*. Integra anche la visualizzazione dell'indice di vitalità (obiettivo 6).
+
+---
+
+## 1. Scelta architetturale
+
+### Opzioni considerate
+
+| Architettura | Pro | Contro |
+|---|---|---|
+| **A. Sito servito dall'ESP32** (web server + WebSocket a bordo) | Zero infrastruttura, funziona offline, coerente col contesto UPRISE (emergenza = niente internet), demo autonoma | RAM/flash limitate, max 2-3 client simultanei |
+| B. ESP32 → MQTT → server Python/Node + DB | Scalabile, storico illimitato | Serve un broker + un server sempre accesi; troppa infrastruttura per una tesi di sensing |
+| C. Cloud (ThingSpeak, Blynk…) | Pronto all'uso | Non offline, campionamento limitato (~15 s), dati fuori controllo, non difendibile in sede di tesi UPRISE |
+
+### Scelta: **A — tutto sull'ESP32**
+
+Motivazioni:
+1. **Coerenza col progetto UPRISE**: in emergenza sismica non c'è internet; un nodo
+   autonomo che serve la propria dashboard è la miniatura concettuale della
+   "piattaforma di monitoraggio" del progetto (modalità tempo di pace/emergenza)
+2. Il volume dati è piccolo: ~20 valori × 5 Hz ≈ 2 KB/s — ben dentro i limiti dell'ESP32
+3. La persistenza lunga non serve a bordo: lo storico si accumula **nel browser**,
+   che ha memoria abbondante e fa lui l'export CSV
+
+### Modalità WiFi: doppia, selezionabile
+
+- **Station (STA)**: l'ESP32 si collega al WiFi di casa → comodo durante lo sviluppo
+- **Access Point (AP)**: l'ESP32 crea la propria rete (`UPRISE-Sensor`) → demo
+  ovunque senza infrastruttura, scenario emergenza. Fallback automatico: se lo STA
+  non si connette entro 15 s, parte l'AP
+
+---
+
+## 2. Dati da pubblicare (mappati sugli output reali del firmware)
+
+Il firmware `ld2410b_logger` produce già tutto ciò che serve. Il messaggio WebSocket
+riprende le stesse grandezze del CSV, più i campi calcolati:
+
+```json
+{
+  "t": 123456,                 // millis ESP32
+  "presence": 1,               // radar_presence
+  "moving": 1, "still": 0,     // stato target
+  "mdist": 145, "sdist": 0,    // distanze cm
+  "menergy": 72, "senergy": 0, // energia target 0-100
+  "pir": 1,                    // sensore PIR (confronto live!)
+  "gates_m": [0,5,60,10,0,0,0,0,0],   // energia per-gate moving (eng. mode)
+  "gates_s": [0,0,45,8,0,0,0,0,0],    // energia per-gate stationary
+  "vitality": 54,              // indice di vitalità 0-100 (obiettivo 6, calcolato a bordo)
+  "vitality_class": "attivo"   // nessun_segno | vitalita_bassa | moderato | attivo
+}
+```
+
+Frequenza di push: **5 Hz** (uguale al campionamento — nessun sottocampionamento,
+così il CSV esportato dal browser è equivalente a quello di acquire.py).
+
+Statistiche di sessione (calcolate nel browser, non sull'ESP32):
+- tempo di sessione, % campioni con presenza (radar e PIR separati)
+- numero eventi di attivazione (fronti 0→1) radar e PIR → stima falsi positivi live
+- distanza min/media/max, energia media
+- ultima rilevazione (secondi fa) — il dato "salvavita" nello scenario UPRISE
+- vitalità: valore corrente, media mobile, minimo/massimo di sessione
+
+---
+
+## 3. Struttura della pagina (single-page, 4 aree)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  HEADER   ● PRESENZA RILEVATA      [dist. 1.45 m]   [⏺ REC] │  ← stato colore:
+├──────────────────────────┬──────────────────────────────────┤    verde/giallo/rosso
+│  A. STATO LIVE           │  B. INDICE DI VITALITÀ           │
+│  radar: MOVING @ 145cm   │       ┌─── gauge 0-100 ───┐      │
+│  PIR:   ATTIVO           │       │        54          │      │
+│  energia mov:  ▓▓▓▓ 72   │       │      "attivo"      │      │
+│  energia still:▓▓   30   │       └────────────────────┘      │
+├──────────────────────────┴──────────────────────────────────┤
+│  C. GRAFICI                                                  │
+│  C1: serie temporale energia moving/still + soglia (scorre) │
+│  C2: barre per-gate (9 gate × moving/still) = "dov'è"       │
+│  C3: timeline presenza radar vs PIR (confronto visivo!)     │
+├──────────────────────────────────────────────────────────────┤
+│  D. SESSIONE & EXPORT                                        │
+│  scenario:[________] trial:[__] gt:[0|1]   ← metadati test  │
+│  [Avvia sessione] [Stop] [Scarica CSV] [Reset statistiche]  │
+│  stats: durata 12:34 | radar 97.2% | PIR 41.0% | eventi 3   │
+└──────────────────────────────────────────────────────────────┘
+```
+
+Scelte di visualizzazione, in ordine di valore per la tesi:
+
+1. **C3 — timeline radar vs PIR sovrapposte**: è l'obiettivo 3 reso visibile in diretta.
+   Una persona ferma davanti al sensore vede il PIR spegnersi e il radar restare acceso:
+   questo grafico da solo racconta metà della tesi in demo
+2. **C2 — barre per-gate**: mostra "dove" è la persona (gate × 0.75 m), è il dato
+   che nessun PIR può dare, e visualizza in diretta il superamento degli ostacoli
+3. **B — gauge vitalità**: la "ciliegina" dell'obiettivo 6 in primo piano
+4. **C1 — serie energia**: con persona immobile si VEDE l'oscillazione del respiro
+   a occhio nudo (0.1-0.5 Hz) — ottimo effetto in sede di discussione
+
+### Il form metadati (area D) — decisione progettuale chiave
+
+Il CSV esportato dal browser include le stesse colonne di metadati di `acquire.py`
+(`scenario, trial_id, ground_truth_presence, ground_truth_state`), compilate dal form.
+Conseguenza: **i CSV della web UI si analizzano con gli stessi script**
+(`analizza_test.py`, `analizza_respiro.py`) e la web UI può sostituire acquire.py
+nelle campagne di test. Un solo formato dati in tutta la tesi:
+
+```
+firmware CSV (superset)  ==  CSV acquire.py  ==  CSV export web  →  Excel / script analisi
+```
+
+---
+
+## 4. Struttura progettuale del software
+
+```
+firmware/ld2410b_web/
+├── ld2410b_web.ino          # setup WiFi/AP, loop: radar → stato condiviso
+├── radar_task.h             # lettura MyLD2410 (riuso logica di ld2410b_logger)
+├── vitality.h               # indice di vitalità: EWMA energia moving del gate
+│                            #   attivo, normalizzata 0-100 + classificazione
+├── web_server.h             # ESPAsyncWebServer: statiche da LittleFS + WebSocket /ws
+└── data/                    # → caricata su LittleFS (tutto locale, ZERO CDN)
+    ├── index.html           # struttura pagina (aree A-D)
+    ├── style.css            # dark theme (dashboard di monitoraggio)
+    ├── app.js               # WebSocket client, statistiche, buffer, export CSV
+    └── chart.umd.min.js     # Chart.js in locale (~70 KB) — offline by design
+```
+
+### Stack e librerie
+
+| Componente | Scelta | Perché |
+|---|---|---|
+| Server HTTP+WS | **ESPAsyncWebServer** + AsyncTCP | non blocca il loop radar; WebSocket integrato |
+| JSON | **ArduinoJson 7** | già installata |
+| File system | **LittleFS** | per servire la pagina; upload da Arduino IDE (plugin) |
+| Grafici | **Chart.js** (bundle locale) | leggero, niente dipendenze, funziona offline |
+| Export CSV | **Blob + download lato browser** | zero carico sull'ESP32, storico illimitato |
+
+### Flusso dati
+
+```
+LD2410B ──UART 256000──► ESP32 ──┬── Serial USB: CSV (resta attivo: debug/acquire.py)
+                                 │
+                    vitality.h ──┤
+                                 └── WebSocket JSON 5 Hz ──► browser
+                                                              ├─ render live (A,B,C)
+                                                              ├─ ring buffer 60 s (grafici)
+                                                              ├─ array sessione (illimitato)
+                                                              └─ Blob → download .csv
+```
+
+Decisione: il **logging seriale resta attivo** insieme al WiFi — la web UI non
+sostituisce il canale di test finché la Fase 2 del piano non è chiusa, ci gira accanto.
+
+### Punti di attenzione tecnici
+
+- **RAM**: niente storico sull'ESP32 — solo l'ultimo campione + accumulatori statistici.
+  Lo storico vive nel browser
+- **UART vs WiFi**: la lettura radar via `sensor.check()` va chiamata a ogni loop;
+  con ESPAsyncWebServer il networking gira su callback e non ruba il loop — è il
+  motivo principale per cui NON usare WebServer sincrono
+- **Client multipli**: broadcast WebSocket a tutti i client connessi; limite pratico
+  2-3 browser, sufficiente (demo: tablet del relatore + tuo PC)
+- **Ordine dei float**: inviare interi dove possibile (energie, cm) per tenere i
+  messaggi < 512 byte → un frame TCP, niente frammentazione
+
+---
+
+## 5. Statistiche nella pagina vs analisi in Excel — divisione dei compiti
+
+| Dove | Cosa | Perché |
+|---|---|---|
+| **Web UI (live)** | presenza %, eventi, ultima rilevazione, vitalità, min/max | feedback immediato durante i test e in demo |
+| **Excel (offline)** | medie ± dev.std multi-trial, confronti tra scenari, grafici della tesi | l'aggregazione tra file resta a `analizza_test.py` + Excel, come da obiettivo 5 |
+
+La web UI **non** rifà l'analisi numerica: mostra la sessione corrente e produce il
+CSV. L'analisi vera resta nella pipeline già costruita.
+
+---
+
+## 6. Piano di sviluppo incrementale (dettaglia la Fase 7 di PIANO_TEST.md)
+
+Ogni step è funzionante e dimostrabile da solo:
+
+1. **Step 1 — WiFi + pagina statica** (mezza giornata)
+   ESP32 in STA/AP, LittleFS, index.html "hello". Verifica: pagina raggiungibile da telefono
+2. **Step 2 — WebSocket live** (mezza giornata)
+   JSON a 5 Hz, area A (stato testuale). Verifica: valori cambiano muovendosi davanti al sensore
+3. **Step 3 — Grafici** (1 giorno)
+   C1 serie energia, C2 barre per-gate, C3 timeline radar vs PIR
+4. **Step 4 — Sessioni, statistiche, export CSV** (1 giorno)
+   form metadati, accumulo, download. Verifica di accettazione: CSV esportato dal
+   browser analizzato con `analizza_test.py` → stessi numeri del CSV seriale equivalente
+5. **Step 5 — Indice di vitalità** (dopo la Fase 6 dei test: algoritmo tarato sui dati)
+   `vitality.h` a bordo + gauge. Verifica: i 4 scenari `vitalita_*` producono le 4 classi
+
+**Test di accettazione finale** (chiude l'obiettivo 5): sessione di 10 min con la web UI
+in parallelo al logging seriale → i due CSV devono dare le stesse statistiche.
+
+---
+
+## 7. Dimensionamento — l'ESP32 regge? (verifica numerica)
+
+**Sì, con margini di 2-3 ordini di grandezza.** Il design non accumula nulla a bordo:
+l'ESP32 tiene solo l'ultimo campione, lo storico vive nel browser.
+
+### Volumi dati (messaggio JSON ~250 byte, push a 5 Hz)
+
+| Flusso | Volume | Capacità | Utilizzo |
+|---|---|---|---|
+| WebSocket → 1 client | ~1.25 KB/s | WiFi ESP32 ~1-2 MB/s reali | ~0.1% |
+| WebSocket → 3 client | ~3.75 KB/s | idem | ~0.3% |
+| CSV seriale in parallelo | ~0.55 KB/s | USB 115200 ≈ 11.5 KB/s | ~5% |
+
+### Memoria
+
+| Dove | Consumo | Disponibile | Note |
+|---|---|---|---|
+| ESP32 heap | ~80-100 KB (WiFi+server) + ~10 KB/client WS | ~200 KB | stabile: nessun accumulo |
+| Browser | ~2-3 MB per 30 min di sessione | centinaia di MB | anche 8 h (~35 MB) ok |
+| CSV esportato | ~2 MB/ora (18.000 righe) | Excel: 1.048.576 righe | ~58 h in un file |
+
+Limite reale: **client simultanei** (~4-5 browser per la RAM delle connessioni TCP) —
+sufficiente per demo e test.
+
+### Quando servirebbe un server esterno (nessuno dei casi riguarda la tesi)
+
+1. Storico persistente di giorni senza browser collegato (flash ESP32: ~1 h di CSV)
+2. Aggregazione multi-sensore — nel progetto UPRISE reale la fa il gateway LoRa, non il nodo
+3. Accesso remoto da internet — fuori scope, e in emergenza l'infrastruttura è assente
+
+Argomento per la tesi: nel dominio UPRISE il nodo DEVE essere autonomo (in emergenza
+non c'è infrastruttura) — il server esterno sarebbe concettualmente sbagliato, non
+solo superfluo.
+
+---
+
+## 8. Estensioni possibili (se avanza tempo — non necessarie alla tesi)
+
+- Supporto secondo sensore (LD2420) con selettore nella UI
+- Modalità "emergenza" simulata: sfondo rosso, solo dato salvavita ("persona viva
+  sotto il banco: SÌ/NO + vitalità") → mockup del tablet soccorritore UPRISE
+- Grafico spettro FFT live del respiro (porting di analizza_respiro.py in JS)
+- Salvataggio sessioni in LittleFS per funzionare senza browser collegato

@@ -1,0 +1,9 @@
+# Ambienti Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# File temporanei
+*.tmp
+~$*
