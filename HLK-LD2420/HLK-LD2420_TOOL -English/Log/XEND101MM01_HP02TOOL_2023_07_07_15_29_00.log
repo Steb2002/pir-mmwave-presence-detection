@@ -1,0 +1,55 @@
+2023/07/07 15:29:02.141 => Stop Realtime data show.
+2023/07/07 15:29:05.004 => CloseSerial: mSerialFile=0xffffffff
+2023/07/07 15:29:05.004 => Prepare Open Serial: Com=\\.\COM12 BaudRate=115200
+2023/07/07 15:29:05.005 => OpenSerial: Com=\\.\COM12 BaudRate=115200, Success=1, mSerialFile=0x00000818
+2023/07/07 15:29:05.013 => protocol version = 2, send_recv buffer size = 32
+2023/07/07 15:29:05.185 => protocol version = 2, send_recv buffer size = 32
+2023/07/07 15:29:05.193 => GetVersion Return: v1.5.5_0.0
+2023/07/07 15:29:05.273 => ReadSetting_RadarOperatorConfig, result: Success
+2023/07/07 15:29:06.419 => Start Realtime data show.
+2023/07/07 15:29:06.426 => thread create success, thread handle=0x0000082c, id=15108, name=ReadData
+2023/07/07 15:29:06.426 => thread information, name=ReadData, tid=15108(0x00003b04)
+2023/07/07 15:29:06.426 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2023/07/07 15:29:06.592 => protocol version = 2, send_recv buffer size = 32
+2023/07/07 15:30:14.388 => prepare exit thread..., name=ReadData, tid=15108(0x00003b04)
+2023/07/07 15:30:14.388 => thread exit, name=ReadData, tid=15108(0x00003b04)
+2023/07/07 15:30:14.388 => thread exit over, name=ReadData, tid=15108(0x00003b04)
+2023/07/07 15:30:14.389 => Stop Realtime data show.
+2023/07/07 15:30:15.596 => CloseSerial: mSerialFile=0xffffffff
+2023/07/07 15:30:15.596 => Prepare Open Serial: Com=\\.\COM12 BaudRate=115200
+2023/07/07 15:30:15.596 => Open \\.\COM12 failed:5
+2023/07/07 15:30:15.596 => OpenSerial: Com=\\.\COM12 BaudRate=115200, Success=0, mSerialFile=0xffffffff
+2023/07/07 15:30:15.596 => CloseSerial: mSerialFile=0xffffffff
+2023/07/07 15:30:19.564 => CloseSerial: mSerialFile=0xffffffff
+2023/07/07 15:30:19.564 => Prepare Open Serial: Com=\\.\COM12 BaudRate=115200
+2023/07/07 15:30:19.564 => Open \\.\COM12 failed:5
+2023/07/07 15:30:19.564 => OpenSerial: Com=\\.\COM12 BaudRate=115200, Success=0, mSerialFile=0xffffffff
+2023/07/07 15:30:19.564 => CloseSerial: mSerialFile=0xffffffff
+2023/07/07 15:30:25.892 => CloseSerial: mSerialFile=0xffffffff
+2023/07/07 15:30:25.892 => Prepare Open Serial: Com=\\.\COM1 BaudRate=115200
+2023/07/07 15:30:25.893 => OpenSerial: Com=\\.\COM1 BaudRate=115200, Success=1, mSerialFile=0x0000082c
+2023/07/07 15:30:27.902 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A001
+2023/07/07 15:30:30.061 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A001
+2023/07/07 15:30:32.075 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A001
+2023/07/07 15:30:34.077 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A001
+2023/07/07 15:30:36.089 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A001
+2023/07/07 15:30:36.089 => Cancel Read Data
+2023/07/07 15:30:36.089 => CloseSerial: mSerialFile=0x0000082c
+2023/07/07 15:30:44.820 => CloseSerial: mSerialFile=0xffffffff
+2023/07/07 15:30:44.820 => Prepare Open Serial: Com=\\.\COM1 BaudRate=115200
+2023/07/07 15:30:44.821 => OpenSerial: Com=\\.\COM1 BaudRate=115200, Success=1, mSerialFile=0x00000808
+2023/07/07 15:30:46.833 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A001
+2023/07/07 15:30:48.998 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A001
+2023/07/07 15:30:51.010 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A001
+2023/07/07 15:30:53.015 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A001
+2023/07/07 15:30:55.022 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A001
+2023/07/07 15:30:55.022 => Cancel Read Data
+2023/07/07 15:30:55.022 => CloseSerial: mSerialFile=0x00000808
+2023/07/07 15:31:33.957 => Stop Realtime data show.
+2023/07/07 15:31:33.957 => Stop Realtime data show.
+2023/07/07 15:31:33.958 => Stop Noise scan.
+2023/07/07 15:31:33.959 => Cancel Read Data
+2023/07/07 15:31:33.959 => CloseSerial: mSerialFile=0xffffffff
+2023/07/07 15:31:33.959 => Cancel Read Data
+2023/07/07 15:31:33.959 => CloseSerial: mSerialFile=0xffffffff
+2023/07/07 15:31:33.959 => CloseSerial: mSerialFile=0xffffffff

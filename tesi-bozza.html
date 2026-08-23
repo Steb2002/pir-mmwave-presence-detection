@@ -1,0 +1,1889 @@
+<!doctype html><html lang='it'><head><meta charset='utf-8'>
+<title>Tesi — bozza completa</title><style>
+@page { size: A4; margin: 20mm 18mm 20mm 18mm; }
+html { -webkit-print-color-adjust: exact; }
+body { font-family: "Charter","Georgia","Times New Roman",serif; font-size: 10.5pt;
+       line-height: 1.45; color: #111; margin: 0; }
+h1,h2,h3,h4 { font-family: "Segoe UI","Helvetica Neue",Arial,sans-serif;
+              line-height: 1.2; }
+h1 { font-size: 20pt; margin: 0 0 1.2em 0; padding-bottom: .3em;
+     border-bottom: 2px solid #900020; page-break-before: always;
+     break-before: page; color: #900020; }
+h1 .num { display:block; font-size: 34pt; color:#111; line-height:1; }
+h2 { font-size: 13.5pt; margin: 1.6em 0 .5em; color:#111; }
+h3 { font-size: 11.5pt; margin: 1.2em 0 .4em; font-style: italic; font-weight:600; }
+h2 .num, h3 .num { color:#900020; margin-right:.4em; }
+p { margin: 0 0 .55em 0; text-align: justify; hyphens: auto; }
+p.runin strong { color:#000; }
+em { font-style: italic; }
+code { font-family: "Consolas","Bitstream Vera Sans Mono",monospace; font-size: .88em;
+       background:#f4f4f4; padding:0 2px; border-radius:2px; }
+pre { font-family: "Consolas",monospace; font-size: 8pt; background:#f6f6f6;
+      border:1px solid #ddd; padding: 6px 8px; overflow-wrap: break-word;
+      white-space: pre-wrap; page-break-inside: avoid; }
+blockquote { margin: 0 0 1.2em 0; padding: .6em .9em; background:#f7f5f2;
+             border-left: 3px solid #900020; font-size: .93em; }
+blockquote p { margin-bottom:.35em; }
+ul,ol,dl { margin: 0 0 .7em 0; padding-left: 1.5em; }
+li { margin-bottom: .22em; text-align: justify; }
+ul.custom, ol.custom { list-style: none; padding-left: 1.9em; }
+li.custom { position: relative; }
+li.custom .lbl { position:absolute; left:-1.9em; font-weight:600; }
+dl dt { font-weight: 600; margin-top: .4em; }
+dl dd { margin: 0 0 .3em 1.2em; text-align: justify; }
+dl.abbr { columns: 2; column-gap: 2em; font-size: 9.5pt; }
+dl.abbr dt { break-after: avoid; }
+figure { margin: 1.1em 0; page-break-inside: avoid; break-inside: avoid; }
+figcaption { font-size: 8.8pt; color:#333; margin-bottom: .35em; text-align: left; }
+figcaption b { color:#900020; }
+figure.fig figcaption { margin-top:.35em; margin-bottom:0; }
+table { border-collapse: collapse; width: 100%; font-size: 8.8pt; }
+thead th { border-top: 1.1pt solid #111; border-bottom: .6pt solid #111;
+           text-align: left; padding: 3px 5px; vertical-align: bottom; }
+tbody td { padding: 2.5px 5px; vertical-align: top; border-bottom: .3pt solid #e6e6e6; }
+tbody tr:last-child td { border-bottom: 1.1pt solid #111; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+div.plaintab { margin: .9em 0; page-break-inside: avoid; }
+div.plaintab table { width: auto; }
+.math { font-family: "Cambria Math","Georgia",serif; font-style: italic;
+        white-space: nowrap; }
+.math .mrm { font-style: normal; }
+.eqwrap { position: relative; margin: .9em 0 .9em 1.5em; page-break-inside: avoid; }
+table.eq { width: auto; font-size: 10pt; }
+table.eq td { border: none; padding: 1px 6px; }
+td.eql { text-align: right; } td.eqm { text-align: left; }
+td.eqn { font-size: 8.5pt; color:#555; padding-left: 1.5em; }
+.eqnum { position: absolute; right: 0; top: 0; font-size: 9pt; color:#555; }
+sup.fn { color:#900020; font-weight:600; }
+.notes { margin-top: 1.5em; padding-top:.5em; border-top:.5pt solid #bbb;
+         font-size: 8.8pt; }
+.notes ol { padding-left: 1.4em; }
+.todo { color: #b00; font-weight: 600; }
+.unres { color:#b00; }
+a { color: #900020; text-decoration: none; }
+a.cite { font-weight:600; }
+.sc { font-variant: small-caps; }
+ol.bib { font-size: 9pt; padding-left: 1.8em; }
+ol.bib li { margin-bottom: .5em; }
+.biburl { word-break: break-all; font-size: .92em; }
+.bibnote { color:#555; font-style: italic; }
+ul.toc { list-style:none; padding:0; font-size: 10pt; }
+ul.toc li { margin: .12em 0; }
+li.toc1 { margin-top: .6em !important; font-weight: 700; }
+li.toc2 { padding-left: 2.2em; font-weight: 400; }
+ul.toc .n { display:inline-block; min-width: 2.6em; color:#900020; }
+.titlepage { text-align:center; page-break-after: always; padding-top: 8mm; }
+.titlepage .uni { font-variant: small-caps; font-size: 17pt; font-weight:700;
+                  letter-spacing:.5px; }
+.titlepage .scuola { font-variant: small-caps; font-size: 12pt; margin-top:.5em; }
+.titlepage .corso { font-variant: small-caps; font-size: 11pt; margin-top:.3em; }
+.titlepage .tit { font-size: 19pt; font-weight:700; margin: 22mm 6mm 6mm;
+                  line-height:1.3; color:#900020; }
+.titlepage .prov { font-size: 9.5pt; font-style:italic; color:#555; }
+.titlepage .people { display:flex; justify-content: space-between;
+                     margin: 26mm 4mm 0; font-size: 11pt; }
+.titlepage .aa { margin-top: 30mm; font-variant: small-caps; font-size: 11pt;
+                 border-top: .5pt solid #111; display:inline-block; padding-top:.4em; }
+.frontsec { page-break-before: always; }
+.frontsec > h1.plain { page-break-before: avoid; border-bottom:2px solid #900020;
+                       color:#900020; font-size:18pt; }
+.frontsec > h1.plain .num { display:none; }
+.banner { background:#fff8f0; border:1px solid #e0c9a6; padding:8px 12px;
+          font-size:9pt; margin-bottom:1.2em; }
+</style></head><body>
+
+<div class="titlepage">
+  <div class="uni">Universit&agrave; degli Studi di Camerino</div>
+  <div class="scuola">Scuola di Scienze e Tecnologie</div>
+  <div class="corso">Corso di Laurea in Informatica &mdash; Classe L-31</div>
+  <div class="tit">Sensori di presenza per la sicurezza sismica:<br>
+    confronto sperimentale tra radar mmWave a 24&nbsp;GHz<br>
+    e sensori PIR su piattaforma ESP32</div>
+  <div class="prov">(titolo provvisorio &mdash; vedi le proposte a pagina seguente)</div>
+  <div class="people">
+    <div><b>Relatore</b><br>Dott. Massimo Callisto De Donato</div>
+    <div style="text-align:right"><b>Laureando</b><br>Stefano De Bernardinis</div>
+  </div>
+  <div class="aa">Anno Accademico 2025&ndash;2026</div>
+</div>
+<section class='frontsec'><div class='banner'><b>Bozza di lavoro.</b> Documento generato il 21 agosto 2026 dai sorgenti LaTeX della tesi, impaginato via HTML per la lettura. Non &egrave; l'output del template UNICAM: l&rsquo;impaginazione definitiva sar&agrave; quella prodotta da LaTeX su Overleaf. Le note in <span class='todo'>rosso</span> segnano i punti da completare.</div>
+<h1 class='plain'>Proposte di titolo</h1>
+<p></p>
+<div class="plaintab"><p> Proposte di titolo<br>
+ documento di lavoro — 21 agosto 2026</p></div>
+<p>
+
+Elenco di titoli alternativi, raggruppati per taglio. La scelta va concordata con
+il relatore.</p>
+<p>
+<strong>A. Taglio “confronto sperimentale” (il più aderente al contenuto)</strong></p>
+<ol class="custom"><li class="custom"><span class="lbl">A1.</span> Sensori di presenza per la sicurezza sismica: confronto sperimentale tra
+        radar mmWave a 24&nbsp;GHz e sensori PIR su piattaforma ESP32</li><li class="custom"><span class="lbl">A2.</span> Rilevare chi non si muove: valutazione sperimentale di radar mmWave e PIR
+        per il rilevamento di presenza in scenari di emergenza</li><li class="custom"><span class="lbl">A3.</span> Caratterizzazione e confronto quantitativo di sensori PIR e radar mmWave a
+        24&nbsp;GHz per il rilevamento di persone in ambienti indoor</li><li class="custom"><span class="lbl">A4.</span> Oltre il movimento: analisi comparata PIR / mmWave FMCW per il rilevamento
+        di presenza statica</li></ol>
+<p>
+<strong>B. Taglio “progetto UPRISE/SAFE” (contesto applicativo in evidenza)</strong></p>
+<ol class="custom"><li class="custom"><span class="lbl">B1.</span> Sensing di presenza per arredi salva-vita: il radar mmWave a 24&nbsp;GHz come
+        evoluzione del nodo PIR nel progetto SAFE</li><li class="custom"><span class="lbl">B2.</span> Un sensore per chi è rimasto sotto: rilevamento di presenza e di vitalità
+        con radar mmWave per il soccorso post-sismico</li><li class="custom"><span class="lbl">B3.</span> Dal “c'è qualcuno” al “in che condizioni è”: sensing mmWave a supporto
+        del triage in emergenza sismica</li><li class="custom"><span class="lbl">B4.</span> Nodi IoT per arredi antisismici: valutazione di sensori mmWave, PIR e UWB
+        per il rilevamento di persone intrappolate</li></ol>
+<p>
+<strong>C. Taglio “sistema realizzato” (firmware, web UI, indice di vitalità)</strong></p>
+<ol class="custom"><li class="custom"><span class="lbl">C1.</span> Progetto e realizzazione di un nodo di sensing mmWave su ESP32 con
+        dashboard web e indice di vitalità</li><li class="custom"><span class="lbl">C2.</span> Acquisizione, visualizzazione e analisi di dati radar mmWave a 24&nbsp;GHz: un
+        sistema completo su ESP32 per il rilevamento di presenza</li><li class="custom"><span class="lbl">C3.</span> Da micro-movimenti a indice di vitalità: elaborazione di dati radar mmWave
+        su microcontrollore</li></ol>
+<p>
+<strong>D. Taglio tecnico e breve</strong></p>
+<ol class="custom"><li class="custom"><span class="lbl">D1.</span> Radar mmWave a 24&nbsp;GHz per il rilevamento di presenza statica: misure e
+        confronto con sensori PIR</li><li class="custom"><span class="lbl">D2.</span> Presence sensing con mmWave ed ESP32: caratterizzazione sperimentale</li><li class="custom"><span class="lbl">D3.</span> Micro-movimenti e respiro: analisi dei dati per-gate di un radar FMCW a
+        24&nbsp;GHz</li></ol>
+<p>
+<strong>Nota per la scelta.</strong> Il risultato sperimentale centrale già
+acquisito è la <em>cecità del PIR sulla persona ferma</em>: falsi negativi al
+<span class="math">99,78 ± 0,49 %</span> contro lo <span class="math">0,00 %</span> del radar. I titoli A2, B2 e D1 sono
+quelli che lo mettono in prima linea. Se il relatore preferisce che il titolo
+espliciti il progetto europeo, la coppia consigliata è B1 (sobria) oppure B2
+(più comunicativa). Il taglio C è appropriato solo se l'implementazione della
+web UI e dell'indice di vitalità saranno completate: al momento sono progettate
+ma non realizzate.</p>
+<p></p></section>
+<section class='frontsec'><h1 class='plain'>Sommario</h1><p>Il progetto europeo UPRISE, nato dopo il sisma del 2016 nell'area di Camerino,
+prevede l'integrazione di sensori IoT negli arredi scolastici: in caso di terremoto
+il nodo installato nell'arredo deve rilevare la presenza di una persona rifugiata
+sotto di esso e comunicarlo all'esterno tramite rete LoRa. Il nodo attualmente in
+uso (DIPME-DEVICE) affida il rilevamento di presenza a un sensore <em>PIR</em>, che
+per principio fisico è cieco verso una persona immobile: proprio la condizione
+tipica di chi si trova intrappolato.</p>
+<p>Questa tesi affronta la parte di <em>sensing</em> del problema. Sono stati studiati,
+strumentati e confrontati sperimentalmente due radar <em>mmWave</em> FMCW a 24&nbsp;GHz
+(HLK-LD2410B e HLK-LD2420) e un sensore PIR HC-SR501, acquisendo i dati con una
+piattaforma di misura realizzata su ESP32 che campiona a 5&nbsp;Hz in
+<em>engineering mode</em>, cioè con accesso ai valori di energia riflessa per ciascuno
+dei nove <em>gate</em> di distanza del radar.</p>
+<p>Il risultato centrale è quantitativo: su cinque prove indipendenti da cinque minuti
+ciascuna, con un soggetto immobile seduto a 2,30&nbsp;m, il PIR ha mancato la presenza
+nel <span class="math">99,78 ± 0,49 %</span> dei campioni, mentre il radar l'ha rilevata nel
+<span class="math">100 %</span> dei 7554 campioni acquisiti. Il PIR risulta inaffidabile anche con il
+soggetto <em>in movimento sul posto</em> (<span class="math">80,5 %</span> di falsi negativi a 1&nbsp;m,
+<span class="math">100 %</span> oltre i 2&nbsp;m), coerentemente con il fatto che l'elemento piroelettrico
+risponde al transito del flusso infrarosso fra le zone della lente di Fresnel e non
+al movimento in sé. La misura di distanza del radar si è rivelata estremamente
+lineare (<span class="math">R<sup>2</sup> = 0,99965</span> su 25 prove fra 1 e 5&nbsp;m), con un errore di scala del
+<span class="math">+3,81 %</span> correggibile mediante un singolo coefficiente; su 7&nbsp;ore di stanza
+vuota nessuno dei due sensori ha prodotto falsi positivi, con limite superiore al
+95&thinsp;% di confidenza pari a <span class="math">0,43</span> eventi/h. Dall'analisi in frequenza
+dell'energia per-gate è stato inoltre possibile estrarre il ritmo respiratorio di un
+soggetto immobile, con concordanza fra canali indipendenti.</p>
+<p>Su questa base la tesi propone un <em>indice di vitalità</em>: una grandezza compresa
+fra 0 e 100 che, oltre al “c'è qualcuno”, stimi quanto la persona si muove, a
+supporto del triage dei soccorritori. Il lavoro comprende infine l'analisi dei
+consumi da datasheet e il progetto di un'interfaccia web servita direttamente
+dall'ESP32 per la visualizzazione in tempo reale e l'esportazione dei dati.</p>
+<p>La raccomandazione conclusiva non è la sostituzione del PIR, ma
+un'<em>architettura ibrida</em>: il PIR come guardiano a microampere che decide quando
+accendere il radar, e il radar mmWave come strumento di misura durante la finestra
+di emergenza.</p>
+<p></p>
+<p><strong>Parole chiave:</strong> radar mmWave, FMCW 24&nbsp;GHz, PIR, rilevamento di
+presenza, ESP32, HLK-LD2410B, monitoraggio del respiro, sicurezza sismica,
+UPRISE/SAFE.</p></section>
+<section class='frontsec'><h1 class='plain'>Indice</h1><ul class='toc'><li class='toc1'><a href='#cap:introduzione'><span class='n'>1</span> Introduzione</a></li><li class='toc2'><a href='#sec:contesto'><span class='n'>1.1</span> Contesto: il progetto UPRISE/SAFE</a></li><li class='toc2'><a href='#sec:problema'><span class='n'>1.2</span> Il problema specifico affrontato dalla tesi</a></li><li class='toc2'><a href='#sec:obiettivi'><span class='n'>1.3</span> Obiettivi</a></li><li class='toc2'><a href='#sec:contributi'><span class='n'>1.4</span> Contributi</a></li><li class='toc2'><a href=''><span class='n'>1.5</span> Struttura del documento</a></li><li class='toc1'><a href='#cap:sensori'><span class='n'>2</span> I sensori di presenza: principi e stato dell&#x27;arte</a></li><li class='toc2'><a href='#sec:pir'><span class='n'>2.1</span> Il sensore PIR</a></li><li class='toc2'><a href='#sec:mmwave'><span class='n'>2.2</span> Il radar mmWave a 24&amp;nbsp;GHz</a></li><li class='toc2'><a href='#sec:altre-tecnologie'><span class='n'>2.3</span> Altre tecnologie di rilevamento di presenza</a></li><li class='toc2'><a href='#sec:posizionamento'><span class='n'>2.4</span> Posizionamento comparativo</a></li><li class='toc1'><a href='#cap:moduli'><span class='n'>3</span> I moduli in esame e i dati che producono</a></li><li class='toc2'><a href='#sec:ld2410b'><span class='n'>3.1</span> HLK-LD2410B</a></li><li class='toc2'><a href='#sec:ld2420'><span class='n'>3.2</span> HLK-LD2420</a></li><li class='toc2'><a href='#sec:hcsr501'><span class='n'>3.3</span> Il sensore PIR in dotazione: HC-SR501</a></li><li class='toc2'><a href='#sec:piattaforma'><span class='n'>3.4</span> La piattaforma di acquisizione</a></li><li class='toc2'><a href='#sec:insidie'><span class='n'>3.5</span> Che aspetto hanno i dati: validazione e insidie</a></li><li class='toc2'><a href='#sec:soglie'><span class='n'>3.6</span> Decisione sulle soglie: non ricalibrare</a></li><li class='toc1'><a href='#cap:confronto'><span class='n'>4</span> Confronto sperimentale PIR vs mmWave</a></li><li class='toc2'><a href='#sec:protocollo'><span class='n'>4.1</span> Protocollo sperimentale</a></li><li class='toc2'><a href='#sec:falsi-positivi'><span class='n'>4.2</span> Falsi positivi: stanza vuota</a></li><li class='toc2'><a href='#sec:persona-ferma'><span class='n'>4.3</span> Il risultato centrale: la persona ferma</a></li><li class='toc2'><a href='#sec:pir-movimento'><span class='n'>4.4</span> Il PIR sbaglia anche con la persona in movimento</a></li><li class='toc2'><a href='#sec:distanza'><span class='n'>4.5</span> Accuratezza della misura di distanza</a></li><li class='toc2'><a href='#sec:latenza'><span class='n'>4.6</span> Latenze di rilevamento e di rilascio</a></li><li class='toc2'><a href='#sec:sotto-banco'><span class='n'>4.7</span> Lo scenario UPRISE: persona sotto il banco</a></li><li class='toc2'><a href='#sec:ostacoli'><span class='n'>4.8</span> Penetrazione degli ostacoli</a></li><li class='toc2'><a href='#sec:respiro'><span class='n'>4.9</span> Il rilevamento del respiro</a></li><li class='toc2'><a href='#sec:ld2420-risultati'><span class='n'>4.10</span> Confronto fra i due moduli radar</a></li><li class='toc2'><a href='#sec:discussione'><span class='n'>4.11</span> Discussione</a></li><li class='toc1'><a href='#cap:consumi'><span class='n'>5</span> Consumo energetico</a></li><li class='toc2'><a href=''><span class='n'>5.1</span> Consumo dei singoli componenti</a></li><li class='toc2'><a href=''><span class='n'>5.2</span> Consumo dei nodi completi</a></li><li class='toc2'><a href=''><span class='n'>5.3</span> Stime di autonomia a batteria</a></li><li class='toc2'><a href='#sec:architettura-ibrida'><span class='n'>5.4</span> Implicazione per UPRISE: l&#x27;architettura ibrida</a></li><li class='toc1'><a href='#cap:webui'><span class='n'>6</span> Interfaccia web: visualizzazione e raccolta dati</a></li><li class='toc2'><a href='#sec:webui-requisiti'><span class='n'>6.1</span> Requisiti e scelta architetturale</a></li><li class='toc2'><a href='#sec:webui-progetto'><span class='n'>6.2</span> Progetto</a></li><li class='toc2'><a href='#sec:webui-piano'><span class='n'>6.3</span> Piano di realizzazione e criteri di accettazione</a></li><li class='toc2'><a href=''><span class='n'>6.4</span> Riferimenti di progetto</a></li><li class='toc1'><a href='#cap:vitalita'><span class='n'>7</span> L&#x27;indice di vitalità</a></li><li class='toc2'><a href='#sec:vitalita-motivazione'><span class='n'>7.1</span> Motivazione: dalla presenza al triage</a></li><li class='toc2'><a href='#sec:vitalita-ingressi'><span class='n'>7.2</span> Dati di ingresso</a></li><li class='toc2'><a href='#sec:vitalita-algoritmo'><span class='n'>7.3</span> Algoritmo</a></li><li class='toc2'><a href='#sec:vitalita-classi'><span class='n'>7.4</span> Classificazione</a></li><li class='toc2'><a href='#sec:vitalita-taratura'><span class='n'>7.5</span> Percorso di sviluppo e taratura</a></li><li class='toc2'><a href='#sec:vitalita-limiti'><span class='n'>7.6</span> Casi limite e comportamenti attesi</a></li><li class='toc2'><a href=''><span class='n'>7.7</span> Estensioni possibili</a></li><li class='toc1'><a href='#cap:conclusioni'><span class='n'>8</span> Conclusioni e sviluppi futuri</a></li><li class='toc2'><a href=''><span class='n'>8.1</span> Risposta alla domanda di partenza</a></li><li class='toc2'><a href=''><span class='n'>8.2</span> Contributi consolidati</a></li><li class='toc2'><a href=''><span class='n'>8.3</span> Lavoro rimanente</a></li><li class='toc2'><a href=''><span class='n'>8.4</span> Sviluppi futuri</a></li><li class='toc1'><a href='#app:protocollo'><span class='n'>A</span> Protocollo seriale del LD2410B</a></li><li class='toc2'><a href=''><span class='n'>A.1</span> Parametri della porta seriale</a></li><li class='toc2'><a href=''><span class='n'>A.2</span> Struttura dei frame</a></li><li class='toc2'><a href=''><span class='n'>A.3</span> Comandi utilizzati</a></li><li class='toc2'><a href=''><span class='n'>A.4</span> Regola di rilevamento</a></li><li class='toc2'><a href=''><span class='n'>A.5</span> Auto-calibrazione del firmware V2.44</a></li><li class='toc1'><a href='#app:codice'><span class='n'>B</span> Software realizzato</a></li><li class='toc2'><a href=''><span class='n'>B.1</span> Organizzazione del repository</a></li><li class='toc2'><a href=''><span class='n'>B.2</span> Il logger</a></li><li class='toc2'><a href=''><span class='n'>B.3</span> Acquisizione</a></li><li class='toc2'><a href=''><span class='n'>B.4</span> Script di analisi</a></li><li class='toc2'><a href=''><span class='n'>B.5</span> Configurazione del gate massimo</a></li></ul></section>
+<section class="chap"><h1 id="cap:introduzione"><span class="num">1</span> Introduzione</h1>
+<p></p>
+<h2 id="sec:contesto"><span class="num">1.1</span> Contesto: il progetto UPRISE/SAFE</h2>
+<p></p>
+<p>Il terremoto del 2016 che ha colpito l'Italia centrale, e in particolare l'area di
+Camerino, ha reso evidente un problema tanto concreto quanto poco studiato: nelle
+prime ore successive a un evento sismico l'informazione più preziosa per i
+soccorritori non è lo stato dell'edificio, ma <em>dove si trovano le persone</em>.
+Da questa esigenza nasce il progetto europeo UPRISE<sup class="fn">1</sup>, che ha come obiettivo la mitigazione del rischio sismico attraverso
+l'integrazione di sensoristica IoT negli <em>arredi</em> degli ambienti
+scolastici&nbsp;<a class="cite" href="#bib">[1]</a>.</p>
+<p>L'idea del progetto si articola su tre livelli.</p>
+<dl><dt>Arredi salva-vita</dt><dd>Banchi e pareti progettate dalla Scuola di Architettura
+    e Design di UNICAM per resistere al crollo e offrire un volume di rifugio: il
+    banco ha telaio doppio spaziale, piano rinforzato con lamiera forata
+    antisfondamento, elemento di base dissipativo e connessione strutturale fra
+    banchi adiacenti.</dd><dt>Nodi di sensing</dt><dd>Nell'arredo è integrata l'elettronica sviluppata dal
+    partner industriale AM Microsystems: il <strong>DIPME-DEVICE</strong> monta radio LoRa,
+    sensore <em>PIR</em>, sensore <em>UWB</em>, oltre a CO<sub>2</sub>,
+    temperatura, umidità, pressione, accelerometro e Bluetooth. I nodi
+    comunicano con un <strong>DIPME-COORDINATOR</strong> e da questo verso un gateway IoT
+    su Linux/Raspberry.</dd><dt>Raccolta e visualizzazione</dt><dd>In emergenza la rete di terra non è
+    disponibile: i messaggi LoRa (bande sub-GHz libere, 433/868&nbsp;MHz in Europa,
+    con portate dell'ordine di 3–5&nbsp;km in ambiente urbano) vengono raccolti da
+    <em>droni</em> che ricostruiscono una mappa di calore geolocalizzata, consultabile
+    offline dal tablet dei soccorritori. L'intero sistema è modellato e validato
+    a priori sulla piattaforma di Digital Twin del gruppo di
+    ricerca&nbsp;<a class="cite" href="#bib">[2, 3]</a>.</dd></dl>
+<p>Il sistema opera in due modalità: un “tempo di pace” di monitoraggio ordinario
+e un “tempo di guerra” di emergenza sismica, attivato da un trigger (accelerometro
+sul gateway, blackout della rete elettrica).</p>
+<p><span class="todo">[DA FARE: inserire una figura di sistema: arredo <span class="math">→</span> DIPME <span class="math">→</span> coordinator <span class="math">→</span>
+gateway <span class="math">→</span> drone <span class="math">→</span> tablet]</span></p>
+<h2 id="sec:problema"><span class="num">1.2</span> Il problema specifico affrontato dalla tesi</h2>
+<p></p>
+<p>Questa tesi si occupa esclusivamente del livello più basso della catena: il
+<strong>sensing di presenza</strong>. La domanda di partenza è molto circoscritta e ha
+un'origine precisa nell'architettura esistente.</p>
+<p>Il DIPME-DEVICE rileva la presenza con un sensore PIR (<em>Passive InfraRed</em>).
+Il PIR è il sensore di presenza più diffuso al mondo per tre ragioni difficili
+da battere: consuma qualche decina di microampere, costa pochi euro e non richiede
+alcuna elaborazione. Ha tuttavia un limite che non dipende dalla qualità del
+componente ma dal suo principio di funzionamento: l'elemento piroelettrico risponde
+alla <em>variazione</em> del flusso infrarosso incidente, non al suo valore. Una
+persona ferma produce un flusso costante, quindi un segnale differenziale nullo:
+<em>nessun PIR, a nessun prezzo, può rilevare una persona immobile</em>
+(sezione&nbsp;<a href="#sec:pir-principio">2.1.1</a>).</p>
+<p>Nello scenario UPRISE questo limite cade esattamente nel punto peggiore. Una
+persona rifugiata sotto un banco dopo un crollo è, tipicamente, <strong>ferma</strong>:
+per paura, per scelta, o perché non può muoversi. È il caso cieco del sensore
+che il nodo monta oggi.</p>
+<p>I radar <em>mmWave</em> a onda continua modulata in frequenza (FMCW) a 24&nbsp;GHz
+promettono di coprire proprio questo buco: rilevano i micro-movimenti
+(fino, in linea di principio, all'oscillazione toracica del respiro), misurano la
+distanza del bersaglio e non producono immagini, il che li rende compatibili con i
+vincoli di privacy di un ambiente scolastico. Da qui le domande di ricerca della
+tesi:</p>
+<ol><li><em>quanto</em> vale, in numeri, il vantaggio del mmWave sul PIR nel caso
+        della persona ferma?</li><li>quali <em>dati</em> produce realmente un modulo mmWave di fascia consumer, e
+        con quale accuratezza?</li><li>a che <em>costo</em> energetico, e con quale architettura di nodo?</li><li>è possibile andare oltre la presenza binaria, verso una misura di
+        <em>vitalità</em> utile al triage?</li></ol>
+<h2 id="sec:obiettivi"><span class="num">1.3</span> Obiettivi</h2>
+<p></p>
+<p>Gli obiettivi sono stati concordati con il relatore e sono qui riportati nella
+formulazione originale, perché costituiscono la traccia di tutto il documento.</p>
+<ol class="custom"><li class="custom"><span class="lbl"><strong>O1.</strong></span> <strong>Studio dei sensori</strong> — chi li usa, come vengono usati, quali dati
+        producono (PIR e mmWave). <em>Capitolo <a href="#cap:sensori">2</a>.</em></li><li class="custom"><span class="lbl"><strong>O2.</strong></span> <strong>Analisi dei dati forniti</strong> — capire nel dettaglio quali grandezze
+        i sensori mettono a disposizione: il PIR solo movimento sì/no, il mmWave
+        micro-movimenti, distanza e potenzialmente respiro.
+        <em>Capitolo <a href="#cap:moduli">3</a>.</em></li><li class="custom"><span class="lbl"><strong>O3.</strong></span> <strong>Comparazione con testing numerico</strong> — confronto sperimentale
+        PIR vs mmWave con metriche quantitative. <em>Capitolo <a href="#cap:confronto">4</a>.</em></li><li class="custom"><span class="lbl"><strong>O4.</strong></span> <strong>Consumo energetico</strong> — a titolo informativo, sulla base dei
+        datasheet, non essendo disponibile strumentazione di misura.
+        <em>Capitolo <a href="#cap:consumi">5</a>.</em></li><li class="custom"><span class="lbl"><strong>O5.</strong></span> <strong>User interface web</strong> — l'ESP32 pubblica i dati, un sito web li
+        visualizza in tempo reale, la stessa applicazione li salva con statistiche
+        ed esporta in CSV per l'analisi numerica. <em>Capitolo <a href="#cap:webui">6</a>.</em></li><li class="custom"><span class="lbl"><strong>O6.</strong></span> <strong>Indice di vitalità</strong> — obiettivo avanzato: oltre alla presenza
+        sì/no, un algoritmo che quantifichi quanto una persona si muove
+        (per esempio 50 su 100) e la classifichi di conseguenza.
+        <em>Capitolo <a href="#cap:vitalita">7</a>.</em></li></ol>
+<p class="runin"><strong>Fuori scope.</strong>  Non fanno parte della tesi: la radio LoRa e il suo
+protocollo, la raccolta con droni, il Digital Twin, la progettazione strutturale
+degli arredi. Questi elementi compaiono solo in sezione&nbsp;<a href="#sec:contesto">1.1</a> come
+inquadramento e, dove pertinente, come vincolo di progetto (per esempio l'assenza
+di connettività in emergenza, che orienta le scelte del capitolo&nbsp;<a href="#cap:webui">6</a>).</p>
+<h2 id="sec:contributi"><span class="num">1.4</span> Contributi</h2>
+<p></p>
+<p>I contributi originali di questo lavoro sono:</p>
+<ul><li>una <strong>piattaforma di misura riproducibile</strong> su ESP32 che acquisisce
+        radar e PIR in parallelo a 5&nbsp;Hz esatti con accesso ai dati per-gate del
+        radar, con formato CSV unico condiviso da tutta la catena di analisi
+        (sezione&nbsp;<a href="#sec:piattaforma">3.4</a>);</li><li>la <strong>caratterizzazione quantitativa</strong> del divario PIR/mmWave sulla
+        persona ferma e sulla persona in movimento sul posto, con deviazioni
+        standard su cinque ripetizioni per scenario (capitolo&nbsp;<a href="#cap:confronto">4</a>);</li><li>la <strong>calibrazione della misura di distanza</strong> del LD2410B su 25 prove
+        fra 1 e 5&nbsp;m, con individuazione di un errore di scala sistematico e del
+        coefficiente che lo corregge (sezione&nbsp;<a href="#sec:distanza">4.5</a>);</li><li>la <strong>dimostrazione di misurabilità del respiro</strong> con hardware
+        consumer, e l'individuazione documentata di quale dei venti canali di
+        energia disponibili sia effettivamente utilizzabile a ciascuna distanza
+        (sezione&nbsp;<a href="#sec:respiro">4.9</a>);</li><li>la <strong>specifica e la taratura di un indice di vitalità</strong>
+        implementabile su microcontrollore (capitolo&nbsp;<a href="#cap:vitalita">7</a>).</li></ul>
+<h2><span class="num">1.5</span> Struttura del documento</h2>
+<p>Il capitolo&nbsp;<a href="#cap:sensori">2</a> tratta i principi di funzionamento e lo stato dell'arte dei
+sensori di presenza (O1). Il capitolo&nbsp;<a href="#cap:moduli">3</a> descrive i moduli in esame, i dati
+che producono e la piattaforma di acquisizione realizzata (O2). Il
+capitolo&nbsp;<a href="#cap:confronto">4</a> è il capitolo centrale e riporta il confronto sperimentale
+(O3). Il capitolo&nbsp;<a href="#cap:consumi">5</a> analizza i consumi (O4), il capitolo&nbsp;<a href="#cap:webui">6</a> la web UI
+(O5), il capitolo&nbsp;<a href="#cap:vitalita">7</a> l'indice di vitalità (O6). Il
+capitolo&nbsp;<a href="#cap:conclusioni">8</a> risponde in sintesi alla domanda di partenza e indica gli
+sviluppi futuri. Le appendici raccolgono i dettagli del protocollo seriale e i
+listati principali.</p><div class="notes"><b>Note</b><ol><li>Nella documentazione
+scientifica del gruppo di ricerca il progetto è indicato anche con il nome
+<strong>SAFE</strong>; nel seguito si userà UPRISE/SAFE per riferirsi allo stesso
+ecosistema.</li></ol></div></section>
+<section class="chap"><h1 id="cap:sensori"><span class="num">2</span> I sensori di presenza: principi e stato dell'arte</h1>
+<p></p>
+<blockquote><p>
+Questo capitolo risponde all'obiettivo O1: che cosa sono i sensori di presenza,
+come funzionano, chi li usa e quali dati producono. La trattazione è
+volutamente asimmetrica — più spazio a PIR e mmWave, che sono i sensori
+effettivamente misurati nel capitolo&nbsp;<a href="#cap:confronto">4</a> — e si chiude con il
+posizionamento comparativo che giustifica le scelte del resto della tesi.</p></blockquote>
+<h2 id="sec:pir"><span class="num">2.1</span> Il sensore PIR</h2>
+<p></p>
+<h3 id="sec:pir-principio"><span class="num">2.1.1</span> Principio fisico: un rilevatore di variazione, non di presenza</h3>
+<p></p>
+<p>PIR è l'acronimo di <em>Passive InfraRed</em>: il sensore non emette nulla, si limita
+a osservare la radiazione infrarossa che lo raggiunge. Il cuore del componente è un
+cristallo <strong>piroelettrico</strong>, che genera una piccola carica elettrica quando la
+radiazione incidente <em>cambia</em>. Il corpo umano, con una temperatura superficiale
+di circa 34&thinsp;°C, emette con picco intorno a 9,4&nbsp;µ m; il sensore è
+filtrato con una finestra ottica di 5–14&nbsp;µ m proprio per privilegiare quella
+banda&nbsp;<a class="cite" href="#bib">[4]</a>.</p>
+<p>Il punto essenziale per questa tesi è che il cristallo risponde alla
+<strong>derivata</strong> del flusso infrarosso, non al suo valore assoluto.
+Costruttivamente il sensore contiene <strong>due elementi piroelettrici in
+configurazione differenziale</strong>, collegati in serie con polarità opposte, e da questo
+seguono tre conseguenze:</p>
+<ul><li>una persona che si muove investe i due elementi in <em>tempi diversi</em>: il
+        segnale differenziale è non nullo e si ha rilevamento;</li><li>una persona ferma illumina entrambi gli elementi con lo stesso flusso
+        costante: la differenza è nulla e il sensore è <strong>fisicamente cieco</strong>;</li><li>una variazione globale della scena (il sole che scalda la stanza) colpisce
+        entrambi gli elementi allo stesso modo e si cancella: da qui la buona
+        immunità del PIR ai falsi positivi ambientali lenti.</li></ul>
+<p>È importante inquadrare correttamente questo comportamento. Il risultato
+sperimentale del sezione&nbsp;<a href="#sec:persona-ferma">4.3</a> — falsi negativi prossimi al
+100&thinsp;% su persona ferma — <strong>non è il fallimento di un componente
+economico</strong>: è il funzionamento nominale del principio. Nessun PIR, a nessun prezzo,
+può rilevare un corpo immobile. Questa è la frase su cui poggia l'intero confronto
+con il radar.</p>
+<h3 id="sec:fresnel"><span class="num">2.1.2</span> La lente di Fresnel: da due elementi a decine di zone</h3>
+<p></p>
+<p>Due soli elementi coprirebbero un campo visivo strettissimo. La cupola bianca che
+si vede su tutti i moduli PIR è una <strong>lente di Fresnel multi-segmento</strong>: ogni
+segmento focalizza sul cristallo una porzione differente della scena, creando
+decine di <em>zone di rilevamento</em> a ventaglio, separate da zone cieche.</p>
+<p>Questo dettaglio costruttivo ha due conseguenze misurabili, entrambe verificate
+sperimentalmente nel capitolo&nbsp;<a href="#cap:confronto">4</a>:</p>
+<ol><li>il movimento <strong>trasversale</strong>, che attraversa le zone, genera molte
+        transizioni di flusso ed è rilevato bene; il movimento <strong>radiale</strong>,
+        diretto verso il sensore, resta più a lungo nella stessa zona ed è rilevato
+        male. Il radar FMCW ha la sensibilità esattamente opposta, perché misura
+        variazioni di distanza;</li><li>la portata dichiarata (3–7&nbsp;m) vale per il movimento trasversale di tutto
+        il corpo. Un movimento <em>sul posto</em> non attraversa le zone e cade nel
+        caso sfavorevole: è il meccanismo che spiega il risultato, a prima vista
+        sorprendente, del sezione&nbsp;<a href="#sec:pir-movimento">4.4</a>.</li></ol>
+<h3 id="sec:pir-dati"><span class="num">2.1.3</span> I dati prodotti: un bit, e come va interpretato</h3>
+<p></p>
+<p>L'uscita di un modulo PIR è <strong>un solo bit digitale</strong>. Tutta l'elaborazione è
+nell'elettronica di condizionamento, tipicamente il circuito integrato
+BISS0001&nbsp;<a class="cite" href="#bib">[5]</a>, che introduce i meccanismi riassunti nella
+tabella&nbsp;<a href="#tab:pir-meccanismi">2.1</a>.</p>
+<figure class="tab" id="tab:pir-meccanismi"><figcaption><b>Tabella 2.1.</b> Meccanismi di condizionamento del segnale PIR e loro effetto sul dato
+prodotto.</figcaption><table><thead><tr><th><strong>Meccanismo</strong></th><th><strong>Effetto sul dato</strong></th></tr></thead><tbody><tr><td>Soglia sul segnale amplificato</td><td>sensibilità/portata (trimmer)</td></tr><tr><td><strong>Tempo di ritenuta</strong> (hold)</td><td>l'uscita resta alta <span class="math">N</span> secondi dopo l'ultimo
+  trigger (trimmer)</td></tr><tr><td>Modalità trigger L (single)</td><td>l'uscita torna bassa alla fine della ritenuta anche
+  se il movimento continua</td></tr><tr><td>Modalità trigger H (repeat)</td><td>ogni nuovo movimento riarma la ritenuta</td></tr><tr><td>Tempo di stabilizzazione</td><td>30–60&nbsp;s all'accensione, uscita non attendibile</td></tr><tr><td>Block time</td><td>2,5&nbsp;s di cecità strutturale dopo ogni rilascio</td></tr></tbody></table></figure>
+<p>Da questa tabella derivano direttamente tre scelte del protocollo sperimentale
+(sezione&nbsp;<a href="#sec:protocollo">4.1</a>): il jumper in modalità <strong>H</strong>, il trimmer di ritenuta
+al <strong>minimo</strong> e lo scarto del primo minuto di ogni acquisizione. Se la
+ritenuta non fosse al minimo, la “latenza di rilascio” misurata sarebbe una
+proprietà del potenziometro, non del sensore.</p>
+<p>Il confronto informativo con il mmWave si riassume in una riga: il PIR produce
+<strong>1 bit filtrato da isteresi</strong>, il LD2410B produce circa <strong>venti valori
+numerici</strong> (stato, due distanze, due energie di target, diciotto energie per-gate) a
+ogni frame. La tesi quantifica quanto questo divario informativo si traduca in
+capacità di rilevamento.</p>
+<h3 id="sec:pir-temperatura"><span class="num">2.1.4</span> Sensibilità alla temperatura ambiente</h3>
+<p></p>
+<p>Il segnale utile del PIR è il <em>contrasto termico</em> fra corpo e sfondo. A
+20&thinsp;°C di ambiente il contrasto è di circa 14&thinsp;°C; a
+30–32&thinsp;°C — un'aula assolata d'estate — scende a 2–4&thinsp;°C, con
+segnale più debole, portata ridotta e più falsi negativi. Sopra i 35&thinsp;°C il
+contrasto può addirittura invertirsi.</p>
+<p>Per questo motivo ogni sessione sperimentale registra la temperatura della stanza
+(sezione&nbsp;<a href="#sec:registro">4.1.3</a>). Le acquisizioni di questa tesi sono state svolte fra 25 e
+29&thinsp;°C: una condizione <em>sfavorevole</em> al PIR, che va dichiarata
+esplicitamente nella discussione dei risultati (sezione&nbsp;<a href="#sec:limiti">4.11.3</a>).</p>
+<p>Altre sorgenti note di falsi positivi PIR, tenute fuori dal setup: correnti d'aria
+calda o fredda, animali, sole diretto attraverso i vetri (il vetro blocca l'IR del
+corpo, ma non il riscaldamento solare degli oggetti interni).</p>
+<h3 id="sec:pir-usi"><span class="num">2.1.5</span> Chi lo usa e perché domina</h3>
+<p></p>
+<p>Il PIR è il sensore di presenza più diffuso al mondo: luci automatiche, antifurti,
+videocitofoni, termostati. Le ragioni sono tre numeri difficili da battere:
+circa <strong>50&nbsp;µ A</strong> di corrente di riposo, <strong>1–3&nbsp;€</strong> di costo e
+<strong>zero elaborazione</strong> richiesta al microcontrollore, cui si aggiunge l'assenza
+totale di emissioni — essendo un sensore passivo — che semplifica
+certificazioni e conformità in materia di privacy.</p>
+<p>Nel progetto UPRISE il DIPME-DEVICE monta un PIR esattamente per questi motivi: un
+nodo deve poter vegliare per anni a batteria. Il limite emerge solo nello scenario
+di emergenza, ed è il punto di partenza di questa tesi.</p>
+<h2 id="sec:mmwave"><span class="num">2.2</span> Il radar mmWave a 24&nbsp;GHz</h2>
+<p></p>
+<h3><span class="num">2.2.1</span> Principio: FMCW e gate di distanza</h3>
+<p>I moduli in esame sono radar <em>FMCW</em> (<em>Frequency Modulated Continuous
+Wave</em>) operanti nella banda ISM a 24&nbsp;GHz. Il principio è il seguente: il
+trasmettitore emette un segnale continuo la cui frequenza cresce linearmente nel
+tempo (<em>chirp</em>); l'eco riflessa dal bersaglio torna con un ritardo
+proporzionale alla distanza, e poiché la frequenza istantanea è cambiata nel
+frattempo, il battimento fra segnale trasmesso e ricevuto ha una frequenza
+proporzionale alla distanza del bersaglio. Un'analisi in frequenza del segnale di
+battimento produce quindi direttamente un profilo distanza–intensità.</p>
+<p>I moduli consumer non espongono il segnale grezzo, ma una sua versione elaborata e
+discretizzata in <strong>gate di distanza</strong>: intervalli contigui di profondità, nove
+per il LD2410B (0,75&nbsp;m ciascuno, per un massimo di 6,75&nbsp;m) e quindici per il
+LD2420 (0,70&nbsp;m ciascuno). Per ogni gate il modulo riporta un valore di
+<strong>energia riflessa</strong> normalizzato nell'intervallo 0–100, separatamente per la
+componente “in movimento” e per quella “stazionaria”. Questo insieme di valori
+— accessibile solo attivando l'<em>engineering mode</em>, sezione&nbsp;<a href="#sec:engineering">3.1.4</a> —
+è la materia prima di tutta l'analisi quantitativa di questa tesi.</p>
+<h3><span class="num">2.2.2</span> Come si rileva un corpo immobile</h3>
+<p>Un radar FMCW puro misura distanza, non movimento: un corpo fermo produce comunque
+un'eco. In pratica i moduli commerciali separano due contributi:</p>
+<ul><li>la componente <strong>moving</strong>, associata a variazioni rapide della fase
+        dell'eco (spostamento del bersaglio);</li><li>la componente <strong>stationary</strong> (o <em>motionless</em>), associata a
+        un'eco stabile in distanza ma con fluttuazioni residue.</li></ul>
+<p>Una persona ferma non è mai realmente ferma: il torace si muove di alcuni
+millimetri a ogni atto respiratorio, e a 24&nbsp;GHz (lunghezza d'onda di circa
+12,5&nbsp;mm) uno spostamento millimetrico produce una variazione di fase perfettamente
+misurabile. È questa la ragione fisica per cui il radar vede ciò che il PIR non può
+vedere, ed è anche la base del rilevamento del respiro
+(sezione&nbsp;<a href="#sec:respiro-teoria">2.2.3</a>).</p>
+<h3 id="sec:respiro-teoria"><span class="num">2.2.3</span> Il respiro come segnale</h3>
+<p></p>
+<p>Il respiro di un adulto a riposo ha frequenza compresa fra circa 0,1 e 0,5&nbsp;Hz
+(6–30 atti al minuto). L'oscillazione toracica modula l'energia riflessa dal gate
+in cui si trova la persona: campionando quel valore nel tempo e applicando una
+trasformata di Fourier, il picco spettrale in banda 0,1–0,5&nbsp;Hz corrisponde al
+ritmo respiratorio.</p>
+<p>Questa strada è ampiamente documentata in letteratura, con hardware sia
+professionale sia consumer. Sono stati esaminati in particolare i lavori
+sul monitoraggio non a contatto dei parametri vitali con radar FMCW, che
+dimostrano il rilevamento di eventi apnoici e confrontano architetture a onda
+continua e FMCW&nbsp;<a class="cite" href="#bib">[6]</a>, l'estrazione congiunta di frequenza
+respiratoria e cardiaca con reti neurali&nbsp;<a class="cite" href="#bib">[7]</a>, il confronto fra
+sensori a 24 e a 60&nbsp;GHz (dove il 24&nbsp;GHz privilegia la portata e il 60&nbsp;GHz la
+risoluzione)&nbsp;<a class="cite" href="#bib">[8]</a>, il tracciamento multi-bersaglio&nbsp;<a class="cite" href="#bib">[9]</a>
+e le tecniche specifiche di monitoraggio respiratorio con
+mmWave&nbsp;<a class="cite" href="#bib">[10]</a>.</p>
+<p>L'aspettativa realistica con hardware consumer, che i risultati del
+sezione&nbsp;<a href="#sec:respiro">4.9</a> confermano, è la seguente: rilevare la <em>presenza</em> di
+respiro — cioè distinguere una persona ferma e viva da una stanza vuota — è
+affidabile; misurare la frequenza esatta richiede post-elaborazione e condizioni
+controllate.</p>
+<h3><span class="num">2.2.4</span> Chi li usa</h3>
+<p>I radar mmWave di fascia consumer si sono diffusi rapidamente nella domotica
+(interruttori di presenza, illuminazione che non si spegne mentre si legge fermi
+sul divano), nell'automazione degli edifici per il conteggio di occupazione, nel
+monitoraggio del sonno e nei sistemi di rilevamento cadute per l'assistenza agli
+anziani. Il supporto nelle piattaforme aperte è ormai maturo: le integrazioni
+ESPHome per LD2410 e LD2420 sono documentate e ampiamente
+usate&nbsp;<a class="cite" href="#bib">[11, 12, 13]</a>, e la letteratura tecnica sulle
+applicazioni di conteggio dell'occupazione negli edifici
+intelligenti&nbsp;<a class="cite" href="#bib">[14]</a> documenta gli ordini di grandezza attesi. Sono
+fonti utili per il
+comportamento pratico dei moduli oltre a quanto scritto nei manuali.</p>
+<h2 id="sec:altre-tecnologie"><span class="num">2.3</span> Altre tecnologie di rilevamento di presenza</h2>
+<p></p>
+<h3 id="sec:uwb"><span class="num">2.3.1</span> UWB (Ultra-WideBand)</h3>
+<p></p>
+<p>L'UWB merita più attenzione delle altre alternative per una ragione precisa: il
+DIPME-DEVICE ne monta già uno. La domanda “perché mmWave e non UWB?” è quindi
+attesa in sede di discussione, e la risposta va preparata.</p>
+<p>L'UWB trasmette impulsi molto brevi su una banda larghissima (tipicamente
+3–10&nbsp;GHz), ottenendo un'eccellente risoluzione temporale e quindi spaziale, buona
+penetrazione dei materiali e consumi molto contenuti (sotto i 10&nbsp;mW in
+trasmissione)&nbsp;<a class="cite" href="#bib">[15]</a>. È in grado di rilevare corpi fermi e, in
+letteratura, anche parametri vitali.</p>
+<p>Gli argomenti a favore del mmWave nel contesto specifico di questa tesi sono
+quattro:</p>
+<ol><li><strong>maturità dei moduli consumer</strong>: LD2410B e LD2420 costano 5–15&nbsp;€,
+        hanno firmware che espone direttamente presenza, distanza ed energia
+        per-gate e non richiedono elaborazione a valle; i moduli UWB comparabili
+        costano 20–50&nbsp;€ e tipicamente espongono dati grezzi che richiedono un
+        processore vero;</li><li><strong>dati per-gate già elaborati</strong>: i venti canali di energia del
+        LD2410B sono ciò che rende possibile l'indice di vitalità del
+        capitolo&nbsp;<a href="#cap:vitalita">7</a> su un microcontrollore da pochi euro;</li><li><strong>destinazione d'uso</strong>: l'UWB sul DIPME è pensato principalmente per
+        localizzazione/ranging fra nodi, un problema diverso dal rilevamento di
+        presenza in un volume;</li><li><strong>complementarità, non concorrenza</strong>: nulla vieta che il nodo finale
+        usi entrambi. La raccomandazione del capitolo&nbsp;<a href="#cap:conclusioni">8</a> è
+        un'architettura a più sensori, non una sostituzione.</li></ol>
+<h3><span class="num">2.3.2</span> Ultrasuoni, CO<sub>2</sub>, visione</h3>
+<p>Per completezza si citano tre alternative escluse a priori.
+Gli <strong>ultrasuoni</strong> misurano distanza in modo economico ma sono molto
+sensibili a tessuti fonoassorbenti e alla geometria della scena, e sotto un arredo
+crollato la propagazione acustica è imprevedibile.
+La <strong>CO<sub>2</sub></strong> è un ottimo indicatore di occupazione di un
+ambiente — ed è già presente sul DIPME — ma ha costanti di tempo dell'ordine
+dei minuti e non localizza: inadatta a rispondere alla domanda “c'è qualcuno
+sotto <em>questo</em> banco?”.
+La <strong>visione</strong> (telecamere, termocamere) è la più informativa ma è esclusa da
+vincoli di privacy in ambiente scolastico, dal costo e dall'inutilizzabilità nel
+buio e nella polvere post-crollo.</p>
+<h2 id="sec:posizionamento"><span class="num">2.4</span> Posizionamento comparativo</h2>
+<p></p>
+<p>La tabella&nbsp;<a href="#tab:comparativa">2.2</a> riassume il confronto fra le tre tecnologie candidate. I
+valori sono da datasheet o da letteratura; la colonna mmWave è quella verificata
+sperimentalmente nel capitolo&nbsp;<a href="#cap:confronto">4</a>.</p>
+<figure class="tab" id="tab:comparativa"><figcaption><b>Tabella 2.2.</b> Confronto fra le tecnologie di rilevamento di presenza candidate. Le
+prestazioni della colonna mmWave sono verificate sperimentalmente nel
+capitolo&nbsp;<a href="#cap:confronto">4</a>.</figcaption><table><thead><tr><th><strong>Parametro</strong></th><th><strong>PIR</strong></th><th><strong>mmWave 24&nbsp;GHz</strong></th><th><strong>UWB 3–10&nbsp;GHz</strong></th></tr></thead><tbody><tr><td>Rilevamento corpo fermo</td><td>no (fisicamente)</td><td>sì (micro-movimenti)</td><td>sì</td></tr><tr><td>Misura di distanza</td><td>no</td><td>sì</td><td>sì</td></tr><tr><td>Conteggio persone</td><td>no</td><td>limitato (no angolazione)</td><td>limitato</td></tr><tr><td>Rilevamento respiro</td><td>no</td><td>sì, parziale</td><td>sì</td></tr><tr><td>Penetrazione ostacoli</td><td>no</td><td>parziale (non metallo/cemento)</td><td>buona</td></tr><tr><td>Corrente tipica</td><td><span class="math">~</span>0,05&nbsp;mA</td><td>50–80&nbsp;mA</td><td><span class="math"> lt;</span>10&nbsp;mW</td></tr><tr><td>Privacy</td><td>assenza di dato personale</td><td>alta (nessuna immagine)</td><td>alta</td></tr><tr><td>Costo indicativo</td><td>1–3&nbsp;€</td><td>5–15&nbsp;€</td><td>20–50&nbsp;€</td></tr><tr><td>Alimentazione</td><td>batteria adeguata</td><td>fissa preferibile</td><td>batteria adeguata</td></tr></tbody></table></figure>
+<p>Il quadro che emerge è quello di una <strong>complementarità</strong>, non di una
+sostituzione: il PIR è imbattibile come guardiano a costo energetico nullo, il
+mmWave è l'unico dei tre a offrire, a costo contenuto e con dati già elaborati,
+una misura continua di <em>quanto</em> si muove ciò che riflette. È esattamente la
+grandezza necessaria all'indice di vitalità.</p>
+<p>
+
+Come riferimento di prestazioni attese in condizioni ottimali, la letteratura
+tecnica sui moduli mmWave consumer indica latenza di rilevamento del movimento
+inferiore a 500&nbsp;ms, conferma di persona ferma in 2–5&nbsp;s, conferma di stanza vuota
+in 20–60&nbsp;s e tassi di falsi positivi inferiori a 0,05 eventi/h.
+Il capitolo&nbsp;<a href="#cap:confronto">4</a> verifica questi ordini di grandezza sul nostro esemplare.</p></section>
+<section class="chap"><h1 id="cap:moduli"><span class="num">3</span> I moduli in esame e i dati che producono</h1>
+<p></p>
+<blockquote><p>
+Questo capitolo risponde all'obiettivo O2. Descrive i tre sensori effettivamente
+usati, il protocollo con cui si interrogano, la piattaforma di acquisizione
+realizzata per la campagna sperimentale e la natura dei dati prodotti, comprese le
+loro insidie — saturazione, canali strutturalmente disattivati, coda di presenza
+— individuate in fase di validazione.</p></blockquote>
+<h2 id="sec:ld2410b"><span class="num">3.1</span> HLK-LD2410B</h2>
+<p></p>
+<h3><span class="num">3.1.1</span> Specifiche</h3>
+<p>Il  è un modulo radar FMCW a 24&nbsp;GHz prodotto da Shenzhen Hi-Link
+Electronic. Le specifiche dichiarate dal manuale ufficiale e dal datasheet sono
+riassunte nella tabella&nbsp;<a href="#tab:ld2410b-specs">3.1</a>.</p>
+<figure class="tab" id="tab:ld2410b-specs"><figcaption><b>Tabella 3.1.</b> Specifiche del  (fonti: manuale ufficiale
+V1.04&nbsp;<a class="cite" href="#bib">[16]</a>, manuale V1.03&nbsp;<a class="cite" href="#bib">[17]</a>,
+datasheet&nbsp;<a class="cite" href="#bib">[18]</a>).</figcaption><table><thead><tr><th><strong>Parametro</strong></th><th><strong>Valore</strong></th></tr></thead><tbody><tr><td>Tecnologia</td><td>FMCW, banda ISM 24&nbsp;GHz</td></tr><tr><td>Portata dichiarata</td><td>5–6&nbsp;m</td></tr><tr><td>Campo visivo</td><td><span class="math">± 60°</span></td></tr><tr><td>Alimentazione</td><td>5&nbsp;V, alimentatore con capacità <span class="math"> gt;</span>200&nbsp;mA</td></tr><tr><td>Corrente media</td><td>80&nbsp;mA</td></tr><tr><td>Interfaccia</td><td>UART 256000 baud, 8N1</td></tr><tr><td>Bluetooth</td><td>integrato (variante B), password di default <code>HiLink</code></td></tr><tr><td>Dimensioni</td><td>circa 35&nbsp;mm <span class="math">×</span> 7&nbsp;mm</td></tr><tr><td>Gate di distanza</td><td>9 (0–8)</td></tr><tr><td>Risoluzione gate</td><td>0,75&nbsp;m oppure 0,20&nbsp;m</td></tr></tbody></table></figure>
+<h3 id="sec:cablaggio"><span class="num">3.1.2</span> Piedinatura e cablaggio</h3>
+<p></p>
+<p>Il modulo espone cinque piedini, definiti nella Tabella&nbsp;1 del
+datasheet&nbsp;<a class="cite" href="#bib">[18]</a>:</p>
+<div class="plaintab"><table><thead><tr><th><strong>Pin</strong></th><th><strong>Nome</strong></th><th><strong>Funzione</strong></th><th><strong>Collegamento ESP32</strong></th></tr></thead><tbody><tr><td class="num">1</td><td>OUT</td><td>presenza digitale (alto = persona)</td><td>non collegato</td></tr><tr><td class="num">2</td><td>UART_Tx</td><td>il radar trasmette</td><td>GPIO25 (RX2)</td></tr><tr><td class="num">3</td><td>UART_Rx</td><td>il radar riceve</td><td>GPIO26 (TX2)</td></tr><tr><td class="num">4</td><td>GND</td><td>massa</td><td>GND</td></tr><tr><td class="num">5</td><td>VCC</td><td>alimentazione</td><td>VIN (5&nbsp;V)</td></tr></tbody></table></div>
+<figure class="tab" id="tab:colori"><figcaption><b>Tabella 3.2.</b> Corrispondenza fra i colori del cavo JST fornito con il modulo e i piedini
+del datasheet. Una mappatura errata di questa corrispondenza ha comportato circa tre
+settimane di lavoro perso nella convinzione che il modulo fosse guasto.</figcaption><table><thead><tr><th><strong>Colore</strong></th><th><strong>Pin</strong></th><th><strong>Segnale</strong></th><th><strong>ESP32</strong></th></tr></thead><tbody><tr><td>Rosso</td><td class="num">5</td><td>VCC</td><td>VIN (5&nbsp;V)</td></tr><tr><td>Nero</td><td class="num">4</td><td>GND</td><td>GND</td></tr><tr><td>Giallo</td><td class="num">3</td><td>UART_Rx</td><td>D26 (TX2)</td></tr><tr><td>Verde</td><td class="num">2</td><td>UART_Tx</td><td>D25 (RX2)</td></tr><tr><td>Blu</td><td class="num">1</td><td>OUT</td><td>non collegato</td></tr></tbody></table></figure>
+<p class="runin"><strong>Nota metodologica.</strong>  Vale la pena riportare l'episodio, perché è un
+risultato pratico di per sé. Il 19 luglio 2026 il modulo è stato dichiarato
+guasto dopo giorni di tentativi in cui non si riceveva alcun byte; il 9 agosto,
+ricontrollando la Tabella&nbsp;1 del datasheet invece di dedurre l'ordine dei pin dalla
+fotografia del connettore, si è scoperto che i due fili della seriale erano
+invertiti. Il modulo ha risposto al primo tentativo. La regola che ne deriva —
+<em>fare sempre riferimento alla tabella di piedinatura del datasheet, non
+all'ordine apparente dei fili</em> — è banale ma è costata tre settimane.</p>
+<p>Un secondo caso analogo si è presentato con lo strumento di configurazione da PC:
+il pacchetto <code>HLK-LD2420_TOOL</code> non è utilizzabile con il LD2410B (protocolli
+diversi, l'errore restituito è <em>Failed to set data transfer mode</em>). Per il
+LD2410B va usato il <code>LD2410 Tool</code> distribuito nella cartella Drive del
+produttore&nbsp;<a class="cite" href="#bib">[19]</a>.</p>
+<h3 id="sec:protocollo-seriale"><span class="num">3.1.3</span> Protocollo seriale</h3>
+<p></p>
+<p>La comunicazione avviene su UART a 256000 baud, 8N1, con due tipi di frame
+distinti da intestazione e chiusura (protocollo V1.07&nbsp;<a class="cite" href="#bib">[20]</a>, i
+dettagli completi sono in appendice&nbsp;<a href="#app:protocollo">A</a>):</p>
+<ul><li><strong>frame di comando</strong> — intestazione <code>FD FC FB FA</code>, chiusura
+        <code>04 03 02 01</code>;</li><li><strong>frame di dati</strong> — intestazione <code>F4 F3 F2 F1</code>, chiusura
+        <code>F8 F7 F6 F5</code>.</li></ul>
+<p>Nel frame di dati il byte 8 contiene lo stato del bersaglio come maschera di bit
+(<code>0x01</code> = in movimento, <code>0x02</code> = stazionario), seguito dalle distanze
+e dalle energie del bersaglio. Se il byte 6 vale <code>0x01</code> il frame è in
+<em>engineering mode</em> e trasporta anche le energie per-gate nei byte 19–37, più
+la lettura del sensore di luce.</p>
+<p>I comandi utilizzati in questo lavoro sono:</p>
+<div class="plaintab"><table><thead><tr><th><strong>Comando</strong></th><th><strong>Funzione</strong></th></tr></thead><tbody><tr><td><code>0x00FF</code></td><td>entra in modalità configurazione</td></tr><tr><td><code>0x00FE</code></td><td>esce dalla modalità configurazione</td></tr><tr><td><code>0x0062</code></td><td>attiva engineering mode</td></tr><tr><td><code>0x0063</code></td><td>disattiva engineering mode</td></tr><tr><td><code>0x00A0</code></td><td>legge la versione firmware</td></tr><tr><td><code>0x0061</code></td><td>legge i parametri correnti (soglie, gate, timeout)</td></tr><tr><td><code>0x0060</code></td><td>imposta i parametri</td></tr><tr><td><code>0x00AA</code></td><td>imposta la risoluzione di distanza</td></tr><tr><td><code>0x000B</code></td><td>auto-calibrazione del rumore di fondo (firmware V2.44)</td></tr></tbody></table></div>
+<h3 id="sec:engineering"><span class="num">3.1.4</span> Engineering mode e dati per-gate</h3>
+<p></p>
+<p>In modalità normale il modulo riporta, per ogni frame, lo stato di presenza, la
+distanza e l'energia del bersaglio in movimento e di quello stazionario. In
+<strong>engineering mode</strong> aggiunge le energie di ciascuno dei nove gate,
+separatamente per la componente in movimento e per quella stazionaria: diciotto
+valori aggiuntivi, più la lettura del fotosensore e lo stato del pin OUT.</p>
+<p>Questo è il punto di svolta per gli obiettivi O2, O3 e O6: senza i dati per-gate
+il radar sarebbe soltanto un PIR con la distanza, mentre con essi diventa uno
+strumento di misura. Tutta l'analisi del respiro e l'indice di vitalità si basano
+sulle serie temporali di questi canali.</p>
+<h3 id="sec:identita"><span class="num">3.1.5</span> Identità dell'esemplare in prova</h3>
+<p></p>
+<p>Per la riproducibilità dei risultati si riportano i dati letti dal modulo
+effettivamente usato, ottenuti via UART il 18 agosto 2026
+(tabella&nbsp;<a href="#tab:identita">3.3</a>).</p>
+<figure class="tab" id="tab:identita"><figcaption><b>Tabella 3.3.</b> Identità e parametri di fabbrica dell'esemplare di  in prova, letti
+via UART.</figcaption><table><thead><tr><th><strong>Dato</strong></th><th><strong>Valore letto</strong></th></tr></thead><tbody><tr><td>Versione firmware</td><td class="num">2.44.25070917</td></tr><tr><td>Versione protocollo</td><td class="num">1</td></tr><tr><td>MAC Bluetooth</td><td>5E:E4:93:22:B9:3F</td></tr><tr><td>Baud confermato</td><td>256000, 8N1</td></tr><tr><td>Risoluzione gate</td><td>75&nbsp;cm; portata massima 675&nbsp;cm (gate 0–8)</td></tr><tr><td>Timeout di presenza (<em>no-one duration</em>)</td><td>5&nbsp;s</td></tr><tr><td>Soglie di movimento (gate 0–8)</td><td class="num">50, 50, 40, 30, 20, 15, 15, 15, 15</td></tr><tr><td>Soglie stazionarie (gate 0–8)</td><td class="num">0, 0, 40, 40, 30, 30, 20, 20, 20</td></tr></tbody></table></figure>
+<p>Il firmware 2.44 è l'ultima versione rilasciata dal produttore ed è quella che
+introduce l'<strong>auto-calibrazione del rumore di fondo</strong>, cioè la taratura
+automatica delle soglie di movimento e stazionarie&nbsp;<a class="cite" href="#bib">[21]</a>.</p>
+<p class="runin"><strong>Avvertenza sulla fonte dei parametri.</strong>  Lo strumento da PC
+<code>LD2410 Tool</code> riporta per le sensibilità il valore&nbsp;100 su tutti i gate. È
+una lettura errata: la lettura via UART con il comando <code>0x0061</code> restituisce
+la scala di fabbrica decrescente riportata in tabella&nbsp;<a href="#tab:identita">3.3</a>, che è coerente
+sia con il protocollo V1.07 (§1.2.2: il bersaglio è riconosciuto solo se
+l'energia supera la soglia del gate) sia con il comportamento osservato. Per i
+valori numerici si è quindi fatto fede alla lettura via UART e non allo strumento
+da PC.</p>
+<h2 id="sec:ld2420"><span class="num">3.2</span> HLK-LD2420</h2>
+<p></p>
+<p>Il  è il secondo radar 24&nbsp;GHz in dotazione; la documentazione di
+riferimento è quella distribuita dal produttore&nbsp;<a class="cite" href="#bib">[22]</a>. Le differenze rilevanti rispetto
+al LD2410B sono riassunte nella tabella&nbsp;<a href="#tab:confronto-moduli">3.4</a>. Due meritano
+attenzione particolare:</p>
+<ul><li><strong>alimentazione a 3,3&nbsp;V</strong> e non a 5&nbsp;V: collegarlo come il LD2410B lo
+        danneggerebbe;</li><li><strong>la piedinatura cambia con la versione firmware</strong>. Fino alla 1.5.2 il
+        piedino 3 (OT1) è l'uscita di presenza digitale e il piedino 5 (OT2) è il
+        TX seriale; dalla 1.5.3 i ruoli sono invertiti, e cambia anche il baud
+        (256000 fino alla 1.5.2, 115200 dalla 1.5.3). Verificare la versione prima
+        di collegare non è un consiglio ma un prerequisito.</li></ul>
+<figure class="tab" id="tab:confronto-moduli"><figcaption><b>Tabella 3.4.</b> Confronto fra i due moduli radar in dotazione.</figcaption><table><thead><tr><th><strong>Caratteristica</strong></th><th><strong>LD2410B</strong></th><th><strong>LD2420</strong></th></tr></thead><tbody><tr><td>Alimentazione</td><td>5&nbsp;V</td><td>3,3&nbsp;V</td></tr><tr><td>Portata</td><td>circa 5–6&nbsp;m</td><td>circa 12&nbsp;m</td></tr><tr><td>Gate</td><td>9 (0–8)</td><td>15 (0–14)</td></tr><tr><td>Risoluzione gate</td><td>0,75&nbsp;m oppure 0,20&nbsp;m</td><td>0,70&nbsp;m fisso</td></tr><tr><td>Baud</td><td>256000 fisso</td><td>115200 o 256000 (dipende dal firmware)</td></tr><tr><td>Bluetooth</td><td>presente</td><td>assente</td></tr><tr><td>Calibrazione</td><td>manuale (auto da V2.44)</td><td>automatica (firmware <span class="math">≥</span> 1.5.4)</td></tr><tr><td>Dati per-gate</td><td>molto dettagliati</td><td>limitati</td></tr><tr><td>Piedinatura</td><td>fissa</td><td>varia con il firmware</td></tr><tr><td>Uso più adatto</td><td>respiro, dettaglio</td><td>portata lunga, copertura</td></tr></tbody></table></figure>
+<h3><span class="num">3.2.1</span> Verifica sull'esemplare in dotazione</h3>
+<p>L'esemplare in prova è stato collegato all'ESP32 (GPIO16/17) e verificato il
+17 luglio 2026. Risultati:</p>
+<ul><li>il baud funzionante è <strong>115200</strong>, da cui si deduce firmware
+        <span class="math">≥</span> 1.5.3 e quindi TX seriale sul piedino 3 (OT1). A 256000 baud si
+        riceve solo rumore, con lo stesso alfabeto di byte tipico di un log letto
+        al baud sbagliato;</li><li>la modalità di fabbrica è <strong>ASCII “semplice”</strong> e non il protocollo
+        binario: il modulo trasmette righe di testo terminate da
+        <code>CR&thinsp;LF</code> contenenti <code>ON</code>, <code>OFF</code> oppure
+        <code>Range NN</code>;</li><li>in questa modalità sono disponibili solo presenza e un valore di
+        “range”: <strong>nessuna energia per-gate</strong>, nessuna distinzione fra
+        movimento e stazionario.</li></ul>
+<p class="runin"><strong>Limite dichiarato.</strong>  L'unità di misura del campo <code>Range</code> non è
+documentata nella documentazione in nostro possesso. I valori osservati
+(7–37 muovendosi nella stanza) sono compatibili con decimetri, cioè 0,7–3,7&nbsp;m, ma
+in assenza di conferma il dato non viene usato come misura di distanza in questa
+tesi. Per accedere all'engineering mode del LD2420 occorre riconfigurare il modulo
+in modalità binaria; l'attività è rimasta fuori dal perimetro sperimentale
+completato (sezione&nbsp;<a href="#sec:ld2420-risultati">4.10</a>).</p>
+<h2 id="sec:hcsr501"><span class="num">3.3</span> Il sensore PIR in dotazione: HC-SR501</h2>
+<p></p>
+<p>Il modulo in dotazione è stato identificato per via fotografica come un
+<strong></strong>, riconoscendo sul circuito stampato la serigrafia del circuito di
+condizionamento BISS0001 e del regolatore lineare HT7133. Le specifiche da
+datasheet&nbsp;<a class="cite" href="#bib">[23]</a> sono riassunte nella tabella&nbsp;<a href="#tab:pir-specs">3.5</a>.</p>
+<figure class="tab" id="tab:pir-specs"><figcaption><b>Tabella 3.5.</b> Specifiche del PIR  in dotazione (datasheet&nbsp;<a class="cite" href="#bib">[23]</a>).</figcaption><table><thead><tr><th><strong>Parametro</strong></th><th><strong>Valore</strong></th></tr></thead><tbody><tr><td>Base</td><td>BISS0001 + elemento LHI778</td></tr><tr><td>Alimentazione</td><td>4,5–20&nbsp;V DC (collegato a VIN 5&nbsp;V dell'ESP32)</td></tr><tr><td>Livello logico di uscita</td><td>alto 3,3&nbsp;V / basso 0&nbsp;V, grazie al regolatore HT7133 a
+  bordo: compatibile con i GPIO dell'ESP32 senza adattamento</td></tr><tr><td>Corrente di riposo</td><td><span class="math"> lt;</span>50&nbsp;µ A</td></tr><tr><td>Portata</td><td>3–7&nbsp;m, regolabile con il trimmer di sensibilità</td></tr><tr><td>Angolo di copertura</td><td>cono <span class="math"> lt;</span>110° (più ampio dei <span class="math">± 60°</span> del radar)</td></tr><tr><td>Tempo di ritenuta</td><td>regolabile da circa 3&nbsp;s a circa 5&nbsp;min</td></tr><tr><td>Block time</td><td>2,5&nbsp;s dopo ogni rilascio</td></tr><tr><td>Trigger</td><td>jumper: L = singolo, H = ripetibile</td></tr><tr><td>Temperatura operativa</td><td><span class="math">-15</span> / <span class="math">+70</span>&nbsp;°C</td></tr><tr><td>Dimensioni</td><td>32 <span class="math">×</span> 24&nbsp;mm</td></tr></tbody></table></figure>
+<p class="runin"><strong>Configurazione adottata per la campagna</strong>  (fissata il 19 luglio 2026 e
+mantenuta identica per tutte le acquisizioni, con fotografia della posizione dei
+trimmer):</p>
+<ol><li>jumper in posizione <strong>H</strong> (repeat trigger), altrimenti una persona in
+        movimento continuo apparirebbe intermittente per costruzione;</li><li>trimmer del tempo di ritenuta al <strong>minimo</strong>: la ritenuta misurata è
+        risultata di circa 3,4&nbsp;s;</li><li>trimmer di sensibilità a <strong>metà corsa</strong>;</li><li>uscita collegata a <strong>GPIO34</strong>. La scelta merita una nota: GPIO34 è un
+        piedino di solo ingresso e privo di resistenza di pull-up interna, il che
+        normalmente lo rende inadatto a un sensore a collettore aperto;
+        l' però pilota attivamente la propria uscita a 3,3&nbsp;V e 0&nbsp;V, quindi il
+        collegamento è corretto. GPIO25 non era disponibile perché usato come RX2
+        del radar.</li></ol>
+<h2 id="sec:piattaforma"><span class="num">3.4</span> La piattaforma di acquisizione</h2>
+<p></p>
+<h3><span class="num">3.4.1</span> Punto di partenza: il repository di riferimento</h3>
+<p>Il lavoro parte dal repository del relatore&nbsp;<a class="cite" href="#bib">[24]</a>, che contiene un
+firmware PlatformIO per ESP32 basato sulla libreria <code>ncmreynolds/ld2410</code> e
+uno script Python di acquisizione. Il firmware legge il radar via UART, gestisce
+opzionalmente un display OLED e un PIR e stampa righe CSV sulla seriale; lo script
+<code>acquire.py</code> le salva su file aggiungendo i metadati sperimentali passati
+da riga di comando.</p>
+<p>Lo studio del codice ha evidenziato tre limiti per gli scopi di questa tesi:</p>
+<ol><li><strong>campionamento a 1&nbsp;Hz</strong>. Troppo lento per misurare latenze con
+        precisione e, soprattutto, insufficiente per l'analisi del respiro: con
+        frequenza di campionamento 1&nbsp;Hz il limite di Nyquist è 0,5&nbsp;Hz, cioè
+        esattamente il bordo superiore della banda respiratoria;</li><li><strong>assenza dell'engineering mode</strong>: viene registrata solo l'energia del
+        bersaglio, non i diciotto valori per-gate;</li><li><strong>piedinatura opposta</strong> alla nostra (radar TX su GPIO17 e RX su
+        GPIO16), quindi i due firmware non sono interscambiabili senza riscablare.</li></ol>
+<h3><span class="num">3.4.2</span> Il firmware realizzato</h3>
+<p>È stato quindi scritto un logger dedicato
+(<code>firmware/ld2410b_logger</code>, appendice&nbsp;<a href="#app:codice">B</a>) basato sulla libreria
+<code>MyLD2410</code>, con le seguenti caratteristiche:</p>
+<ul><li>campionamento a <strong>5&nbsp;Hz</strong> con periodo fisso;</li><li><strong>engineering mode</strong> sempre attivo, con registrazione di tutti i
+        canali;</li><li>lettura del PIR su GPIO34 nello stesso frame, in modo che il confronto fra i
+        due sensori sia <em>sincrono per costruzione</em> — non due acquisizioni da
+        allineare a posteriori;</li><li>formato CSV retrocompatibile con <code>acquire.py</code>.</li></ul>
+<p>Il formato CSV, unico per tutta la tesi, è il seguente (le prime nove colonne
+coincidono con quelle del repository di riferimento):</p>
+<figure class="lst"><figcaption><b>Listato 1.</b> Intestazione del CSV prodotto dal logger, in
+engineering mode.</figcaption><pre>timestamp_ms, radar_presence, moving_target, stationary_target,
+moving_distance_cm, stationary_distance_cm, moving_energy, stationary_energy,
+pir_presence,
+menergy_gate0 ... menergy_gate8,   (9 colonne)
+senergy_gate0 ... senergy_gate8,   (9 colonne)
+light_level, out_level</pre></figure>
+<p>Lo script di acquisizione aggiunge a ogni riga i metadati sperimentali:
+<code>pc_time_s</code>, <code>group_id</code>, <code>trial_id</code>, <code>scenario</code>,
+<code>ground_truth_presence</code>, <code>ground_truth_state</code>.</p>
+<p class="runin"><strong>Una correzione necessaria allo script di acquisizione.</strong>  La versione
+originale scrive righe sul file solo dopo aver riconosciuto la riga di intestazione,
+che l'ESP32 stampa una sola volta in <code>setup()</code>. Se il reset all'apertura
+della porta seriale non scatta — cosa che accade con una certa frequenza — il
+CSV risulta <strong>vuoto senza alcun messaggio di errore</strong>, e lo si scopre a
+sessione finita. La nostra versione ricostruisce l'intestazione dal numero di
+colonne della prima riga di dati (9 = base, 27 = engineering, 29 = engineering con
+luce e OUT). È una modifica di poche righe che ha evitato la perdita di sessioni
+lunghe.</p>
+<h3 id="sec:catena-analisi"><span class="num">3.4.3</span> La catena di analisi</h3>
+<p></p>
+<p>L'analisi è svolta da tre script Python, scritti per questa tesi e basati sulla
+sola libreria standard, tranne dove indicato:</p>
+<dl><dt><code>analisi/verifica_engineering.py</code></dt><dd>controllo di qualità di un CSV
+    <em>prima</em> di usarlo: cadenza reale e jitter, presenza delle colonne per-gate,
+    percentuale di saturazione a 100, coerenza fra gate di picco e distanza
+    riportata, rumore di fondo per-gate a stanza vuota, transizioni di presenza. Va
+    eseguito a ogni sessione: è ciò che ha permesso di individuare i problemi
+    descritti in sezione&nbsp;<a href="#sec:insidie">3.5</a>.</dd><dt><code>analisi/analizza_test.py</code></dt><dd>metriche di confronto: accuratezza,
+    falsi positivi in eventi/h, falsi negativi in percentuale, latenza di
+    rilevamento e di rilascio, statistiche di distanza ed energia, aggregazione per
+    scenario con media e deviazione standard sui cinque trial.</dd><dt><code>analisi/analizza_respiro.py</code></dt><dd>analisi in frequenza: FFT della
+    serie di energia, individuazione del picco in banda 0,1–0,5&nbsp;Hz, stima degli
+    atti al minuto, esportazione dello spettro in CSV. Richiede NumPy. La modalità
+    <code>–scan</code> prova tutti e venti i canali di energia, scarta quelli saturi
+    e quelli piatti, li ordina per rapporto segnale-rumore e riporta la mediana
+    delle stime concordi.</dd></dl>
+<p>L'ultima funzione non era prevista inizialmente: è nata dal fatto che nel primo
+tentativo di misura del respiro il canale scelto per intuito
+(<code>stationary_energy</code>) era completamente saturo, mentre il segnale era
+perfettamente leggibile su <code>menergy_gate2</code>. La ricerca automatica del
+canale migliore, con criterio dichiarato, è diventata parte del metodo.</p>
+<h2 id="sec:insidie"><span class="num">3.5</span> Che aspetto hanno i dati: validazione e insidie</h2>
+<p></p>
+<p>Prima di usare i dati per il confronto quantitativo è stata svolta una sessione di
+validazione (673 campioni su 134&nbsp;s). I risultati positivi sono:</p>
+<ul><li><strong>cadenza di 5,00&nbsp;Hz esatti</strong>: intervallo di 200&nbsp;ms su tutti i 672
+        intervalli, jitter nullo. La serie temporale è uniforme, requisito
+        necessario per l'analisi in frequenza;</li><li><strong>engineering mode attivo</strong>, con tutte e diciotto le colonne per-gate
+        popolate;</li><li><strong>mappa gate–distanza validata al 97,1&thinsp;%</strong>: la percentuale di
+        campioni in cui il gate di massima energia coincide, entro <span class="math">± 1</span>, con
+        quello atteso dalla distanza riportata (distanza divisa per 0,75&nbsp;m), su
+        tutto il range 0–6&nbsp;m. Su una seconda sessione indipendente la conferma è
+        salita al 98,3&thinsp;% su 663 campioni;</li><li><strong>zero falsi positivi</strong> nei 29&nbsp;s di stanza vuota della sessione.</li></ul>
+<p>La stessa validazione ha però messo in luce tre comportamenti del modulo che
+condizionano tutte le analisi successive e che vanno dichiarati esplicitamente.</p>
+<h3 id="sec:saturazione"><span class="num">3.5.1</span> Saturazione dei canali di energia</h3>
+<p></p>
+<p>Con il bersaglio fermo a distanza ravvicinata, l'energia stazionaria è a fondo
+scala (valore 100) nel <strong>92&thinsp;%</strong> dei campioni e quella in movimento nel
+<strong>41&thinsp;%</strong>. Un segnale che tocca il fondo scala non porta informazione:
+qualunque analisi di variazione su un canale saturo è priva di senso.</p>
+<p>Va chiarito un punto che è stato oggetto di un'ipotesi errata iniziale: <strong>le
+soglie non risolvono la saturazione</strong>. L'energia è un valore normalizzato 0–100 e
+la soglia interviene soltanto sulla <em>decisione</em> di rilevamento (protocollo
+V1.07, §1.2.2), non sul valore riportato. Nemmeno l'auto-calibrazione del firmware
+V2.44 la risolve, perché anch'essa tara soglie e non la scala. L'unico rimedio è
+<strong>geometrico</strong>: allontanare il soggetto (almeno 1,5–2&nbsp;m), disallineare il
+sensore o attenuare il segnale. Questo vincolo ha determinato il progetto degli
+esperimenti sul respiro e sulla vitalità.</p>
+<h3 id="sec:senergy-zero"><span class="num">3.5.2</span> Canali stazionari strutturalmente disattivati sotto 1,5&nbsp;m</h3>
+<p></p>
+<p>Le colonne <code>senergy_gate0</code> e <code>senergy_gate1</code> sono risultate pari a
+zero in tutti i 673 campioni. Non è un difetto dell'esemplare: anche l'esempio
+riportato nel protocollo ufficiale V1.07 (§2.3.2) mostra <code>00 00</code> per i
+primi due gate stazionari, e le relative soglie di fabbrica valgono&nbsp;0
+(tabella&nbsp;<a href="#tab:identita">3.3</a>) — con la regola “energia <em>maggiore</em> della soglia” il
+canale è quindi disattivato per costruzione sotto 1,5&nbsp;m.</p>
+<p>È importante non trarre la conclusione sbagliata. Il radar <strong>riporta comunque</strong>
+bersagli fermi sotto 1,5&nbsp;m: nei dati si osservano valori di
+<code>stationary_distance</code> fra 70 e 89&nbsp;cm con <code>stationary_energy</code> pari a
+100. Ciò che manca è solo il <em>dettaglio per-gate</em> dello stazionario nei primi
+due gate. La conseguenza pratica è però rilevante: le analisi che si basano sulle
+serie per-gate — respiro e indice di vitalità — per un soggetto a meno di 1,5&nbsp;m
+devono usare i <strong>canali in movimento</strong> oppure i gate di indice <span class="math">≥ 2</span>.
+E poiché nello scenario UPRISE la persona è sotto un banco, cioè vicina, questo è
+un vincolo di progetto e non un dettaglio (sezione&nbsp;<a href="#sec:sotto-banco">4.7</a>).</p>
+<h3 id="sec:coda"><span class="num">3.5.3</span> Coda di presenza</h3>
+<p></p>
+<p>Dopo l'uscita del soggetto dalla stanza il radar ha mantenuto
+<code>radar_presence = 1</code> per circa 10&nbsp;s, riportando un bersaglio fermo
+“fantasma” a circa 5,2&nbsp;m con energia in decadimento. Il comportamento è atteso ed
+è il <em>no-one duration</em> previsto dal protocollo (§1.2.2), impostato a 5&nbsp;s di
+fabbrica sul nostro esemplare.</p>
+<p>Questo ha una conseguenza metodologica precisa: la coda va misurata come
+<strong>latenza di rilascio</strong> (sezione&nbsp;<a href="#sec:latenza">4.6</a>) e non va conteggiata come falso
+positivo. Confondere le due cose porterebbe ad attribuire al radar decine di falsi
+positivi inesistenti.</p>
+<h3><span class="num">3.5.4</span> Il pin OUT e il sensore di luce</h3>
+<p>Due verifiche minori ma utili. La colonna <code>out_level</code>, che riporta lo stato
+del pin OUT letto <em>dal frame UART</em>, coincide con <code>radar_presence</code> in
+1699 campioni su 1699: il collegamento fisico del filo blu è quindi inutile ai
+nostri fini. È però un'informazione utile per il progetto UPRISE, perché indica che
+un dispositivo interessato alla sola presenza binaria può usare il pin OUT senza
+implementare la UART.</p>
+<p>Il sensore di luce funziona: la colonna <code>light_level</code> vale 21–29 di giorno
+e 0–1 di notte, misurato su una sessione notturna di 6,5&nbsp;h. Il dato è annotato
+perché il comando di configurazione ausiliaria <code>0x01AE</code> non risponde sul
+nostro esemplare: i due fatti sono indipendenti, il valore fotosensibile viaggia
+nel frame di engineering mode e segue effettivamente l'illuminazione ambientale.</p>
+<h2 id="sec:soglie"><span class="num">3.6</span> Decisione sulle soglie: non ricalibrare</h2>
+<p></p>
+<p>Un'ultima scelta metodologica va motivata, perché condiziona la validità di tutti i
+confronti fra trial. Il tabella&nbsp;<a href="#tab:soglie">3.6</a> confronta le soglie di fabbrica con il
+rumore di fondo misurato a stanza vuota.</p>
+<figure class="tab" id="tab:soglie"><figcaption><b>Tabella 3.6.</b> Soglie di fabbrica per-gate confrontate con il rumore di fondo misurato a
+stanza vuota (29&nbsp;s). Regola del protocollo V1.07 §1.2.2: il bersaglio è
+riconosciuto solo se l'energia supera la soglia.</figcaption><table><thead><tr><th><strong>Gate</strong></th><th><strong>Distanza</strong></th><th colspan="3"><strong>Movimento</strong></th><th colspan="2"><strong>Stazionario</strong></th></tr><tr><th></th><th></th><th>soglia</th><th>rumore max</th><th>margine</th><th>soglia</th><th>rumore max</th></tr></thead><tbody><tr><td class="num">0</td><td>0–75&nbsp;cm</td><td class="num">50</td><td class="num">26</td><td class="num">24</td><td class="num">0</td><td class="num">0</td></tr><tr><td class="num">1</td><td>75–150&nbsp;cm</td><td class="num">50</td><td class="num">21</td><td class="num">29</td><td class="num">0</td><td class="num">0</td></tr><tr><td class="num">2</td><td>150–225&nbsp;cm</td><td class="num">40</td><td class="num">9</td><td class="num">31</td><td class="num">40</td><td class="num">6</td></tr><tr><td class="num">3</td><td>225–300&nbsp;cm</td><td class="num">30</td><td class="num">4</td><td class="num">26</td><td class="num">40</td><td class="num">4</td></tr><tr><td class="num">4</td><td>300–375&nbsp;cm</td><td class="num">20</td><td class="num">9</td><td class="num">11</td><td class="num">30</td><td class="num">4</td></tr><tr><td class="num">5</td><td>375–450&nbsp;cm</td><td class="num">15</td><td class="num">6</td><td class="num">9</td><td class="num">30</td><td class="num">3</td></tr><tr><td class="num">6</td><td>450–525&nbsp;cm</td><td class="num">15</td><td class="num">11</td><td class="num"><strong>4</strong></td><td class="num">20</td><td class="num">5</td></tr><tr><td class="num">7</td><td>525–600&nbsp;cm</td><td class="num">15</td><td class="num">8</td><td class="num">7</td><td class="num">20</td><td class="num">7</td></tr><tr><td class="num">8</td><td>600–675&nbsp;cm</td><td class="num">15</td><td class="num">7</td><td class="num">8</td><td class="num">20</td><td class="num">5</td></tr></tbody></table></figure>
+<p>Il margine più stretto è il gate&nbsp;6 in movimento (soglia 15 contro rumore massimo
+11), che è anche il gate in cui si è manifestato il bersaglio fantasma della coda di
+presenza. Su tutti gli altri gate il margine è ampio, e i falsi positivi osservati
+sono zero. Si è quindi deciso di <strong>non ricalibrare</strong>: la taratura di fabbrica
+regge nell'ambiente di prova, e le soglie restano il <em>riferimento fisso</em> per
+tutta la campagna. Cambiarle a metà campagna renderebbe i trial non confrontabili
+fra loro, che è il difetto peggiore in un lavoro comparativo.</p>
+<p>L'auto-calibrazione disponibile nel firmware V2.44 va usata dopo, come esperimento a
+sé stante con confronto prima/dopo: è materiale per una sezione della tesi, non un
+prerequisito della campagna.</p>
+<p>La stabilità di questa scelta è stata verificata su tempi lunghi: nella sessione
+notturna di 6,5&nbsp;h la media dell'energia di rumore del gate&nbsp;0 è passata da 17,4 a
+17,8 fra la prima e la seconda metà della notte e quella del gate&nbsp;1 da 13,3 a 13,1,
+con un massimo assoluto di 34 sul gate&nbsp;0 contro una soglia di 50.</p></section>
+<section class="chap"><h1 id="cap:confronto"><span class="num">4</span> Confronto sperimentale PIR vs mmWave</h1>
+<p></p>
+<blockquote><p>
+Questo è il capitolo centrale della tesi e risponde all'obiettivo O3. Presenta il
+protocollo di misura, i risultati acquisiti e la loro discussione critica. Le
+sezioni contrassegnate come <em>in corso</em> indicano acquisizioni pianificate ma
+non ancora completate alla data di questa stesura: la loro collocazione nel
+capitolo è già definita, così come le metriche e i comandi con cui verranno
+prodotte.</p></blockquote>
+<h2 id="sec:protocollo"><span class="num">4.1</span> Protocollo sperimentale</h2>
+<p></p>
+<h3><span class="num">4.1.1</span> Principi generali</h3>
+<p>Il protocollo è stato definito <em>prima</em> di iniziare le acquisizioni ed è
+rimasto invariato, per una ragione precisa: la campagna completa richiede circa
+dieci ore di acquisizioni, e una modifica del protocollo a metà strada le renderebbe
+non confrontabili.</p>
+<p>I principi adottati sono cinque.</p>
+<ol><li><strong>Cinque ripetizioni per scenario</strong> (T01–T05). È ciò che permette di
+        riportare media e deviazione standard, e quindi di rendere il confronto
+        “numerico” e non anecdottico. Ogni valore riportato in questo capitolo
+        nella forma <span class="math">μ ± σ</span> è calcolato su cinque trial indipendenti.</li><li><strong>Acquisizione sincrona dei due sensori</strong>. Radar e PIR sono letti nello
+        stesso frame dal medesimo firmware, sulla stessa base dei tempi: il
+        confronto non richiede allineamento a posteriori e non introduce errori di
+        sincronizzazione.</li><li><strong>Ground truth dichiarata</strong>. Ogni acquisizione porta nei metadati la
+        presenza reale e lo stato reale del soggetto, dichiarati dall'operatore da
+        riga di comando. Per la ground truth statica per file questo è sufficiente;
+        per le latenze si adotta la convenzione dell'evento a istante noto
+        (sezione&nbsp;<a href="#sec:latenza">4.6</a>).</li><li><strong>Setup fisso</strong>. LD2410B e PIR affiancati sul bordo di un tavolo a
+        circa 1&nbsp;m di altezza, puntati verso l'area di prova, con la zona di prova
+        interna al campo di <em>entrambi</em> i sensori (il PIR copre un cono più
+        ampio, <span class="math"> lt;</span>110°, del radar). Nessun oggetto in movimento nella stanza:
+        nessun ventilatore, tende ferme, porta chiusa.</li><li><strong>Alimentazione da alimentatore di rete</strong> da almeno 1&nbsp;A e non dalla
+        porta USB del portatile. L'ESP32 con WiFi attivo e il LD2410B presentano
+        picchi superiori a 400&nbsp;mA, e una porta USB debole provoca brownout, cioè
+        riavvii casuali che si presentano come bug del firmware.</li></ol>
+<h3><span class="num">4.1.2</span> Metriche</h3>
+<p>Le metriche calcolate da <code>analisi/analizza_test.py</code> sono le seguenti.</p>
+<dl><dt>Falsi negativi (%)</dt><dd>percentuale dei campioni con presenza reale in cui il
+    sensore riporta assenza. È la metrica chiave dello scenario “persona ferma”.</dd><dt>Falsi positivi (eventi/h)</dt><dd>numero di transizioni <span class="math">0 → 1</span> per ora di
+    osservazione a stanza vuota. Si conta per <em>eventi</em> e non per campioni,
+    perché un singolo falso positivo che dura dieci secondi non è dieci volte più
+    grave di uno che dura un secondo.</dd><dt>Latenza di rilevamento</dt><dd>tempo fra l'evento reale e la prima transizione
+    <span class="math">0 → 1</span> del sensore.</dd><dt>Latenza di rilascio</dt><dd>tempo fra l'uscita del soggetto e la transizione
+    stabile <span class="math">1 → 0</span>, con conteggio separato delle eventuali riaccensioni nella
+    coda.</dd><dt>Accuratezza della distanza</dt><dd>scostamento fra distanza riportata dal radar e
+    distanza reale misurata, con separazione fra dispersione <em>fra</em> trial e
+    dispersione <em>entro</em> il trial.</dd></dl>
+<h3 id="sec:registro"><span class="num">4.1.3</span> Registro delle sessioni</h3>
+<p></p>
+<p>Ogni sessione è annotata in un registro con data, ora, temperatura della stanza,
+soggetto, alimentazione, test svolti e note. La temperatura è registrata perché il
+PIR degrada al crescere della temperatura ambiente (sezione&nbsp;<a href="#sec:pir-temperatura">2.1.4</a>); le
+sessioni di questa campagna si collocano fra 25 e 29&thinsp;°C, condizione
+sfavorevole al PIR che va tenuta presente nella discussione (sezione&nbsp;<a href="#sec:limiti">4.11.3</a>).</p>
+<p>Le acquisizioni completate sono riassunte nella tabella&nbsp;<a href="#tab:sessioni">4.1</a>.</p>
+<figure class="tab" id="tab:sessioni"><figcaption><b>Tabella 4.1.</b> Sessioni di acquisizione completate.</figcaption><table><thead><tr><th><strong>Data</strong></th><th><strong>Scenario</strong></th><th><strong>Durata</strong></th><th><strong>Note</strong></th></tr></thead><tbody><tr><td>18/08/2026</td><td>validazione logger</td><td>134&nbsp;s</td><td>673 campioni, 5,00&nbsp;Hz esatti</td></tr><tr><td>18/08/2026</td><td>pilota PIR vs radar</td><td>339,6&nbsp;s</td><td>1699 campioni, PIR su GPIO34</td></tr><tr><td>18/08/2026</td><td>pilota respiro</td><td>91&nbsp;s</td><td>soggetto a 40&nbsp;cm, nessuna ground truth</td></tr><tr><td>18/08/2026</td><td>stanza vuota (giorno)</td><td>1742&nbsp;s</td><td>8711 campioni, 29&thinsp;°C</td></tr><tr><td>18/08/2026</td><td>fermo seduto T01–T05</td><td>5 <span class="math">×</span> 302&nbsp;s</td><td>7554 campioni, 2,30&nbsp;m, 27&thinsp;°C</td></tr><tr><td>20/08/2026</td><td>distanza 1–5&nbsp;m, 25 trial</td><td>25 <span class="math">×</span> 62&nbsp;s</td><td>cammino sul posto</td></tr><tr><td>20–21/08/2026</td><td>stanza vuota (notte)</td><td>23640,6&nbsp;s</td><td>118&thinsp;204 campioni, 6,57&nbsp;h</td></tr></tbody></table></figure>
+<p class="runin"><strong>Nota su una sessione troncata.</strong>  La sessione notturna era programmata per
+sette ore ed è terminata a 6,57&nbsp;h perché un aggiornamento automatico di Windows ha
+riavviato il computer. I dati restano validi: l'intervallo di campionamento è di
+200&nbsp;ms esatti su tutti i 118&thinsp;203 intervalli, senza buchi né campioni persi —
+l'acquisizione è semplicemente troncata. L'episodio è però istruttivo e ha prodotto
+una regola di protocollo: per le acquisizioni oltre l'ora, sospendere gli
+aggiornamenti di Windows e verificare che sospensione e ibernazione siano disattivate.</p>
+<h2 id="sec:falsi-positivi"><span class="num">4.2</span> Falsi positivi: stanza vuota</h2>
+<p></p>
+<p class="runin"><strong>Procedura.</strong>  Acquisizione avviata con l'operatore che esce immediatamente
+dalla stanza; scarto dei primi 60&nbsp;s (stabilizzazione del PIR e uscita
+dell'operatore); conteggio delle transizioni <span class="math">0 → 1</span> sul resto.</p>
+<p class="runin"><strong>Risultato.</strong>  Su un totale di <strong>7,05&nbsp;h</strong> di stanza vuota
+(6,57&nbsp;h notturni più 0,48&nbsp;h diurni), <strong>né il radar né il PIR hanno prodotto
+alcun falso positivo</strong>. Nella sessione notturna gli unici 96 campioni con presenza
+sono compresi fra <span class="math">t=0</span> e <span class="math">t=19</span>&nbsp;s e corrispondono all'operatore che esce dalla
+stanza.</p>
+<p>Con zero eventi osservati non è corretto scrivere “0 eventi/h”: si riporta il
+limite superiore, che dipende dal tempo di osservazione. Applicando la regola del
+tre (<span class="math">3/T</span>, che approssima il limite superiore al 95&thinsp;% di confidenza per un
+processo di Poisson con zero eventi osservati):</p>
+<div class="eqwrap" id="eq:regola-tre"><table class="eq"><tr><td class="eql"><span class="math">
+λ<sub>95%</sub> ≤ (3)/(7,05~<span class="mrm">h</span>) = 0,43~<span class="mrm">eventi/h</span>
+
+</span></td><td class="eqm"></td><td class="eqn"></td></tr></table><span class="eqnum">(4.1)</span></div>
+<p>Il risultato da riportare è quindi: <strong>falsi positivi <span class="math">≤ 0,43</span> eventi/h
+per entrambi i sensori, al 95&thinsp;% di confidenza</strong>. Il valore è coerente con l'ordine
+di grandezza indicato dalla letteratura tecnica per i moduli mmWave consumer
+(<span class="math"> lt;</span>0,05 eventi/h), che però richiederebbe una sessione di decine di ore per essere
+confermato con questa metodologia. Questo è il modo corretto di riportare
+un'assenza di eventi, e la principale limitazione del risultato è il tempo di
+osservazione, non il sensore.</p>
+<p class="runin"><strong>Nota sulla temperatura.</strong>  Le sessioni sono state svolte a 29&thinsp;°C. È
+una condizione <em>sfavorevole</em> al PIR per il rilevamento (minore contrasto
+termico) ma <em>favorevole</em> sui falsi positivi: un ambiente caldo e uniforme
+produce meno gradienti spuri. Il risultato “zero falsi positivi PIR” va quindi
+letto come non pessimistico.</p>
+<h2 id="sec:persona-ferma"><span class="num">4.3</span> Il risultato centrale: la persona ferma</h2>
+<p></p>
+<p class="runin"><strong>Procedura.</strong>  Soggetto seduto immobile a 2,30&nbsp;m dalla coppia di sensori,
+respirazione spontanea, nessun movimento volontario. Cinque trial da 302&nbsp;s utili
+ciascuno dopo lo scarto dei primi 30&nbsp;s. Temperatura della stanza 27&thinsp;°C.
+Totale: 7554 campioni con presenza reale.</p>
+<p class="runin"><strong>Risultato.</strong>  I valori misurati sono riportati nella
+tabella&nbsp;<a href="#tab:fermo-seduto">4.2</a>.</p>
+<figure class="tab" id="tab:fermo-seduto"><figcaption><b>Tabella 4.2.</b> Scenario “persona ferma seduta a 2,30&nbsp;m”. Falsi negativi sui 7554
+campioni con presenza reale, su cinque trial indipendenti da 302&nbsp;s.</figcaption><table><thead><tr><th><strong>Metrica</strong></th><th><strong>PIR </strong></th><th><strong>Radar </strong></th></tr></thead><tbody><tr><td>Falsi negativi (media <span class="math">±</span> dev. std. su 5 trial)</td><td><span class="math">99,78 ± 0,49 %</span></td><td><span class="math"><b class="mrm">0,00 ± 0,00 %</b></span></td></tr><tr><td>Trial con falsi negativi al 100&thinsp;%</td><td>4 su 5</td><td>0 su 5</td></tr><tr><td>Campioni con presenza rilevata</td><td><span class="math">~</span>17 su 7554</td><td>7554 su 7554</td></tr></tbody></table></figure>
+<p>Il dato va letto con attenzione al suo significato operativo: in quattro trial su
+cinque il PIR ha prodotto <strong>zero rilevamenti in cinque minuti</strong> con una
+persona viva seduta a 2,3&nbsp;m di distanza, in campo visivo libero. Il radar ha
+rilevato la presenza nel 100&thinsp;% dei campioni in tutti e cinque i trial.</p>
+<p>Questo è il risultato che risponde alla domanda di ricerca principale. Non è un
+esito sorprendente — è precisamente ciò che la fisica del piroelettrico prevede
+(sezione&nbsp;<a href="#sec:pir-principio">2.1.1</a>) — ma la tesi lo <em>quantifica</em>, con deviazione
+standard su cinque ripetizioni, nella condizione che interessa il progetto UPRISE.</p>
+<p>Un risultato analogo, ottenuto in una sessione precedente con procedura meno
+controllata, conferma il quadro: in un tratto di <strong>93,2&nbsp;s di immobilità
+continuativa</strong> a circa 2,9&nbsp;m, il radar ha rilevato la presenza nel 100&thinsp;% dei
+campioni e il PIR nello 0,2&thinsp;% (un solo campione su 466).</p>
+<h3 id="sec:interpretazione-pir"><span class="num">4.3.1</span> Come va interpretato il valore percentuale</h3>
+<p></p>
+<p>Il numero “99,78&thinsp;% di falsi negativi” richiede una precisazione onesta, perché
+dipende in parte da un parametro sotto il nostro controllo: il trimmer del tempo di
+ritenuta, che abbiamo tenuto al minimo (sezione&nbsp;<a href="#sec:hcsr501">3.3</a>).</p>
+<p>Nella sessione pilota il PIR ha prodotto <strong>14 impulsi di durata costante
+compresa fra 3,4 e 3,6&nbsp;s</strong> invece di un segnale continuo. Su due sessioni sono stati
+misurati in totale <strong>30 impulsi, tutti compresi fra 3,4 e 3,8&nbsp;s</strong>. Questa è la
+prova quantitativa di un fatto qualitativo: <strong>l'uscita del PIR è un
+monostabile a durata fissa</strong>, indipendente da cosa fa la persona. Il PIR non misura
+la presenza né la durata del movimento: segnala eventi.</p>
+<p>La conseguenza è che, con la ritenuta regolata al massimo, il PIR
+<em>sembrerebbe</em> rilevare molto di più — ma starebbe soltanto trattenendo
+l'ultimo evento per minuti. La percentuale di campioni rilevati non è quindi una
+proprietà robusta del sensore.</p>
+<p>Il dato robusto e non contestabile è l'altro, e va riportato come tale: nei 93&nbsp;s di
+immobilità continuativa e nei cinque trial da cinque minuti, <strong>il PIR non ha
+prodotto alcun evento di movimento</strong> (con le eccezioni contate sopra), perché non
+c'era alcun transito di flusso infrarosso da rilevare. La percentuale di campioni è
+il modo di quantificarlo, il numero di eventi è il modo di dimostrarlo.</p>
+<h2 id="sec:pir-movimento"><span class="num">4.4</span> Il PIR sbaglia anche con la persona in movimento</h2>
+<p></p>
+<p>Questo è il risultato meno atteso della campagna, e con il maggiore impatto sul
+contesto applicativo.</p>
+<p class="runin"><strong>Procedura.</strong>  Soggetto che cammina <em>sul posto</em> a distanza fissa dalla
+coppia di sensori — movimento continuo, ma senza spostamento nello spazio. Cinque
+distanze (1, 2, 3, 4, 5&nbsp;m), cinque trial per distanza, 62&nbsp;s utili ciascuno: 25
+trial in totale.</p>
+<p class="runin"><strong>Risultato.</strong>  A 1&nbsp;m, condizione teoricamente ideale per un PIR (bersaglio
+vicino, movimento continuo, campo libero), il PIR ha registrato
+<span class="math"><b class="mrm">80,46 ± 6,22 %</b></span> di falsi negativi. In 62&nbsp;s di cammino continuo ha
+emesso da <strong>1 a 4 impulsi</strong> per trial, di durata 3,6–3,8&nbsp;s. A 2, 3, 4 e 5&nbsp;m il
+tasso di falsi negativi è <strong>100,0&thinsp;%</strong> su tutti e venti i trial: nessun
+rilevamento. Il radar ha rilevato la presenza nel 100&thinsp;% dei campioni a tutte e
+cinque le distanze.</p>
+<p class="runin"><strong>Spiegazione.</strong>  Il risultato non è un'anomalia e si spiega esattamente con
+il meccanismo della lente di Fresnel (sezione&nbsp;<a href="#sec:fresnel">2.1.2</a>): il piroelettrico
+risponde al <em>transito</em> del flusso infrarosso fra le zone della lente, non al
+movimento in sé. Chi si muove <em>sul posto</em> non attraversa le zone, quindi non
+genera transizioni — e per il sensore è indistinguibile da un corpo fermo.</p>
+<p class="runin"><strong>Rilevanza per UPRISE.</strong>  Questo risultato è più importante di quanto la
+sua sobrietà suggerisca. Una persona intrappolata sotto un arredo <em>si muove sul
+posto</em>: si agita, cerca di liberarsi, sposta le braccia, chiama aiuto. Non attraversa
+la stanza. È il caso peggiore per un PIR, e la campagna mostra che il PIR fallisce
+in questo caso quasi allo stesso modo in cui fallisce sulla persona completamente
+immobile (<span class="math">80 %</span> contro <span class="math">~100 %</span> di falsi negativi, e <span class="math">100 %</span> oltre i 2&nbsp;m).</p>
+<p>Detto in altri termini: l'ipotesi implicita “il PIR non vede chi è fermo ma vede
+chi si muove” è, nello scenario di interesse, falsa.</p>
+<h2 id="sec:distanza"><span class="num">4.5</span> Accuratezza della misura di distanza</h2>
+<p></p>
+<p>Gli stessi 25 trial forniscono la caratterizzazione della misura di distanza del
+radar, riportata nella tabella&nbsp;<a href="#tab:distanza">4.3</a>.</p>
+<figure class="tab" id="tab:distanza"><figcaption><b>Tabella 4.3.</b> Accuratezza della distanza riportata dal , su 25 trial (5 distanze
+<span class="math">×</span> 5 ripetizioni). L'energia è il valore medio del bersaglio, normalizzato
+0–100.</figcaption><table><thead><tr><th><strong>Distanza reale</strong></th><th><strong>Errore grezzo</strong></th><th><strong>Errore relativo</strong></th><th><strong>Dispersione entro trial</strong></th><th><strong>Energia media</strong></th></tr></thead><tbody><tr><td>1&nbsp;m</td><td><span class="math">-0,5</span>&nbsp;cm</td><td><span class="math">-0,5 %</span></td><td>10–26&nbsp;cm</td><td class="num">99</td></tr><tr><td>2&nbsp;m</td><td>—</td><td>—</td><td>10–26&nbsp;cm</td><td class="num">85</td></tr><tr><td>3&nbsp;m</td><td>—</td><td>—</td><td>10–26&nbsp;cm</td><td class="num">54</td></tr><tr><td>4&nbsp;m</td><td>—</td><td>—</td><td>10–26&nbsp;cm</td><td class="num">35</td></tr><tr><td>5&nbsp;m</td><td><span class="math">+18,2</span>&nbsp;cm</td><td><span class="math">+3,6 %</span></td><td>10–26&nbsp;cm</td><td class="num">28</td></tr></tbody></table></figure>
+<p><span class="todo">[DA FARE: completare le colonne intermedie della tabella&nbsp;<a href="#tab:distanza">4.3</a> con i valori
+puntuali per 2, 3 e 4&nbsp;m e la dispersione entro trial per singola distanza,
+rileggendoli dall'output di <code>analizza_test.py</code>]</span></p>
+<h3><span class="num">4.5.1</span> Il modello di errore</h3>
+<p>La regressione lineare fra distanza misurata e distanza reale, sui 25 trial, dà:</p>
+<div class="eqwrap" id="eq:regressione"><table class="eq"><tr><td class="eql"><span class="math">
+d<sub><span class="mrm">misurata</span></sub> = 1,0381 · d<sub><span class="mrm">reale</span></sub> - 1,32~<span class="mrm">cm</span>,
+     R<sup>2</sup> = 0,99965
+
+</span></td><td class="eqm"></td><td class="eqn"></td></tr></table><span class="eqnum">(4.2)</span></div>
+<p>Il risultato si legge in due parti, ed è la lettura — non il numero grezzo — il
+contributo di questa sezione.</p>
+<ul><li>Il radar è <strong>estremamente lineare</strong>: <span class="math">R<sup>2</sup> = 0,99965</span> e residui dalla
+        retta non superiori a 4,9&nbsp;cm su tutto il range. Non c'è alcuna non linearità
+        apprezzabile fra 1 e 5&nbsp;m.</li><li>L'errore è quasi interamente un <strong>errore di scala del <span class="math">+3,81 %</span></strong>,
+        con offset praticamente nullo (<span class="math">-1,32</span>&nbsp;cm). Questo spiega perché l'errore
+        grezzo cresce con la distanza (da <span class="math">-0,5</span>&nbsp;cm a 1&nbsp;m fino a <span class="math">+18,2</span>&nbsp;cm a
+        5&nbsp;m) ed è, soprattutto, <strong>correggibile con un solo coefficiente</strong>:
+        dividendo la lettura per 1,0381 l'errore residuo scende sotto i 5&nbsp;cm a tutte
+        le distanze.</li></ul>
+<p class="runin"><strong>Limite dichiarato sulla causa.</strong>  I dati raccolti <em>non</em> permettono di
+attribuire l'origine del <span class="math">+3,81 %</span>. Può trattarsi della calibrazione interna del
+modulo oppure del riferimento con cui sono state segnate le distanze sul pavimento.
+Per discriminare servirebbe un riferimento di distanza indipendente, per esempio un
+distanziometro laser. La distinzione è rilevante: nel primo caso il coefficiente
+correttivo è una proprietà del modulo e vale in generale, nel secondo è un artefatto
+del nostro setup.</p>
+<h3><span class="num">4.5.2</span> Dispersione entro il trial</h3>
+<p>La dispersione della distanza <em>entro</em> un singolo trial è risultata di
+10–26&nbsp;cm nello scenario di cammino sul posto, contro
+<span class="math"><b class="mrm">1,48 ± 0,77</b></span>&nbsp;<strong>cm</strong> nello scenario da seduto immobile
+(sezione&nbsp;<a href="#sec:persona-ferma">4.3</a>). Il confronto è informativo: la dispersione maggiore non
+è rumore del sensore, è l'oscillazione reale del busto di chi cammina sul posto. Il
+radar la sta misurando correttamente.</p>
+<p>Nello scenario da seduto emerge una scomposizione utile: la variabilità <em>fra</em>
+trial della distanza media è di <span class="math">± 2,38</span>&nbsp;cm (media <span class="math">229,78</span>&nbsp;cm su una distanza
+reale di 230&nbsp;cm), mentre la stabilità <em>entro</em> il trial è di <span class="math">1,48</span>&nbsp;cm. La
+variabilità di come il soggetto si siede (<span class="math">~</span>2,4&nbsp;cm) è quindi maggiore di quella
+del sensore (<span class="math">~</span>1,5&nbsp;cm): il fattore limitante dell'accuratezza in questo scenario
+è il soggetto, non lo strumento.</p>
+<h3><span class="num">4.5.3</span> Decadimento dell'energia con la distanza</h3>
+<p>L'energia media del bersaglio decade da 99 a 1&nbsp;m fino a 28 a 5&nbsp;m
+(tabella&nbsp;<a href="#tab:distanza">4.3</a>). Il decadimento è <em>molto</em> più lento di quanto
+prevederebbe l'equazione del radar, che per un bersaglio puntiforme dà una
+dipendenza <span class="math">1/D<sup>4</sup></span> della potenza ricevuta.</p>
+<p>Va quindi evitata una tentazione interpretativa: <strong>questo valore non è una
+potenza e non va letto con l'equazione del radar</strong>. È un indicatore normalizzato
+0–100 prodotto da un'elaborazione interna non documentata, con ogni probabilità
+compressiva. Se ne può usare la monotonia (più lontano <span class="math">→</span> meno energia) ma non il
+valore assoluto in termini fisici.</p>
+<p>L'osservazione ha però un uso pratico: l'extrapolazione della tendenza porta a un
+valore di circa 27 a 6&nbsp;m, contro una soglia di rilevamento di 15 sul gate
+corrispondente (tabella&nbsp;<a href="#tab:soglie">3.6</a>). Questo indica che il sensore avrebbe funzionato
+anche a 6&nbsp;m.</p>
+<p class="runin"><strong>Perimetro sperimentale.</strong>  Il range coperto è <strong>1–5&nbsp;m</strong> e non 6&nbsp;m: è
+un limite della stanza disponibile, non del sensore, e va dichiarato come tale. La
+retta di regressione è costruita su cinque punti e 25 trial. Per lo scenario UPRISE
+la limitazione è comunque irrilevante, perché la distanza di interesse è
+<em>inferiore al metro</em> — la persona sotto il banco — che è coperta dallo
+scenario di sezione&nbsp;<a href="#sec:sotto-banco">4.7</a>.</p>
+<h2 id="sec:latenza"><span class="num">4.6</span> Latenze di rilevamento e di rilascio</h2>
+<p></p>
+<p><em>Acquisizione in corso.</em></p>
+<p class="runin"><strong>Metodo previsto.</strong>  Poiché la ground truth è statica per file, la latenza
+si misura con la convenzione dell'<strong>evento a istante noto</strong>: l'acquisizione
+parte con la stanza vuota e il soggetto entra esattamente a <span class="math">t = 10</span>&nbsp;s, con
+riferimento condiviso fra operatore e acquisizione. Lo script di analisi riceve
+l'istante dell'evento come parametro (<code>–event-time</code> per il rilevamento,
+<code>–release-time</code> per il rilascio) e calcola la latenza come distanza
+temporale fra l'evento e la prima transizione stabile.</p>
+<p class="runin"><strong>Attese e vincoli noti.</strong>  Tre elementi sono già stabiliti e vanno riportati
+con i risultati.</p>
+<ul><li>La latenza di rilascio del radar <strong>non è un difetto</strong>: è il
+        <em>no-one duration</em>, impostato a 5&nbsp;s di fabbrica, che nella sessione di
+        validazione ha prodotto una coda osservata di circa 10&nbsp;s con un bersaglio
+        fantasma in decadimento a 5,2&nbsp;m (sezione&nbsp;<a href="#sec:coda">3.5.3</a>). Va misurata come tale e
+        non conteggiata fra i falsi positivi.</li><li>Il PIR ha un <strong>block time di 2,5&nbsp;s</strong> dopo ogni rilascio, durante il
+        quale è cieco per costruzione. Una latenza di rilevamento misurata subito
+        dopo un rilascio è quindi contaminata da questo effetto e va segnalata.</li><li>La direzione di ingresso conta, e in senso opposto per i due sensori: il PIR
+        favorisce l'ingresso <em>trasversale</em>, il radar quello <em>radiale</em>
+        (sezione&nbsp;<a href="#sec:fresnel">2.1.2</a>). La direzione va annotata per ogni trial e i due casi
+        vanno riportati separatamente, altrimenti il confronto è ambiguo.</li></ul>
+<h2 id="sec:sotto-banco"><span class="num">4.7</span> Lo scenario UPRISE: persona sotto il banco</h2>
+<p></p>
+<p><em>Acquisizione in corso.</em></p>
+<p>È lo scenario che replica la condizione d'interesse del progetto: soggetto
+accovacciato sotto un piano, a distanza inferiore al metro dal sensore. Rispetto
+agli scenari precedenti presenta tre elementi nuovi, tutti già identificati:</p>
+<ol><li><strong>distanza ravvicinata</strong>, quindi rischio di saturazione dei canali di
+        energia (sezione&nbsp;<a href="#sec:saturazione">3.5.1</a>);</li><li><strong>canali stazionari per-gate non disponibili</strong> sotto 1,5&nbsp;m
+        (sezione&nbsp;<a href="#sec:senergy-zero">3.5.2</a>): l'analisi dovrà usare i canali in movimento,
+        e questa verifica è esplicitamente parte dello scenario;</li><li><strong>presenza del piano dell'arredo</strong> fra sensore e soggetto, a seconda
+        del punto di montaggio. Nel banco UPRISE il piano è rinforzato con
+        <em>lamiera forata</em>: il metallo è il materiale peggiore per un radar
+        (sezione&nbsp;<a href="#sec:ostacoli">4.8</a>), e la posizione di montaggio del sensore rispetto alla
+        lamiera è una domanda aperta di progetto, da porre al relatore.</li></ol>
+<h2 id="sec:ostacoli"><span class="num">4.8</span> Penetrazione degli ostacoli</h2>
+<p></p>
+<p><em>Acquisizione in corso.</em></p>
+<p class="runin"><strong>Metodo previsto.</strong>  Ripetizione dello scenario “persona ferma” con
+l'interposizione di un pannello fra sensore e soggetto, per i materiali disponibili:
+cartongesso, legno, vetro, plastica. Metrica: tasso di falsi negativi e riduzione
+dell'energia del bersaglio rispetto al caso senza ostacolo, a parità di distanza.</p>
+<p class="runin"><strong>Attese da letteratura.</strong>  Il radar a 24&nbsp;GHz attraversa cartongesso, legno,
+vetro e plastica con attenuazione contenuta, mentre è bloccato da metallo e da
+cemento armato di spessore rilevante. Il PIR è invece bloccato da <em>tutti</em> i
+materiali elencati, vetro compreso: la finestra ottica 5–14&nbsp;µ m del corpo
+umano non attraversa il vetro comune. Quest'ultimo punto è un risultato atteso ma
+importante per il confronto, perché rende il PIR inutilizzabile per qualunque
+montaggio incassato o protetto.</p>
+<h2 id="sec:respiro"><span class="num">4.9</span> Il rilevamento del respiro</h2>
+<p></p>
+<h3><span class="num">4.9.1</span> Metodo</h3>
+<p>Il metodo segue quanto descritto in sezione&nbsp;<a href="#sec:respiro-teoria">2.2.3</a>: si campiona a 5&nbsp;Hz
+un canale di energia per-gate in engineering mode, si applica la FFT alla serie
+temporale e si cerca il picco in banda 0,1–0,5&nbsp;Hz. La frequenza del picco,
+moltiplicata per 60, dà la stima degli atti al minuto.</p>
+<p>Il contributo metodologico di questa tesi è nella <strong>selezione del canale</strong>. Il
+LD2410B mette a disposizione venti serie temporali di energia (due di bersaglio più
+diciotto per-gate) e non tutte sono utilizzabili: alcune sono sature
+(sezione&nbsp;<a href="#sec:saturazione">3.5.1</a>), altre identicamente nulle (sezione&nbsp;<a href="#sec:senergy-zero">3.5.2</a>), altre
+piatte perché lontane dal bersaglio. La modalità <code>–scan</code> dello script di
+analisi esamina tutti i canali, scarta quelli saturi e quelli piatti secondo criteri
+dichiarati, ordina i rimanenti per rapporto segnale-rumore e riporta la
+<strong>mediana delle stime concordi</strong>. La concordanza fra canali indipendenti è
+l'unico controllo di plausibilità disponibile in assenza di ground truth.</p>
+<h3><span class="num">4.9.2</span> Prima prova: soggetto a 40&nbsp;cm</h3>
+<p class="runin"><strong>Risultato.</strong>  Soggetto fermo a circa 40&nbsp;cm, 91&nbsp;s di acquisizione,
+respirazione spontanea. <strong>Sette canali di energia in movimento, indipendenti
+fra loro, concordano su 0,264&nbsp;Hz, cioè 15,8 atti al minuto</strong>, con rapporto
+segnale-rumore fino a 12,8 sul canale <code>menergy_gate2</code>. Il valore è
+fisiologicamente plausibile per un adulto a riposo.</p>
+<p class="runin"><strong>Perché non è una misura valida.</strong>  Va detto con chiarezza, perché è una
+distinzione che qualifica il lavoro: questa prova dimostra la <em>fattibilità</em> ma
+non è una misura utilizzabile come risultato. Le ragioni sono tre:
+<em>(i)</em> manca la ground truth, cioè non si conosce il ritmo respiratorio reale e
+quindi non si può calcolare un errore; <em>(ii)</em> l'89&thinsp;% dei campioni sui canali
+in movimento è saturo; <em>(iii)</em> 40&nbsp;cm non è una distanza rappresentativa di
+alcuno scenario d'uso.</p>
+<p class="runin"><strong>I canali stazionari sono inutilizzabili a questa distanza.</strong>  I gate 2 e 3
+stazionari sono saturi al 100&thinsp;%, i gate 0 e 1 sono identicamente nulli
+(sezione&nbsp;<a href="#sec:senergy-zero">3.5.2</a>) e i gate 4–8 forniscono stime fra 6,6 e 9,2 atti al
+minuto, in disaccordo fra loro e con il canale in movimento. Il valore 0,132&nbsp;Hz che
+appare su alcuni di questi canali è esattamente la metà di 0,264&nbsp;Hz: si tratta con
+ogni probabilità di una subarmonica, cioè di un artefatto dell'analisi, non di un
+segnale.</p>
+<h3><span class="num">4.9.3</span> Seconda prova: soggetto a 2,31&nbsp;m</h3>
+<p>La stessa analisi è stata applicata ai cinque trial dello scenario “persona ferma”
+(sezione&nbsp;<a href="#sec:persona-ferma">4.3</a>), a 2,31&nbsp;m e per 302&nbsp;s ciascuno. Il quadro si ripete, ma
+in condizioni migliori.</p>
+<ul><li>I canali <strong>in movimento</strong> dei gate 2–8 concordano su circa 0,30&nbsp;Hz,
+        cioè <strong>18,2 atti al minuto</strong>, valore plausibile per un adulto seduto.
+        Le stime per i cinque trial sono 18,2 / 18,9 / 18,8 / 20,0 / 20,2 atti al
+        minuto, con 7–8 canali concordi per trial.</li><li>Questi canali <strong>non sono saturi</strong> a questa distanza: la percentuale di
+        campioni a fondo scala è fra 0 e 1&thinsp;%. È una buona notizia di natura
+        pratica, perché significa che la prova definitiva del respiro può essere
+        svolta a distanza realistica senza accorgimenti geometrici particolari.</li><li>I canali <strong>stazionari</strong> danno 6,5–7,8 atti al minuto, troppo pochi per
+        un adulto a riposo, e i gate prossimi al bersaglio sono saturi (gate&nbsp;3 al
+        100&thinsp;%, gate&nbsp;4 al 97&thinsp;%).</li></ul>
+<p class="runin"><strong>Conclusione operativa.</strong>  Due sessioni a distanze molto diverse (40&nbsp;cm e
+2,31&nbsp;m) dicono la stessa cosa: <strong>per il respiro vanno usati i canali in
+movimento</strong>. Il valore intorno a 7 atti al minuto dei canali stazionari è
+verosimilmente un artefatto del filtraggio interno del canale e non respirazione —
+ma, in assenza di ground truth, questa resta un'ipotesi e va presentata come tale.
+A deciderlo è la prova con metronomo descritta di seguito.</p>
+<h3 id="sec:respiro-metronomo"><span class="num">4.9.4</span> La prova definitiva: respiro a ritmo imposto</h3>
+<p></p>
+<p><em>Acquisizione in corso.</em></p>
+<p>La misura valida per la tesi richiede una ground truth, e il modo più semplice di
+ottenerla è imporre il ritmo: il soggetto respira seguendo un metronomo a
+frequenza nota (per esempio 10, 15 e 20 atti al minuto), a distanza <span class="math">≥ 1,5</span>&nbsp;m,
+per cinque trial per ritmo. Il confronto fra stima e ritmo imposto è la vera prova,
+e permette di riportare un errore assoluto in atti al minuto invece di una
+concordanza fra canali.</p>
+<p>È inoltre necessario un <strong>controllo negativo</strong>: la stessa analisi applicata a
+una registrazione di stanza vuota deve <em>non</em> produrre un picco in banda
+respiratoria. Senza questo controllo, un picco nello spettro non dimostra nulla, e
+la banda 0,1–0,5&nbsp;Hz è abbastanza larga da ospitare artefatti.</p>
+<h2 id="sec:ld2420-risultati"><span class="num">4.10</span> Confronto fra i due moduli radar</h2>
+<p></p>
+<p><em>Attività parziale.</em></p>
+<p>Il LD2420 è stato collegato e verificato (sezione&nbsp;<a href="#sec:ld2420">3.2</a>): risponde ai movimenti,
+riporta presenza e un valore di “range” in modalità ASCII a 115200 baud. In questa
+modalità però non fornisce energia per-gate né distingue movimento e stazionario, e
+l'unità del campo “range” non è documentata. Il confronto quantitativo con il
+LD2410B richiede quindi la riconfigurazione del modulo in modalità binaria.</p>
+<p>Alla data di questa stesura il confronto è limitato a un raffronto di specifiche
+(tabella&nbsp;<a href="#tab:confronto-moduli">3.4</a>) e alla constatazione qualitativa che il LD2420
+rileva presenza a distanze superiori. Il posizionamento dei due moduli resta quello
+indicato dalle specifiche: il LD2410B è il modulo adatto al caso UPRISE (dettaglio
+per-gate, respiro, distanze brevi), il LD2420 a una copertura di ambiente più ampia.</p>
+<h2 id="sec:discussione"><span class="num">4.11</span> Discussione</h2>
+<p></p>
+<h3><span class="num">4.11.1</span> Dove il mmWave vince</h3>
+<p>Il quadro che emerge dai dati acquisiti è netto e si può riassumere in quattro
+punti.</p>
+<ol><li><strong>Sulla persona ferma il divario non è graduale, è categorico</strong>:
+        <span class="math">0,00 %</span> contro <span class="math">99,78 %</span> di falsi negativi. Non si tratta di un
+        sensore migliore di un altro, ma di un sensore che misura una grandezza che
+        l'altro non ha accesso a misurare.</li><li><strong>Il divario si estende alla persona in movimento sul posto</strong>, che è il
+        caso applicativo reale: <span class="math">100 %</span> di falsi negativi PIR oltre i 2&nbsp;m contro
+        <span class="math">0 %</span> del radar.</li><li><strong>Il radar aggiunge informazione, non solo affidabilità</strong>: la distanza
+        è misurata con linearità <span class="math">R<sup>2</sup> = 0,99965</span> e un errore correggibile con un
+        coefficiente; l'energia per-gate consente l'analisi del respiro e l'indice
+        di vitalità (capitolo&nbsp;<a href="#cap:vitalita">7</a>), cose che con un bit non sono
+        rappresentabili.</li><li><strong>Sui falsi positivi i due sensori sono equivalenti</strong>: entrambi
+        <span class="math">≤ 0,43</span> eventi/h su 7&nbsp;h di osservazione. Il vantaggio del radar non si
+        paga in affidabilità.</li></ol>
+<h3><span class="num">4.11.2</span> Dove il mmWave non vince</h3>
+<p>Per equilibrio vanno riportati anche i punti a sfavore, che sono reali.</p>
+<ul><li><strong>Consumo</strong>: tre ordini di grandezza in più (80&nbsp;mA contro 50&nbsp;µ A).
+        È il vincolo che, da solo, determina l'architettura raccomandata nel
+        capitolo&nbsp;<a href="#cap:conclusioni">8</a>, e il capitolo&nbsp;<a href="#cap:consumi">5</a> lo quantifica.</li><li><strong>Coda di presenza</strong>: il radar mantiene la presenza per circa 10&nbsp;s dopo
+        l'uscita. Per un'applicazione di illuminazione automatica sarebbe un
+        vantaggio, per una misura di occupazione istantanea è un ritardo.</li><li><strong>Saturazione a distanza ravvicinata</strong>: proprio nello scenario di
+        interesse (sotto il banco) i canali più informativi rischiano di saturare,
+        e i canali stazionari per-gate non sono disponibili sotto 1,5&nbsp;m. Sono
+        vincoli di progetto, non insormontabili, ma vanno gestiti.</li><li><strong>Bersaglio singolo</strong>: il LD2410B non dispone di un array di antenne e
+        non distingue due persone alla stessa distanza. Non fornisce informazione
+        angolare.</li><li><strong>Complessità</strong>: richiede UART a 256000 baud, gestione di un protocollo
+        a frame, e — per usarne i dati veri — engineering mode e analisi
+        numerica. Il PIR richiede un piedino digitale.</li></ul>
+<h3 id="sec:limiti"><span class="num">4.11.3</span> Limiti del setup sperimentale</h3>
+<p></p>
+<p>I limiti da dichiarare esplicitamente sono i seguenti.</p>
+<dl><dt>Numero di soggetti</dt><dd>Le acquisizioni sono state svolte con un solo soggetto
+    (indicato come S1 nel registro). La corporatura influisce sull'energia riflessa
+    e, nel caso del PIR, sull'emissione infrarossa: la ripetizione degli scenari
+    chiave con un secondo soggetto è la prima estensione da fare.</dd><dt>Ambiente</dt><dd>Stanza domestica, non un'aula scolastica: dimensioni, materiali,
+    riflessioni multiple e presenza di arredi metallici sono diversi. Il
+    trasferimento dei risultati al dimostratore reale va verificato.</dd><dt>Temperatura</dt><dd>Fra 25 e 29&thinsp;°C. Condizione sfavorevole al PIR in
+    rilevamento: un confronto a 18–20&thinsp;°C è un'estensione a costo quasi
+    nullo che rafforzerebbe il risultato, mostrando quanto della cecità sul fermo
+    sia strutturale e quanto termico. La previsione, dalla fisica del principio, è
+    che la cecità sul fermo resti totale a qualunque temperatura.</dd><dt>Range</dt><dd>1–5&nbsp;m per la distanza, per limite della stanza. Il caso UPRISE è
+    sotto il metro e non è interessato.</dd><dt>Un solo esemplare per modello</dt><dd>Nessuna stima della variabilità fra esemplari.
+    Il coefficiente di scala del <span class="math">+3,81 %</span> potrebbe essere specifico
+    dell'esemplare in prova.</dd><dt>Assenza di strumentazione di misura</dt><dd>I consumi sono da datasheet
+    (capitolo&nbsp;<a href="#cap:consumi">5</a>) e le distanze sono riferite a marcature su pavimento, non a
+    un distanziometro certificato.</dd></dl>
+<p>Nessuno di questi limiti mette in discussione il risultato centrale, che è
+robusto per la natura stessa del divario misurato: la cecità del PIR sulla persona
+ferma è una conseguenza del principio fisico, e i dati la confermano nella
+condizione di interesse con cinque ripetizioni indipendenti.</p></section>
+<section class="chap"><h1 id="cap:consumi"><span class="num">5</span> Consumo energetico</h1>
+<p></p>
+<blockquote><p>
+Questo capitolo risponde all'obiettivo O4. L'analisi è dichiaratamente
+<em>a titolo informativo</em> e basata su dati di datasheet: non si dispone di
+strumentazione di misura (né multimetro né resistenze di shunt), come concordato
+con il relatore. Tutti i valori riportati sono quelli dichiarati dai produttori,
+con la fonte indicata.</p></blockquote>
+<h2><span class="num">5.1</span> Consumo dei singoli componenti</h2>
+<h3><span class="num">5.1.1</span> Sensori</h3>
+<figure class="tab" id="tab:consumi-sensori"><figcaption><b>Tabella 5.1.</b> Consumo dei sensori in esame, da datasheet.</figcaption><table><thead><tr><th><strong>Componente</strong></th><th><strong>Tensione</strong></th><th><strong>Corrente media</strong></th><th><strong>Potenza</strong></th><th><strong>Fonte</strong></th></tr></thead><tbody><tr><td></td><td>5&nbsp;V (<span class="math"> gt;</span>200&nbsp;mA di capacità)</td><td>80&nbsp;mA</td><td><span class="math">~</span>400&nbsp;mW</td><td>manuale Hi-Link V1.03&nbsp;<a class="cite" href="#bib">[17]</a></td></tr><tr><td></td><td>3,3&nbsp;V (3,0–3,6&nbsp;V)</td><td><span class="math">~</span>50&nbsp;mA</td><td><span class="math">~</span>165&nbsp;mW</td><td>datasheet Hi-Link / OpenELAB&nbsp;<a class="cite" href="#bib">[25]</a></td></tr><tr><td>PIR</td><td>4,5–20&nbsp;V</td><td><span class="math"> lt;</span>0,05&nbsp;mA</td><td><span class="math">~</span>0,3&nbsp;mW</td><td>datasheet &nbsp;<a class="cite" href="#bib">[23]</a></td></tr></tbody></table></figure>
+<p>Il rapporto fra i due estremi è immediato e va sottolineato perché è il dato
+strutturale di tutto il capitolo: il radar consuma circa <strong>1600 volte</strong> la
+corrente del PIR.</p>
+<p class="runin"><strong>Nota su una fonte discordante.</strong>  Una fonte secondaria di uso
+comune&nbsp;<a class="cite" href="#bib">[26]</a> riporta per l' una corrente di riposo di 65&nbsp;mA. Si tratta con evidenza di un
+refuso fra milliampere e microampere, incompatibile con l'architettura del modulo
+(un BISS0001 alimentato da un LDO HT7133). Si è fatto fede al datasheet, che indica
+<span class="math"> lt;</span>50&nbsp;µ A. Il caso è riportato perché illustra la necessità della regola
+adottata in tutta la tesi: risalire sempre al datasheet del produttore.</p>
+<h3><span class="num">5.1.2</span> Microcontrollore</h3>
+<figure class="tab" id="tab:consumi-esp32"><figcaption><b>Tabella 5.2.</b> Consumo dell'ESP32-WROOM-32 per modalità operativa
+(datasheet Espressif&nbsp;<a class="cite" href="#bib">[27]</a>).</figcaption><table><thead><tr><th><strong>Modalità</strong></th><th><strong>Corrente</strong></th><th><strong>Note</strong></th></tr></thead><tbody><tr><td>Attivo, WiFi in trasmissione</td><td>160–260&nbsp;mA (picco)</td><td>invio dati alla web UI</td></tr><tr><td>Attivo, WiFi in ricezione/idle</td><td><span class="math">~</span>95–100&nbsp;mA</td><td>connesso, in ascolto</td></tr><tr><td>Modem-sleep (CPU attiva, WiFi spento)</td><td>20–68&nbsp;mA</td><td>dipende dalla frequenza di
+  clock (80–240&nbsp;MHz)</td></tr><tr><td>Light-sleep</td><td><span class="math">~</span>0,8&nbsp;mA</td><td></td></tr><tr><td>Deep-sleep</td><td><span class="math">~</span>0,01&nbsp;mA (10&nbsp;µ A)</td><td>solo dominio RTC attivo</td></tr></tbody></table></figure>
+<h2><span class="num">5.2</span> Consumo dei nodi completi</h2>
+<p>Sommando microcontrollore e sensore si ottengono le configurazioni effettivamente
+usate in questa tesi e quelle rilevanti per il progetto (tabella&nbsp;<a href="#tab:consumi-nodi">5.3</a>).</p>
+<figure class="tab" id="tab:consumi-nodi"><figcaption><b>Tabella 5.3.</b> Consumo stimato del nodo completo nelle configurazioni di interesse.</figcaption><table><thead><tr><th><strong>Configurazione</strong></th><th><strong>Corrente totale</strong></th><th><strong>Potenza (5&nbsp;V)</strong></th></tr></thead><tbody><tr><td>ESP32 attivo + LD2410B + WiFi</td><td><span class="math">~</span>180–260&nbsp;mA</td><td><span class="math">~</span>0,9–1,3&nbsp;W</td></tr><tr><td>ESP32 attivo + LD2410B (solo logging seriale)</td><td><span class="math">~</span>110–150&nbsp;mA</td><td><span class="math">~</span>0,55–0,75&nbsp;W</td></tr><tr><td>ESP32 attivo + LD2420</td><td><span class="math">~</span>80–120&nbsp;mA</td><td><span class="math">~</span>0,4–0,6&nbsp;W</td></tr><tr><td>ESP32 attivo + PIR</td><td><span class="math">~</span>30–70&nbsp;mA</td><td><span class="math">~</span>0,15–0,35&nbsp;W</td></tr><tr><td>ESP32 in deep-sleep + PIR (sveglia su interrupt)</td><td><span class="math"><b class="mrm">~ 0,06</b></span>&nbsp;<strong>mA</strong></td><td><span class="math">~</span>0,3&nbsp;mW</td></tr></tbody></table></figure>
+<p>L'ultima riga è il punto chiave del capitolo. L'uscita digitale del PIR può
+risvegliare l'ESP32 dal deep-sleep tramite interrupt su GPIO: il nodo può quindi
+restare in attesa a costo praticamente nullo, con il PIR nel ruolo di
+<em>guardiano</em>. Il radar mmWave, invece, costa tre ordini di grandezza in più ed
+è progettato per un'alimentazione fissa.</p>
+<h2><span class="num">5.3</span> Stime di autonomia a batteria</h2>
+<p>Assumendo una cella litio-ione 18650 da 3000&nbsp;mAh e un rendimento del regolatore di
+circa l'85&thinsp;%, si ottengono le autonomie di tabella&nbsp;<a href="#tab:autonomia">5.4</a>.</p>
+<figure class="tab" id="tab:autonomia"><figcaption><b>Tabella 5.4.</b> Autonomia stimata con una cella Li-ion 18650 da 3000&nbsp;mAh e rendimento del
+regolatore dell'85&thinsp;%.</figcaption><table><thead><tr><th><strong>Scenario</strong></th><th><strong>Corrente media</strong></th><th><strong>Autonomia</strong></th></tr></thead><tbody><tr><td>Nodo mmWave sempre attivo (LD2410B + ESP32 + WiFi)</td><td><span class="math">~</span>200&nbsp;mA</td><td><span class="math">~</span>13&nbsp;h</td></tr><tr><td>Nodo mmWave attivo senza WiFi continuo</td><td><span class="math">~</span>130&nbsp;mA</td><td><span class="math">~</span>20&nbsp;h</td></tr><tr><td>Nodo PIR sempre attivo (ESP32 in modem-sleep)</td><td><span class="math">~</span>25&nbsp;mA</td><td><span class="math">~</span>4 giorni</td></tr><tr><td>Nodo dormiente (deep-sleep + PIR come watchdog)</td><td><span class="math">~</span>0,06&nbsp;mA</td><td><span class="math">~</span>4–5 anni<span class="math"><sup>*</sup></span></td></tr><tr><td>3@l@ <span class="math"><sup>*</sup></span> in questo regime il fattore
+limitante non è il consumo ma l'autoscarica della cella.</td></tr></tbody></table></figure>
+<h2 id="sec:architettura-ibrida"><span class="num">5.4</span> Implicazione per UPRISE: l'architettura ibrida</h2>
+<p></p>
+<p>I numeri precedenti risolvono un'apparente contraddizione del progetto. Il sistema
+integrato negli arredi deve restare in attesa <em>per anni</em> in “tempo di pace” e
+deve funzionare a batteria durante il blackout che segue il sisma: due requisiti
+incompatibili con un sensore da 80&nbsp;mA sempre acceso, ma anche con un sensore che non
+vede le persone ferme.</p>
+<p>La soluzione non è scegliere fra i due sensori, ma metterli in sequenza temporale.</p>
+<ol><li><strong>Tempo di pace</strong> — l'intero nodo in deep-sleep, con il PIR spento o
+        usato come watchdog: consumo dell'ordine dei microampere, autonomia
+        pluriennale limitata dall'autoscarica della batteria.</li><li><strong>Trigger di “modalità terremoto”</strong> — l'accelerometro sul gateway
+        o il rilevamento del blackout risveglia l'ESP32. Il PIR può contribuire come
+        sorgente di interrupt a costo nullo.</li><li><strong>Emergenza</strong> — si accende il radar mmWave per il rilevamento fine:
+        persona ferma sotto il banco, respiro, indice di vitalità. L'autonomia di
+        13–20&nbsp;ore copre la finestra critica iniziale delle operazioni di ricerca e
+        soccorso.</li><li><strong>Estensione della finestra</strong> — per coprire le prime 72&nbsp;ore, che è
+        l'orizzonte convenzionale del soccorso, sono disponibili due strade
+        combinabili: una batteria maggiorata, oppure il <em>duty-cycling</em> del
+        radar. Un ciclo di 1&nbsp;minuto acceso ogni 5 riduce il consumo medio di circa
+        cinque volte, portando l'autonomia oltre le 72&nbsp;ore. Il costo è una latenza
+        di rilevamento fino a quattro minuti, che nello scenario di soccorso è
+        accettabile: la domanda a cui il sistema risponde è “c'è qualcuno sotto
+        questo banco?”, non “in quale istante si è mosso?”.</li></ol>
+<p class="runin"><strong>Conclusione del capitolo.</strong>  L'analisi dei consumi porta a una
+raccomandazione precisa, che è anche la risposta alla domanda implicita del titolo
+della tesi: il PIR <strong>non va sostituito</strong>. Non è un concorrente del radar ma il
+guardiano a basso costo che decide quando accenderlo. Il radar mmWave è lo strumento
+di misura della fase di emergenza. Ciascuno dei due fa ciò che l'altro non può fare,
+e i dati del capitolo&nbsp;<a href="#cap:confronto">4</a> e di questo capitolo lo mostrano da due direzioni
+opposte.</p>
+<p><span class="todo">[DA FARE: se il tempo lo consente: verificare sperimentalmente il consumo con un
+misuratore USB in linea, anche a bassa precisione. Anche una misura al 10&thinsp;%
+di accuratezza confermerebbe l'ordine di grandezza delle tabelle e renderebbe il
+capitolo più solido]</span></p></section>
+<section class="chap"><h1 id="cap:webui"><span class="num">6</span> Interfaccia web: visualizzazione e raccolta dati</h1>
+<p></p>
+<blockquote><p>
+Questo capitolo risponde all'obiettivo O5: l'ESP32 pubblica i dati, un sito web li
+visualizza in tempo reale, la stessa applicazione li salva con statistiche ed
+esporta in CSV per l'analisi numerica. Alla data di questa stesura il progetto
+architetturale e di dettaglio è completo; l'implementazione è in corso.</p></blockquote>
+<h2 id="sec:webui-requisiti"><span class="num">6.1</span> Requisiti e scelta architetturale</h2>
+<p></p>
+<h3><span class="num">6.1.1</span> Requisiti</h3>
+<p>Dall'obiettivo O5 si ricavano cinque requisiti funzionali e due non funzionali.</p>
+<dl><dt>R1 — Pubblicazione</dt><dd>l'ESP32 rende disponibili i dati del sensore in rete.</dd><dt>R2 — Tempo reale</dt><dd>la visualizzazione segue il sensore senza ritardi
+    percepibili, alla stessa cadenza dell'acquisizione (5&nbsp;Hz).</dd><dt>R3 — Statistiche</dt><dd>la stessa applicazione calcola e mostra statistiche di
+    sessione.</dd><dt>R4 — Esportazione</dt><dd>i dati sono esportabili in CSV per l'analisi in Excel.</dd><dt>R5 — Vitalità</dt><dd>l'interfaccia mostra anche l'indice di vitalità
+    (capitolo&nbsp;<a href="#cap:vitalita">7</a>).</dd><dt>N1 — Funzionamento offline</dt><dd>vincolo derivato dal contesto UPRISE: in
+    emergenza sismica non c'è connettività.</dd><dt>N2 — Coerenza dei dati</dt><dd>il CSV esportato dal browser deve avere lo stesso
+    formato di quello prodotto dalla catena seriale, in modo che esista
+    <em>un solo</em> formato dati in tutta la tesi.</dd></dl>
+<h3><span class="num">6.1.2</span> Opzioni considerate</h3>
+<figure class="tab" id="tab:webui-opzioni"><figcaption><b>Tabella 6.1.</b> Opzioni architetturali valutate per la web UI.</figcaption><table><thead><tr><th><strong>Architettura</strong></th><th><strong>Vantaggi</strong></th><th><strong>Svantaggi</strong></th></tr></thead><tbody><tr><td><strong>A. Sito servito dall'ESP32</strong> (web server e WebSocket a bordo)</td><td>nessuna infrastruttura, funziona offline, dimostrazione autonoma, coerente con lo
+  scenario di emergenza</td><td>RAM e flash limitate, massimo 2–3 client simultanei</td></tr><tr><td>B. ESP32 <span class="math">→</span> MQTT <span class="math">→</span> server con database</td><td>scalabile, storico illimitato, più vicino a una piattaforma reale</td><td>richiede broker e server sempre accesi: infrastruttura eccessiva per una tesi di
+  sensing</td></tr><tr><td>C. Piattaforma cloud (ThingSpeak, Blynk)</td><td>pronta all'uso</td><td>non funziona offline, cadenza di campionamento limitata (<span class="math">~</span>15&nbsp;s), dati fuori
+  controllo</td></tr></tbody></table></figure>
+<h3><span class="num">6.1.3</span> Scelta: tutto sull'ESP32</h3>
+<p>È stata scelta l'opzione&nbsp;A, per tre motivi.</p>
+<ol><li><strong>Coerenza con il contesto</strong>: un nodo autonomo che serve la propria
+        dashboard è la miniatura concettuale della piattaforma di monitoraggio del
+        progetto, con le sue due modalità di funzionamento. L'opzione&nbsp;C viola
+        direttamente il requisito N1.</li><li><strong>Il volume dei dati è piccolo</strong>: circa venti valori a 5&nbsp;Hz,
+        dell'ordine di 2&nbsp;kB/s, ben dentro le capacità dell'ESP32.</li><li><strong>La persistenza a lungo termine non serve a bordo</strong>: lo storico si
+        accumula <em>nel browser</em>, che ha memoria abbondante, ed è il browser a
+        produrre il CSV. Questo elimina il bisogno di un database senza perdere
+        funzionalità.</li></ol>
+<p class="runin"><strong>Modalità WiFi doppia.</strong>  Il firmware supporta due modalità selezionabili:
+<em>Station</em>, in cui l'ESP32 si collega a una rete esistente (comodo in fase di
+sviluppo), e <em>Access Point</em>, in cui crea la propria rete e serve la pagina a
+chi si collega. Se la connessione in modalità Station non riesce entro 15&nbsp;s, parte
+automaticamente l'Access Point. È la modalità che rende la dimostrazione possibile
+in qualunque luogo, e quella che corrisponde allo scenario di emergenza.</p>
+<p class="runin"><strong>Piano di riserva.</strong>  È stato progettato anche il percorso alternativo
+(opzione&nbsp;B: ESP32 <span class="math">→</span> MQTT <span class="math">→</span> backend FastAPI con SQLite <span class="math">→</span> browser) nel
+caso in cui il relatore intenda una piattaforma centralizzata anziché il nodo
+autonomo. Il frontend è condiviso per circa l'85&thinsp;% fra le due architetture, quindi
+il cambio di rotta costerebbe due o tre giornate di lavoro. La scelta di riferimento
+resta l'opzione&nbsp;A.</p>
+<h2 id="sec:webui-progetto"><span class="num">6.2</span> Progetto</h2>
+<p></p>
+<h3><span class="num">6.2.1</span> Stack</h3>
+<p>Lato firmware: <code>ESPAsyncWebServer</code> per servire la pagina, WebSocket per il
+flusso dati, LittleFS per ospitare i file statici. Tutto risiede sull'ESP32 e nulla
+è caricato da rete esterna, in ottemperanza al requisito N1.</p>
+<p>Lato browser: pagina singola in HTML, CSS e JavaScript, senza framework e senza
+dipendenze da CDN — coerentemente con il vincolo di funzionamento offline.</p>
+<h3><span class="num">6.2.2</span> Protocollo dati</h3>
+<p>Il messaggio WebSocket riprende le stesse grandezze del CSV, con l'aggiunta dei campi
+calcolati a bordo:</p>
+<figure class="lst"><figcaption><b>Listato 2.</b> Messaggio WebSocket inviato a 5&nbsp;Hz.</figcaption><pre>{
+  &quot;t&quot;: 123456,                        // millis() dell&#x27;ESP32
+  &quot;presence&quot;: 1,                      // radar_presence
+  &quot;moving&quot;: 1, &quot;still&quot;: 0,            // stato del bersaglio
+  &quot;mdist&quot;: 145, &quot;sdist&quot;: 0,           // distanze in cm
+  &quot;menergy&quot;: 72, &quot;senergy&quot;: 0,        // energia del bersaglio 0-100
+  &quot;pir&quot;: 1,                           // sensore PIR (confronto dal vivo)
+  &quot;gates_m&quot;: [0,5,60,10,0,0,0,0,0],   // energia per-gate, movimento
+  &quot;gates_s&quot;: [0,0,45,8,0,0,0,0,0],    // energia per-gate, stazionario
+  &quot;vitality&quot;: 54,                     // indice di vitalita 0-100
+  &quot;vitality_class&quot;: &quot;attivo&quot;          // nessun_segno | vitalita_bassa |
+                                      // moderato | attivo
+}</pre></figure>
+<p>La cadenza di invio è di <strong>5&nbsp;Hz</strong>, identica al campionamento: nessun
+sottocampionamento, così che il CSV esportato dal browser sia equivalente a quello
+prodotto dalla catena seriale (requisito N2).</p>
+<p>Il canale WebSocket gestisce la riconnessione automatica con backoff: se la
+connessione cade, la pagina segnala lo stato e riprende senza perdere le statistiche
+già accumulate.</p>
+<h3><span class="num">6.2.3</span> Struttura della pagina</h3>
+<p>La pagina è organizzata in quattro aree, schematizzate in figura&nbsp;<a href="#fig:webui-layout">6.1</a>.</p>
+<figure class="fig" id="fig:webui-layout"><pre>+-------------------------------------------------------------+
+|  HEADER   * PRESENZA RILEVATA     [dist. 1.45 m]  [REC]     |
++--------------------------+----------------------------------+
+|  A. STATO LIVE           |  B. INDICE DI VITALITA&#x27;          |
+|  radar: MOVING @ 145 cm  |        +--- gauge 0-100 ---+     |
+|  PIR:   ATTIVO           |        |        54         |     |
+|  energia mov.:   72      |        |     &quot;attivo&quot;      |     |
+|  energia still.: 30      |        +-------------------+     |
++--------------------------+----------------------------------+
+|  C. GRAFICI                                                 |
+|  C1: serie temporale energia moving/still + soglia           |
+|  C2: barre per-gate (9 gate x moving/still) = &quot;dov&#x27;e&#x27;&quot;       |
+|  C3: timeline presenza radar vs PIR (confronto visivo)       |
++-------------------------------------------------------------+
+|  D. SESSIONE ED ESPORTAZIONE                                 |
+|  scenario:[______] trial:[__] gt:[0|1]   &lt;- metadati test    |
+|  [Avvia] [Stop] [Scarica CSV] [Reset statistiche]            |
+|  durata 12:34 | radar 97.2
++-------------------------------------------------------------+</pre><figcaption><b>Figura 6.1.</b> Struttura della pagina della dashboard. Il grafico C3 — la timeline
+affiancata di presenza radar e PIR — è l'elemento che rende visivamente immediato
+il risultato del capitolo&nbsp;<a href="#cap:confronto">4</a>.</figcaption></figure>
+<p>Due scelte di progetto meritano una nota.</p>
+<ul><li>Il grafico C3 mostra <strong>radar e PIR affiancati sulla stessa base dei
+        tempi</strong>. È l'elemento più efficace dal punto di vista dimostrativo: un
+        osservatore vede la riga del radar continua e quella del PIR a impulsi
+        isolati mentre una persona sta ferma davanti al sensore. È il risultato
+        della tesi reso visibile in tempo reale.</li><li>L'area D contiene i <strong>metadati sperimentali</strong> (scenario, trial, ground
+        truth) con gli stessi nomi usati dalla catena seriale. In questo modo il CSV
+        scaricato dal browser è direttamente utilizzabile dagli stessi script di
+        analisi, senza conversioni.</li></ul>
+<h3><span class="num">6.2.4</span> Statistiche di sessione</h3>
+<p>Le statistiche sono calcolate <em>nel browser</em> e non sull'ESP32, per non caricare
+il microcontrollore con un compito che non gli è proprio:</p>
+<ul><li>durata della sessione e percentuale di campioni con presenza, separatamente
+        per radar e PIR;</li><li>numero di eventi di attivazione (fronti <span class="math">0 → 1</span>) per ciascun sensore, che
+        è la stima dei falsi positivi in tempo reale;</li><li>distanza minima, media e massima; energia media;</li><li>tempo trascorso dall'ultima rilevazione — l'informazione più rilevante
+        nello scenario di soccorso;</li><li>vitalità: valore corrente, media mobile, minimo e massimo di sessione.</li></ul>
+<h2 id="sec:webui-piano"><span class="num">6.3</span> Piano di realizzazione e criteri di accettazione</h2>
+<p></p>
+<p>Lo sviluppo è organizzato in cinque passi, ciascuno con un criterio di accettazione
+verificabile. La suddivisione serve a garantire che ogni passo produca qualcosa di
+utilizzabile anche se i successivi non vengono completati.</p>
+<ol><li><strong>Server e pagina statica</strong> — l'ESP32 serve una pagina da LittleFS in
+        entrambe le modalità WiFi. <em>Accettazione</em>: la pagina si apre da browser
+        collegandosi all'Access Point del nodo.</li><li><strong>Flusso WebSocket</strong> — invio del messaggio di
+        listato&nbsp;<a href="#lst:ws">2</a> a 5&nbsp;Hz. <em>Accettazione</em>: i valori sulla pagina cambiano
+        insieme al sensore, senza ritardo percepibile e senza accumulo di latenza su
+        dieci minuti di funzionamento.</li><li><strong>Visualizzazione</strong> — stato live, i tre grafici, la gauge di vitalità.
+        <em>Accettazione</em>: le barre per-gate indicano il gate corretto quando il
+        soggetto si sposta di 0,75&nbsp;m.</li><li><strong>Registrazione ed esportazione</strong> — accumulo nel browser ed
+        esportazione CSV. <em>Accettazione</em>: il CSV scaricato dal browser e quello
+        prodotto dalla catena seriale, per la stessa sessione, sono
+        <strong>equivalenti</strong>; gli script di analisi producono le stesse metriche su
+        entrambi. Questo è il test che chiude il requisito N2.</li><li><strong>Indice di vitalità a bordo</strong> — porting dell'algoritmo del
+        capitolo&nbsp;<a href="#cap:vitalita">7</a>. <em>Accettazione</em>: l'indice calcolato sull'ESP32 e
+        quello calcolato in Python sullo stesso CSV coincidono entro l'errore di
+        arrotondamento.</li></ol>
+<h2><span class="num">6.4</span> Riferimenti di progetto</h2>
+<p>Come riferimento di interfaccia è stato esaminato il <em>LD2410
+Configurator</em>&nbsp;<a class="cite" href="#bib">[28]</a>, un configuratore web open source che dialoga
+con il modulo tramite Web Serial e Web Bluetooth. Da esso sono stati ripresi due
+elementi: la rappresentazione a barre delle energie per-gate con la soglia
+sovrapposta, che è il modo più leggibile di mostrare venti canali insieme, e
+l'impostazione “una pagina, nessuna installazione”. Non sono state riprese le
+funzioni di configurazione dei parametri, che nel nostro caso sarebbero controproducenti:
+le soglie devono restare fisse per tutta la campagna (sezione&nbsp;<a href="#sec:soglie">3.6</a>), e un
+pulsante che le modifica dalla dashboard è un rischio, non una funzione.</p>
+<p class="runin"><strong>Avvertenza sulla fonte.</strong>  Il LD2410 Configurator è un progetto di comunità
+e non un prodotto Hi-Link: vale come riferimento di interfaccia e di implementazione,
+non come fonte di dati tecnici sul modulo. Per quelli si è fatto riferimento
+esclusivamente ai documenti ufficiali&nbsp;<a class="cite" href="#bib">[16, 20]</a>.</p>
+<p><span class="todo">[DA FARE: completare con gli screenshot della dashboard realizzata e con l'esito
+del test di accettazione del passo 4 (equivalenza dei due CSV)]</span></p></section>
+<section class="chap"><h1 id="cap:vitalita"><span class="num">7</span> L'indice di vitalità</h1>
+<p></p>
+<blockquote><p>
+Questo capitolo risponde all'obiettivo O6, formulato dal relatore come segue:
+<em>oltre alla presenza sì/no, creare un indice di vitalità — un algoritmo che
+valuti quanto una persona si muove: questa persona si muove 50 su 100, quindi è viva
+o moderatamente viva</em>. È l'obiettivo più avanzato della tesi ed è anche la
+dimostrazione costruttiva che i dati del radar abilitano ciò che con un bit non è
+rappresentabile. Alla data di questa stesura l'algoritmo è specificato e il percorso
+di taratura è definito; la taratura sui dati è in corso.</p></blockquote>
+<h2 id="sec:vitalita-motivazione"><span class="num">7.1</span> Motivazione: dalla presenza al triage</h2>
+<p></p>
+<p>Nel contesto del progetto, la differenza fra “presenza” e “vitalità” è la
+differenza fra due domande distinte dei soccorritori:</p>
+<ol><li><em>C'è qualcuno sotto il banco?</em> — è la domanda di presenza, cui
+        rispondono gli obiettivi O1–O3.</li><li><em>In che condizioni si trova?</em> — si muove attivamente, quindi è
+        cosciente; compie solo micro-movimenti, quindi è ferito o intrappolato ma
+        vivo; oppure non dà segni rilevabili.</li></ol>
+<p>Il PIR non può nemmeno porsi la seconda domanda: la sua uscita è un bit, e come
+mostrato in sezione&nbsp;<a href="#sec:interpretazione-pir">4.3.1</a> quel bit non misura nemmeno la durata del
+movimento. Il radar mmWave sì, perché espone l'<strong>energia riflessa per gate di
+distanza</strong>: una misura continua di <em>quanto</em> si muove ciò che riflette, non solo
+del fatto che si muova.</p>
+<p>L'indice di vitalità è la sintesi di questa informazione in un numero fra 0 e 100,
+leggibile da un operatore non tecnico, accompagnato da una classificazione a quattro
+livelli.</p>
+<h2 id="sec:vitalita-ingressi"><span class="num">7.2</span> Dati di ingresso</h2>
+<p></p>
+<p>L'algoritmo lavora sui campioni a 5&nbsp;Hz prodotti dal logger
+(sezione&nbsp;<a href="#sec:piattaforma">3.4</a>), usando i canali di tabella&nbsp;<a href="#tab:vitalita-ingressi">7.1</a>.</p>
+<figure class="tab" id="tab:vitalita-ingressi"><figcaption><b>Tabella 7.1.</b> Segnali di ingresso dell'indice di vitalità.</figcaption><table><thead><tr><th><strong>Segnale</strong></th><th><strong>Colonna CSV</strong></th><th><strong>Che cosa misura</strong></th></tr></thead><tbody><tr><td>Energia del bersaglio in movimento</td><td><code>moving_energy</code></td><td>intensità del movimento rilevato (0–100)</td></tr><tr><td>Energia per-gate, movimento</td><td><code>menergy_gate0..8</code></td><td>dove avviene il movimento</td></tr><tr><td>Energia per-gate, stazionario</td><td><code>senergy_gate0..8</code></td><td>riflessione del corpo fermo; oscilla con il respiro</td></tr><tr><td>Stato di presenza</td><td><code>radar_presence</code></td><td>condizione di guardia: se nulla, l'indice è forzato a zero</td></tr></tbody></table></figure>
+<p>L'osservazione su cui poggia l'algoritmo è la seguente: una persona <strong>viva ma
+immobile</strong> ha energia in movimento prossima a zero, ma l'energia del suo gate
+<em>oscilla</em> con il respiro nella banda 0,1–0,5&nbsp;Hz. Una stanza vuota ha energia
+costante, a meno del rumore di fondo. La <strong>variabilità</strong> dell'energia è dunque
+il segnale di vita minimo, quello che sta sotto il movimento.</p>
+<p class="runin"><strong>Vincolo importante ereditato dal capitolo&nbsp;<a href="#cap:moduli">3</a>.</strong>  La formulazione
+iniziale dell'algoritmo usava l'energia <em>stazionaria</em> del gate attivo come
+sorgente del termine respiratorio. I risultati di sezione&nbsp;<a href="#sec:senergy-zero">3.5.2</a> e
+sezione&nbsp;<a href="#sec:respiro">4.9</a> impongono una correzione: sotto 1,5&nbsp;m i canali stazionari per-gate
+sono strutturalmente nulli, e a tutte le distanze provate i canali stazionari
+risultano saturi o discordanti mentre i canali <em>in movimento</em> forniscono stime
+concordi e non sature. L'implementazione deve quindi selezionare la sorgente del
+termine respiratorio fra i canali in movimento, o comunque scartare i canali saturi
+e quelli identicamente nulli con criterio esplicito. È un esempio di come la fase di
+caratterizzazione abbia modificato il progetto dell'algoritmo, e non solo confermato
+delle attese.</p>
+<h2 id="sec:vitalita-algoritmo"><span class="num">7.3</span> Algoritmo</h2>
+<p></p>
+<p>L'algoritmo ha due componenti, aggiornate a ogni campione, e una fusione.</p>
+<div class="eqwrap" id="eq:gate-attivo"><span id="eq:vitalita"></span><table class="eq"><tr><td class="eql"><span class="math">
+g<sup>*</sup> </span></td><td class="eqm"><span class="math">= argmax<sub>i</sub>   e<sub>i</sub> </span></td><td class="eqn">gate attivo</td></tr><tr><td class="eql"><span class="math">
+m<sub>k</sub> </span></td><td class="eqm"><span class="math">= (E<sub><span class="mrm">mov</span></sub>,  e<sup><span class="mrm">mov</span></sup><sub>g<sup>*</sup></sub>) </span></td><td class="eqn">movimento istantaneo</td></tr><tr><td class="eql"><span class="math">
+M<sub>k</sub> </span></td><td class="eqm"><span class="math">= α<sub>m</sub>   m<sub>k</sub> + (1-α<sub>m</sub>)  M<sub>k-1</sub> </span></td><td class="eqn">EWMA rapida,  α_m = 0,1</td></tr><tr><td class="eql"><span class="math">
+d<sub>k</sub> </span></td><td class="eqm"><span class="math">= | e<sub>g<sup>*</sup></sub>[k] - e<sub>g<sup>*</sup></sub>[k-1] | </span></td><td class="eqn">variazione tick a tick</td></tr><tr><td class="eql"><span class="math">
+R<sub>k</sub> </span></td><td class="eqm"><span class="math">= α<sub>r</sub>   d<sub>k</sub> + (1-α<sub>r</sub>)  R<sub>k-1</sub> </span></td><td class="eqn">EWMA lenta,  α_r = 0,02</td></tr><tr><td class="eql"><span class="math">
+V<sub>k</sub> </span></td><td class="eqm"><span class="math">= <span class="mrm">clamp</span>(M<sub>k</sub> + k<sub>r</sub> R<sub>k</sub>,  0,  100) </span></td><td class="eqn">indice di vitalità</td></tr></table><span class="eqnum">(7.1)</span></div>
+<p>con la condizione di guardia <span class="math">V<sub>k</sub> = 0</span> se <code>radar_presence</code> <span class="math">= 0</span>.</p>
+<h3><span class="num">7.3.1</span> Razionale delle scelte</h3>
+<p>Ogni scelta ha una motivazione, ed è utile esplicitarla perché l'algoritmo deve
+girare identico in Python e su microcontrollore.</p>
+<dl><dt>Media esponenziale e non finestra mobile</dt><dd>La EWMA costa <span class="math">O(1)</span> in memoria
+    (due variabili in virgola mobile) e gira senza modifiche sull'ESP32; una finestra
+    mobile richiederebbe un buffer circolare e darebbe risultati equivalenti. Poiché
+    l'algoritmo deve essere lo stesso in Python e in C++ per essere verificabile
+    (passo&nbsp;5 di sezione&nbsp;<a href="#sec:webui-piano">6.3</a>), la formulazione più semplice è quella
+    giusta.</dd><dt>Due costanti di tempo diverse</dt><dd>Il movimento deve reagire in circa 2&nbsp;s, che a
+    5&nbsp;Hz corrisponde a <span class="math">α<sub>m</sub> = 0,1</span>; il respiro è un segnale lento e va
+    integrato su circa 10&nbsp;s (<span class="math">α<sub>r</sub> = 0,02</span>) per emergere dal rumore. Un'unica
+    costante non può servire entrambi gli scopi.</dd><dt>Massimo fra energia del bersaglio e del gate</dt><dd>Le due grandezze talvolta
+    divergono, per effetto dei filtri interni del modulo. Prendere il massimo rende
+    l'indice <em>conservativo verso il falso “nessun segno”</em>, che è l'errore più
+    grave nel dominio applicativo: dichiarare vuoto un banco sotto cui c'è qualcuno.</dd><dt>Il coefficiente <span class="math">k<sub>r</sub></span></dt><dd>La variazione <span class="math">d<sub>k</sub></span> è numericamente piccola, di
+    qualche unità di energia; <span class="math">k<sub>r</sub></span> la riporta nella scala 10–30 attesa per la classe
+    “vitalità bassa”. È il parametro principale da tarare, con un intervallo
+    iniziale plausibile fra 5 e 15.</dd></dl>
+<h2 id="sec:vitalita-classi"><span class="num">7.4</span> Classificazione</h2>
+<p></p>
+<figure class="tab" id="tab:vitalita-classi"><figcaption><b>Tabella 7.2.</b> Classi dell'indice di vitalità e loro significato operativo. Le soglie
+riportate sono iniziali e vanno tarate sui dati (sezione&nbsp;<a href="#sec:vitalita-taratura">7.5</a>).</figcaption><table><thead><tr><th><strong>Indice</strong></th><th><strong>Classe</strong></th><th><strong>Significato operativo (triage)</strong></th></tr></thead><tbody><tr><td>0–9</td><td><code>nessun_segno</code></td><td>nessuna presenza, o nessuna variazione rilevabile</td></tr><tr><td>10–39</td><td><code>vitalita_bassa</code></td><td>vivo: respiro e micro-movimenti, non si muove</td></tr><tr><td>40–69</td><td><code>moderato</code></td><td>movimenti limitati ma attivi</td></tr><tr><td>70–100</td><td><code>attivo</code></td><td>movimento pieno, persona reattiva</td></tr></tbody></table></figure>
+<p class="runin"><strong>Avvertenza da riportare anche nella tesi finale.</strong>  Le classi sono un
+supporto informativo al triage e <strong>non costituiscono una diagnosi medica</strong>. In
+particolare <code>nessun_segno</code> significa “il sensore non rileva variazioni”, non
+“persona deceduta”: la persona può essere fuori portata, schermata da materiale
+metallico, oppure priva di sensi ma viva. La formulazione dell'etichetta, in
+un'interfaccia destinata a soccorritori, è essa stessa una scelta di progetto con
+implicazioni: un'etichetta che suggerisca una conclusione clinica sarebbe
+inappropriata.</p>
+<h2 id="sec:vitalita-taratura"><span class="num">7.5</span> Percorso di sviluppo e taratura</h2>
+<p></p>
+<p>La regola metodologica adottata è: <strong>l'algoritmo si sviluppa su PC, sui file
+CSV, dove si può iterare in secondi</strong>. Il porting su ESP32 avviene solo a soglie
+validate. Il percorso è il seguente.</p>
+<ol><li><strong>Raccolta dei quattro scenari</strong>, cinque trial ciascuno:
+        <code>vitalita_0</code> (stanza vuota), <code>vitalita_respiro</code> (soggetto
+        immobile), <code>vitalita_micro</code> (micro-movimenti: mano, testa, busto),
+        <code>vitalita_attivo</code> (movimento pieno). Distanza <span class="math">≥ 1,5</span>&nbsp;m per
+        evitare la saturazione (sezione&nbsp;<a href="#sec:saturazione">3.5.1</a>).</li><li><strong>Prototipo Python</strong> (<code>analisi/vitalita_proto.py</code>): implementa
+        le equazioni (<a href="#eq:gate-attivo">7.1</a>)–(<a href="#eq:vitalita">7.1</a>) e produce la serie
+        <span class="math">V(t)</span> per ogni trial.</li><li><strong>Taratura</strong> di <span class="math">α<sub>m</sub></span>, <span class="math">α<sub>r</sub></span>, <span class="math">k<sub>r</sub></span> e delle tre soglie in modo
+        che i quattro scenari cadano nelle quattro classi attese. Il metodo scelto è
+        semplice e difendibile: si osservano le distribuzioni di <span class="math">V</span> per scenario
+        (diagrammi a scatola) e si collocano le soglie negli intervalli vuoti fra le
+        distribuzioni. Se le distribuzioni si sovrappongono, la sovrapposizione è
+        essa stessa un risultato da riportare, e indica che quei due scenari non sono
+        separabili con questo indice.</li><li><strong>Validazione su trial non usati per la taratura</strong>: taratura su
+        T01–T03, validazione su T04–T05, con matrice di confusione
+        scenario/classe. La metrica finale è la percentuale di campioni classificati
+        nella classe attesa, per scenario.</li><li><strong>Porting</strong> in <code>vitality.h</code> con le stesse costanti, e verifica
+        dal vivo nella dashboard (passo&nbsp;5 di sezione&nbsp;<a href="#sec:webui-piano">6.3</a>).</li></ol>
+<p>Il passo&nbsp;4 fornisce il numero da riportare nella tesi: <em>l'indice classifica
+correttamente l'<span class="math">X %</span> dei campioni su scenari mai visti in fase di taratura</em>. La
+separazione fra trial di taratura e trial di validazione è ciò che distingue questo
+risultato da una descrizione dei dati su cui l'algoritmo è stato costruito.</p>
+<p><span class="todo">[DA FARE: completare con i risultati della taratura: boxplot per scenario, valori
+scelti dei parametri, matrice di confusione sui trial di validazione]</span></p>
+<h2 id="sec:vitalita-limiti"><span class="num">7.6</span> Casi limite e comportamenti attesi</h2>
+<p></p>
+<figure class="tab" id="tab:vitalita-casilimite"><figcaption><b>Tabella 7.3.</b> Casi limite dell'indice di vitalità e comportamento previsto.</figcaption><table><thead><tr><th><strong>Situazione</strong></th><th><strong>Comportamento atteso</strong></th><th><strong>Note</strong></th></tr></thead><tbody><tr><td>La persona esce dal campo</td><td>indice a 0 entro il timeout del radar (<span class="math">~</span>5&nbsp;s)</td><td>forzatura sulla condizione di presenza</td></tr><tr><td>La persona si addormenta</td><td>da <code>attivo</code> a <code>vitalita_bassa</code> in
+  30–60&nbsp;s</td><td>le medie esponenziali decadono con le loro costanti</td></tr><tr><td>Ventilatore o tenda in movimento</td><td>possibile falso <code>moderato</code></td><td>limite da dichiarare; mitigazione tramite le soglie per-gate del radar</td></tr><tr><td>Due persone</td><td>indice riferito al gate dominante</td><td>coerente con il limite mono-bersaglio del LD2410B</td></tr><tr><td>Persona oltre 4–5&nbsp;m</td><td>respiro non più rilevabile, quindi sottostima</td><td>va documentata la distanza massima utile per la classe
+  <code>vitalita_bassa</code></td></tr><tr><td>Persona a meno di 1,5&nbsp;m</td><td>canali stazionari per-gate non disponibili</td><td>usare i canali in movimento (sezione&nbsp;<a href="#sec:senergy-zero">3.5.2</a>)</td></tr></tbody></table></figure>
+<h2><span class="num">7.7</span> Estensioni possibili</h2>
+<p>Tre estensioni sono state individuate ma non sono necessarie per l'obiettivo, e
+vanno affrontate solo se il tempo lo consente.</p>
+<ol><li>Sostituire il termine respiratorio a media esponenziale con la
+        <strong>potenza in banda 0,1–0,5&nbsp;Hz</strong> calcolata su una finestra scorrevole di
+        30&nbsp;s, cioè una FFT ridotta eseguita a bordo. È più robusta agli artefatti ma
+        computazionalmente più costosa, e richiede un buffer: sarebbe una versione&nbsp;2.</li><li><strong>Isteresi sulle classi</strong>: una classe cambia solo dopo <span class="math">N</span> secondi di
+        stabilità, per evitare lo sfarfallio dell'etichetta nell'interfaccia.</li><li><strong>Indicatore di confidenza</strong> affiancato all'indice, funzione della
+        stabilità del gate attivo: un indice calcolato su un gate che cambia
+        continuamente è meno affidabile e sarebbe onesto dichiararlo.</li></ol></section>
+<section class="chap"><h1 id="cap:conclusioni"><span class="num">8</span> Conclusioni e sviluppi futuri</h1>
+<p></p>
+<h2><span class="num">8.1</span> Risposta alla domanda di partenza</h2>
+<p>La domanda con cui si apre questa tesi era: <em>il radar mmWave può sostituire o
+affiancare il sensore PIR nel nodo DIPME-DEVICE del progetto UPRISE/SAFE?</em></p>
+<p>La risposta, sulla base dei dati raccolti, è <strong>affiancare, non sostituire</strong>, e
+si articola in tre affermazioni sostenute da misure.</p>
+<p class="runin"><strong>1. Sul caso d'uso che interessa il progetto, il PIR non funziona — e
+non per difetto ma per costruzione.</strong>  Con un soggetto immobile a 2,30&nbsp;m, su cinque
+trial da cinque minuti, il PIR ha mancato la presenza nel
+<span class="math">99,78 ± 0,49 %</span> dei campioni, con zero rilevamenti in quattro trial su
+cinque; il radar l'ha rilevata nel <span class="math">100 %</span> dei 7554 campioni
+(sezione&nbsp;<a href="#sec:persona-ferma">4.3</a>). Il risultato più significativo è però un altro: il PIR
+fallisce anche con il soggetto <em>in movimento sul posto</em>, con
+<span class="math">80,5 %</span> di falsi negativi a 1&nbsp;m e <span class="math">100 %</span> oltre i 2&nbsp;m
+(sezione&nbsp;<a href="#sec:pir-movimento">4.4</a>). Poiché una persona intrappolata si muove sul posto e non
+attraversa la stanza, l'ipotesi implicita “il PIR non vede chi è fermo ma vede chi
+si muove” è, nello scenario di interesse, falsa. Questa è la conclusione più
+rilevante per il progetto.</p>
+<p class="runin"><strong>2. Il radar non è solo più affidabile: fornisce grandezze diverse.</strong>  La
+distanza è misurata con linearità eccellente (<span class="math">R<sup>2</sup> = 0,99965</span> su 25 trial fra 1 e
+5&nbsp;m) e con un errore riducibile sotto i 5&nbsp;cm applicando un singolo coefficiente
+correttivo (sezione&nbsp;<a href="#sec:distanza">4.5</a>). Le venti serie di energia dell'engineering mode
+consentono di estrarre il ritmo respiratorio di un soggetto immobile, con
+concordanza fra canali indipendenti (sezione&nbsp;<a href="#sec:respiro">4.9</a>), e sono la base
+dell'indice di vitalità (capitolo&nbsp;<a href="#cap:vitalita">7</a>). Nessuna di queste grandezze è
+rappresentabile con l'uscita a un bit di un PIR. E il vantaggio non si paga in
+affidabilità: su 7&nbsp;ore di stanza vuota entrambi i sensori hanno prodotto zero falsi
+positivi, con limite superiore al 95&thinsp;% di <span class="math">≤ 0,43</span> eventi/h
+(sezione&nbsp;<a href="#sec:falsi-positivi">4.2</a>).</p>
+<p class="runin"><strong>3. Il consumo esclude la sostituzione secca e indica l'architettura.</strong>  Il
+radar assorbe 80&nbsp;mA contro i meno di 50&nbsp;µ A del PIR: tre ordini di grandezza
+(capitolo&nbsp;<a href="#cap:consumi">5</a>). Un nodo integrato in un arredo deve restare in attesa per anni
+a batteria, e con il radar sempre acceso l'autonomia si misura in ore. La soluzione
+non è scegliere fra i due sensori ma metterli in sequenza temporale, secondo
+l'architettura ibrida di sezione&nbsp;<a href="#sec:architettura-ibrida">5.4</a>: il PIR come guardiano a
+microampere in “tempo di pace”, il radar mmWave come strumento di misura durante la
+finestra di emergenza, con <em>duty-cycling</em> per estendere l'autonomia oltre le 72
+ore. Il PIR non è un concorrente del radar: è ciò che decide quando accenderlo.</p>
+<p>
+
+La raccomandazione operativa per il progetto è quindi di <strong>aggiungere</strong> un
+modulo mmWave al DIPME-DEVICE, mantenendo il PIR nel ruolo di sorgente di risveglio,
+e di attivare il radar sul trigger di modalità terremoto.</p>
+<h2><span class="num">8.2</span> Contributi consolidati</h2>
+<p>Riassumendo quanto prodotto:</p>
+<ul><li>una piattaforma di misura riproducibile su ESP32 che campiona radar e PIR in
+        modo sincrono a 5,00&nbsp;Hz esatti con accesso ai dati per-gate, con un formato
+        CSV unico condiviso da firmware, acquisizione, analisi e interfaccia web;</li><li>la caratterizzazione quantitativa, con cinque ripetizioni per scenario, del
+        divario PIR/mmWave sulla persona ferma e sulla persona in movimento sul
+        posto;</li><li>la calibrazione della misura di distanza del LD2410B e l'individuazione di un
+        errore di scala sistematico correggibile con un coefficiente;</li><li>la dimostrazione di misurabilità del respiro con hardware consumer, con
+        l'individuazione documentata di quali canali siano effettivamente
+        utilizzabili e perché gli altri non lo siano;</li><li>la specifica di un indice di vitalità implementabile su microcontrollore, con
+        un percorso di taratura e validazione su trial separati;</li><li>l'analisi dei consumi e l'argomentazione dell'architettura ibrida.</li></ul>
+<h3><span class="num">8.2.1</span> Risultati metodologici collaterali</h3>
+<p>Tre esiti non previsti meritano una menzione, perché sono il tipo di informazione
+che raramente entra nella documentazione ma che ha valore per chi ripete il lavoro.</p>
+<ol><li><strong>Non fidarsi degli strumenti di configurazione da PC per i valori
+        numerici.</strong> Lo strumento ufficiale <code>LD2410 Tool</code> riporta sensibilità
+        pari a 100 su tutti i gate; la lettura via UART restituisce la scala di
+        fabbrica decrescente, coerente con il protocollo e con il comportamento
+        osservato (sezione&nbsp;<a href="#sec:identita">3.1.5</a>). Per i parametri va usata la lettura diretta
+        dal modulo.</li><li><strong>Fare riferimento alla tabella di piedinatura del datasheet, non
+        all'ordine apparente dei fili.</strong> Un'inversione dei due fili della seriale ha
+        prodotto tre settimane di lavoro nella convinzione che il modulo fosse
+        guasto (sezione&nbsp;<a href="#sec:cablaggio">3.1.2</a>).</li><li><strong>Verificare la qualità dei dati prima di analizzarli.</strong> La saturazione
+        dei canali di energia, i canali stazionari strutturalmente nulli e la coda di
+        presenza (sezione&nbsp;<a href="#sec:insidie">3.5</a>) sono tutti fenomeni che, non riconosciuti,
+        producono conclusioni sbagliate anziché errori evidenti: un canale saturo non
+        segnala il proprio stato, restituisce semplicemente numeri privi di
+        informazione. Da qui la scelta di eseguire un controllo di qualità
+        automatico su ogni file prima di usarlo.</li></ol>
+<h2><span class="num">8.3</span> Lavoro rimanente</h2>
+<p>Per completezza si elencano le attività pianificate e non ancora completate alla
+data di questa stesura, con la sezione in cui sono collocate:</p>
+<ul><li>latenze di rilevamento e di rilascio con la convenzione dell'evento a
+        istante noto (sezione&nbsp;<a href="#sec:latenza">4.6</a>);</li><li>scenario “persona sotto il banco” a distanza inferiore al metro
+        (sezione&nbsp;<a href="#sec:sotto-banco">4.7</a>);</li><li>penetrazione degli ostacoli: cartongesso, legno, vetro, plastica
+        (sezione&nbsp;<a href="#sec:ostacoli">4.8</a>);</li><li>prova del respiro con ritmo imposto da metronomo e controllo negativo su
+        stanza vuota (sezione&nbsp;<a href="#sec:respiro-metronomo">4.9.4</a>);</li><li>riconfigurazione del LD2420 in modalità binaria per il confronto quantitativo
+        fra i due radar (sezione&nbsp;<a href="#sec:ld2420-risultati">4.10</a>);</li><li>implementazione della dashboard e test di equivalenza dei due CSV
+        (sezione&nbsp;<a href="#sec:webui-piano">6.3</a>);</li><li>taratura e validazione dell'indice di vitalità
+        (sezione&nbsp;<a href="#sec:vitalita-taratura">7.5</a>).</li></ul>
+<h2><span class="num">8.4</span> Sviluppi futuri</h2>
+<p class="runin"><strong>Verso il dimostratore reale.</strong>  La campagna è stata svolta in ambiente
+domestico con un solo soggetto. Il passo successivo naturale è la ripetizione degli
+scenari chiave nei dimostratori del progetto — il Polo Lodovici di Informatica e
+l'IIS Fermi Sacconi Ceci di Ascoli Piceno — dove dimensioni dell'ambiente,
+materiali, riflessioni multiple e presenza di più persone sono realistici. Le
+domande aperte sono due: il tasso di falsi positivi in un'aula con arredi metallici,
+e il comportamento con più persone contemporaneamente presenti, che è il limite
+strutturale del LD2410B (sezione&nbsp;<a href="#sec:discussione">4.11</a>).</p>
+<p class="runin"><strong>Il montaggio sulla lamiera forata.</strong>  È la questione di progetto più
+concreta e va posta ai progettisti dell'arredo. Il piano del banco è rinforzato con
+lamiera forata antisfondamento, e il metallo è il materiale peggiore per un radar a
+24&nbsp;GHz. Tre configurazioni sono da valutare sperimentalmente: sensore montato
+<em>sotto</em> il piano e quindi rivolto verso il volume di rifugio (ipotesi
+preferibile); sensore montato <em>sopra</em> il piano, che richiede di verificare se il
+diametro e il passo dei fori consentono la trasmissione a 24&nbsp;GHz — una griglia
+metallica con fori molto più piccoli della lunghezza d'onda di 12,5&nbsp;mm si comporta
+come uno schermo continuo, quindi la geometria della perforazione è determinante;
+sensore integrato nel telaio laterale. Questa verifica è un'estensione di
+sezione&nbsp;<a href="#sec:ostacoli">4.8</a> con il materiale reale.</p>
+<p class="runin"><strong>Selettività fra banchi adiacenti.</strong>  Nel banco UPRISE i banchi sono
+strutturalmente connessi fra loro, e un radar con portata di 6&nbsp;m vede diversi banchi.
+Il problema si affronta limitando il gate massimo via UART, funzione già
+implementata e verificata nel corredo software di questa tesi. La misura da fare è
+il tasso di attribuzione corretta con due volumi di rifugio adiacenti, che è
+l'informazione necessaria a una mappa di calore utile ai soccorritori: sapere che
+c'è qualcuno in un'aula è molto meno utile che sapere sotto quale banco.</p>
+<p class="runin"><strong>Integrazione con il nodo DIPME e la rete LoRa.</strong>  L'indice di vitalità è
+progettato per essere calcolato a bordo e occupa pochi byte: è esattamente il tipo di
+informazione trasmissibile su LoRa, dove il vincolo è la dimensione del messaggio e
+il duty cycle. Un messaggio che riporti presenza, distanza, classe di vitalità e
+istante dell'ultima rilevazione sta in pochi byte ed è direttamente rappresentabile
+sulla mappa di calore dei soccorritori. L'integrazione con il DIPME-DEVICE e con il
+Digital Twin del progetto&nbsp;<a class="cite" href="#bib">[2]</a> è il proseguimento naturale del
+lavoro.</p>
+<p class="runin"><strong>Analisi in frequenza a bordo.</strong>  L'estensione dell'indice di vitalità con
+una FFT calcolata sull'ESP32 su finestra scorrevole di 30&nbsp;s renderebbe il termine
+respiratorio più robusto agli artefatti rispetto alla media esponenziale attuale, a
+costo di un buffer e di qualche millisecondo di calcolo per finestra: entrambi
+disponibili sull'hardware in uso.</p>
+<p class="runin"><strong>Confronto diretto con l'UWB del DIPME.</strong>  Il nodo esistente monta già un
+sensore UWB. Un confronto sperimentale a tre — PIR, mmWave, UWB — sullo stesso
+scenario e con la stessa metodologia sarebbe il completamento naturale di questo
+lavoro, e trasformerebbe l'argomentazione di sezione&nbsp;<a href="#sec:uwb">2.3.1</a>, oggi basata su
+datasheet e letteratura, in un risultato misurato.</p></section>
+<section class="chap"><h1 id="app:protocollo"><span class="num">A</span> Protocollo seriale del LD2410B</h1>
+<p></p>
+<p>Riferimento: <em>LD2410B Serial communication protocol</em>
+V1.07&nbsp;<a class="cite" href="#bib">[20]</a>. Questa appendice riporta gli elementi effettivamente
+usati dal firmware realizzato, per rendere il lavoro riproducibile senza dover
+ricostruire il protocollo dal documento originale.</p>
+<h2><span class="num">A.1</span> Parametri della porta seriale</h2>
+<div class="plaintab"><table><tbody><tr><td>Baud rate</td><td>256000 (fisso, non modificabile senza comando <code>0x00A1</code>)</td></tr><tr><td>Formato</td><td>8 bit di dati, nessuna parità, 1 bit di stop (8N1)</td></tr><tr><td>Livelli</td><td>3,3&nbsp;V TTL</td></tr></tbody></table></div>
+<p>Il baud di 256000 richiede una UART hardware: sull'ESP32 si usa <code>Serial2</code>
+(GPIO25 come RX, GPIO26 come TX nella nostra configurazione). Un'implementazione a
+software non regge questa velocità.</p>
+<h2><span class="num">A.2</span> Struttura dei frame</h2>
+<h3><span class="num">A.2.1</span> Frame di comando (dall'host al modulo)</h3>
+<div class="plaintab"><table><thead><tr><th><strong>Campo</strong></th><th><strong>Lunghezza</strong></th><th><strong>Valore</strong></th></tr></thead><tbody><tr><td>Intestazione</td><td>4 byte</td><td><code>FD FC FB FA</code></td></tr><tr><td>Lunghezza dati</td><td>2 byte</td><td>little-endian</td></tr><tr><td>Parola di comando</td><td>2 byte</td><td>little-endian</td></tr><tr><td>Valore del comando</td><td>variabile</td><td>dipende dal comando</td></tr><tr><td>Chiusura</td><td>4 byte</td><td class="num"><code>04 03 02 01</code></td></tr></tbody></table></div>
+<p>Il modulo risponde con un frame della stessa struttura, in cui la parola di comando
+ha il bit più significativo posto a uno, seguita da uno stato (zero = successo) e
+dagli eventuali dati di risposta.</p>
+<h3><span class="num">A.2.2</span> Frame di dati (dal modulo all'host)</h3>
+<div class="plaintab"><table><thead><tr><th><strong>Campo</strong></th><th><strong>Lunghezza</strong></th><th><strong>Valore</strong></th></tr></thead><tbody><tr><td>Intestazione</td><td>4 byte</td><td><code>F4 F3 F2 F1</code></td></tr><tr><td>Lunghezza dati</td><td>2 byte</td><td>little-endian</td></tr><tr><td>Tipo di dato</td><td>1 byte</td><td><code>0x01</code> = engineering mode, <code>0x02</code> = normale</td></tr><tr><td>Testa</td><td>1 byte</td><td><code>0xAA</code></td></tr><tr><td>Stato del bersaglio</td><td>1 byte</td><td>maschera: <code>0x01</code> in movimento, <code>0x02</code> stazionario</td></tr><tr><td>Distanza in movimento</td><td>2 byte</td><td>cm, little-endian</td></tr><tr><td>Energia in movimento</td><td>1 byte</td><td>0–100</td></tr><tr><td>Distanza stazionaria</td><td>2 byte</td><td>cm, little-endian</td></tr><tr><td>Energia stazionaria</td><td>1 byte</td><td>0–100</td></tr><tr><td>Distanza di rilevamento</td><td>2 byte</td><td>cm, little-endian</td></tr><tr><td>3@l@<em>solo in engineering mode:</em></td></tr><tr><td>Gate massimo movimento</td><td>1 byte</td><td></td></tr><tr><td>Gate massimo stazionario</td><td>1 byte</td><td></td></tr><tr><td>Energie per-gate movimento</td><td>9 byte</td><td>gate 0–8, valori 0–100</td></tr><tr><td>Energie per-gate stazionario</td><td>9 byte</td><td>gate 0–8, valori 0–100</td></tr><tr><td>Sensore di luce</td><td>1 byte</td><td>0–255</td></tr><tr><td>Stato del pin OUT</td><td>1 byte</td><td></td></tr><tr><td>3@l@</td></tr><tr><td>Coda</td><td>1 byte</td><td><code>0x55</code></td></tr><tr><td>Controllo</td><td>1 byte</td><td><code>0x00</code></td></tr><tr><td>Chiusura</td><td>4 byte</td><td><code>F8 F7 F6 F5</code></td></tr></tbody></table></div>
+<h2><span class="num">A.3</span> Comandi utilizzati</h2>
+<div class="plaintab"><table><thead><tr><th><strong>Parola</strong></th><th><strong>Funzione</strong></th><th><strong>Note d'uso</strong></th></tr></thead><tbody><tr><td><code>0x00FF</code></td><td>entra in configurazione</td><td>obbligatorio prima di ogni altro
+  comando; valore <code>0x0001</code></td></tr><tr><td><code>0x00FE</code></td><td>esce dalla configurazione</td><td>il modulo riprende a inviare frame di
+  dati</td></tr><tr><td><code>0x0062</code></td><td>attiva engineering mode</td><td>va inviato dentro la modalità
+  configurazione</td></tr><tr><td><code>0x0063</code></td><td>disattiva engineering mode</td><td></td></tr><tr><td><code>0x00A0</code></td><td>legge la versione firmware</td><td>restituisce tipo e versione
+  (nel nostro caso 2.44.25070917)</td></tr><tr><td><code>0x00A5</code></td><td>legge il MAC Bluetooth</td><td></td></tr><tr><td><code>0x0061</code></td><td>legge i parametri correnti</td><td>restituisce risoluzione, gate massimi,
+  timeout e le 9+9 soglie; <strong>è la lettura da usare per i parametri</strong>, non lo
+  strumento da PC</td></tr><tr><td><code>0x0060</code></td><td>imposta i parametri</td><td>usato per limitare il gate massimo nella prova
+  di selettività spaziale</td></tr><tr><td><code>0x00AA</code></td><td>imposta la risoluzione di distanza</td><td>0,75&nbsp;m oppure 0,20&nbsp;m per gate</td></tr><tr><td><code>0x000B</code></td><td>auto-calibrazione del rumore di fondo</td><td>disponibile dal firmware
+  V2.44&nbsp;<a class="cite" href="#bib">[21]</a></td></tr></tbody></table></div>
+<h2><span class="num">A.4</span> Regola di rilevamento</h2>
+<p>Dal protocollo V1.07, §1.2.2: il bersaglio in un gate è riconosciuto
+<strong>solo se l'energia del gate supera la soglia configurata per quel gate</strong>. Da
+questa regola derivano due fatti osservati sperimentalmente:</p>
+<ul><li>i canali stazionari dei gate 0 e 1, che hanno soglia di fabbrica pari a&nbsp;0 e
+        energia riportata sempre nulla, sono disattivati per costruzione
+        (sezione&nbsp;<a href="#sec:senergy-zero">3.5.2</a>);</li><li>le soglie influiscono sulla <em>decisione</em> di rilevamento, non sul valore
+        di energia riportato: non possono quindi risolvere la saturazione
+        (sezione&nbsp;<a href="#sec:saturazione">3.5.1</a>).</li></ul>
+<h2><span class="num">A.5</span> Auto-calibrazione del firmware V2.44</h2>
+<p>Il documento delle novità del firmware V2.44&nbsp;<a class="cite" href="#bib">[21]</a> descrive il
+rilevamento automatico del rumore di fondo, che tara le soglie di movimento e
+stazionarie. La procedura richiede 10&nbsp;s per uscire dal campo del sensore più 60&nbsp;s di
+misura, per un totale di 70&nbsp;s da trascorrere fuori dalla portata del modulo, e
+l'applicazione mobile in versione adeguata (Android <span class="math">≥</span> V1.5.12 oppure
+iOS <span class="math">≥</span> V1.5.4).</p>
+<p>Due precisazioni utili, entrambe verificate:</p>
+<ul><li>la funzione “Detect noise floor” presente nella schermata dei parametri
+        dell'applicazione è <em>soltanto</em> una funzione di visualizzazione: mostra i
+        valori di rumore misurati ma non li applica come soglie. Non va confusa con
+        l'auto-calibrazione;</li><li>il documento non descrive alcuna procedura di aggiornamento del firmware, e
+        né lo strumento da PC né l'applicazione mobile offrono una funzione di flash.
+        La versione del firmware è quindi da considerare un dato dell'esemplare.</li></ul></section>
+<section class="chap"><h1 id="app:codice"><span class="num">B</span> Software realizzato</h1>
+<p></p>
+<p>Questa appendice documenta l'organizzazione del software prodotto per la tesi e i
+comandi con cui è stato usato. I listati completi non sono riportati integralmente:
+si indicano struttura, scelte implementative rilevanti e modalità d'uso.</p>
+<h2><span class="num">B.1</span> Organizzazione del repository</h2>
+<div class="plaintab"><table><thead><tr><th><strong>Percorso</strong></th><th><strong>Contenuto</strong></th></tr></thead><tbody><tr><td><code>firmware/ld2410b_logger/</code></td><td>logger CSV a 5&nbsp;Hz con engineering mode e
+  lettura del PIR — è il firmware usato per tutta la campagna</td></tr><tr><td><code>firmware/test00_ld2410_info/</code></td><td>lettura dei parametri del modulo via
+  UART: firmware, MAC, soglie, gate, timeout</td></tr><tr><td><code>firmware/test01_ld2410_base/</code></td><td>sketch diagnostico con auto-scan del baud
+  rate e stampa dei byte grezzi</td></tr><tr><td><code>firmware/test03_pir_base/</code></td><td>verifica del PIR e misura della durata degli
+  impulsi</td></tr><tr><td><code>firmware/test04_set_gate/</code></td><td>configurazione del gate massimo per la prova
+  di selettività spaziale</td></tr><tr><td><code>firmware/ld2420_monitor/</code></td><td>lettura del LD2420 in modalità ASCII</td></tr><tr><td><code>HLK-LD2410x/acquire.py</code></td><td>acquisizione dalla seriale con metadati
+  sperimentali (versione adattata)</td></tr><tr><td><code>analisi/verifica_engineering.py</code></td><td>controllo di qualità dei file CSV</td></tr><tr><td><code>analisi/analizza_test.py</code></td><td>metriche di confronto e aggregazione per
+  scenario</td></tr><tr><td><code>analisi/analizza_respiro.py</code></td><td>analisi in frequenza e ricerca del canale
+  migliore</td></tr></tbody></table></div>
+<h2><span class="num">B.2</span> Il logger</h2>
+<h3><span class="num">B.2.1</span> Scelte implementative rilevanti</h3>
+<dl><dt>Periodo fisso e non ritardo fisso</dt><dd>Il ciclo principale calcola l'istante del
+    prossimo campione anziché attendere un intervallo dopo l'elaborazione. È la
+    ragione per cui la cadenza misurata è di 200&nbsp;ms esatti su tutti gli intervalli,
+    senza deriva: requisito necessario per l'analisi in frequenza.</dd><dt>Lettura del PIR nello stesso frame</dt><dd>Il valore del PIR è campionato
+    immediatamente prima di comporre la riga CSV, quindi i due sensori condividono la
+    base dei tempi per costruzione.</dd><dt>Engineering mode all'avvio</dt><dd>Il firmware entra in configurazione, attiva
+    l'engineering mode, esce dalla configurazione e verifica che i frame ricevuti
+    siano del tipo esteso, segnalando l'esito sulla seriale. Un fallimento silenzioso
+    produrrebbe file senza colonne per-gate scoperti solo in fase di analisi.</dd><dt>Intestazione stampata una sola volta</dt><dd>L'intestazione CSV è stampata in
+    <code>setup()</code>. Poiché il reset all'apertura della porta non è garantito, lo
+    script di acquisizione la ricostruisce dal numero di colonne (si veda oltre).</dd></dl>
+<h3><span class="num">B.2.2</span> Formato di uscita</h3>
+<figure class="lst"><figcaption><b>Listato 2.</b> Intestazione CSV completa in engineering mode, 29
+colonne.</figcaption><pre>timestamp_ms,radar_presence,moving_target,stationary_target,
+moving_distance_cm,stationary_distance_cm,moving_energy,stationary_energy,
+pir_presence,
+menergy_gate0,menergy_gate1,menergy_gate2,menergy_gate3,menergy_gate4,
+menergy_gate5,menergy_gate6,menergy_gate7,menergy_gate8,
+senergy_gate0,senergy_gate1,senergy_gate2,senergy_gate3,senergy_gate4,
+senergy_gate5,senergy_gate6,senergy_gate7,senergy_gate8,
+light_level,out_level</pre></figure>
+<p>Le prime nove colonne coincidono con quelle del repository di
+riferimento&nbsp;<a class="cite" href="#bib">[24]</a>, per compatibilità.</p>
+<h2><span class="num">B.3</span> Acquisizione</h2>
+<h3><span class="num">B.3.1</span> Ambiente</h3>
+<figure class="lst"><figcaption><b>Listato 2.</b> Preparazione dell'ambiente Python.</figcaption><pre>cd HLK-LD2410x
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install pyserial numpy
+mkdir data</pre></figure>
+<h3><span class="num">B.3.2</span> Uso</h3>
+<figure class="lst"><figcaption><b>Listato 2.</b> Esempio di acquisizione di un trial.</figcaption><pre>python acquire.py --port COM3 --duration 300 ^
+  --output data/fermo_seduto_T01.csv ^
+  --scenario fermo_seduto --trial T01 ^
+  --ground_truth_presence 1 --ground_truth_state still</pre></figure>
+<p>Lo script aggiunge a ogni riga le colonne <code>pc_time_s</code>,
+<code>group_id</code>, <code>trial_id</code>, <code>scenario</code>,
+<code>ground_truth_presence</code>, <code>ground_truth_state</code>.</p>
+<h3><span class="num">B.3.3</span> La modifica necessaria</h3>
+<p>La versione originale scrive righe solo dopo aver riconosciuto l'intestazione
+stampata dall'ESP32 in <code>setup()</code>. Se il reset all'apertura della porta non
+scatta, il file risulta <strong>vuoto senza alcun messaggio</strong>. La versione adattata
+ricostruisce l'intestazione dal numero di colonne della prima riga di dati:</p>
+<div class="plaintab"><table><thead><tr><th><strong>Colonne</strong></th><th><strong>Interpretazione</strong></th></tr></thead><tbody><tr><td class="num">9</td><td>modalità base</td></tr><tr><td class="num">27</td><td>engineering mode</td></tr><tr><td class="num">29</td><td>engineering mode con sensore di luce e stato OUT</td></tr></tbody></table></div>
+<h2><span class="num">B.4</span> Script di analisi</h2>
+<h3><span class="num">B.4.1</span> Controllo di qualità</h3>
+<pre>python analisi/verifica_engineering.py data/fermo_seduto_T01.csv</pre>
+<p>Verifica ed esce con diagnostica su: cadenza effettiva e jitter, presenza delle
+colonne per-gate, percentuale di campioni saturi per canale, coerenza fra gate di
+picco e distanza riportata, rumore di fondo per-gate nei tratti a stanza vuota,
+numero e istante delle transizioni di presenza. Va eseguito su ogni file
+<em>prima</em> di usarlo per l'analisi.</p>
+<h3><span class="num">B.4.2</span> Metriche di confronto</h3>
+<pre>python analisi/analizza_test.py data/fermo_seduto_T0*.csv --salta-inizio 30
+python analisi/analizza_test.py data/ingresso_T0*.csv --event-time 10
+python analisi/analizza_test.py data/uscita_T0*.csv --release-time 10</pre>
+<p>Le opzioni principali: <code>–salta-inizio</code> scarta i primi secondi (uscita
+dell'operatore e stabilizzazione del PIR), <code>–event-time</code> e
+<code>–release-time</code> attivano il calcolo delle latenze con la convenzione
+dell'evento a istante noto. Con più file dello stesso scenario lo script aggrega e
+riporta media e deviazione standard fra trial. Nel calcolo della latenza di rilascio
+distingue i casi in cui il rilascio non avviene mai e quelli in cui avviene prima
+dell'istante dichiarato, e conta le riaccensioni nella coda.</p>
+<h3><span class="num">B.4.3</span> Analisi del respiro</h3>
+<pre>python analisi/analizza_respiro.py data/fermo_seduto_T01.csv --scan</pre>
+<p>La modalità <code>–scan</code> esamina tutti e venti i canali di energia, scarta
+quelli saturi e quelli piatti secondo criteri dichiarati, ordina i rimanenti per
+rapporto segnale-rumore del picco in banda 0,1–0,5&nbsp;Hz e riporta la mediana delle
+stime concordi con l'elenco dei canali che le sostengono. Esporta lo spettro in CSV
+per la produzione dei grafici. Richiede NumPy; gli altri script usano la sola
+libreria standard.</p>
+<h2><span class="num">B.5</span> Configurazione del gate massimo</h2>
+<p>Lo sketch <code>firmware/test04_set_gate/</code> imposta il gate massimo via UART per
+la prova di selettività spaziale. Tre accorgimenti sono degni di nota, perché
+riguardano la scrittura di parametri persistenti su un modulo:</p>
+<ol><li>dopo ogni scrittura <strong>rilegge sempre</strong> i parametri per conferma, e
+        segnala se il valore letto non corrisponde a quello scritto;</li><li><strong>avvisa</strong> quando la configurazione corrente è diversa da quella di
+        fabbrica, per evitare di condurre acquisizioni con parametri modificati
+        inconsapevolmente — il rischio più insidioso in una campagna comparativa;</li><li>il comando <code>d</code> riscrive i valori di fabbrica del nostro esemplare
+        (le 9+9 soglie di tabella&nbsp;<a href="#tab:identita">3.3</a>, gate 8/8 e timeout di 5&nbsp;s),
+        così da poter tornare in ogni momento alla configurazione di riferimento.</li></ol></section>
+<section class='frontsec'><h1 class='plain'>Abbreviazioni e sigle</h1><dl class='abbr'><dt>PIR</dt><dd>Passive InfraRed, sensore a infrarossi passivo</dd><dt>mmWave</dt><dd>onde millimetriche, radar nella banda dei millimetri</dd><dt>FMCW</dt><dd>Frequency Modulated Continuous Wave, onda continua modulata in frequenza</dd><dt>UWB</dt><dd>Ultra-WideBand, radio a banda ultra larga</dd><dt>ISM</dt><dd>Industrial, Scientific and Medical, bande radio di uso libero</dd><dt>UART</dt><dd>Universal Asynchronous Receiver-Transmitter, interfaccia seriale asincrona</dd><dt>GPIO</dt><dd>General Purpose Input/Output, piedino di ingresso/uscita generico</dd><dt>FFT</dt><dd>Fast Fourier Transform, trasformata di Fourier veloce</dd><dt>EWMA</dt><dd>Exponentially Weighted Moving Average, media mobile a pesi esponenziali</dd><dt>SNR</dt><dd>Signal to Noise Ratio, rapporto segnale-rumore</dd><dt>IoT</dt><dd>Internet of Things, internet delle cose</dd><dt>LoRa</dt><dd>Long Range, modulazione radio a lungo raggio per reti a basso consumo</dd><dt>CSV</dt><dd>Comma Separated Values, formato tabellare testuale</dd><dt>JSON</dt><dd>JavaScript Object Notation</dd><dt>WebSocket</dt><dd>protocollo di comunicazione bidirezionale su HTTP</dd><dt>AP</dt><dd>Access Point, modalità in cui il nodo crea la propria rete WiFi</dd><dt>STA</dt><dd>Station, modalità in cui il nodo si collega a una rete WiFi esistente</dd><dt>RTC</dt><dd>Real Time Clock, dominio a bassa potenza sempre alimentato</dd><dt>LDO</dt><dd>Low DropOut, regolatore lineare di tensione</dd><dt>FP</dt><dd>falso positivo: presenza segnalata in assenza di persone</dd><dt>FN</dt><dd>falso negativo: presenza reale non segnalata</dd><dt>GT</dt><dd>ground truth, verità di riferimento dichiarata dall'operatore</dd><dt>DIPME</dt><dd>nodo di sensing del progetto UPRISE/SAFE (DEVICE, COORDINATOR, DRIVER)</dd></dl></section>
+<section class='frontsec' id='bib'><h1 class='plain'>Bibliografia e fonti</h1><ol class='bib'><li><i>Progetto UPRISE --- presentazione</i>. 2025. <a href="https://docs.google.com/presentation/d/11Q_Zet3aEtPZo2vcoM7_cvcTCbvLY-FBznCqPK37k3E/edit" class="biburl">https://docs.google.com/presentation/d/11Q_Zet3aEtPZo2vcoM7_cvcTCbvLY-FBznCqPK37k3E/edit</a> (consultato il 2026-07-06) <span class="bibnote">Slide del progetto; materiale fornito dal relatore</span></li><li><b>Callisto De Donato, Massimo and others</b>. <i>Design and Development of a Digital Twin Prototype for the
+                  SAFE Project</i>. Enterprise Design, Operations and Computing (EDOC). Springer. 2023. <span class="bibnote">Riferimento del progetto SAFE/UPRISE. Da completare con
+                  pagine, DOI e elenco esatto degli autori</span></li><li><b>PROcess and Service Lab, UNICAM</b>. <i>Digital Twin Platform --- PROS Lab, Universita&#x27; di Camerino</i>. 2024. <a href="https://pros.unicam.it/dtplatform/" class="biburl">https://pros.unicam.it/dtplatform/</a> (consultato il 2026-07-06)</li><li><b>Adafruit Industries</b>. <i>PIR Passive Infrared Proximity Motion Sensor --- guide</i>. 2023. <a href="https://learn.adafruit.com/pir-passive-infrared-proximity-motion-sensor" class="biburl">https://learn.adafruit.com/pir-passive-infrared-proximity-motion-sensor</a> (consultato il 2026-07-15) <span class="bibnote">Riferimento per il principio piroelettrico e la lente di Fresnel</span></li><li><i>BISS0001 Micro Power PIR Motion Detector IC --- Datasheet</i>. 2010. <a href="https://cdn-shop.adafruit.com/datasheets/BISS0001.pdf" class="biburl">https://cdn-shop.adafruit.com/datasheets/BISS0001.pdf</a> (consultato il 2026-07-15) <span class="bibnote">Circuito di condizionamento del segnale piroelettrico: principio
+                  differenziale, ritenuta, block time. Mirror Adafruit</span></li><li><i>Non-Contact Vital Signs Monitoring</i>. Universidad Politecnica de Madrid. 2024. <a href="https://oa.upm.es/85091/" class="biburl">https://oa.upm.es/85091/</a> (consultato il 2026-07-12) <span class="bibnote">Rilevamento di eventi apnoici con radar FMCW; confronto fra
+                  architetture CW e FMCW</span></li><li><b>University of Technology Sydney</b>. <i>mmWave Sensing for Vital Signs and User Identification</i>. 2024. <a href="https://opus.lib.uts.edu.au/handle/10453/194445" class="biburl">https://opus.lib.uts.edu.au/handle/10453/194445</a> (consultato il 2026-07-12) <span class="bibnote">Neural ODE e TCN per l&#x27;estrazione di frequenza respiratoria e
+                  cardiaca</span></li><li><i>Comparison of 24 GHz and 60 GHz mmWave Sensors</i>. Theseus (Finlandia). 2024. <a href="https://www.theseus.fi/handle/10024/850734" class="biburl">https://www.theseus.fi/handle/10024/850734</a> (consultato il 2026-07-12) <span class="bibnote">24 GHz: portata maggiore, risoluzione inferiore; 60 GHz:
+                  risoluzione alta, portata ridotta</span></li><li><b>University of Technology Sydney</b>. <i>mmWave Multi-Object Tracking</i>. 2023. <a href="https://opus.lib.uts.edu.au/handle/10453/192530" class="biburl">https://opus.lib.uts.edu.au/handle/10453/192530</a> (consultato il 2026-07-12)</li><li><i>mmWave-RM: A Respiration Monitoring Method</i>. Sensors. MDPI. vol. 24, n. 13, pp. 4315. 2024. DOI: 10.3390/s24134315. <a href="https://www.mdpi.com/1424-8220/24/13/4315" class="biburl">https://www.mdpi.com/1424-8220/24/13/4315</a> (consultato il 2026-07-12) <span class="bibnote">Da recuperare tramite accesso universitario: non consultato in
+                  versione integrale</span></li><li><b>ESPHome</b>. <i>LD2410 component</i>. 2024. <a href="https://esphome.io/components/sensor/ld2410.html" class="biburl">https://esphome.io/components/sensor/ld2410.html</a> (consultato il 2026-07-10)</li><li><b>ESPHome</b>. <i>LD2420 component</i>. 2024. <a href="https://esphome.io/components/sensor/ld2420.html" class="biburl">https://esphome.io/components/sensor/ld2420.html</a> (consultato il 2026-07-10)</li><li><b>espboards.dev</b>. <i>LD2410 mmWave presence sensor --- guide</i>. 2024. <a href="https://www.espboards.dev/sensors/ld2410/" class="biburl">https://www.espboards.dev/sensors/ld2410/</a> (consultato il 2026-07-10)</li><li><b>mmwave-radar.dev</b>. <i>mmWave occupancy sensors for smart buildings</i>. 2024. <a href="https://mmwave-radar.dev/applications/occupancy-sensing" class="biburl">https://mmwave-radar.dev/applications/occupancy-sensing</a> (consultato il 2026-07-12)</li><li><b>RF Wireless World</b>. <i>UWB radar vs passive IR vs mmWave radar --- comparison</i>. 2024. <a href="https://www.rfwireless-world.com/terminology/uwb-radar-vs-passive-ir-vs-mmwave-radar-comparison" class="biburl">https://www.rfwireless-world.com/terminology/uwb-radar-vs-passive-ir-vs-mmwave-radar-comparison</a> (consultato il 2026-07-12)</li><li><b>Shenzhen Hi-Link Electronic Co., Ltd.</b>. <i>HLK-LD2410B Life Presence Sensing Module Manual, V1.04</i>. 2024. <a href="https://drive.google.com/drive/folders/16zI-fium_BZeP08EyQke0rWp0BJTMvw3" class="biburl">https://drive.google.com/drive/folders/16zI-fium_BZeP08EyQke0rWp0BJTMvw3</a> (consultato il 2026-08-18) <span class="bibnote">Manuale ufficiale del modulo. Copia locale in
+                  HLK-LD2410x/Documentazione/</span></li><li><b>Shenzhen Hi-Link Electronic Co., Ltd.</b>. <i>HLK-LD2410 Life Presence Sensor Module Manual, V1.03 (220629)</i>. 2022. <a href="https://seengreat.com/upload/file/86/HLK+LD2410+Life+Presence+Sensor+Module+Manual+V1.03(220629).pdf" class="biburl">https://seengreat.com/upload/file/86/HLK+LD2410+Life+Presence+Sensor+Module+Manual+V1.03(220629).pdf</a> (consultato il 2026-07-15) <span class="bibnote">Fonte dei dati elettrici usati nel capitolo sui consumi:
+                  ``DC 5V, power supply capability &gt;200mA, average operating
+                  current 80 mA&#x27;&#x27;</span></li><li><b>Shenzhen Hi-Link Electronic Co., Ltd.</b>. <i>HLK-LD2410B Datasheet --- pin definition and serial protocol</i>. 2023. <a href="https://assets.super.so/79c0d2a8-d37a-438f-8fbe-c44778f3b0dd/files/7c3607bd-f703-43f5-9f22-f369f00c37bd.pdf" class="biburl">https://assets.super.so/79c0d2a8-d37a-438f-8fbe-c44778f3b0dd/files/7c3607bd-f703-43f5-9f22-f369f00c37bd.pdf</a> (consultato il 2026-07-15) <span class="bibnote">Figura 1 e Tabella 1: definizione dei piedini, unica numerazione
+                  di riferimento adottata in questa tesi</span></li><li><b>Shenzhen Hi-Link Electronic Co., Ltd.</b>. <i>HLK-LD2410B: documentazione e strumento PC ufficiale</i>. 2024. <a href="https://drive.google.com/drive/folders/16zI-fium_BZeP08EyQke0rWp0BJTMvw3" class="biburl">https://drive.google.com/drive/folders/16zI-fium_BZeP08EyQke0rWp0BJTMvw3</a> (consultato il 2026-08-18) <span class="bibnote">Cartella ufficiale collegata dalla pagina prodotto
+                  https://www.hlktech.net/index.php?id=1090; contiene
+                  LD2410 Tool EN</span></li><li><b>Shenzhen Hi-Link Electronic Co., Ltd.</b>. <i>LD2410B Serial Communication Protocol, V1.07</i>. 2024. <a href="https://drive.google.com/drive/folders/16zI-fium_BZeP08EyQke0rWp0BJTMvw3" class="biburl">https://drive.google.com/drive/folders/16zI-fium_BZeP08EyQke0rWp0BJTMvw3</a> (consultato il 2026-08-18) <span class="bibnote">Protocollo seriale completo: struttura dei frame, comandi,
+                  engineering mode. Copia locale in
+                  HLK-LD2410x/Documentazione/</span></li><li><b>Shenzhen Hi-Link Electronic Co., Ltd.</b>. <i>LD2410B V2.44 (24073110) --- Introduction of New Features</i>. 2024. <a href="https://drive.google.com/drive/folders/16zI-fium_BZeP08EyQke0rWp0BJTMvw3" class="biburl">https://drive.google.com/drive/folders/16zI-fium_BZeP08EyQke0rWp0BJTMvw3</a> (consultato il 2026-08-18) <span class="bibnote">Descrive il rilevamento automatico del rumore di fondo
+                  (auto-calibrazione delle soglie). Copia locale in
+                  HLK-LD2410x/Documentazione/</span></li><li><b>Shenzhen Hi-Link Electronic Co., Ltd.</b>. <i>HLK-LD2420: datasheet e strumento PC ufficiale</i>. 2024. <a href="https://drive.google.com/drive/folders/1IggDH6ejNSOs8EklQbAXcqUI7KENSZLt" class="biburl">https://drive.google.com/drive/folders/1IggDH6ejNSOs8EklQbAXcqUI7KENSZLt</a> (consultato il 2026-07-17)</li><li><i>HC-SR501 Body Sensor Module --- Datasheet</i>. 2019. <a href="https://www.electronicoscaldas.com/datasheet/HC-SR501.pdf" class="biburl">https://www.electronicoscaldas.com/datasheet/HC-SR501.pdf</a> (consultato il 2026-07-15) <span class="bibnote">Specifiche elettriche, modalita&#x27; di trigger L/H, block time.
+                  Mirror del datasheet del produttore; copia alternativa su
+                  https://www.mpja.com/download/31227sc.pdf</span></li><li><b>Callisto De Donato, Massimo</b>. <i>HLK-LD2410x: firmware ESP32 e script di acquisizione</i>. 2024. <a href="https://github.com/massimocallisto/HLK-LD2410x" class="biburl">https://github.com/massimocallisto/HLK-LD2410x</a> (consultato il 2026-07-10) <span class="bibnote">Repository di riferimento indicato dal relatore: base del
+                  formato CSV e dello script di acquisizione</span></li><li><b>OpenELAB</b>. <i>What is HLK-LD2420 and how to use it</i>. 2024. <a href="https://openelab.io/blogs/learn/what-is-hlk-ld2420-and-how-to-use-it" class="biburl">https://openelab.io/blogs/learn/what-is-hlk-ld2420-and-how-to-use-it</a> (consultato il 2026-07-17) <span class="bibnote">Fonte secondaria per i dati elettrici del LD2420
+                  (3,0--3,6 V, circa 50 mA medi)</span></li><li><b>Components101</b>. <i>HC-SR501 PIR Sensor --- pinout, trimmer, modalita&#x27; H/L</i>. 2023. <a href="https://components101.com/sensors/hc-sr501-pir-sensor" class="biburl">https://components101.com/sensors/hc-sr501-pir-sensor</a> (consultato il 2026-07-15) <span class="bibnote">Fonte secondaria. ATTENZIONE: riporta 65 mA di corrente di
+                  riposo, refuso evidente per microampere; fa fede il datasheet
+                  (&lt;50 uA)</span></li><li><b>Espressif Systems</b>. <i>ESP32-WROOM-32 Datasheet</i>. 2023. <a href="https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf" class="biburl">https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf</a> (consultato il 2026-07-15) <span class="bibnote">Sezione ``Current Consumption&#x27;&#x27;, usata nel capitolo sui consumi</span></li><li><b>Nisbet, Albert</b>. <i>LD2410 Configurator --- configuratore web via Web Serial e
+                  Web Bluetooth</i>. 2024. <a href="https://ld2410.albert.nz/" class="biburl">https://ld2410.albert.nz/</a> (consultato il 2026-07-19) <span class="bibnote">Progetto di comunita&#x27;, non ufficiale Hi-Link: usato come
+                  riferimento di interfaccia, non come fonte di dati tecnici.
+                  Sorgenti: https://github.com/albertnis/ld2410-configurator</span></li></ol></section>
+</body></html>

@@ -72,8 +72,8 @@ dedicato al radar.
 ### 2.3 Serializzazione JSON (ArduinoJson 7)
 
 ```cpp
-// web_server.h — buffer statico riusato, mai allocazioni nel loop
-StaticJsonDocument<512> doc;
+// web_server.h — buffer riusato, mai allocazioni nel loop
+JsonDocument doc;   // ArduinoJson 7: StaticJsonDocument<N> è deprecato
 char out[512];
 
 void wsBroadcast(const RadarSample& s) {

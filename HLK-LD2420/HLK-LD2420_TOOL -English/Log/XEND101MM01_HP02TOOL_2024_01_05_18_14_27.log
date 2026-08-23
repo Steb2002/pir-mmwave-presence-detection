@@ -1,0 +1,27 @@
+2024/01/05 18:15:17.889 => CloseSerial: mSerialFile=0xffffffff
+2024/01/05 18:15:17.889 => Prepare Open Serial: Com=\\.\COM13 BaudRate=115200
+2024/01/05 18:15:17.891 => OpenSerial: Com=\\.\COM13 BaudRate=115200, Success=1, mSerialFile=0x00000974
+2024/01/05 18:15:17.941 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:15:18.152 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:15:18.153 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:15:18.258 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:15:18.258 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:15:18.258 => Cancel Read Data
+2024/01/05 18:15:18.258 => CloseSerial: mSerialFile=0x00000974
+2024/01/05 18:15:36.636 => CloseSerial: mSerialFile=0xffffffff
+2024/01/05 18:15:36.636 => Prepare Open Serial: Com=\\.\COM13 BaudRate=115200
+2024/01/05 18:15:36.638 => OpenSerial: Com=\\.\COM13 BaudRate=115200, Success=1, mSerialFile=0x0000094c
+2024/01/05 18:15:36.741 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:15:36.951 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:15:36.952 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:15:37.057 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:15:37.058 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:15:37.058 => Cancel Read Data
+2024/01/05 18:15:37.058 => CloseSerial: mSerialFile=0x0000094c
+2024/01/05 18:15:40.125 => Stop Realtime data show.
+2024/01/05 18:15:40.127 => Stop Noise scan.
+2024/01/05 18:15:40.128 => Cancel Read Data
+2024/01/05 18:15:40.128 => CloseSerial: mSerialFile=0xffffffff
+2024/01/05 18:15:40.128 => Cancel Read Data
+2024/01/05 18:15:40.128 => CloseSerial: mSerialFile=0xffffffff
+2024/01/05 18:15:40.128 => CloseSerial: mSerialFile=0xffffffff

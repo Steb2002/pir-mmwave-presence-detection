@@ -14,7 +14,8 @@
       "WebFetch(domain:drive.google.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:community.home-assistant.io)",
-      "WebFetch(domain:esphome.io)"
+      "WebFetch(domain:esphome.io)",
+      "WebFetch(domain:ld2410.albert.nz)"
     ]
   }
 }

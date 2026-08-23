@@ -1,0 +1,32 @@
+2023/07/07 17:56:41.446 => CloseSerial: mSerialFile=0xffffffff
+2023/07/07 17:56:41.446 => Prepare Open Serial: Com=\\.\COM12 BaudRate=115200
+2023/07/07 17:56:41.447 => OpenSerial: Com=\\.\COM12 BaudRate=115200, Success=1, mSerialFile=0x00000814
+2023/07/07 17:56:41.456 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2023/07/07 17:56:41.619 => protocol version = 2, send_recv buffer size = 32
+2023/07/07 17:56:41.627 => GetVersion Return: v1.5.5_0.0
+2023/07/07 17:56:41.706 => ReadSetting_RadarOperatorConfig, result: Success
+2023/07/07 17:56:42.549 => Start Realtime data show.
+2023/07/07 17:56:42.549 => thread create success, thread handle=0x00000828, id=1216, name=ReadData
+2023/07/07 17:56:42.549 => thread information, name=ReadData, tid=1216(0x000004c0)
+2023/07/07 17:56:42.550 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2023/07/07 17:56:42.709 => protocol version = 2, send_recv buffer size = 32
+2023/07/07 17:56:50.757 => prepare exit thread..., name=ReadData, tid=1216(0x000004c0)
+2023/07/07 17:56:50.779 => protocol version = 2, send_recv buffer size = 32
+2023/07/07 17:56:50.947 => protocol version = 2, send_recv buffer size = 32
+2023/07/07 17:56:50.963 => thread exit, name=ReadData, tid=1216(0x000004c0)
+2023/07/07 17:56:50.964 => thread exit over, name=ReadData, tid=1216(0x000004c0)
+2023/07/07 17:56:50.966 => Stop Realtime data show.
+2023/07/07 17:56:51.638 => Stop Realtime data show.
+2023/07/07 17:56:51.638 => Stop Noise scan.
+2023/07/07 17:56:51.639 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2023/07/07 17:56:51.798 => protocol version = 2, send_recv buffer size = 32
+2023/07/07 17:56:51.814 => Cancel Read Data
+2023/07/07 17:56:51.814 => CloseSerial: mSerialFile=0x00000814
+2023/07/07 17:57:09.132 => Stop Realtime data show.
+2023/07/07 17:57:09.132 => Stop Realtime data show.
+2023/07/07 17:57:09.134 => Stop Noise scan.
+2023/07/07 17:57:09.139 => Cancel Read Data
+2023/07/07 17:57:09.139 => CloseSerial: mSerialFile=0xffffffff
+2023/07/07 17:57:09.139 => Cancel Read Data
+2023/07/07 17:57:09.139 => CloseSerial: mSerialFile=0xffffffff
+2023/07/07 17:57:09.139 => CloseSerial: mSerialFile=0xffffffff

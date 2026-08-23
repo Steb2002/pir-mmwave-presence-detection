@@ -1,0 +1,26 @@
+Qui vanno le immagini della tesi.
+
+DA INSERIRE SUBITO
+  logo_unicam.png   logo dell'Universita di Camerino, usato dal frontespizio.
+                    Dopo averlo messo qui, decommentare la riga
+                    \includegraphics in frontmatter/titlepage.tex.
+                    Nel template originale c'era il logo della School of
+                    Advanced Studies (Logo_ScuDo.png): non e' stato copiato
+                    perche' riguarda il dottorato, non la laurea triennale.
+
+DA PRODURRE (vedi i \todo nei capitoli)
+  schema_sistema        cap. 1  arredo -> DIPME -> coordinator -> gateway ->
+                                drone -> tablet
+  foto_setup            cap. 4  radar e PIR affiancati sul tavolo, con il metro
+  traccia_radar_pir     cap. 4  serie temporale presenza radar vs PIR sul trial
+                                "fermo seduto": e' la figura che mostra il
+                                risultato centrale della tesi
+  regressione_distanza  cap. 4  distanza misurata vs reale, 25 trial, con la
+                                retta di regressione
+  spettro_respiro       cap. 4  spettro FFT di menergy_gate2 con il picco in
+                                banda 0,1-0,5 Hz
+  boxplot_vitalita      cap. 7  distribuzione dell'indice per i 4 scenari
+  dashboard             cap. 6  screenshot della web UI
+
+Formato consigliato: PDF vettoriale per i grafici (matplotlib: savefig in .pdf),
+PNG per le fotografie e gli screenshot.

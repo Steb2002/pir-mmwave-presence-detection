@@ -66,3 +66,7 @@ coverage.xml
 *.csv
 .vscode/.browse.c_cpp.db*
 .vscode/ipch
+
+# I CSV di acquisizione della tesi sono il dato insostituibile: vanno versionati.
+# La riga *.csv qui sopra arriva dal repo originale del professore e li escludeva.
+!data/*.csv

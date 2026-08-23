@@ -50,7 +50,7 @@ Obiettivo di contorno: valutare anche altri tipi di sensori.
 | Componente | Quantità | Note |
 |---|---|---|
 | ESP32 (scheda nera 30-pin) | 1 | Chip Espressif ESP32-WROOM-32, USB-C |
-| HLK-LD2410B | 1 | Modulo blu piccolo, PCB v1.3, ha Bluetooth, cavi già saldati |
+| HLK-LD2410B | 1 | ✅ **FUNZIONANTE (09/08/2026)**. Il "guasto" del 19/07/2026 era un errore di cablaggio: i colori dei cavi erano mappati al contrario. Mappatura corretta (datasheet Tabella 1): rosso=VCC, nero=GND, giallo=UART_Rx, verde=UART_Tx, blu=OUT |
 | HLK-LD2420 | 1 | Scheda arancione/verde, range maggiore |
 | HLK-CH340E-V1.0 | 1 | Adattatore USB→Seriale, utile per connettere LD2420 direttamente al PC |
 | PIR **HC-SR501** | 1 | Identificato dalle foto (`PIR HC-SR501/`): BISS0001 + regolatore HT7133, uscita 3.3V ok per ESP32, 2 trimmer + jumper H/L — dettagli in `analisi/ANALISI_PIR.md` §6 |
@@ -76,24 +76,31 @@ Obiettivo di contorno: valutare anche altri tipi di sensori.
 - Bluetooth integrato (variante B) — password default: `HiLink`
 - Dimensioni: ~35mm × 7mm
 
-### Pinout (5 pin)
+### Pinout (5 pin) — datasheet ufficiale, Tabella 1
+Fonte: https://assets.super.so/79c0d2a8-d37a-438f-8fbe-c44778f3b0dd/files/7c3607bd-f703-43f5-9f22-f369f00c37bd.pdf (Figura 1 + Tabella 1)
 ```
-Pin 1: VCC  → 5V ESP32 (VIN)
-Pin 2: GND  → GND ESP32
-Pin 3: TX   → GPIO16 (RX2) ESP32
-Pin 4: RX   ← GPIO17 (TX2) ESP32
-Pin 5: OUT  → GPIO opzionale (presenza digitale HIGH/LOW)
+Pin 1: OUT      → presenza digitale (HIGH = persona, LOW = nessuno)
+Pin 2: UART_Tx  → GPIO25 (RX2) ESP32   [il radar parla]
+Pin 3: UART_Rx  ← GPIO26 (TX2) ESP32   [il radar ascolta]
+Pin 4: GND      → GND ESP32
+Pin 5: VCC      → 5V ESP32 (VIN)
 ```
+Questa è **l'unica numerazione valida** (quella del datasheet). Nella figura del datasheet,
+guardando il modulo con il connettore a destra, l'ordine dall'alto verso il basso è
+**VCC, GND, UART_Rx, UART_Tx, OUT**.
 
-### Colori cavi del connettore JST (verificati fisicamente sul modulo)
-⚠️ Colori NON convenzionali — basarsi sul segno Pin 1 sul PCB, non sul colore!
+### Colori cavi del connettore JST — ✅ CORRETTO (verificato 09/08/2026)
+⚠️ Una mappatura sbagliata dei colori è stata la causa del presunto "guasto" del
+19/07/2026: il modulo **funziona**, era cablato male. Mappatura corretta:
 ```
-Blu   = Pin 1 → VCC  (5V)
-Verde = Pin 2 → GND
-Giallo= Pin 3 → TX   → D16 ESP32
-Nero  = Pin 4 → RX   → D17 ESP32
-Rosso = Pin 5 → OUT  (non collegare per ora)
+Rosso  = Pin 5 → VCC     → VIN ESP32 (5V)
+Nero   = Pin 4 → GND     → GND ESP32
+Giallo = Pin 3 → UART_Rx ← D26 ESP32 (TX2: l'ESP32 parla)
+Verde  = Pin 2 → UART_Tx → D25 ESP32 (RX2: l'ESP32 ascolta)
+Blu    = Pin 1 → OUT     (presenza digitale; non collegare per ora)
 ```
+Regola mnemonica: rosso = corrente, nero = massa (convenzione standard), blu = OUT;
+i due in mezzo sono la seriale, sempre **incrociata** (Tx radar → Rx ESP32).
 
 ### Dati in uscita
 - Stato presenza: moving / still / none
@@ -141,10 +148,21 @@ Rosso = Pin 5 → OUT  (non collegare per ora)
 - Bluetooth: **assente**
 - Calibrazione: **automatica** (firmware ≥ 1.5.4)
 
+### ✅ VERIFICATO SU HARDWARE (17/07/2026) — il nostro esemplare
+
+Testato collegando il LD2420 ai pin **GPIO16/17 dell'ESP32** (sketch
+`firmware/ld2420_monitor/`, ESP32 su COM3):
+- **Firmware ≥ 1.5.3** (dedotto dal baud): TX seriale su **Pin 3 (OT1) → GPIO16**
+- **Baud: 115200** (confermato: a 256000 si legge solo poltiglia, stesso alfabeto
+  di byte del boot-log dell'ESP32 letto al baud sbagliato)
+- **Modalità di fabbrica = ASCII "semplice"** (vedi sotto), NON il protocollo binario
+- Alimentazione 3.3V OK, il sensore risponde ai movimenti
+- ⚠️ Versione firmware ESATTA e unità del "Range" ancora da leggere col tool HiLink (Test 0.5)
+
 ### ATTENZIONE — Pinout dipende dalla versione firmware
 
 ```
-Firmware ≤ 1.5.2:              Firmware ≥ 1.5.3:
+Firmware ≤ 1.5.2:              Firmware ≥ 1.5.3:  ← IL NOSTRO
 Pin 1: 3.3V                    Pin 1: 3.3V
 Pin 2: GND                     Pin 2: GND
 Pin 3: OT1 (presenza digitale) Pin 3: OT1 → TX seriale → ESP32 RX
@@ -155,9 +173,25 @@ Pin 5: OT2 → TX → ESP32 RX     Pin 5: OT2 (presenza digitale)
 **Verificare sempre la versione firmware prima di collegare!**
 Tool ufficiale: Google Drive HiLink → cartella `HLK-LD2420_TOOL - English`
 
+### Formato dati in modalità di fabbrica (ASCII, verificato)
+Di default il nostro LD2420 trasmette testo a righe (terminate `\r\n`) a 115200 baud:
+```
+ON            → presenza rilevata
+OFF           → nessuna presenza
+Range NN      → distanza del target (valore GREZZO, unità non documentata)
+```
+- Limiti di questa modalità: solo presenza + un "range"; **niente energia per-gate,
+  niente distinzione moving/still**. Per l'engineering mode (necessario al respiro,
+  obiettivo 5) serve riconfigurare il sensore in modalità binaria via comandi UART/HiLink.
+- ⚠️ L'unità del "Range" NON è documentata nel datasheet in nostro possesso: i valori
+  osservati (7–37 muovendosi in stanza) sono compatibili con decimetri (~0.7–3.7 m) ma
+  va confermato prima di usarlo come distanza in metri nella tesi (regola fonti).
+- Collegamento diretto al PC via CH340E: script `HLK-LD2420/Test LD2420/ld2420_diag.py`
+  (annusa-byte a 115200/256000). Lettura via ESP32: `firmware/ld2420_monitor/`.
+
 ### Baud rate per versione firmware
 - Firmware < 1.5.3: **256000 baud**
-- Firmware ≥ 1.5.3: **115200 baud**
+- Firmware ≥ 1.5.3: **115200 baud** ← il nostro esemplare (verificato 17/07/2026)
 
 ### Parametri configurabili
 | Parametro | Range | Default |
@@ -255,16 +289,16 @@ VIN, GND, D13, D12, D14, D27, D26, D25, D33, D32, D35, D34, VN, VP, EN
 ```
 - **VIN** = 5V in ingresso (lato destro, primo pin in alto) — usare per alimentare LD2410B
 - **3V3** = 3.3V (lato sinistro, primo pin in alto) — usare per alimentare LD2420
-- **D16** = RX2 (Serial2) — riceve dati dal sensore
-- **D17** = TX2 (Serial2) — invia comandi al sensore
+- **D25** = RX2 (Serial2) — riceve dati dal sensore (← TX del radar)
+- **D26** = TX2 (Serial2) — invia comandi al sensore (→ RX del radar)
 
-### Collegamento ESP32 ↔ LD2410B (con colori reali)
+### Collegamento ESP32 ↔ LD2410B (colori reali, verificato 09/08/2026)
 ```
-Cavo BLU    (Pin 1 VCC) → VIN  ESP32  (5V, lato dx primo in alto)
-Cavo VERDE  (Pin 2 GND) → GND  ESP32
-Cavo GIALLO (Pin 3 TX)  → D16  ESP32
-Cavo NERO   (Pin 4 RX)  → D17  ESP32
-Cavo ROSSO  (Pin 5 OUT) → non collegare per ora
+Cavo ROSSO  (Pin 5 VCC)     → VIN  ESP32  (5V, lato dx primo in alto)
+Cavo NERO   (Pin 4 GND)     → GND  ESP32
+Cavo GIALLO (Pin 3 UART_Rx) → D26  ESP32  (TX2: l'ESP32 parla)
+Cavo VERDE  (Pin 2 UART_Tx) → D25  ESP32  (RX2: l'ESP32 ascolta)
+Cavo BLU    (Pin 1 OUT)     → non collegare per ora
 ```
 
 ### Collegamento ESP32 ↔ LD2420 (firmware ≥ 1.5.3, da verificare)
@@ -296,18 +330,24 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - ⚠️ **PINOUT INVERTITO rispetto al nostro cablaggio**: il professore usa radar TX→GPIO17 e radar RX→GPIO16 (noi: TX→16, RX→17). Se si usa il suo firmware così com'è, scambiare i cavi giallo/nero; il nostro sketch `firmware/ld2410b_logger/` usa invece il nostro cablaggio
 - ⚠️ **Campionamento a 1 Hz** (samplePeriodMs=1000): troppo lento per misurare la latenza con precisione e insufficiente per la FFT del respiro (Nyquist = 0.5 Hz, proprio il limite della banda respiratoria)
 - **Niente engineering mode**: logga solo energia del target, non i 9+9 valori per-gate
-- PIR su GPIO23, LED su GPIO2, seriale verso PC a 115200 baud
+- PIR su GPIO23 (nel **nostro** logger è su **GPIO34**, vedi sotto), LED su GPIO2, seriale verso PC a 115200 baud
 - CSV: `timestamp_ms,radar_presence,moving_target,stationary_target,moving_distance_cm,stationary_distance_cm,moving_energy,stationary_energy,pir_presence`
 
-**Script `acquire.py`** (solo pyserial): legge la seriale e aggiunge a ogni riga i metadati sperimentali da CLI: `pc_time_s, group_id, trial_id, scenario, ground_truth_presence, ground_truth_state`. La ground truth è **statica per file** → per la latenza serve la convenzione "evento a t=10s" (vedi PIANO_TEST.md, Test 2.1)
+**Script `acquire.py`** (solo pyserial): legge la seriale e aggiunge a ogni riga i metadati sperimentali da CLI. ⚠️ **La nostra copia diverge dal repo del professore**: l'originale scrive righe solo dopo aver visto la riga di intestazione (stampata dall'ESP32 una volta sola in `setup()`), quindi se il reset all'apertura della porta non scatta il CSV esce **vuoto senza avvisi**. Abbiamo aggiunto la ricostruzione dell'intestazione dal numero di colonne della riga di dati (9 = base, 27 = engineering, 29 = engineering + light/out): `pc_time_s, group_id, trial_id, scenario, ground_truth_presence, ground_truth_state`. La ground truth è **statica per file** → per la latenza serve un evento a istante noto. Abbiamo aggiunto `--beep-at SEC` (fase 2): beep grave alla prima riga di dati, beep acuto SEC secondi dopo = istante dell'evento. ⚠️ Un timer sul telefono **non** va bene: tra l'apertura della porta e la prima riga passano 2-3 s (reset ESP32 + setup logger + `time.sleep(2)`), errore sistematico maggiore della latenza misurata. Il beep conta dalla prima riga, cioè dalla stessa origine dei tempi usata da `analizza_test.py`. `serie.py` lo inoltra con lo stesso nome
 
 **Adattamenti fatti per la tesi** (cartella `firmware/` e `analisi/`):
-- `firmware/ld2410b_logger/ld2410b_logger.ino` — logger riscritto con MyLD2410: 5 Hz, engineering mode (colonne extra `menergy_gate0..8`, `senergy_gate0..8`), pin corretti per il nostro cablaggio, CSV retro-compatibile con acquire.py (da compilare e verificare su hardware)
-- `analisi/analizza_test.py` — metriche automatiche dai CSV: accuratezza, FP eventi/h, FN%, latenza (--event-time), statistiche distanza/energia, aggregazione per scenario (media ± dev.std). Solo libreria standard
-- `analisi/analizza_respiro.py` — FFT della serie di energia, picco in banda 0.1-0.5 Hz, stima atti/min, export spettro CSV per Excel. Richiede numpy
+- `firmware/ld2410b_logger/ld2410b_logger.ino` — logger riscritto con MyLD2410: 5 Hz, engineering mode (colonne extra `menergy_gate0..8`, `senergy_gate0..8`, più `light_level` e `out_level` — quest'ultimo è lo **stato del pin OUT del radar, letto dal frame UART**: il cavo blu non va collegato), pin corretti per il nostro cablaggio, CSV retro-compatibile con acquire.py (da compilare e verificare su hardware)
+- `analisi/analizza_test.py` — metriche automatiche dai CSV: accuratezza, FP eventi/h, FN%, latenza di rilevamento (`--event-time`, con la differenza appaiata `latenza_delta_s` radar−PIR e il flag dei trial in cui un sensore era già attivo prima dell'evento), latenza di **rilascio** (`--release-time`, Test 2.2: riporta anche le riaccensioni nella coda e distingue i casi `MAI`/`PRIMA`), statistiche distanza/energia, aggregazione per scenario (media ± dev.std). Solo libreria standard
+- `firmware/test04_set_gate/` — configurazione del **gate massimo** via UART per il Test 2.4 (selettività spaziale / banchi adiacenti): imposta, **rilegge sempre per conferma**, avvisa quando la configurazione è diversa da quella di fabbrica, e col comando `d` riscrive le 9+9 soglie di fabbrica del nostro esemplare + gate 8/8 + timeout 5 s. Ha anche un monitor live per trovare la portata effettiva prima di acquisire
+- `analisi/verifica_engineering.py` — controllo di qualità di un CSV del logger prima di
+  usarlo: cadenza reale e jitter, presenza delle colonne per-gate, % di saturazione a 100,
+  coerenza gate di picco↔distanza, rumore di fondo per-gate a stanza vuota, transizioni di
+  presenza. Solo libreria standard. Da lanciare a ogni sessione di acquisizione
+- `analisi/analizza_respiro.py` — FFT della serie di energia, picco in banda 0.1-0.5 Hz, stima atti/min, export spettro CSV per Excel. Richiede numpy. Modalità **`--scan`**: prova tutti i 20 canali di energia, scarta saturi e piatti, ordina per SNR e riporta la mediana delle stime concordi — nata dal pilota respiro del 18/08/2026, dove il canale di default (`stationary_energy`) era saturo al 100% mentre il respiro era leggibile benissimo su `menergy_gate2`
 - `analisi/ANALISI_CONSUMI.md` — obiettivo 4 completato in bozza (consumi da datasheet + stime autonomia + argomentazione architettura ibrida PIR+mmWave)
-- `analisi/ANALISI_WEB_UI.md` — progetto della web UI (obiettivo 5): architettura ESP32 self-hosted (ESPAsyncWebServer + WebSocket + LittleFS, tutto offline), formato JSON, layout pagina, struttura codice `firmware/ld2410b_web/`, piano di sviluppo in 5 step. Decisione chiave: il CSV esportato dal browser usa le stesse colonne di acquire.py → un solo formato dati in tutta la tesi
+- `analisi/ANALISI_WEB_UI.md` — progetto della web UI (obiettivo 5): architettura ESP32 self-hosted (ESPAsyncWebServer + WebSocket + LittleFS, tutto offline), formato JSON, layout pagina, struttura codice `firmware/ld2410b_web/`, piano di sviluppo in 5 step. Decisione chiave: il CSV esportato dal browser usa le stesse colonne di acquire.py → un solo formato dati in tutta la tesi. §9: analisi del riferimento UI "LD2410 Configurator" (cosa prendere/cosa no) + opzione D di riserva via Web Serial
 - `analisi/PROGETTO_SITO_DETTAGLIO.md` — progetto di dettaglio implementativo del sito: struct/pseudocodice firmware, protocollo WS con riconnessione, strutture dati JS, config dei 3 grafici, export CSV client-side, gestione errori, criteri di accettazione per step
+- `analisi/ANALISI_SITO_SERVER.md` — piano B dell'obiettivo 5 (19/07/2026): progetto completo del sito "vero" su server esterno nel caso il professore intenda una piattaforma e non il sito self-hosted. Architettura ESP32→MQTT (Mosquitto)→FastAPI+SQLite→browser, codice firmware/backend di riferimento, export CSV compatibile acquire.py, confronto A vs B e domanda di decisione per l'incontro (aggiunta a INCONTRO_PROFESSORE.md, domanda 7). Frontend condiviso ~85% con l'opzione A → cambiare rotta costa ~2-3 giorni. Default resta l'opzione A
 - `analisi/ANALISI_VITALITA.md` — specifica dell'indice di vitalità (obiettivo 6, documento autonomo): algoritmo v1 (doppia EWMA movimento+respiro), classificazione a 4 classi per il triage, percorso di taratura Python-prima sui CSV della Fase 6 con validazione su trial separati, casi limite, collocazione nella tesi
 - `analisi/ANALISI_PIR.md` — analisi teorica del PIR (obiettivo 1-2): principio piroelettrico differenziale, lente di Fresnel, perché è fisicamente cieco alla persona ferma, dati prodotti (1 bit + ritenuta/trigger), sensibilità alla temperatura, sezione 6 DA COMPLETARE col modello reale (Test 0.3)
 - `SCALETTA_TESI.md` — scaletta Overleaf in 8 capitoli con mappa obiettivi→capitoli, materiale già pronto per ciascuno e ordine di scrittura consigliato (cap. 5 e 2 scrivibili subito)
@@ -330,11 +370,20 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - esp32.co.uk LD2410+HA: https://esp32.co.uk/esp32-ld2410-mmwave-presence-sensor-with-home-assistant/
 - tastethecode.com guida pratica: https://www.tastethecode.com/human-presence-detection-with-millimeter-wave-sensors
 - Google Drive HiLink LD2420 (datasheet + tool): https://drive.google.com/drive/folders/1IggDH6ejNSOs8EklQbAXcqUI7KENSZLt
+- Google Drive HiLink **LD2410B** (manuale V1.04, protocollo seriale V1.07, tool PC `LD2410 Tool EN (英文版).zip`): https://drive.google.com/drive/folders/16zI-fium_BZeP08EyQke0rWp0BJTMvw3 — linkata dalla pagina prodotto ufficiale https://www.hlktech.net/index.php?id=1090. ⚠️ NON usare `HLK-LD2420_TOOL` col LD2410B: protocolli diversi, errore "Failed to set data transfer mode" (17/08/2026)
+- **Copie locali ufficiali LD2410B** (scaricate 18/08/2026, in `HLK-LD2410x/Documentazione/`) — da citare in `bib/tesi.bib` come fonti primarie:
+  - `HLK LD2410B Life Presence Sensing Module Manual V1.04.pdf` — manuale ufficiale (specifiche, consumi, pinout)
+  - `LD2410B Serial communication protocol V1.07.pdf` — protocollo seriale completo (frame, comandi, engineering mode)
+  - `LD2410B V2.44 (24073110)- introduction of new features.pdf` — novità del firmware V2.44: **rilevamento automatico del rumore di fondo** (auto-calibrazione delle soglie movimento+stazionario). Procedura: pulsante "Auto" nell'app, 10 s per uscire dal campo + 60 s di misura = 70 s totali, restando fuori dal range. Richiede app Android ≥ V1.5.12 / iOS ≥ V1.5.4. Da non confondere con il "Detect noise floor" della schermata parametri, che è **solo** una funzione dell'app (mostra i valori, non li applica). Il documento NON descrive alcuna procedura di aggiornamento del firmware
+- Tool PC ufficiale `LD2410 Tool (v1.0.0.0)` — copia locale in `HLK-LD2410x/LD2410 Tool/LD2410 Tool.exe`. ⚠️ Non mostra la versione firmware e **non** ha funzione di flash/update
+- App mobile Bluetooth `HLKRadarTool` (Android/iOS, password `HiLink`): cercare "HLKRadarTool" negli app store, oppure download ufficiale https://www.hlktech.com/Mobile/App/12.html (link dal documento V2.44)
 - Datasheet HC-SR501 (PIR in dotazione): https://www.electronicoscaldas.com/datasheet/HC-SR501.pdf (mirror; altra copia su mpja.com/download/31227sc.pdf)
 - Datasheet BISS0001 (chip del PIR): https://cdn-shop.adafruit.com/datasheets/BISS0001.pdf
 - Adafruit PIR guide (principio piroelettrico/Fresnel): https://learn.adafruit.com/pir-passive-infrared-proximity-motion-sensor
 - ESP32-WROOM-32 datasheet (consumi): https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf
 - Manuale HLK-LD2410 V1.03 (consumi/specifiche verificate): https://seengreat.com/upload/file/86/HLK+LD2410+Life+Presence+Sensor+Module+Manual+V1.03(220629).pdf
+- Datasheet LD2410B (pin definition Tabella 1, protocollo seriale): https://assets.super.so/79c0d2a8-d37a-438f-8fbe-c44778f3b0dd/files/7c3607bd-f703-43f5-9f22-f369f00c37bd.pdf
+- LD2410 Configurator (Albert Nisbet) — configuratore web open source via Web Serial/Web Bluetooth, riferimento UI per l'obiettivo 5: https://ld2410.albert.nz/ · sorgenti https://github.com/albertnis/ld2410-configurator · ⚠️ progetto di comunità, non ufficiale Hi-Link: vale come riferimento UI/implementativo, non come fonte di dati tecnici (analisi in `analisi/ANALISI_WEB_UI.md` §9)
 
 ### Articoli e confronti
 - mmWave Occupancy Sensors - Smart Buildings: https://mmwave-radar.dev/applications/occupancy-sensing
@@ -362,11 +411,11 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - Il LD2420 si alimenta a **3.3V**, non 5V come il LD2410B
 - Il pinout del LD2420 **cambia con la versione firmware** — verificare prima di collegare con HLK-CH340E
 - Entrambi i sensori usano **TX/RX incrociati** rispetto all'ESP32
-- Il baud rate 256000 richiede UART hardware dell'ESP32 (D16/D17), non softserial
+- Il baud rate 256000 richiede UART hardware dell'ESP32 (D25/D26), non softserial
 - Per il respiro serve **engineering mode** sul LD2410B (byte comando `0x62`)
 - Il LD2410B non distingue due persone alla stessa distanza (no array di antenne)
 - Penetrazione ostacoli: funziona su legno/cartongesso/vetro/plastica; non su metallo o cemento armato spesso
-- I cavi del LD2410B hanno colori NON convenzionali (blu=VCC, verde=GND) — non fidarsi del colore, usare il segno Pin 1 sul PCB
+- I cavi del LD2410B seguono la convenzione standard: **rosso=VCC, nero=GND, blu=OUT**, i due centrali (giallo=Rx, verde=Tx) sono la seriale. Fare sempre riferimento alla Tabella 1 del datasheet, non a ipotesi sull'ordine dei pin: un'inversione qui ha già fatto perdere ~3 settimane facendo credere il modulo guasto
 - Il CH340E può essere usato per collegare il LD2420 direttamente al PC (senza ESP32) per leggere il firmware
 
 ## Note di processo
@@ -391,17 +440,290 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - [x] Piano di test completo scritto (`PIANO_TEST.md`)
 - [x] Script di analisi pronti (`analisi/analizza_test.py`, `analisi/analizza_respiro.py`)
 - [x] Firmware logger esteso scritto (`firmware/ld2410b_logger/` — da compilare e verificare su hardware)
-- [ ] Verificare firmware LD2420 con CH340E + tool HiLink
+- [~] Primo contatto LD2420 fatto via ESP32 (GPIO16/17, 115200, modalità ASCII) — resta
+      da leggere versione firmware esatta + unità "Range" col tool HiLink (Test 0.5)
 
 ### Sensori (obiettivi 1-2)
-- [ ] Primo sketch test LD2410B
-- [ ] Sketch logging dati LD2410B
-- [ ] Setup e test LD2420
+- [x] LD2410B FUNZIONANTE (09/08/2026) — il "guasto" del 19/07 era cablaggio invertito.
+      Cablaggio corretto: rosso→VIN, nero→GND, giallo(Rx)→D26, verde(Tx)→D25. Test 0.1,
+      0.2, 0.6 e fasi 1-3/5-6 sbloccati
+- [x] LD2410B verificato dal PC col tool ufficiale (18/08/2026): `LD2410 Tool (v1.0.0.0)`,
+      COM3 @ 256000, **Engineering Mode attivo** — grafici energia per-gate Moving/Motionless
+      e distanza rilevata funzionanti (letti 41 cm). Parametri di fabbrica letti: 1 RG = 0.75 m,
+      Moving/Motionless Max RG = 8, Abs. Report Delay = 3 s, Stat. Time = 120 s,
+      sensibilità Moving/Motionless = 100. Conferma che i dati per-gate necessari agli
+      obiettivi 2/3/6 (respiro compreso) sono già disponibili senza toccare il firmware.
+      ⚠️ **RISOLTO (18/08/2026)**: il "sensibilità = 100" letto dal LD2410 Tool era una
+      lettura sbagliata. Le soglie vere, lette col comando 0x0061 via
+      `firmware/test00_ld2410_info/`, sono la scala di fabbrica decrescente:
+      movimento **50 50 40 30 20 15 15 15 15**, stazionario **0 0 40 40 30 30 20 20 20**
+      (gate 0-8). Coerente col protocollo V1.07 §1.2.2 (target riconosciuto solo se
+      energia > soglia) e col comportamento osservato. **Non fidarsi del LD2410 Tool per
+      i valori numerici: usare la lettura via UART**
+- [x] **Test 0.1 SUPERATO (18/08/2026)** — `firmware/test01_ld2410_base/`: baud **256000**
+      confermato, presenza/distanza/energia leggibili, moving e still distinti
+- [x] **Parametri di fabbrica letti via UART (18/08/2026)** — `firmware/test00_ld2410_info/`:
+      MAC Bluetooth **5E:E4:93:22:B9:3F**, risoluzione 75 cm/gate, range 675 cm,
+      timeout presenza **5 s**, soglie movimento **50 50 40 30 20 15 15 15 15** e
+      stazionario **0 0 40 40 30 30 20 20 20**. Tabella completa con confronto
+      soglia↔rumore in `HLK-LD2410x/data/REGISTRO_SESSIONI.md`
+- [x] **Decisione: NON ricalibrare adesso.** Confrontando le soglie di fabbrica col
+      rumore di fondo misurato, il margine più stretto è il gate 6 in movimento
+      (soglia 15 vs rumore max 11) e i falsi positivi osservati sono zero: la taratura
+      di fabbrica regge nel nostro ambiente. Le soglie restano il **riferimento fisso**
+      per tutta la campagna fasi 1-3 (cambiarle a metà renderebbe i trial non
+      confrontabili). L'auto-calibrazione (cmd 0x000B) va usata dopo, come esperimento
+      a sé con confronto prima/dopo — è materiale da sezione della tesi, non un
+      prerequisito
+- [x] Versione firmware letta: **2.44.25070917** — è l'ultima Hi-Link, quindi il nostro
+      esemplare **ha l'auto-calibrazione delle soglie** del V2.44 (esempio
+      `MyLD2410 > auto_thresholds`). Annotata in `HLK-LD2410x/data/REGISTRO_SESSIONI.md`.
+      Resta da leggere il MAC Bluetooth
+- [x] **Test 0.1 passo B + Test 0.2 SUPERATI (18/08/2026)** — logger `ld2410b_logger`
+      validato su 673 campioni / 134 s (`HLK-LD2410x/data/20260818_test01B_ld2410b_engineering.csv`,
+      analizzato con `analisi/verifica_engineering.py`):
+      - cadenza **5.00 Hz esatti**, dt = 200 ms su tutti i 672 intervalli (jitter zero) →
+        serie temporale uniforme, adatta alla FFT del respiro
+      - engineering mode attivo: 18 colonne per-gate popolate
+      - **mappa gate↔distanza validata: 97.1%** dei campioni in movimento ha il gate di
+        picco entro ±1 dal gate atteso (distanza/0.75 m), su tutto il range 0-6 m
+      - rumore di fondo a stanza vuota (29 s): moving gate0 ≈ 17 (max 26), gate1 ≈ 13
+        (max 21), gate2-8 ≤ 11; stationary tutti ≤ 7
+      - **zero falsi positivi** nei 29 s di stanza vuota
+- ⚠️ **Tre osservazioni metodologiche dal Test 0.1/0.2** (da tenere presenti in fase 1-3 e 6):
+      1. **Saturazione**: l'energia *stazionaria* è a fondoscala (100) nel **92%** dei
+         campioni con target fermo, la *moving* nel 41%. Un segnale clippato non porta
+         informazione. ⚠️ **Le soglie NON risolvono la saturazione**: l'energia è un valore
+         normalizzato 0-100 e la soglia interviene solo sulla *decisione* di rilevamento
+         (protocollo V1.07 §1.2.2), non sul valore riportato. Nemmeno l'auto-calibrazione
+         (cmd 0x000B) la risolve, perché anch'essa tara soglie, non la scala. L'unico
+         rimedio è **geometrico**: allontanare il soggetto (≥1.5-2 m), disallineare il
+         sensore o attenuare. Vale per respiro e indice di vitalità
+      2. **`senergy_gate0` e `senergy_gate1` sono sempre 0** (673/673 campioni). Anche
+         l'esempio ufficiale del protocollo V1.07 §2.3.2 mostra `00 00` per i primi due
+         gate statici, quindi non è un difetto del nostro esemplare.
+         ⚠️ Attenzione a non trarre la conclusione sbagliata: il radar **riporta comunque
+         bersagli fermi sotto 1.5 m** (nei dati: `stationary_distance` 70-89 cm con
+         `stationary_energy` = 100). A mancare è solo il **dettaglio per-gate** dello
+         stazionario nei primi due gate. Conseguenza pratica: respiro e indice di vitalità,
+         che si basano sulla serie di energia per-gate, per un soggetto a < 1.5 m non
+         possono usare il canale stazionario → usare il canale **moving** o i gate ≥ 2.
+         **Rilevante per lo scenario UPRISE** (persona sotto il banco, quindi vicina):
+         da verificare esplicitamente in fase 6
+      3. **Coda di presenza**: dopo l'uscita il radar ha tenuto `presence=1` per ~10 s con
+         un target fermo fantasma a ~5.2 m ed energia in decadimento. È il comportamento
+         atteso ("no-one duration", protocollo §1.2.2), ma va misurato come **latenza di
+         rilascio** in fase 1 e non confuso con un falso positivo
+- [~] Setup e test LD2420 — collegato e letto (presenza + range in modalità ASCII,
+      sketch `firmware/ld2420_monitor/`); engineering mode binario ancora da attivare
 - [x] Identificazione PIR: HC-SR501 (foto + datasheet, `analisi/ANALISI_PIR.md` §6 completata)
-- [ ] Configurazione e test PIR HC-SR501 (jumper H, ritenuta al minimo, sensibilità a metà — Test 0.3)
+- [x] Configurazione e test PIR HC-SR501 (Test 0.3, 19/07/2026) — pinout verificato
+      GND|OUT|+Power (visto dal lato trimmer), **OUT→D34** (18/08/2026: D25 è ora RX2 del
+      radar e D23 sta sul lato opposto della scheda; D34 è solo-input senza pull-up, ok
+      perché l'HC-SR501 pilota attivamente l'uscita), **jumper su L** (creduto H
+      fino al 22/08/2026),
+      ritenuta al minimo (~3.4 s misurati), sensibilità a metà. Sketch:
+      `firmware/test03_pir_base/`. Funziona: rileva/rilascia pulito, no falsi positivi
 
 ### Testing comparativo (obiettivo 3)
+- [x] **PIR cablato su GPIO34** (18/08/2026) — non D23: sta sul lato opposto della scheda.
+      GPIO34 è solo-input e senza pull-up, ma va bene perché l'HC-SR501 pilota
+      attivamente l'uscita a 3.3V/0V
+- [x] **PILOTA PIR vs mmWave riuscito (18/08/2026)** — `HLK-LD2410x/data/pir_vs_radar_T01.csv`,
+      1699 campioni / 339.6 s. **È il risultato centrale della tesi, già misurato**:
+      - **PIR: 80.4% di falsi negativi** sulla presenza reale (attivo in 254/1298 campioni);
+        radar: 0%
+      - tratto **immobile di 93.2 s continuativi a ~2.9 m**: radar presente nel **100%** dei
+        campioni, PIR nello **0.2%** (1 campione su 466)
+      - **zero falsi positivi** per entrambi in 80.2 s di stanza vuota
+      - mappa gate↔distanza confermata al **98.3%** su 663 campioni (gate 0-7)
+      - rumore di fondo riproducibile tra sessioni: gate0 max 27 (era 26), gate1 max 21
+        (era 21) → i margini soglia↔rumore calcolati restano validi
+- [~] *(SUPERATO dalla correzione qui sotto)* **Il PIR sbaglia anche con la persona IN MOVIMENTO (Test 1.2 a 1 m, 20/08/2026)**:
+      cammino sul posto a 1 m, condizione teoricamente ideale per un PIR → **80.46 ± 6.22 %
+      di falsi negativi**, praticamente identico al caso della persona ferma. In 62 s di
+      cammino continuo ha emesso solo **1-4 impulsi** per trial, di durata 3.6-3.8 s.
+      Spiegazione: il piroelettrico risponde al *transito* del flusso IR attraverso le zone
+      della lente di Fresnel, non al movimento in sé — chi si muove *sul posto* non
+      attraversa le zone. **Rilevantissimo per UPRISE**: una persona intrappolata si muove
+      sul posto, non attraversa la stanza. È il caso peggiore per un PIR
+- [x] **⚠️ CORREZIONE IMPORTANTE (22/08/2026): l'80.5% di falsi negativi del PIR con
+      persona in movimento a 1 m era un artefatto della modalita' L.** Ripetuta la stessa
+      serie con jumper su **H** (stesso movimento, stessa posizione, 5 trial):
+      | configurazione | fn_PIR | pir_rate |
+      | L (non ripetibile) | **80.46 ± 6.22 %** | 19.54 % |
+      | H (repeat trigger) | **14.80 ± 11.52 %** | 85.20 % |
+      Con il ritrigger attivo il PIR **rileva bene** una persona che si muove a 1 m.
+      La frase "il PIR sbaglia anche con la persona in movimento" **non e' piu' sostenibile**
+      cosi' com'e': va riferita esplicitamente alla configurazione L
+- [x] **Controllo di comparabilita' fra le due serie, fatto col radar come testimone**:
+      `menergy_media` 98.96 (L) vs 99.30 (H) e `mdist_dev_cm` 10.38 vs 10.40 → il movimento
+      del soggetto e' stato riprodotto quasi identico. Resta uno scarto di ~4 cm sulla
+      distanza media (99.5 vs 103.6 cm) dovuto al rimontaggio del setup fra le due serie:
+      da dichiarare, ma non intacca il confronto sul PIR
+- ⚠️ **Cosa resta valido e cosa no**:
+      - **intatti** i due risultati portanti: persona **immobile** a 2.3 m (99.78% FN) e
+        sotto il banco (99.90% FN). Li' il PIR non ha generato alcun trigger, e il jumper
+        agisce solo *dopo* un trigger
+      - **da rifare in H**: `sotto_banco_movimenti` (era 64.1% FN in L)
+      - ✔ **verificato in H a 2 m (22/08/2026)**: `fn_PIR = 100.00 ± 0.00 %`, identico
+        alla serie in L. Conferma sperimentalmente la deduzione — dove non ci sono trigger
+        il jumper non cambia nulla — e la estende per deduzione a 3-5 m
+- [x] 🎯 **ESPERIMENTO CENTRALE DELLA TESI (22/08/2026): a parita' di tutto, cambia solo
+      il movimento.** A 1 m, jumper su **H** (configurazione migliore del PIR), stesso
+      setup, stessa postura in piedi, 5 trial per condizione:
+      | condizione | rilevamento PIR | fn PIR | fn radar |
+      | cammino sul posto | **85.20 ± 11.52 %** | 14.80 % | 0.00 % |
+      | **immobile** | **1.52 ± 1.03 %** | **98.48 %** | 0.00 % |
+      Struttura degli impulsi: in movimento **6 impulsi da 14.1 s in media, fino a 29.8 s**
+      (il ritrigger li concatena); da fermo **2 soli impulsi in 1000 s complessivi**.
+      **Una sola variabile cambia fra le due righe.** Il fallimento del PIR non e' dovuto
+      alla distanza (a 1 m funziona benissimo), ne' alla configurazione (e' in H), ne' alla
+      taratura: e' dovuto **all'immobilita' del soggetto**. Il radar resta a 0.00% in
+      entrambe le condizioni
+- ⚠️ Effetto collaterale interessante sul **radar**: con soggetto fermo `menergy_media`
+      scende da 99.3 a 68.6 e la dispersione della distanza sale da 10.4 a 21.3 cm. Il
+      bersaglio immobile da' un ritorno piu' debole, quindi la stima di distanza e' piu'
+      rumorosa — pur restando il rilevamento al 100%
+- [x] 🎯 **La stessa dimostrazione nello scenario UPRISE reale (22/08/2026)**: persona
+      sotto il banco a ~60 cm, jumper su **H**, 5 trial per condizione:
+      | condizione | rilevamento PIR | fn PIR | fn radar |
+      | con micro-movimenti | **96.52 ± 3.60 %** | 3.48 % | 0.00 % |
+      | immobile (rifatto in H) | **1.32 ± 0.86 %** | **98.68 %** | 0.00 % |
+      (la serie immobile in L dava 0.10% / 99.90%: il ritrigger allunga di poco i rari
+      impulsi isolati, ma non cambia la sostanza. **Entrambe le righe sono ora in H**,
+      quindi la coppia e' perfettamente appaiata)
+      Il contrasto e' ancora piu' netto che a 1 m (96.5% contro 0.1%). A 60 cm il PIR e'
+      un rilevatore di movimento quasi perfetto — e resta **completamente cieco** alla
+      persona ferma
+- 📌 **La tesi in tre frasi, come emerge dai dati**: (1) il PIR, configurato correttamente
+      e entro ~1 m, e' un ottimo rilevatore di **movimento**; (2) e' praticamente cieco
+      alla persona **immobile**, a qualunque distanza e in qualunque configurazione;
+      (3) il radar mmWave rileva entrambe le condizioni al 100% in tutti i test svolti.
+      Per UPRISE, dove la persona intrappolata puo' essere incosciente o esausta e quindi
+      immobile, il PIR non e' adeguato e il mmWave e' necessario. **Non "il PIR e' scarso",
+      ma "il PIR fa bene un lavoro che non e' questo"**
+- ✔ **Residuo di comparabilita' CHIUSO (22/08/2026)**: rifatta anche `sotto_banco_immobile_H`.
+      Le due coppie della tesi sono ora **entrambe interamente in modalita' H**, a due
+      distanze diverse e in due geometrie diverse, e dicono la stessa cosa:
+      | | movimento | immobile |
+      | 1 m, in piedi | 85.20 % | 1.52 % |
+      | 0.6 m, sotto il banco | 96.52 % | 1.32 % |
+      Nessun asterisco da mettere in tesi
+- [x] **Portata utile del PIR con movimento sul posto: sotto i 2 metri.** In modalità H
+      (la piu' favorevole) rileva l'85.2% del tempo a 1 m e **lo 0.0% a 2 m**. Non e' un
+      degrado graduale: fra 1 e 2 metri passa da "funziona bene" a "non vede niente".
+      Con persona **immobile** e' cieco a ogni distanza. Questa e' la caratterizzazione
+      corretta del PIR, misurata nella sua configurazione migliore
+- ⚠️ **Non mescolare le serie `_H` con quelle originali nella regressione della distanza**:
+      il setup e' stato smontato e rimontato, e il sensore risulta spostato di ~4-7 cm
+      (errore a 2 m: +11.22 cm nella serie originale, +18.68 cm in quella nuova). La retta
+      `misurata = 1.0381 x reale - 1.32` resta quella dei 25 trial originali
+- [x] **Durata degli impulsi PIR: 183 impulsi su tre sessioni, TUTTI fra 3.4 e 3.8 s**
+      (153 solo nello scenario "sotto banco con movimenti", dev.std 0.09 s, **zero impulsi
+      oltre 5 s**). Prova definitiva che l'uscita è un monostabile a durata fissa: non si
+      allunga nemmeno con movimento continuo. Il PIR non misura presenza né durata del
+      movimento, **conta eventi** — e il suo apparente "tasso di rilevamento" è il prodotto
+      fra numero di eventi e tempo di ritenuta impostato col trimmer
+- [x] **Il jumper H/L FUNZIONA, e tutta la fase 1 era in L (22/08/2026).**
+      Il ponticello era sui due pin lato "L". Spostandolo su "H" e ripetendo la prova della
+      mano: **un unico impulso continuo di >= 9.2 s**, ancora alto a fine acquisizione,
+      contro i 3.4-3.8 s di tutti i 196 impulsi precedenti. Il ritrigger e' reale.
+      ⚠️ Due errori miei corretti qui: (a) avevo concluso che il jumper fosse inerte, ma le
+      due prove precedenti erano state fatte fra due posizioni entrambe non-H;
+      (b) `impulsi_pir()` scartava gli impulsi **troncati** dai bordi della finestra, cioe'
+      proprio quelli lunghi: su questo file riportava "nessun impulso" mentre conteneva la
+      prova. Ora i troncati sono riportati a parte con il loro limite inferiore
+- ⚠️ **Conseguenza sui dati della fase 1: tutti acquisiti in modalita' L.** Va dichiarato.
+      Cosa ne risente:
+      - **niente** su stanza vuota, immobile a 2.3 m, sotto banco immobile, movimento a
+        2-5 m: il PIR ha prodotto zero o pochissimi eventi **isolati**, e il ritrigger non
+        puo' allungare un impulso che non esiste o che non riceve un secondo trigger entro
+        3.5 s. I due risultati portanti (99.78% e 99.90% di falsi negativi) sono intatti
+      - **solo** `movimento_1m` (80.5% FN) e `sotto_banco_movimenti` (64.1% FN) vanno
+        rifatti in H: sono gli unici scenari con eventi ripetuti durante movimento continuo
+- ⚠️ **Nota operativa**: dopo aver tolto e rimesso l'USB il PIR resta cieco per ~60 s
+      (stabilizzazione). Nella verifica del jumper il primo impulso e' arrivato a t=33 s
+      benche' il movimento fosse continuo dall'inizio: non era un guasto
+- ⚠️ **Come va interpretato l'80.4%**: dipende dal trimmer di ritenuta, che teniamo al
+      minimo. Il PIR ha prodotto **14 impulsi di durata costante 3.4-3.6 s** invece di un
+      segnale continuo: la sua uscita è un **monostabile a durata fissa** (ritenuta), non una
+      misura di presenza. Con la ritenuta al massimo il PIR *sembrerebbe* rilevare molto di
+      più, ma starebbe solo trattenendo l'ultimo evento. Il dato robusto e non contestabile
+      è l'altro: nei 93 s di immobilità il PIR **non ha rilevato alcun evento di movimento**
+- [x] **Il cavo blu (OUT) è definitivamente inutile**: `out_level` letto dal frame UART
+      coincide con `radar_presence` in **1699/1699** campioni. Utile anche per UPRISE: un
+      dispositivo che vuole solo la presenza binaria può usare il solo pin OUT senza UART
+- [x] **Il sensore di luce funziona**: `light_level` 21-29 di giorno e **0-1 di notte**
+      (sessione 6.5 h del 20-21/08/2026), nonostante il comando 0x01AE (config ausiliaria)
+      non risponda. I due fatti sono indipendenti: il valore fotosensibile viaggia nel
+      frame di engineering mode e segue davvero l'illuminazione ambientale
+- [x] **Falsi positivi: limite 95% ≤ 0.43 eventi/h** (20-21/08/2026) — 6.55 h di stanza
+      vuota notturna + 29 min diurni, **zero eventi** per radar e PIR. Con zero eventi non
+      si può scrivere "0 eventi/h": si riporta il limite superiore, che dipende dal tempo
+      di osservazione (regola del tre, 3/T)
+- [x] **Rumore di fondo stabile su 6.5 h**: gate0 media 17.4 → 17.8, gate1 13.3 → 13.1 tra
+      prima e seconda metà della notte; massimo gate0 = 34 contro soglia 50. Conferma su
+      tempi lunghi la decisione di non ricalibrare le soglie
 - [ ] Definire il protocollo di test (scenari, metriche: accuratezza, latenza, FP/FN)
+- [x] **TEST 1.3 COMPLETATO (18/08/2026, 27 °C) — il risultato centrale della tesi**.
+      5 trial × 302 s puliti, soggetto immobile a 2.30 m, ground truth dichiarata
+      dall'operatore via `acquire.py` (`data/fermo_seduto_T01..T05.csv`):
+      - **falsi negativi PIR: 99.78 ± 0.49 %** — su 4 trial su 5 è **100.0%**, cioè zero
+        rilevamenti in 5 minuti con una persona viva a 2.3 m
+      - **falsi negativi radar: 0.00 ± 0.00 %** — presenza rilevata nel 100% dei 7554 campioni
+      - distanza: **229.78 ± 2.38 cm** tra trial, con stabilità **entro** il trial di
+        1.48 ± 0.77 cm → la variabilità di come il soggetto si siede (~2.4 cm) è maggiore
+        di quella del sensore (~1.5 cm): scomposizione utile al capitolo sull'accuratezza
+- [x] **TEST 1.2 COMPLETATO 1-5 m (20/08/2026, 25 trial)** — accuratezza della distanza,
+      `data/movimento_{1,2,3,4,5}m_T01..T05.csv`:
+      - **regressione: misurata = 1.0381 × reale − 1.32 cm, R² = 0.99965**. Il radar è
+        quindi **estremamente lineare** ma ha un errore di **scala del +3.81%**, con offset
+        praticamente nullo. Residui dalla retta ≤ 4.9 cm su tutto il range
+      - conseguenza pratica: l'errore grezzo cresce con la distanza (−0.5 cm a 1 m,
+        +18.2 cm a 5 m = 3.6%), ma è **correggibile con un solo coefficiente**: dividendo
+        per 1.0381 l'errore residuo scende sotto i 5 cm a tutte le distanze
+      - ⚠️ la **causa** del +3.81% non è attribuibile con questi dati: può essere la
+        calibrazione interna del modulo o il riferimento con cui è stato misurato il
+        pavimento. Servirebbe un riferimento di distanza indipendente (metro laser)
+      - dispersione **entro** il trial 10-26 cm: è l'oscillazione del busto camminando sul
+        posto, non rumore del sensore (da seduto fermo era 1.5 cm)
+      - energia media del bersaglio: 99 → 85 → 54 → 35 → 28 da 1 a 5 m. Il decadimento è
+        molto più lento di 1/D⁴: **non** interpretarlo con l'equazione del radar, è un
+        valore normalizzato 0-100 con elaborazione interna
+      - **PIR: 0.0% di rilevamento a 2, 3, 4 e 5 m** — 20 trial, tutti al 100% di falsi
+        negativi, con soggetto in movimento continuo. Rileva qualcosa solo a 1 m (19.5%)
+      - ⚠️ **Range coperto: 1-5 m**, non 6. Limite della stanza disponibile, non del
+        sensore. Da dichiarare in tesi come perimetro sperimentale: la retta di
+        regressione è costruita su 5 punti e 25 trial, e l'extrapolazione dell'energia
+        (~27 a 6 m contro soglia 15) indica che il sensore avrebbe funzionato anche là.
+        Per lo scenario UPRISE il limite è irrilevante: la distanza d'interesse è
+        **sotto il metro** (persona sotto il banco), coperta dal Test 1.4
+- [x] **TEST 1.4 — persona sotto il banco, scenario immobile COMPLETATO (22/08/2026)**.
+      5 trial x 302 s, soggetto rannicchiato a ~50 cm, sensore fissato sotto il piano:
+      - **fn_PIR = 99.90 ± 0.22 %, fn_radar = 0.00 ± 0.00 %** → nello scenario reale del
+        progetto il radar vede la persona sempre, il PIR praticamente mai. È il risultato
+        che giustifica la tesi
+      - distanza 62.7 ± 4.2 cm, dispersione entro trial 13-14 cm: **~9x peggio** che da
+        seduto a 2.3 m (1.5 cm). Sotto l'arredo il radar **rileva benissimo ma localizza
+        male** — irrilevante per UPRISE, dove serve sapere *se* c'è qualcuno
+      - `senergy_gate0/1` = 0 come atteso, ma la presenza è portata dai **gate 2-3**
+        benché il bersaglio sia a ~60 cm: la distribuzione per-gate dello stazionario non
+        corrisponde alla distanza riportata. Osservazione aperta, verosimilmente cammini
+        multipli sotto il piano
+      - **respiro estraibile in 4 trial su 5**: 21.0 ± 2.5 atti/min dai canali moving.
+        Più alto e più disperso che da seduto (18-20), plausibile per postura rannicchiata
+      - **analisi di sensibilità alle soglie** (T04 era l'unico fallimento): abbassando la
+        soglia di accettazione da SNR>3 a SNR>2.5 si recuperano **5 trial su 5**, e le
+        stime dei quattro trial già validi restano **identiche** (17.9 / 20.9 / 23.9 / 21.4).
+        Cambia solo l'aggregato: 21.9 ± 2.9 invece di 21.0 ± 2.5. Il segnale in T04 c'era
+        (9 canali moving su 10 fra 22 e 27.5 atti/min): a scartarlo era la soglia, non il
+        sensore. **Nella tesi va dichiarato il criterio usato e riportata questa sensibilità**
+- ⚠️ **Correzione metodologica sul criterio di consenso del respiro** (22/08/2026): scegliere
+      il *gruppo più numeroso* di canali concordi premiava sistematicamente l'artefatto
+      stazionario a ~6-7 atti/min, che è compatto perché sistematico. `analizza_respiro.py`
+      ora riporta **tutti** i gruppi con la loro composizione (moving/stazionari) e segnala
+      quelli implausibili; la stima aggregata usa i **soli canali moving**
 - [ ] Test comparativo PIR vs mmWave con numeri
 - [ ] Test penetrazione ostacoli (cartongesso, legno, vetro, plastica)
 - [ ] Engineering mode + rilevamento respiro LD2410B
@@ -414,6 +736,29 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - [ ] Export CSV → analisi in Excel
 
 ### Indice di vitalità (obiettivo 6)
+- [x] **Pilota respiro riuscito (18/08/2026)** — `HLK-LD2410x/data/20260818_respiro_40cm_prova.csv`:
+      soggetto fermo a ~40 cm, 91 s. **7 gate moving indipendenti concordano su 0.264 Hz =
+      15.8 atti/min** (SNR fino a 12.8x su `menergy_gate2`), valore fisiologicamente
+      plausibile per un adulto a riposo. Prova che il respiro è rilevabile con questo
+      hardware e con la nostra catena 5 Hz + engineering mode + FFT.
+      ⚠️ **Non è una misura valida per la tesi**: manca la ground truth (non sappiamo il
+      ritmo reale), l'89% dei campioni moving è saturo e 40 cm non è uno scenario
+      realistico. Da rifare in fase 6: ≥1.5 m, soglie tarate, **respiro a metronomo** a
+      ritmo noto (il confronto stima↔ritmo imposto è la vera prova)
+- ⚠️ I canali **stazionari** in questo pilota sono inutilizzabili: gate 2-3 saturi al 100%,
+      gate 0-1 sempre a zero, e i gate 4-8 danno 6.6-9.2 atti/min in disaccordo tra loro e
+      col canale moving (0.132 Hz è esattamente metà di 0.264 → sospetta subarmonica).
+      Conferma che a distanza ravvicinata il respiro va cercato sul canale **moving**
+- [x] **Confermato su una seconda sessione a 2.31 m** (Test 1.3 T01, 302 s): stessa
+      spaccatura. I gate **moving** 2-8 concordano su 0.30 Hz = **18.2 atti/min**
+      (plausibile per adulto seduto) e **non sono saturi** (0-1%); i gate **stazionari**
+      danno 6.5-7.8 atti/min, troppo pochi per un adulto a riposo, e i gate vicini al
+      bersaglio sono saturi (gate3 100%, gate4 97%). Due sessioni a distanze molto diverse
+      dicono la stessa cosa: **per il respiro usare i gate moving**. Il ~7/min stazionario
+      è verosimilmente un artefatto del filtraggio interno del canale, non respirazione —
+      ma senza ground truth resta un'ipotesi: lo decide il test a metronomo della fase 6
+- [x] **Buona notizia per la fase 6**: a 2.3 m i canali moving non saturano, quindi il test
+      del respiro si può fare a distanza realistica senza accorgimenti geometrici
 - [x] Specifica dell'algoritmo (`analisi/ANALISI_VITALITA.md` — v1 da tarare sui dati)
 - [ ] Prototipo Python (`vitalita_proto.py`) + taratura sui CSV della Fase 6
 - [ ] Validazione (matrice di confusione su trial separati)

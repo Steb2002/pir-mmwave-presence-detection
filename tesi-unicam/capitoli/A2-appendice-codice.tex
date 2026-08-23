@@ -1,0 +1,179 @@
+\chapter{Software realizzato}
+\label{app:codice}
+
+Questa appendice documenta l'organizzazione del software prodotto per la tesi e i
+comandi con cui è stato usato. I listati completi non sono riportati integralmente:
+si indicano struttura, scelte implementative rilevanti e modalità d'uso.
+
+\section{Organizzazione del repository}
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Percorso} & \textbf{Contenuto} \\
+\midrule
+\texttt{firmware/ld2410b\_logger/} & logger CSV a 5~Hz con engineering mode e
+  lettura del PIR --- è il firmware usato per tutta la campagna \\
+\texttt{firmware/test00\_ld2410\_info/} & lettura dei parametri del modulo via
+  UART: firmware, MAC, soglie, gate, timeout \\
+\texttt{firmware/test01\_ld2410\_base/} & sketch diagnostico con auto-scan del baud
+  rate e stampa dei byte grezzi \\
+\texttt{firmware/test03\_pir\_base/} & verifica del PIR e misura della durata degli
+  impulsi \\
+\texttt{firmware/test04\_set\_gate/} & configurazione del gate massimo per la prova
+  di selettività spaziale \\
+\texttt{firmware/ld2420\_monitor/} & lettura del LD2420 in modalità ASCII \\
+\texttt{HLK-LD2410x/acquire.py} & acquisizione dalla seriale con metadati
+  sperimentali (versione adattata) \\
+\texttt{analisi/verifica\_engineering.py} & controllo di qualità dei file CSV \\
+\texttt{analisi/analizza\_test.py} & metriche di confronto e aggregazione per
+  scenario \\
+\texttt{analisi/analizza\_respiro.py} & analisi in frequenza e ricerca del canale
+  migliore \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Il logger}
+
+\subsection{Scelte implementative rilevanti}
+
+\begin{description}[leftmargin=1.4em,style=nextline,itemsep=3pt]
+  \item[Periodo fisso e non ritardo fisso] Il ciclo principale calcola l'istante del
+    prossimo campione anziché attendere un intervallo dopo l'elaborazione. È la
+    ragione per cui la cadenza misurata è di 200~ms esatti su tutti gli intervalli,
+    senza deriva: requisito necessario per l'analisi in frequenza.
+  \item[Lettura del PIR nello stesso frame] Il valore del PIR è campionato
+    immediatamente prima di comporre la riga CSV, quindi i due sensori condividono la
+    base dei tempi per costruzione.
+  \item[Engineering mode all'avvio] Il firmware entra in configurazione, attiva
+    l'engineering mode, esce dalla configurazione e verifica che i frame ricevuti
+    siano del tipo esteso, segnalando l'esito sulla seriale. Un fallimento silenzioso
+    produrrebbe file senza colonne per-gate scoperti solo in fase di analisi.
+  \item[Intestazione stampata una sola volta] L'intestazione CSV è stampata in
+    \texttt{setup()}. Poiché il reset all'apertura della porta non è garantito, lo
+    script di acquisizione la ricostruisce dal numero di colonne (si veda oltre).
+\end{description}
+
+\subsection{Formato di uscita}
+
+\begin{lstlisting}[caption={Intestazione CSV completa in engineering mode, 29
+colonne.},basicstyle=\ttfamily\scriptsize]
+timestamp_ms,radar_presence,moving_target,stationary_target,
+moving_distance_cm,stationary_distance_cm,moving_energy,stationary_energy,
+pir_presence,
+menergy_gate0,menergy_gate1,menergy_gate2,menergy_gate3,menergy_gate4,
+menergy_gate5,menergy_gate6,menergy_gate7,menergy_gate8,
+senergy_gate0,senergy_gate1,senergy_gate2,senergy_gate3,senergy_gate4,
+senergy_gate5,senergy_gate6,senergy_gate7,senergy_gate8,
+light_level,out_level
+\end{lstlisting}
+
+Le prime nove colonne coincidono con quelle del repository di
+riferimento~\cite{repoCallisto}, per compatibilità.
+
+\section{Acquisizione}
+
+\subsection{Ambiente}
+
+\begin{lstlisting}[language=bash,caption={Preparazione dell'ambiente Python.},
+basicstyle=\ttfamily\scriptsize]
+cd HLK-LD2410x
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install pyserial numpy
+mkdir data
+\end{lstlisting}
+
+\subsection{Uso}
+
+\begin{lstlisting}[language=bash,caption={Esempio di acquisizione di un trial.},
+basicstyle=\ttfamily\scriptsize]
+python acquire.py --port COM3 --duration 300 ^
+  --output data/fermo_seduto_T01.csv ^
+  --scenario fermo_seduto --trial T01 ^
+  --ground_truth_presence 1 --ground_truth_state still
+\end{lstlisting}
+
+Lo script aggiunge a ogni riga le colonne \texttt{pc\_time\_s},
+\texttt{group\_id}, \texttt{trial\_id}, \texttt{scenario},
+\texttt{ground\_truth\_presence}, \texttt{ground\_truth\_state}.
+
+\subsection{La modifica necessaria}
+
+La versione originale scrive righe solo dopo aver riconosciuto l'intestazione
+stampata dall'ESP32 in \texttt{setup()}. Se il reset all'apertura della porta non
+scatta, il file risulta \textbf{vuoto senza alcun messaggio}. La versione adattata
+ricostruisce l'intestazione dal numero di colonne della prima riga di dati:
+
+\begin{center}\small
+\begin{tabular}{@{}rl@{}}
+\toprule
+\textbf{Colonne} & \textbf{Interpretazione} \\
+\midrule
+9 & modalità base \\
+27 & engineering mode \\
+29 & engineering mode con sensore di luce e stato OUT \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Script di analisi}
+
+\subsection{Controllo di qualità}
+
+\begin{lstlisting}[language=bash,basicstyle=\ttfamily\scriptsize]
+python analisi/verifica_engineering.py data/fermo_seduto_T01.csv
+\end{lstlisting}
+
+Verifica ed esce con diagnostica su: cadenza effettiva e jitter, presenza delle
+colonne per-gate, percentuale di campioni saturi per canale, coerenza fra gate di
+picco e distanza riportata, rumore di fondo per-gate nei tratti a stanza vuota,
+numero e istante delle transizioni di presenza. Va eseguito su ogni file
+\emph{prima} di usarlo per l'analisi.
+
+\subsection{Metriche di confronto}
+
+\begin{lstlisting}[language=bash,basicstyle=\ttfamily\scriptsize]
+python analisi/analizza_test.py data/fermo_seduto_T0*.csv --salta-inizio 30
+python analisi/analizza_test.py data/ingresso_T0*.csv --event-time 10
+python analisi/analizza_test.py data/uscita_T0*.csv --release-time 10
+\end{lstlisting}
+
+Le opzioni principali: \texttt{-{}-salta-inizio} scarta i primi secondi (uscita
+dell'operatore e stabilizzazione del PIR), \texttt{-{}-event-time} e
+\texttt{-{}-release-time} attivano il calcolo delle latenze con la convenzione
+dell'evento a istante noto. Con più file dello stesso scenario lo script aggrega e
+riporta media e deviazione standard fra trial. Nel calcolo della latenza di rilascio
+distingue i casi in cui il rilascio non avviene mai e quelli in cui avviene prima
+dell'istante dichiarato, e conta le riaccensioni nella coda.
+
+\subsection{Analisi del respiro}
+
+\begin{lstlisting}[language=bash,basicstyle=\ttfamily\scriptsize]
+python analisi/analizza_respiro.py data/fermo_seduto_T01.csv --scan
+\end{lstlisting}
+
+La modalità \texttt{-{}-scan} esamina tutti e venti i canali di energia, scarta
+quelli saturi e quelli piatti secondo criteri dichiarati, ordina i rimanenti per
+rapporto segnale-rumore del picco in banda 0,1--0,5~Hz e riporta la mediana delle
+stime concordi con l'elenco dei canali che le sostengono. Esporta lo spettro in CSV
+per la produzione dei grafici. Richiede NumPy; gli altri script usano la sola
+libreria standard.
+
+\section{Configurazione del gate massimo}
+
+Lo sketch \texttt{firmware/test04\_set\_gate/} imposta il gate massimo via UART per
+la prova di selettività spaziale. Tre accorgimenti sono degni di nota, perché
+riguardano la scrittura di parametri persistenti su un modulo:
+
+\begin{enumerate}[leftmargin=1.8em,itemsep=2pt]
+  \item dopo ogni scrittura \textbf{rilegge sempre} i parametri per conferma, e
+        segnala se il valore letto non corrisponde a quello scritto;
+  \item \textbf{avvisa} quando la configurazione corrente è diversa da quella di
+        fabbrica, per evitare di condurre acquisizioni con parametri modificati
+        inconsapevolmente --- il rischio più insidioso in una campagna comparativa;
+  \item il comando \texttt{d} riscrive i valori di fabbrica del nostro esemplare
+        (le 9+9 soglie di \cref{tab:identita}, gate 8/8 e timeout di 5~s),
+        così da poter tornare in ogni momento alla configurazione di riferimento.
+\end{enumerate}

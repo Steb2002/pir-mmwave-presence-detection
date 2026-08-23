@@ -1,0 +1,247 @@
+\chapter{Interfaccia web: visualizzazione e raccolta dati}
+\label{cap:webui}
+
+\begin{quote}\small
+Questo capitolo risponde all'obiettivo O5: l'ESP32 pubblica i dati, un sito web li
+visualizza in tempo reale, la stessa applicazione li salva con statistiche ed
+esporta in CSV per l'analisi numerica. Alla data di questa stesura il progetto
+architetturale e di dettaglio è completo; l'implementazione è in corso.
+\end{quote}
+
+\section{Requisiti e scelta architetturale}
+\label{sec:webui-requisiti}
+
+\subsection{Requisiti}
+
+Dall'obiettivo O5 si ricavano cinque requisiti funzionali e due non funzionali.
+
+\begin{description}[leftmargin=1.4em,style=nextline,itemsep=2pt]
+  \item[R1 --- Pubblicazione] l'ESP32 rende disponibili i dati del sensore in rete.
+  \item[R2 --- Tempo reale] la visualizzazione segue il sensore senza ritardi
+    percepibili, alla stessa cadenza dell'acquisizione (5~Hz).
+  \item[R3 --- Statistiche] la stessa applicazione calcola e mostra statistiche di
+    sessione.
+  \item[R4 --- Esportazione] i dati sono esportabili in CSV per l'analisi in Excel.
+  \item[R5 --- Vitalità] l'interfaccia mostra anche l'indice di vitalità
+    (\cref{cap:vitalita}).
+  \item[N1 --- Funzionamento offline] vincolo derivato dal contesto UPRISE: in
+    emergenza sismica non c'è connettività.
+  \item[N2 --- Coerenza dei dati] il CSV esportato dal browser deve avere lo stesso
+    formato di quello prodotto dalla catena seriale, in modo che esista
+    \emph{un solo} formato dati in tutta la tesi.
+\end{description}
+
+\subsection{Opzioni considerate}
+
+\begin{table*}[htbp]
+\centering
+\caption{Opzioni architetturali valutate per la web UI.}
+\label{tab:webui-opzioni}
+\small
+\begin{tabularx}{\linewidth}{@{}lXX@{}}
+\toprule
+\textbf{Architettura} & \textbf{Vantaggi} & \textbf{Svantaggi} \\
+\midrule
+\textbf{A. Sito servito dall'ESP32} (web server e WebSocket a bordo) &
+  nessuna infrastruttura, funziona offline, dimostrazione autonoma, coerente con lo
+  scenario di emergenza &
+  RAM e flash limitate, massimo 2--3 client simultanei \\
+B. ESP32 $\to$ MQTT $\to$ server con database &
+  scalabile, storico illimitato, più vicino a una piattaforma reale &
+  richiede broker e server sempre accesi: infrastruttura eccessiva per una tesi di
+  sensing \\
+C. Piattaforma cloud (ThingSpeak, Blynk) &
+  pronta all'uso &
+  non funziona offline, cadenza di campionamento limitata ($\sim$15~s), dati fuori
+  controllo \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\subsection{Scelta: tutto sull'ESP32}
+
+È stata scelta l'opzione~A, per tre motivi.
+
+\begin{enumerate}[leftmargin=1.8em,itemsep=3pt]
+  \item \textbf{Coerenza con il contesto}: un nodo autonomo che serve la propria
+        dashboard è la miniatura concettuale della piattaforma di monitoraggio del
+        progetto, con le sue due modalità di funzionamento. L'opzione~C viola
+        direttamente il requisito N1.
+  \item \textbf{Il volume dei dati è piccolo}: circa venti valori a 5~Hz,
+        dell'ordine di 2~kB/s, ben dentro le capacità dell'ESP32.
+  \item \textbf{La persistenza a lungo termine non serve a bordo}: lo storico si
+        accumula \emph{nel browser}, che ha memoria abbondante, ed è il browser a
+        produrre il CSV. Questo elimina il bisogno di un database senza perdere
+        funzionalità.
+\end{enumerate}
+
+\paragraph{Modalità WiFi doppia.} Il firmware supporta due modalità selezionabili:
+\emph{Station}, in cui l'ESP32 si collega a una rete esistente (comodo in fase di
+sviluppo), e \emph{Access Point}, in cui crea la propria rete e serve la pagina a
+chi si collega. Se la connessione in modalità Station non riesce entro 15~s, parte
+automaticamente l'Access Point. È la modalità che rende la dimostrazione possibile
+in qualunque luogo, e quella che corrisponde allo scenario di emergenza.
+
+\paragraph{Piano di riserva.} È stato progettato anche il percorso alternativo
+(opzione~B: ESP32 $\to$ MQTT $\to$ backend FastAPI con SQLite $\to$ browser) nel
+caso in cui il relatore intenda una piattaforma centralizzata anziché il nodo
+autonomo. Il frontend è condiviso per circa l'85\,\% fra le due architetture, quindi
+il cambio di rotta costerebbe due o tre giornate di lavoro. La scelta di riferimento
+resta l'opzione~A.
+
+\section{Progetto}
+\label{sec:webui-progetto}
+
+\subsection{Stack}
+
+Lato firmware: \texttt{ESPAsyncWebServer} per servire la pagina, WebSocket per il
+flusso dati, LittleFS per ospitare i file statici. Tutto risiede sull'ESP32 e nulla
+è caricato da rete esterna, in ottemperanza al requisito N1.
+
+Lato browser: pagina singola in HTML, CSS e JavaScript, senza framework e senza
+dipendenze da CDN --- coerentemente con il vincolo di funzionamento offline.
+
+\subsection{Protocollo dati}
+
+Il messaggio WebSocket riprende le stesse grandezze del CSV, con l'aggiunta dei campi
+calcolati a bordo:
+
+\begin{lstlisting}[caption={Messaggio WebSocket inviato a 5~Hz.},
+label={lst:ws},basicstyle=\ttfamily\scriptsize]
+{
+  "t": 123456,                        // millis() dell'ESP32
+  "presence": 1,                      // radar_presence
+  "moving": 1, "still": 0,            // stato del bersaglio
+  "mdist": 145, "sdist": 0,           // distanze in cm
+  "menergy": 72, "senergy": 0,        // energia del bersaglio 0-100
+  "pir": 1,                           // sensore PIR (confronto dal vivo)
+  "gates_m": [0,5,60,10,0,0,0,0,0],   // energia per-gate, movimento
+  "gates_s": [0,0,45,8,0,0,0,0,0],    // energia per-gate, stazionario
+  "vitality": 54,                     // indice di vitalita 0-100
+  "vitality_class": "attivo"          // nessun_segno | vitalita_bassa |
+                                      // moderato | attivo
+}
+\end{lstlisting}
+
+La cadenza di invio è di \textbf{5~Hz}, identica al campionamento: nessun
+sottocampionamento, così che il CSV esportato dal browser sia equivalente a quello
+prodotto dalla catena seriale (requisito N2).
+
+Il canale WebSocket gestisce la riconnessione automatica con backoff: se la
+connessione cade, la pagina segnala lo stato e riprende senza perdere le statistiche
+già accumulate.
+
+\subsection{Struttura della pagina}
+
+La pagina è organizzata in quattro aree, schematizzate in \cref{fig:webui-layout}.
+
+\begin{figure*}[htbp]
+\centering
+\begin{minipage}{0.95\linewidth}
+\ttfamily\scriptsize
+\begin{verbatim}
++-------------------------------------------------------------+
+|  HEADER   * PRESENZA RILEVATA     [dist. 1.45 m]  [REC]     |
++--------------------------+----------------------------------+
+|  A. STATO LIVE           |  B. INDICE DI VITALITA'          |
+|  radar: MOVING @ 145 cm  |        +--- gauge 0-100 ---+     |
+|  PIR:   ATTIVO           |        |        54         |     |
+|  energia mov.:   72      |        |     "attivo"      |     |
+|  energia still.: 30      |        +-------------------+     |
++--------------------------+----------------------------------+
+|  C. GRAFICI                                                 |
+|  C1: serie temporale energia moving/still + soglia           |
+|  C2: barre per-gate (9 gate x moving/still) = "dov'e'"       |
+|  C3: timeline presenza radar vs PIR (confronto visivo)       |
++-------------------------------------------------------------+
+|  D. SESSIONE ED ESPORTAZIONE                                 |
+|  scenario:[______] trial:[__] gt:[0|1]   <- metadati test    |
+|  [Avvia] [Stop] [Scarica CSV] [Reset statistiche]            |
+|  durata 12:34 | radar 97.2% | PIR 41.0% | eventi 3           |
++-------------------------------------------------------------+
+\end{verbatim}
+\end{minipage}
+\caption{Struttura della pagina della dashboard. Il grafico C3 --- la timeline
+affiancata di presenza radar e PIR --- è l'elemento che rende visivamente immediato
+il risultato del \cref{cap:confronto}.}
+\label{fig:webui-layout}
+\end{figure*}
+
+Due scelte di progetto meritano una nota.
+
+\begin{itemize}[leftmargin=1.4em,itemsep=3pt]
+  \item Il grafico C3 mostra \textbf{radar e PIR affiancati sulla stessa base dei
+        tempi}. È l'elemento più efficace dal punto di vista dimostrativo: un
+        osservatore vede la riga del radar continua e quella del PIR a impulsi
+        isolati mentre una persona sta ferma davanti al sensore. È il risultato
+        della tesi reso visibile in tempo reale.
+  \item L'area D contiene i \textbf{metadati sperimentali} (scenario, trial, ground
+        truth) con gli stessi nomi usati dalla catena seriale. In questo modo il CSV
+        scaricato dal browser è direttamente utilizzabile dagli stessi script di
+        analisi, senza conversioni.
+\end{itemize}
+
+\subsection{Statistiche di sessione}
+
+Le statistiche sono calcolate \emph{nel browser} e non sull'ESP32, per non caricare
+il microcontrollore con un compito che non gli è proprio:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=1pt]
+  \item durata della sessione e percentuale di campioni con presenza, separatamente
+        per radar e PIR;
+  \item numero di eventi di attivazione (fronti $0 \to 1$) per ciascun sensore, che
+        è la stima dei falsi positivi in tempo reale;
+  \item distanza minima, media e massima; energia media;
+  \item tempo trascorso dall'ultima rilevazione --- l'informazione più rilevante
+        nello scenario di soccorso;
+  \item vitalità: valore corrente, media mobile, minimo e massimo di sessione.
+\end{itemize}
+
+\section{Piano di realizzazione e criteri di accettazione}
+\label{sec:webui-piano}
+
+Lo sviluppo è organizzato in cinque passi, ciascuno con un criterio di accettazione
+verificabile. La suddivisione serve a garantire che ogni passo produca qualcosa di
+utilizzabile anche se i successivi non vengono completati.
+
+\begin{enumerate}[leftmargin=1.8em,itemsep=3pt]
+  \item \textbf{Server e pagina statica} --- l'ESP32 serve una pagina da LittleFS in
+        entrambe le modalità WiFi. \emph{Accettazione}: la pagina si apre da browser
+        collegandosi all'Access Point del nodo.
+  \item \textbf{Flusso WebSocket} --- invio del messaggio di
+        \cref{lst:ws} a 5~Hz. \emph{Accettazione}: i valori sulla pagina cambiano
+        insieme al sensore, senza ritardo percepibile e senza accumulo di latenza su
+        dieci minuti di funzionamento.
+  \item \textbf{Visualizzazione} --- stato live, i tre grafici, la gauge di vitalità.
+        \emph{Accettazione}: le barre per-gate indicano il gate corretto quando il
+        soggetto si sposta di 0,75~m.
+  \item \textbf{Registrazione ed esportazione} --- accumulo nel browser ed
+        esportazione CSV. \emph{Accettazione}: il CSV scaricato dal browser e quello
+        prodotto dalla catena seriale, per la stessa sessione, sono
+        \textbf{equivalenti}; gli script di analisi producono le stesse metriche su
+        entrambi. Questo è il test che chiude il requisito N2.
+  \item \textbf{Indice di vitalità a bordo} --- porting dell'algoritmo del
+        \cref{cap:vitalita}. \emph{Accettazione}: l'indice calcolato sull'ESP32 e
+        quello calcolato in Python sullo stesso CSV coincidono entro l'errore di
+        arrotondamento.
+\end{enumerate}
+
+\section{Riferimenti di progetto}
+
+Come riferimento di interfaccia è stato esaminato il \emph{LD2410
+Configurator}~\cite{ld2410configurator}, un configuratore web open source che dialoga
+con il modulo tramite Web Serial e Web Bluetooth. Da esso sono stati ripresi due
+elementi: la rappresentazione a barre delle energie per-gate con la soglia
+sovrapposta, che è il modo più leggibile di mostrare venti canali insieme, e
+l'impostazione ``una pagina, nessuna installazione''. Non sono state riprese le
+funzioni di configurazione dei parametri, che nel nostro caso sarebbero controproducenti:
+le soglie devono restare fisse per tutta la campagna (\cref{sec:soglie}), e un
+pulsante che le modifica dalla dashboard è un rischio, non una funzione.
+
+\paragraph{Avvertenza sulla fonte.} Il LD2410 Configurator è un progetto di comunità
+e non un prodotto Hi-Link: vale come riferimento di interfaccia e di implementazione,
+non come fonte di dati tecnici sul modulo. Per quelli si è fatto riferimento
+esclusivamente ai documenti ufficiali~\cite{hilinkManualV104,hilinkProtoV107}.
+
+\todo{completare con gli screenshot della dashboard realizzata e con l'esito
+del test di accettazione del passo 4 (equivalenza dei due CSV)}

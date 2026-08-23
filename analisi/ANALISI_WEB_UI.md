@@ -248,3 +248,52 @@ solo superfluo.
   sotto il banco: SÌ/NO + vitalità") → mockup del tablet soccorritore UPRISE
 - Grafico spettro FFT live del respiro (porting di analizza_respiro.py in JS)
 - Salvataggio sessioni in LittleFS per funzionare senza browser collegato
+
+---
+
+## 9. Riferimento esterno — "LD2410 Configurator" di Albert Nisbet
+
+**https://ld2410.albert.nz/** — sorgenti: https://github.com/albertnis/ld2410-configurator
+
+⚠️ **Non è uno strumento ufficiale Hi-Link**: è un progetto open source di comunità,
+nato esplicitamente come *"easy-to-use, cross-platform alternative to the Windows-only
+tooling provided by HiLink"*. Sotto la regola fonti vale come **riferimento di
+UI/UX e di implementazione**, non come fonte autorevole di dati tecnici (per quelli
+resta il datasheet).
+
+### Come funziona (verificato 09/08/2026 ispezionando la pagina)
+- **Nessun server**: è una SPA statica su Cloudflare Pages che parla **direttamente**
+  al sensore dal browser via **Web Serial API** (`navigator.serial`) oppure
+  **Web Bluetooth** (`navigator.bluetooth`) — il bundle JS è di soli ~49 KB e non
+  contiene librerie di grafici (rendering fatto a mano)
+- Solo browser Chromium (Chrome/Edge/Opera): Firefox e Safari non implementano Web Serial
+- Supporta LD2410B e LD2410C; il baud è selezionabile (9600 → 460800, default 256000)
+- Bluetooth: chiede la password del modulo (default `HiLink`)
+- La schermata iniziale ha due card, **Serial** e **Bluetooth**, con le istruzioni di
+  cablaggio, e in basso un pannello **Monitor** con il traffico grezzo **RX/TX**
+
+### Cosa prendere per il nostro sito
+1. **Pannello Monitor RX/TX** — un riquadro di debug col traffico seriale grezzo:
+   costa poco e in fase di test fa risparmiare ore (equivale al nostro `ERROR: radar
+   not detected` ma leggibile)
+2. **Stato di connessione sempre visibile in alto** ("Disconnected"/"Connected"):
+   nel nostro caso è lo stato del WebSocket — già previsto nella §3, conferma la scelta
+3. **Zero dipendenze esterne**: nessuna CDN, nessuna libreria di grafici. Coerente col
+   nostro vincolo di funzionare offline; conferma che i 3 grafici della §3 si possono
+   disegnare in canvas/SVG a mano senza Chart.js
+4. **Istruzioni di cablaggio dentro la UI** — utile per la demo al professore
+
+### Cosa NON prendere
+- È un **configuratore**, non un **logger**: non fa storico, statistiche di sessione,
+  né export CSV. Sono esattamente i pezzi che l'obiettivo 5 richiede a noi
+- La connessione diretta browser↔sensore esclude l'ESP32: perderemmo PIR, timestamp
+  coerenti, indice di vitalità a bordo e il confronto PIR vs mmWave sulla stessa base tempi
+
+### Nota architetturale — un'opzione D che non avevamo considerato
+Web Serial apre una terza via: **browser → USB → ESP32** (la pagina legge le righe CSV
+già prodotte dal firmware, senza WiFi né WebSocket). Pro: nessuno stack di rete da
+scrivere, si riusa il logger così com'è. Contro: il cavo USB deve restare attaccato,
+niente demo wireless "nodo autonomo", e si perde l'analogia con la piattaforma UPRISE.
+**La scelta resta A** (sito servito dall'ESP32), ma l'opzione D è un ottimo **piano di
+riserva a basso costo** se il WiFi a bordo desse problemi: il frontend è lo stesso,
+cambia solo la sorgente dei dati (una funzione `connect()` al posto del WebSocket).

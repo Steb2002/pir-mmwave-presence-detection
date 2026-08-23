@@ -1,0 +1,142 @@
+% =====================================================================
+%  TESI DI LAUREA TRIENNALE IN INFORMATICA — Universita' di Camerino
+%
+%  Basato sul template "(Unofficial) Unicam Template for Thesis"
+%  di Matteo Belenchia (LPPL 1.3c). La classe unicam-diss.cls NON e'
+%  stata modificata: tutti gli adattamenti stanno in questo preambolo.
+%
+%  Compilare con pdfLaTeX + Biber (su Overleaf: Compiler = pdfLaTeX).
+%  Servono due o tre passate perche' cleveref risolva i riferimenti.
+% =====================================================================
+
+% L'opzione "italian" non e' dichiarata dalla classe: resta un'opzione
+% globale e viene raccolta da babel E da biblatex (che la classe carica
+% da sola, prima che noi possiamo caricare babel). Senza di essa la
+% bibliografia resterebbe in inglese.
+\documentclass[a4paper,twoside,symmetric,concrete,justified,sfsidenotes,italian]{unicam-diss}
+
+% =====================================================================
+%  PACCHETTI AGGIUNTIVI
+%
+%  ATTENZIONE — la classe carica GIA' i seguenti pacchetti, e ricaricarli
+%  con opzioni diverse causa "Option clash":
+%    geometry, setspace, fancyhdr, hyperref, xcolor, inputenc, fontenc,
+%    titlesec, titletoc, ragged2e, paralist, multicol, tocloft, textcomp,
+%    placeins, changepage, graphicx, amsmath, amsthm, amssymb, mathtools,
+%    biblatex (backend=biber, style=numeric), glossaries-extra, nomencl,
+%    algorithm, titling.
+%  Da NON caricare mai con tufte-book: caption, subcaption (la classe
+%  applica le sue patch a \@caption e vengono sovrascritte).
+% =====================================================================
+
+\usepackage[italian]{babel}
+\usepackage{csquotes}
+
+% ---------- Tabelle ----------
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+
+% ---------- Elenchi ----------
+\usepackage{enumitem}
+
+% ---------- Simboli ----------
+\usepackage{gensymb}   % \degree, \celsius
+\usepackage{eurosym}   % \euro
+
+% ---------- Codice ----------
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  breaklines=true,
+  showstringspaces=false,
+  frame=single,
+  framesep=4pt,
+  captionpos=b,
+  xleftmargin=0pt,
+  aboveskip=1em,
+  belowskip=1em
+}
+
+% ---------- Riferimenti incrociati (dopo hyperref, che e' nella classe) ----------
+\usepackage{cleveref}
+
+% =====================================================================
+%  ADATTAMENTI ALLA CLASSE
+% =====================================================================
+
+% La classe imposta secnumdepth=1 e tocdepth=1: le sottosezioni non
+% sarebbero numerate. Questo documento ha molte sottosezioni richiamate
+% con \cref, che senza numerazione punterebbero al numero di sezione
+% (riferimenti sbagliati). Si alza la profondita' e si ripristina il
+% numero nel titolo, che nella classe ha il campo "label" vuoto.
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\titleformat{\subsection}%
+  {\Large\itshape}%            formato di numero + testo
+  {\upshape\thesubsection}%    numero (nella classe era vuoto)
+  {1em}%                       distanza fra numero e testo
+  {}%
+  []%
+
+% ---------- Bibliografia ----------
+\addbibresource{bib/tesi.bib}
+
+% ---------- Abbreviazioni (glossaries-extra, fornito dalla classe) ----------
+\makeglossaries[abbreviations]
+\input{backmatter/abbreviazioni}
+
+% ---------- Comandi di comodo ----------
+\newcommand{\ldb}{HLK-LD2410B}
+\newcommand{\ldc}{HLK-LD2420}
+\newcommand{\pir}{HC-SR501}
+% Note redazionali di bozza. Per la stampa finale: svuotare la macro
+% decommentando la riga \renewcommand qui sotto.
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+% \renewcommand{\todo}[1]{}
+
+
+\begin{document}
+
+\frontmatter
+\pagenumbering{roman}
+
+% Pagina di lavoro con le proposte di titolo: rimuovere questa riga
+% dopo aver scelto il titolo definitivo.
+\input{frontmatter/proposte-titolo}
+
+\input{frontmatter/titlepage}
+\input{frontmatter/colophon}
+% \input{frontmatter/dedica}      % facoltativa: dedica o epigrafe
+\input{frontmatter/abstract}
+\input{frontmatter/indici}
+
+\mainmatter
+\pagenumbering{arabic}
+
+\input{capitoli/01-introduzione}
+\input{capitoli/02-sensori-stato-arte}
+\input{capitoli/03-moduli-e-dati}
+\input{capitoli/04-confronto-sperimentale}
+\input{capitoli/05-consumo-energetico}
+\input{capitoli/06-web-ui}
+\input{capitoli/07-indice-vitalita}
+\input{capitoli/08-conclusioni}
+
+\appendix
+\input{capitoli/A1-appendice-protocollo}
+\input{capitoli/A2-appendice-codice}
+
+\backmatter
+
+% multipagefullwidth (definito dalla classe) allarga il testo a 180mm e
+% azzera il margine delle note: serve per elenchi e bibliografia, che
+% nella colonna stretta risulterebbero illeggibili.
+\glsaddall
+\begin{multipagefullwidth}
+\printglossary[type=abbreviations,style=mcolindex,title={Abbreviazioni e sigle}]
+\printbibliography[heading=bibintoc,title={Bibliografia e fonti}]
+\end{multipagefullwidth}
+
+\end{document}

@@ -1,0 +1,7 @@
+2023/11/20 15:48:59.452 => Stop Realtime data show.
+2023/11/20 15:48:59.453 => Stop Noise scan.
+2023/11/20 15:48:59.454 => Cancel Read Data
+2023/11/20 15:48:59.454 => CloseSerial: mSerialFile=0xffffffff
+2023/11/20 15:48:59.454 => Cancel Read Data
+2023/11/20 15:48:59.454 => CloseSerial: mSerialFile=0xffffffff
+2023/11/20 15:48:59.454 => CloseSerial: mSerialFile=0xffffffff

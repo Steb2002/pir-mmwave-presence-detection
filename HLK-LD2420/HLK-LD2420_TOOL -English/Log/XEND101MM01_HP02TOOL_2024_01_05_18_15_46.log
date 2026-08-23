@@ -1,0 +1,37 @@
+2024/01/05 18:15:49.925 => CloseSerial: mSerialFile=0xffffffff
+2024/01/05 18:15:49.925 => Prepare Open Serial: Com=\\.\COM13 BaudRate=115200
+2024/01/05 18:15:49.926 => OpenSerial: Com=\\.\COM13 BaudRate=115200, Success=1, mSerialFile=0x0000095c
+2024/01/05 18:15:49.943 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:15:50.154 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:15:50.154 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:15:50.259 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:15:50.259 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:15:50.260 => Cancel Read Data
+2024/01/05 18:15:50.260 => CloseSerial: mSerialFile=0x0000095c
+2024/01/05 18:17:17.621 => CloseSerial: mSerialFile=0xffffffff
+2024/01/05 18:17:17.621 => Prepare Open Serial: Com=\\.\COM13 BaudRate=115200
+2024/01/05 18:17:17.622 => OpenSerial: Com=\\.\COM13 BaudRate=115200, Success=1, mSerialFile=0x00000978
+2024/01/05 18:17:17.721 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:17:17.932 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:17:17.932 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:17:18.038 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:17:18.038 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:17:18.038 => Cancel Read Data
+2024/01/05 18:17:18.039 => CloseSerial: mSerialFile=0x00000978
+2024/01/05 18:17:51.093 => CloseSerial: mSerialFile=0xffffffff
+2024/01/05 18:17:51.093 => Prepare Open Serial: Com=\\.\COM13 BaudRate=115200
+2024/01/05 18:17:51.095 => OpenSerial: Com=\\.\COM13 BaudRate=115200, Success=1, mSerialFile=0x00000980
+2024/01/05 18:17:51.134 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:17:51.344 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:17:51.345 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:17:51.451 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:17:51.451 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/05 18:17:51.451 => Cancel Read Data
+2024/01/05 18:17:51.451 => CloseSerial: mSerialFile=0x00000980
+2024/01/05 18:17:53.659 => Stop Realtime data show.
+2024/01/05 18:17:53.661 => Stop Noise scan.
+2024/01/05 18:17:53.666 => Cancel Read Data
+2024/01/05 18:17:53.666 => CloseSerial: mSerialFile=0xffffffff
+2024/01/05 18:17:53.666 => Cancel Read Data
+2024/01/05 18:17:53.666 => CloseSerial: mSerialFile=0xffffffff
+2024/01/05 18:17:53.666 => CloseSerial: mSerialFile=0xffffffff

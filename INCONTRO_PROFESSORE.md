@@ -31,7 +31,12 @@
 6. Requisiti formali della tesi: numero pagine indicativo, template Overleaf
    dell'ateneo, lingua (IT/EN)?
 7. La web UI: conferma che basta "un minimo di interfaccia" come da call, o si
-   aspetta qualcosa di specifico?
+   aspetta qualcosa di specifico? In particolare: **intende una dashboard servita
+   direttamente dal nodo ESP32** (autonoma, senza infrastruttura — modello
+   "emergenza") **oppure una piattaforma con server e database** che riceve i dati
+   pubblicati dal nodo e mantiene lo storico (modello "piattaforma di monitoraggio
+   SAFE")? Il progetto è pronto per entrambe (`analisi/ANALISI_WEB_UI.md` per la
+   prima, `analisi/ANALISI_SITO_SERVER.md` per la seconda)
 
 ### Se c'è tempo
 8. Possibilità di fare qualche test in un'aula vera (o al dimostratore di Ascoli)?

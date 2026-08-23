@@ -1,0 +1,51 @@
+\chapter*{Sommario}
+\addcontentsline{toc}{chapter}{Sommario}
+\markboth{Sommario}{Sommario}
+
+Il progetto europeo UPRISE, nato dopo il sisma del 2016 nell'area di Camerino,
+prevede l'integrazione di sensori IoT negli arredi scolastici: in caso di terremoto
+il nodo installato nell'arredo deve rilevare la presenza di una persona rifugiata
+sotto di esso e comunicarlo all'esterno tramite rete LoRa. Il nodo attualmente in
+uso (DIPME-DEVICE) affida il rilevamento di presenza a un sensore \emph{PIR}, che
+per principio fisico è cieco verso una persona immobile: proprio la condizione
+tipica di chi si trova intrappolato.
+
+Questa tesi affronta la parte di \emph{sensing} del problema. Sono stati studiati,
+strumentati e confrontati sperimentalmente due radar \emph{mmWave} FMCW a 24~GHz
+(HLK-LD2410B e HLK-LD2420) e un sensore PIR HC-SR501, acquisendo i dati con una
+piattaforma di misura realizzata su ESP32 che campiona a 5~Hz in
+\emph{engineering mode}, cioè con accesso ai valori di energia riflessa per ciascuno
+dei nove \emph{gate} di distanza del radar.
+
+Il risultato centrale è quantitativo: su cinque prove indipendenti da cinque minuti
+ciascuna, con un soggetto immobile seduto a 2,30~m, il PIR ha mancato la presenza
+nel $99{,}78 \pm 0{,}49\,\%$ dei campioni, mentre il radar l'ha rilevata nel
+$100\,\%$ dei 7554 campioni acquisiti. Il PIR risulta inaffidabile anche con il
+soggetto \emph{in movimento sul posto} ($80{,}5\,\%$ di falsi negativi a 1~m,
+$100\,\%$ oltre i 2~m), coerentemente con il fatto che l'elemento piroelettrico
+risponde al transito del flusso infrarosso fra le zone della lente di Fresnel e non
+al movimento in sé. La misura di distanza del radar si è rivelata estremamente
+lineare ($R^2 = 0{,}99965$ su 25 prove fra 1 e 5~m), con un errore di scala del
+$+3{,}81\,\%$ correggibile mediante un singolo coefficiente; su 7~ore di stanza
+vuota nessuno dei due sensori ha prodotto falsi positivi, con limite superiore al
+95\,\% di confidenza pari a $0{,}43$ eventi/h. Dall'analisi in frequenza
+dell'energia per-gate è stato inoltre possibile estrarre il ritmo respiratorio di un
+soggetto immobile, con concordanza fra canali indipendenti.
+
+Su questa base la tesi propone un \emph{indice di vitalità}: una grandezza compresa
+fra 0 e 100 che, oltre al ``c'è qualcuno'', stimi quanto la persona si muove, a
+supporto del triage dei soccorritori. Il lavoro comprende infine l'analisi dei
+consumi da datasheet e il progetto di un'interfaccia web servita direttamente
+dall'ESP32 per la visualizzazione in tempo reale e l'esportazione dei dati.
+
+La raccomandazione conclusiva non è la sostituzione del PIR, ma
+un'\emph{architettura ibrida}: il PIR come guardiano a microampere che decide quando
+accendere il radar, e il radar mmWave come strumento di misura durante la finestra
+di emergenza.
+
+\vspace{1em}
+\begin{sloppypar}
+\noindent\textbf{Parole chiave:} radar mmWave, FMCW 24~GHz, PIR, rilevamento di
+presenza, ESP32, HLK-LD2410B, monitoraggio del respiro, sicurezza sismica,
+UPRISE/SAFE.
+\end{sloppypar}

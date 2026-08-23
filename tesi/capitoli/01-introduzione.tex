@@ -1,0 +1,154 @@
+\chapter{Introduzione}
+\label{cap:introduzione}
+
+\section{Contesto: il progetto UPRISE/SAFE}
+\label{sec:contesto}
+
+Il terremoto del 2016 che ha colpito l'Italia centrale, e in particolare l'area di
+Camerino, ha reso evidente un problema tanto concreto quanto poco studiato: nelle
+prime ore successive a un evento sismico l'informazione più preziosa per i
+soccorritori non è lo stato dell'edificio, ma \emph{dove si trovano le persone}.
+Da questa esigenza nasce il progetto europeo UPRISE\footnote{Nella documentazione
+scientifica del gruppo di ricerca il progetto è indicato anche con il nome
+\textbf{SAFE}; nel seguito si userà UPRISE/SAFE per riferirsi allo stesso
+ecosistema.}, che ha come obiettivo la mitigazione del rischio sismico attraverso
+l'integrazione di sensoristica IoT negli \emph{arredi} degli ambienti
+scolastici~\cite{slideUprise}.
+
+L'idea del progetto si articola su tre livelli.
+
+\begin{description}[leftmargin=1.4em,style=nextline]
+  \item[Arredi salva-vita] Banchi e pareti progettate dalla Scuola di Architettura
+    e Design di UNICAM per resistere al crollo e offrire un volume di rifugio: il
+    banco ha telaio doppio spaziale, piano rinforzato con lamiera forata
+    antisfondamento, elemento di base dissipativo e connessione strutturale fra
+    banchi adiacenti.
+  \item[Nodi di sensing] Nell'arredo è integrata l'elettronica sviluppata dal
+    partner industriale AM Microsystems: il \textbf{DIPME-DEVICE} monta radio LoRa,
+    sensore \emph{PIR}, sensore \emph{UWB}, oltre a CO\textsubscript{2},
+    temperatura, umidità, pressione, accelerometro e Bluetooth. I nodi
+    comunicano con un \textbf{DIPME-COORDINATOR} e da questo verso un gateway IoT
+    su Linux/Raspberry.
+  \item[Raccolta e visualizzazione] In emergenza la rete di terra non è
+    disponibile: i messaggi LoRa (bande sub-GHz libere, 433/868~MHz in Europa,
+    con portate dell'ordine di 3--5~km in ambiente urbano) vengono raccolti da
+    \emph{droni} che ricostruiscono una mappa di calore geolocalizzata, consultabile
+    offline dal tablet dei soccorritori. L'intero sistema è modellato e validato
+    a priori sulla piattaforma di Digital Twin del gruppo di
+    ricerca~\cite{callisto2023dt,unicamDT}.
+\end{description}
+
+Il sistema opera in due modalità: un ``tempo di pace'' di monitoraggio ordinario
+e un ``tempo di guerra'' di emergenza sismica, attivato da un trigger (accelerometro
+sul gateway, blackout della rete elettrica).
+
+\todo{inserire una figura di sistema: arredo $\to$ DIPME $\to$ coordinator $\to$
+gateway $\to$ drone $\to$ tablet}
+
+\section{Il problema specifico affrontato dalla tesi}
+\label{sec:problema}
+
+Questa tesi si occupa esclusivamente del livello più basso della catena: il
+\textbf{sensing di presenza}. La domanda di partenza è molto circoscritta e ha
+un'origine precisa nell'architettura esistente.
+
+Il DIPME-DEVICE rileva la presenza con un sensore PIR (\emph{Passive InfraRed}).
+Il PIR è il sensore di presenza più diffuso al mondo per tre ragioni difficili
+da battere: consuma qualche decina di microampere, costa pochi euro e non richiede
+alcuna elaborazione. Ha tuttavia un limite che non dipende dalla qualità del
+componente ma dal suo principio di funzionamento: l'elemento piroelettrico risponde
+alla \emph{variazione} del flusso infrarosso incidente, non al suo valore. Una
+persona ferma produce un flusso costante, quindi un segnale differenziale nullo:
+\emph{nessun PIR, a nessun prezzo, può rilevare una persona immobile}
+(\cref{sec:pir-principio}).
+
+Nello scenario UPRISE questo limite cade esattamente nel punto peggiore. Una
+persona rifugiata sotto un banco dopo un crollo è, tipicamente, \textbf{ferma}:
+per paura, per scelta, o perché non può muoversi. È il caso cieco del sensore
+che il nodo monta oggi.
+
+I radar \emph{mmWave} a onda continua modulata in frequenza (FMCW) a 24~GHz
+promettono di coprire proprio questo buco: rilevano i micro-movimenti
+(fino, in linea di principio, all'oscillazione toracica del respiro), misurano la
+distanza del bersaglio e non producono immagini, il che li rende compatibili con i
+vincoli di privacy di un ambiente scolastico. Da qui le domande di ricerca della
+tesi:
+
+\begin{enumerate}[leftmargin=2em,itemsep=2pt]
+  \item \emph{quanto} vale, in numeri, il vantaggio del mmWave sul PIR nel caso
+        della persona ferma?
+  \item quali \emph{dati} produce realmente un modulo mmWave di fascia consumer, e
+        con quale accuratezza?
+  \item a che \emph{costo} energetico, e con quale architettura di nodo?
+  \item è possibile andare oltre la presenza binaria, verso una misura di
+        \emph{vitalità} utile al triage?
+\end{enumerate}
+
+\section{Obiettivi}
+\label{sec:obiettivi}
+
+Gli obiettivi sono stati concordati con il relatore e sono qui riportati nella
+formulazione originale, perché costituiscono la traccia di tutto il documento.
+
+\begin{enumerate}[label=\textbf{O\arabic*.},leftmargin=2.6em,itemsep=4pt]
+  \item \textbf{Studio dei sensori} --- chi li usa, come vengono usati, quali dati
+        producono (PIR e mmWave). \emph{Capitolo \ref{cap:sensori}.}
+  \item \textbf{Analisi dei dati forniti} --- capire nel dettaglio quali grandezze
+        i sensori mettono a disposizione: il PIR solo movimento sì/no, il mmWave
+        micro-movimenti, distanza e potenzialmente respiro.
+        \emph{Capitolo \ref{cap:moduli}.}
+  \item \textbf{Comparazione con testing numerico} --- confronto sperimentale
+        PIR vs mmWave con metriche quantitative. \emph{Capitolo \ref{cap:confronto}.}
+  \item \textbf{Consumo energetico} --- a titolo informativo, sulla base dei
+        datasheet, non essendo disponibile strumentazione di misura.
+        \emph{Capitolo \ref{cap:consumi}.}
+  \item \textbf{User interface web} --- l'ESP32 pubblica i dati, un sito web li
+        visualizza in tempo reale, la stessa applicazione li salva con statistiche
+        ed esporta in CSV per l'analisi numerica. \emph{Capitolo \ref{cap:webui}.}
+  \item \textbf{Indice di vitalità} --- obiettivo avanzato: oltre alla presenza
+        sì/no, un algoritmo che quantifichi quanto una persona si muove
+        (per esempio 50 su 100) e la classifichi di conseguenza.
+        \emph{Capitolo \ref{cap:vitalita}.}
+\end{enumerate}
+
+\paragraph{Fuori scope.} Non fanno parte della tesi: la radio LoRa e il suo
+protocollo, la raccolta con droni, il Digital Twin, la progettazione strutturale
+degli arredi. Questi elementi compaiono solo in \cref{sec:contesto} come
+inquadramento e, dove pertinente, come vincolo di progetto (per esempio l'assenza
+di connettività in emergenza, che orienta le scelte del \cref{cap:webui}).
+
+\section{Contributi}
+\label{sec:contributi}
+
+I contributi originali di questo lavoro sono:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=3pt]
+  \item una \textbf{piattaforma di misura riproducibile} su ESP32 che acquisisce
+        radar e PIR in parallelo a 5~Hz esatti con accesso ai dati per-gate del
+        radar, con formato CSV unico condiviso da tutta la catena di analisi
+        (\cref{sec:piattaforma});
+  \item la \textbf{caratterizzazione quantitativa} del divario PIR/mmWave sulla
+        persona ferma e sulla persona in movimento sul posto, con deviazioni
+        standard su cinque ripetizioni per scenario (\cref{cap:confronto});
+  \item la \textbf{calibrazione della misura di distanza} del LD2410B su 25 prove
+        fra 1 e 5~m, con individuazione di un errore di scala sistematico e del
+        coefficiente che lo corregge (\cref{sec:distanza});
+  \item la \textbf{dimostrazione di misurabilità del respiro} con hardware
+        consumer, e l'individuazione documentata di quale dei venti canali di
+        energia disponibili sia effettivamente utilizzabile a ciascuna distanza
+        (\cref{sec:respiro});
+  \item la \textbf{specifica e la taratura di un indice di vitalità}
+        implementabile su microcontrollore (\cref{cap:vitalita}).
+\end{itemize}
+
+\section{Struttura del documento}
+
+Il \cref{cap:sensori} tratta i principi di funzionamento e lo stato dell'arte dei
+sensori di presenza (O1). Il \cref{cap:moduli} descrive i moduli in esame, i dati
+che producono e la piattaforma di acquisizione realizzata (O2). Il
+\cref{cap:confronto} è il capitolo centrale e riporta il confronto sperimentale
+(O3). Il \cref{cap:consumi} analizza i consumi (O4), il \cref{cap:webui} la web UI
+(O5), il \cref{cap:vitalita} l'indice di vitalità (O6). Il
+\cref{cap:conclusioni} risponde in sintesi alla domanda di partenza e indica gli
+sviluppi futuri. Le appendici raccolgono i dettagli del protocollo seriale e i
+listati principali.

@@ -1,0 +1,553 @@
+\chapter{I moduli in esame e i dati che producono}
+\label{cap:moduli}
+
+\begin{quote}\small
+Questo capitolo risponde all'obiettivo O2. Descrive i tre sensori effettivamente
+usati, il protocollo con cui si interrogano, la piattaforma di acquisizione
+realizzata per la campagna sperimentale e la natura dei dati prodotti, comprese le
+loro insidie --- saturazione, canali strutturalmente disattivati, coda di presenza
+--- individuate in fase di validazione.
+\end{quote}
+
+\section{HLK-LD2410B}
+\label{sec:ld2410b}
+
+\subsection{Specifiche}
+
+Il \ldb\ è un modulo radar FMCW a 24~GHz prodotto da Shenzhen Hi-Link
+Electronic. Le specifiche dichiarate dal manuale ufficiale e dal datasheet sono
+riassunte nella \cref{tab:ld2410b-specs}.
+
+\begin{table}[htbp]
+\centering
+\caption{Specifiche del \ldb\ (fonti: manuale ufficiale
+V1.04~\cite{hilinkManualV104}, manuale V1.03~\cite{hilinkManualV103},
+datasheet~\cite{ld2410bDatasheet}).}
+\label{tab:ld2410b-specs}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parametro} & \textbf{Valore} \\
+\midrule
+Tecnologia & FMCW, banda ISM 24~GHz \\
+Portata dichiarata & 5--6~m \\
+Campo visivo & $\pm 60\degree$ \\
+Alimentazione & 5~V, alimentatore con capacità $>$200~mA \\
+Corrente media & 80~mA \\
+Interfaccia & UART 256000 baud, 8N1 \\
+Bluetooth & integrato (variante B), password di default \texttt{HiLink} \\
+Dimensioni & circa 35~mm $\times$ 7~mm \\
+Gate di distanza & 9 (0--8) \\
+Risoluzione gate & 0,75~m oppure 0,20~m \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Piedinatura e cablaggio}
+\label{sec:cablaggio}
+
+Il modulo espone cinque piedini, definiti nella Tabella~1 del
+datasheet~\cite{ld2410bDatasheet}:
+
+\begin{center}\small
+\begin{tabular}{@{}clll@{}}
+\toprule
+\textbf{Pin} & \textbf{Nome} & \textbf{Funzione} & \textbf{Collegamento ESP32} \\
+\midrule
+1 & OUT & presenza digitale (alto = persona) & non collegato \\
+2 & UART\_Tx & il radar trasmette & GPIO25 (RX2) \\
+3 & UART\_Rx & il radar riceve & GPIO26 (TX2) \\
+4 & GND & massa & GND \\
+5 & VCC & alimentazione & VIN (5~V) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{table}[htbp]
+\centering
+\caption{Corrispondenza fra i colori del cavo JST fornito con il modulo e i piedini
+del datasheet. Una mappatura errata di questa corrispondenza ha comportato circa tre
+settimane di lavoro perso nella convinzione che il modulo fosse guasto.}
+\label{tab:colori}
+\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Colore} & \textbf{Pin} & \textbf{Segnale} & \textbf{ESP32} \\
+\midrule
+Rosso & 5 & VCC & VIN (5~V) \\
+Nero & 4 & GND & GND \\
+Giallo & 3 & UART\_Rx & D26 (TX2) \\
+Verde & 2 & UART\_Tx & D25 (RX2) \\
+Blu & 1 & OUT & non collegato \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Nota metodologica.} Vale la pena riportare l'episodio, perché è un
+risultato pratico di per sé. Il 19 luglio 2026 il modulo è stato dichiarato
+guasto dopo giorni di tentativi in cui non si riceveva alcun byte; il 9 agosto,
+ricontrollando la Tabella~1 del datasheet invece di dedurre l'ordine dei pin dalla
+fotografia del connettore, si è scoperto che i due fili della seriale erano
+invertiti. Il modulo ha risposto al primo tentativo. La regola che ne deriva ---
+\emph{fare sempre riferimento alla tabella di piedinatura del datasheet, non
+all'ordine apparente dei fili} --- è banale ma è costata tre settimane.
+
+Un secondo caso analogo si è presentato con lo strumento di configurazione da PC:
+il pacchetto \texttt{HLK-LD2420\_TOOL} non è utilizzabile con il LD2410B (protocolli
+diversi, l'errore restituito è \emph{Failed to set data transfer mode}). Per il
+LD2410B va usato il \texttt{LD2410 Tool} distribuito nella cartella Drive del
+produttore~\cite{hilinkDriveLD2410B}.
+
+\subsection{Protocollo seriale}
+\label{sec:protocollo-seriale}
+
+La comunicazione avviene su UART a 256000 baud, 8N1, con due tipi di frame
+distinti da intestazione e chiusura (protocollo V1.07~\cite{hilinkProtoV107}, i
+dettagli completi sono in \cref{app:protocollo}):
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item \textbf{frame di comando} --- intestazione \texttt{FD FC FB FA}, chiusura
+        \texttt{04 03 02 01};
+  \item \textbf{frame di dati} --- intestazione \texttt{F4 F3 F2 F1}, chiusura
+        \texttt{F8 F7 F6 F5}.
+\end{itemize}
+
+Nel frame di dati il byte 8 contiene lo stato del bersaglio come maschera di bit
+(\texttt{0x01} = in movimento, \texttt{0x02} = stazionario), seguito dalle distanze
+e dalle energie del bersaglio. Se il byte 6 vale \texttt{0x01} il frame è in
+\emph{engineering mode} e trasporta anche le energie per-gate nei byte 19--37, più
+la lettura del sensore di luce.
+
+I comandi utilizzati in questo lavoro sono:
+
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Comando} & \textbf{Funzione} \\
+\midrule
+\texttt{0x00FF} & entra in modalità configurazione \\
+\texttt{0x00FE} & esce dalla modalità configurazione \\
+\texttt{0x0062} & attiva engineering mode \\
+\texttt{0x0063} & disattiva engineering mode \\
+\texttt{0x00A0} & legge la versione firmware \\
+\texttt{0x0061} & legge i parametri correnti (soglie, gate, timeout) \\
+\texttt{0x0060} & imposta i parametri \\
+\texttt{0x00AA} & imposta la risoluzione di distanza \\
+\texttt{0x000B} & auto-calibrazione del rumore di fondo (firmware V2.44) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Engineering mode e dati per-gate}
+\label{sec:engineering}
+
+In modalità normale il modulo riporta, per ogni frame, lo stato di presenza, la
+distanza e l'energia del bersaglio in movimento e di quello stazionario. In
+\textbf{engineering mode} aggiunge le energie di ciascuno dei nove gate,
+separatamente per la componente in movimento e per quella stazionaria: diciotto
+valori aggiuntivi, più la lettura del fotosensore e lo stato del pin OUT.
+
+Questo è il punto di svolta per gli obiettivi O2, O3 e O6: senza i dati per-gate
+il radar sarebbe soltanto un PIR con la distanza, mentre con essi diventa uno
+strumento di misura. Tutta l'analisi del respiro e l'indice di vitalità si basano
+sulle serie temporali di questi canali.
+
+\subsection{Identità dell'esemplare in prova}
+\label{sec:identita}
+
+Per la riproducibilità dei risultati si riportano i dati letti dal modulo
+effettivamente usato, ottenuti via UART il 18 agosto 2026
+(\cref{tab:identita}).
+
+\begin{table}[htbp]
+\centering
+\caption{Identità e parametri di fabbrica dell'esemplare di \ldb\ in prova, letti
+via UART.}
+\label{tab:identita}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Dato} & \textbf{Valore letto} \\
+\midrule
+Versione firmware & 2.44.25070917 \\
+Versione protocollo & 1 \\
+MAC Bluetooth & 5E:E4:93:22:B9:3F \\
+Baud confermato & 256000, 8N1 \\
+Risoluzione gate & 75~cm; portata massima 675~cm (gate 0--8) \\
+Timeout di presenza (\emph{no-one duration}) & 5~s \\
+Soglie di movimento (gate 0--8) & 50, 50, 40, 30, 20, 15, 15, 15, 15 \\
+Soglie stazionarie (gate 0--8) & 0, 0, 40, 40, 30, 30, 20, 20, 20 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Il firmware 2.44 è l'ultima versione rilasciata dal produttore ed è quella che
+introduce l'\textbf{auto-calibrazione del rumore di fondo}, cioè la taratura
+automatica delle soglie di movimento e stazionarie~\cite{hilinkV244}.
+
+\paragraph{Avvertenza sulla fonte dei parametri.} Lo strumento da PC
+\texttt{LD2410 Tool} riporta per le sensibilità il valore~100 su tutti i gate. È
+una lettura errata: la lettura via UART con il comando \texttt{0x0061} restituisce
+la scala di fabbrica decrescente riportata in \cref{tab:identita}, che è coerente
+sia con il protocollo V1.07 (\S1.2.2: il bersaglio è riconosciuto solo se
+l'energia supera la soglia del gate) sia con il comportamento osservato. Per i
+valori numerici si è quindi fatto fede alla lettura via UART e non allo strumento
+da PC.
+
+\section{HLK-LD2420}
+\label{sec:ld2420}
+
+Il \ldc\ è il secondo radar 24~GHz in dotazione; la documentazione di
+riferimento è quella distribuita dal produttore~\cite{hilinkDriveLD2420}. Le differenze rilevanti rispetto
+al LD2410B sono riassunte nella \cref{tab:confronto-moduli}. Due meritano
+attenzione particolare:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item \textbf{alimentazione a 3,3~V} e non a 5~V: collegarlo come il LD2410B lo
+        danneggerebbe;
+  \item \textbf{la piedinatura cambia con la versione firmware}. Fino alla 1.5.2 il
+        piedino 3 (OT1) è l'uscita di presenza digitale e il piedino 5 (OT2) è il
+        TX seriale; dalla 1.5.3 i ruoli sono invertiti, e cambia anche il baud
+        (256000 fino alla 1.5.2, 115200 dalla 1.5.3). Verificare la versione prima
+        di collegare non è un consiglio ma un prerequisito.
+\end{itemize}
+
+\begin{table}[htbp]
+\centering
+\caption{Confronto fra i due moduli radar in dotazione.}
+\label{tab:confronto-moduli}
+\small
+\begin{tabularx}{\textwidth}{@{}lXX@{}}
+\toprule
+\textbf{Caratteristica} & \textbf{LD2410B} & \textbf{LD2420} \\
+\midrule
+Alimentazione & 5~V & 3,3~V \\
+Portata & circa 5--6~m & circa 12~m \\
+Gate & 9 (0--8) & 15 (0--14) \\
+Risoluzione gate & 0,75~m oppure 0,20~m & 0,70~m fisso \\
+Baud & 256000 fisso & 115200 o 256000 (dipende dal firmware) \\
+Bluetooth & presente & assente \\
+Calibrazione & manuale (auto da V2.44) & automatica (firmware $\geq$ 1.5.4) \\
+Dati per-gate & molto dettagliati & limitati \\
+Piedinatura & fissa & varia con il firmware \\
+Uso più adatto & respiro, dettaglio & portata lunga, copertura \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Verifica sull'esemplare in dotazione}
+
+L'esemplare in prova è stato collegato all'ESP32 (GPIO16/17) e verificato il
+17 luglio 2026. Risultati:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item il baud funzionante è \textbf{115200}, da cui si deduce firmware
+        $\geq$ 1.5.3 e quindi TX seriale sul piedino 3 (OT1). A 256000 baud si
+        riceve solo rumore, con lo stesso alfabeto di byte tipico di un log letto
+        al baud sbagliato;
+  \item la modalità di fabbrica è \textbf{ASCII ``semplice''} e non il protocollo
+        binario: il modulo trasmette righe di testo terminate da
+        \texttt{CR\,LF} contenenti \texttt{ON}, \texttt{OFF} oppure
+        \texttt{Range NN};
+  \item in questa modalità sono disponibili solo presenza e un valore di
+        ``range'': \textbf{nessuna energia per-gate}, nessuna distinzione fra
+        movimento e stazionario.
+\end{itemize}
+
+\paragraph{Limite dichiarato.} L'unità di misura del campo \texttt{Range} non è
+documentata nella documentazione in nostro possesso. I valori osservati
+(7--37 muovendosi nella stanza) sono compatibili con decimetri, cioè 0,7--3,7~m, ma
+in assenza di conferma il dato non viene usato come misura di distanza in questa
+tesi. Per accedere all'engineering mode del LD2420 occorre riconfigurare il modulo
+in modalità binaria; l'attività è rimasta fuori dal perimetro sperimentale
+completato (\cref{sec:ld2420-risultati}).
+
+\section{Il sensore PIR in dotazione: HC-SR501}
+\label{sec:hcsr501}
+
+Il modulo in dotazione è stato identificato per via fotografica come un
+\textbf{\pir}, riconoscendo sul circuito stampato la serigrafia del circuito di
+condizionamento BISS0001 e del regolatore lineare HT7133. Le specifiche da
+datasheet~\cite{hcsr501} sono riassunte nella \cref{tab:pir-specs}.
+
+\begin{table}[htbp]
+\centering
+\caption{Specifiche del PIR \pir\ in dotazione (datasheet~\cite{hcsr501}).}
+\label{tab:pir-specs}
+\small
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Parametro} & \textbf{Valore} \\
+\midrule
+Base & BISS0001 + elemento LHI778 \\
+Alimentazione & 4,5--20~V DC (collegato a VIN 5~V dell'ESP32) \\
+Livello logico di uscita & alto 3,3~V / basso 0~V, grazie al regolatore HT7133 a
+  bordo: compatibile con i GPIO dell'ESP32 senza adattamento \\
+Corrente di riposo & $<$50~\textmu A \\
+Portata & 3--7~m, regolabile con il trimmer di sensibilità \\
+Angolo di copertura & cono $<$110\degree\ (più ampio dei $\pm 60\degree$ del radar) \\
+Tempo di ritenuta & regolabile da circa 3~s a circa 5~min \\
+Block time & 2,5~s dopo ogni rilascio \\
+Trigger & jumper: L = singolo, H = ripetibile \\
+Temperatura operativa & $-15$ / $+70$~\celsius \\
+Dimensioni & 32 $\times$ 24~mm \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Configurazione adottata per la campagna} (fissata il 19 luglio 2026 e
+mantenuta identica per tutte le acquisizioni, con fotografia della posizione dei
+trimmer):
+
+\begin{enumerate}[leftmargin=1.8em,itemsep=2pt]
+  \item jumper in posizione \textbf{H} (repeat trigger), altrimenti una persona in
+        movimento continuo apparirebbe intermittente per costruzione;
+  \item trimmer del tempo di ritenuta al \textbf{minimo}: la ritenuta misurata è
+        risultata di circa 3,4~s;
+  \item trimmer di sensibilità a \textbf{metà corsa};
+  \item uscita collegata a \textbf{GPIO34}. La scelta merita una nota: GPIO34 è un
+        piedino di solo ingresso e privo di resistenza di pull-up interna, il che
+        normalmente lo rende inadatto a un sensore a collettore aperto;
+        l'\pir{} però pilota attivamente la propria uscita a 3,3~V e 0~V, quindi il
+        collegamento è corretto. GPIO25 non era disponibile perché usato come RX2
+        del radar.
+\end{enumerate}
+
+\section{La piattaforma di acquisizione}
+\label{sec:piattaforma}
+
+\subsection{Punto di partenza: il repository di riferimento}
+
+Il lavoro parte dal repository del relatore~\cite{repoCallisto}, che contiene un
+firmware PlatformIO per ESP32 basato sulla libreria \texttt{ncmreynolds/ld2410} e
+uno script Python di acquisizione. Il firmware legge il radar via UART, gestisce
+opzionalmente un display OLED e un PIR e stampa righe CSV sulla seriale; lo script
+\texttt{acquire.py} le salva su file aggiungendo i metadati sperimentali passati
+da riga di comando.
+
+Lo studio del codice ha evidenziato tre limiti per gli scopi di questa tesi:
+
+\begin{enumerate}[leftmargin=1.8em,itemsep=3pt]
+  \item \textbf{campionamento a 1~Hz}. Troppo lento per misurare latenze con
+        precisione e, soprattutto, insufficiente per l'analisi del respiro: con
+        frequenza di campionamento 1~Hz il limite di Nyquist è 0,5~Hz, cioè
+        esattamente il bordo superiore della banda respiratoria;
+  \item \textbf{assenza dell'engineering mode}: viene registrata solo l'energia del
+        bersaglio, non i diciotto valori per-gate;
+  \item \textbf{piedinatura opposta} alla nostra (radar TX su GPIO17 e RX su
+        GPIO16), quindi i due firmware non sono interscambiabili senza riscablare.
+\end{enumerate}
+
+\subsection{Il firmware realizzato}
+
+È stato quindi scritto un logger dedicato
+(\texttt{firmware/ld2410b\_logger}, \cref{app:codice}) basato sulla libreria
+\texttt{MyLD2410}, con le seguenti caratteristiche:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item campionamento a \textbf{5~Hz} con periodo fisso;
+  \item \textbf{engineering mode} sempre attivo, con registrazione di tutti i
+        canali;
+  \item lettura del PIR su GPIO34 nello stesso frame, in modo che il confronto fra i
+        due sensori sia \emph{sincrono per costruzione} --- non due acquisizioni da
+        allineare a posteriori;
+  \item formato CSV retrocompatibile con \texttt{acquire.py}.
+\end{itemize}
+
+Il formato CSV, unico per tutta la tesi, è il seguente (le prime nove colonne
+coincidono con quelle del repository di riferimento):
+
+\begin{lstlisting}[caption={Intestazione del CSV prodotto dal logger, in
+engineering mode.},label={lst:csv},basicstyle=\ttfamily\scriptsize]
+timestamp_ms, radar_presence, moving_target, stationary_target,
+moving_distance_cm, stationary_distance_cm, moving_energy, stationary_energy,
+pir_presence,
+menergy_gate0 ... menergy_gate8,   (9 colonne)
+senergy_gate0 ... senergy_gate8,   (9 colonne)
+light_level, out_level
+\end{lstlisting}
+
+Lo script di acquisizione aggiunge a ogni riga i metadati sperimentali:
+\texttt{pc\_time\_s}, \texttt{group\_id}, \texttt{trial\_id}, \texttt{scenario},
+\texttt{ground\_truth\_presence}, \texttt{ground\_truth\_state}.
+
+\paragraph{Una correzione necessaria allo script di acquisizione.} La versione
+originale scrive righe sul file solo dopo aver riconosciuto la riga di intestazione,
+che l'ESP32 stampa una sola volta in \texttt{setup()}. Se il reset all'apertura
+della porta seriale non scatta --- cosa che accade con una certa frequenza --- il
+CSV risulta \textbf{vuoto senza alcun messaggio di errore}, e lo si scopre a
+sessione finita. La nostra versione ricostruisce l'intestazione dal numero di
+colonne della prima riga di dati (9 = base, 27 = engineering, 29 = engineering con
+luce e OUT). È una modifica di poche righe che ha evitato la perdita di sessioni
+lunghe.
+
+\subsection{La catena di analisi}
+\label{sec:catena-analisi}
+
+L'analisi è svolta da tre script Python, scritti per questa tesi e basati sulla
+sola libreria standard, tranne dove indicato:
+
+\begin{description}[leftmargin=1.4em,style=nextline,itemsep=3pt]
+  \item[\texttt{analisi/verifica\_engineering.py}] controllo di qualità di un CSV
+    \emph{prima} di usarlo: cadenza reale e jitter, presenza delle colonne per-gate,
+    percentuale di saturazione a 100, coerenza fra gate di picco e distanza
+    riportata, rumore di fondo per-gate a stanza vuota, transizioni di presenza. Va
+    eseguito a ogni sessione: è ciò che ha permesso di individuare i problemi
+    descritti in \cref{sec:insidie}.
+  \item[\texttt{analisi/analizza\_test.py}] metriche di confronto: accuratezza,
+    falsi positivi in eventi/h, falsi negativi in percentuale, latenza di
+    rilevamento e di rilascio, statistiche di distanza ed energia, aggregazione per
+    scenario con media e deviazione standard sui cinque trial.
+  \item[\texttt{analisi/analizza\_respiro.py}] analisi in frequenza: FFT della
+    serie di energia, individuazione del picco in banda 0,1--0,5~Hz, stima degli
+    atti al minuto, esportazione dello spettro in CSV. Richiede NumPy. La modalità
+    \texttt{-{}-scan} prova tutti e venti i canali di energia, scarta quelli saturi
+    e quelli piatti, li ordina per rapporto segnale-rumore e riporta la mediana
+    delle stime concordi.
+\end{description}
+
+L'ultima funzione non era prevista inizialmente: è nata dal fatto che nel primo
+tentativo di misura del respiro il canale scelto per intuito
+(\texttt{stationary\_energy}) era completamente saturo, mentre il segnale era
+perfettamente leggibile su \texttt{menergy\_gate2}. La ricerca automatica del
+canale migliore, con criterio dichiarato, è diventata parte del metodo.
+
+\section{Che aspetto hanno i dati: validazione e insidie}
+\label{sec:insidie}
+
+Prima di usare i dati per il confronto quantitativo è stata svolta una sessione di
+validazione (673 campioni su 134~s). I risultati positivi sono:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item \textbf{cadenza di 5,00~Hz esatti}: intervallo di 200~ms su tutti i 672
+        intervalli, jitter nullo. La serie temporale è uniforme, requisito
+        necessario per l'analisi in frequenza;
+  \item \textbf{engineering mode attivo}, con tutte e diciotto le colonne per-gate
+        popolate;
+  \item \textbf{mappa gate--distanza validata al 97,1\,\%}: la percentuale di
+        campioni in cui il gate di massima energia coincide, entro $\pm 1$, con
+        quello atteso dalla distanza riportata (distanza divisa per 0,75~m), su
+        tutto il range 0--6~m. Su una seconda sessione indipendente la conferma è
+        salita al 98,3\,\% su 663 campioni;
+  \item \textbf{zero falsi positivi} nei 29~s di stanza vuota della sessione.
+\end{itemize}
+
+La stessa validazione ha però messo in luce tre comportamenti del modulo che
+condizionano tutte le analisi successive e che vanno dichiarati esplicitamente.
+
+\subsection{Saturazione dei canali di energia}
+\label{sec:saturazione}
+
+Con il bersaglio fermo a distanza ravvicinata, l'energia stazionaria è a fondo
+scala (valore 100) nel \textbf{92\,\%} dei campioni e quella in movimento nel
+\textbf{41\,\%}. Un segnale che tocca il fondo scala non porta informazione:
+qualunque analisi di variazione su un canale saturo è priva di senso.
+
+Va chiarito un punto che è stato oggetto di un'ipotesi errata iniziale: \textbf{le
+soglie non risolvono la saturazione}. L'energia è un valore normalizzato 0--100 e
+la soglia interviene soltanto sulla \emph{decisione} di rilevamento (protocollo
+V1.07, \S1.2.2), non sul valore riportato. Nemmeno l'auto-calibrazione del firmware
+V2.44 la risolve, perché anch'essa tara soglie e non la scala. L'unico rimedio è
+\textbf{geometrico}: allontanare il soggetto (almeno 1,5--2~m), disallineare il
+sensore o attenuare il segnale. Questo vincolo ha determinato il progetto degli
+esperimenti sul respiro e sulla vitalità.
+
+\subsection{Canali stazionari strutturalmente disattivati sotto 1,5~m}
+\label{sec:senergy-zero}
+
+Le colonne \texttt{senergy\_gate0} e \texttt{senergy\_gate1} sono risultate pari a
+zero in tutti i 673 campioni. Non è un difetto dell'esemplare: anche l'esempio
+riportato nel protocollo ufficiale V1.07 (\S2.3.2) mostra \texttt{00 00} per i
+primi due gate stazionari, e le relative soglie di fabbrica valgono~0
+(\cref{tab:identita}) --- con la regola ``energia \emph{maggiore} della soglia'' il
+canale è quindi disattivato per costruzione sotto 1,5~m.
+
+È importante non trarre la conclusione sbagliata. Il radar \textbf{riporta comunque}
+bersagli fermi sotto 1,5~m: nei dati si osservano valori di
+\texttt{stationary\_distance} fra 70 e 89~cm con \texttt{stationary\_energy} pari a
+100. Ciò che manca è solo il \emph{dettaglio per-gate} dello stazionario nei primi
+due gate. La conseguenza pratica è però rilevante: le analisi che si basano sulle
+serie per-gate --- respiro e indice di vitalità --- per un soggetto a meno di 1,5~m
+devono usare i \textbf{canali in movimento} oppure i gate di indice $\geq 2$.
+E poiché nello scenario UPRISE la persona è sotto un banco, cioè vicina, questo è
+un vincolo di progetto e non un dettaglio (\cref{sec:sotto-banco}).
+
+\subsection{Coda di presenza}
+\label{sec:coda}
+
+Dopo l'uscita del soggetto dalla stanza il radar ha mantenuto
+\texttt{radar\_presence = 1} per circa 10~s, riportando un bersaglio fermo
+``fantasma'' a circa 5,2~m con energia in decadimento. Il comportamento è atteso ed
+è il \emph{no-one duration} previsto dal protocollo (\S1.2.2), impostato a 5~s di
+fabbrica sul nostro esemplare.
+
+Questo ha una conseguenza metodologica precisa: la coda va misurata come
+\textbf{latenza di rilascio} (\cref{sec:latenza}) e non va conteggiata come falso
+positivo. Confondere le due cose porterebbe ad attribuire al radar decine di falsi
+positivi inesistenti.
+
+\subsection{Il pin OUT e il sensore di luce}
+
+Due verifiche minori ma utili. La colonna \texttt{out\_level}, che riporta lo stato
+del pin OUT letto \emph{dal frame UART}, coincide con \texttt{radar\_presence} in
+1699 campioni su 1699: il collegamento fisico del filo blu è quindi inutile ai
+nostri fini. È però un'informazione utile per il progetto UPRISE, perché indica che
+un dispositivo interessato alla sola presenza binaria può usare il pin OUT senza
+implementare la UART.
+
+Il sensore di luce funziona: la colonna \texttt{light\_level} vale 21--29 di giorno
+e 0--1 di notte, misurato su una sessione notturna di 6,5~h. Il dato è annotato
+perché il comando di configurazione ausiliaria \texttt{0x01AE} non risponde sul
+nostro esemplare: i due fatti sono indipendenti, il valore fotosensibile viaggia
+nel frame di engineering mode e segue effettivamente l'illuminazione ambientale.
+
+\section{Decisione sulle soglie: non ricalibrare}
+\label{sec:soglie}
+
+Un'ultima scelta metodologica va motivata, perché condiziona la validità di tutti i
+confronti fra trial. Il \cref{tab:soglie} confronta le soglie di fabbrica con il
+rumore di fondo misurato a stanza vuota.
+
+\begin{table}[htbp]
+\centering
+\caption{Soglie di fabbrica per-gate confrontate con il rumore di fondo misurato a
+stanza vuota (29~s). Regola del protocollo V1.07 \S1.2.2: il bersaglio è
+riconosciuto solo se l'energia supera la soglia.}
+\label{tab:soglie}
+\small
+\begin{tabular}{@{}clrrrrr@{}}
+\toprule
+\textbf{Gate} & \textbf{Distanza} & \multicolumn{3}{c}{\textbf{Movimento}} &
+\multicolumn{2}{c}{\textbf{Stazionario}} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-7}
+ & & soglia & rumore max & margine & soglia & rumore max \\
+\midrule
+0 & 0--75~cm    & 50 & 26 & 24 & 0  & 0 \\
+1 & 75--150~cm  & 50 & 21 & 29 & 0  & 0 \\
+2 & 150--225~cm & 40 & 9  & 31 & 40 & 6 \\
+3 & 225--300~cm & 30 & 4  & 26 & 40 & 4 \\
+4 & 300--375~cm & 20 & 9  & 11 & 30 & 4 \\
+5 & 375--450~cm & 15 & 6  & 9  & 30 & 3 \\
+6 & 450--525~cm & 15 & 11 & \textbf{4} & 20 & 5 \\
+7 & 525--600~cm & 15 & 8  & 7  & 20 & 7 \\
+8 & 600--675~cm & 15 & 7  & 8  & 20 & 5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Il margine più stretto è il gate~6 in movimento (soglia 15 contro rumore massimo
+11), che è anche il gate in cui si è manifestato il bersaglio fantasma della coda di
+presenza. Su tutti gli altri gate il margine è ampio, e i falsi positivi osservati
+sono zero. Si è quindi deciso di \textbf{non ricalibrare}: la taratura di fabbrica
+regge nell'ambiente di prova, e le soglie restano il \emph{riferimento fisso} per
+tutta la campagna. Cambiarle a metà campagna renderebbe i trial non confrontabili
+fra loro, che è il difetto peggiore in un lavoro comparativo.
+
+L'auto-calibrazione disponibile nel firmware V2.44 va usata dopo, come esperimento a
+sé stante con confronto prima/dopo: è materiale per una sezione della tesi, non un
+prerequisito della campagna.
+
+La stabilità di questa scelta è stata verificata su tempi lunghi: nella sessione
+notturna di 6,5~h la media dell'energia di rumore del gate~0 è passata da 17,4 a
+17,8 fra la prima e la seconda metà della notte e quella del gate~1 da 13,3 a 13,1,
+con un massimo assoluto di 34 sul gate~0 contro una soglia di 50.

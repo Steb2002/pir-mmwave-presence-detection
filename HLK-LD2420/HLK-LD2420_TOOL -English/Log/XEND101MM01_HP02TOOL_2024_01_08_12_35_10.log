@@ -1,0 +1,31 @@
+2024/01/08 12:35:13.643 => CloseSerial: mSerialFile=0xffffffff
+2024/01/08 12:35:13.643 => Prepare Open Serial: Com=\\.\COM13 BaudRate=115200
+2024/01/08 12:35:13.645 => OpenSerial: Com=\\.\COM13 BaudRate=115200, Success=1, mSerialFile=0x0000095c
+2024/01/08 12:35:13.653 => protocol version = 2, send_recv buffer size = 32
+2024/01/08 12:35:13.814 => protocol version = 2, send_recv buffer size = 32
+2024/01/08 12:35:13.822 => GetVersion Return: v1.5.9_0.0
+2024/01/08 12:35:13.904 => ReadSetting_RadarOperatorConfig, result: Success
+2024/01/08 12:35:16.208 => Start Realtime data show.
+2024/01/08 12:35:16.208 => thread create success, thread handle=0x00000950, id=57000, name=ReadData
+2024/01/08 12:35:16.209 => thread information, name=ReadData, tid=57000(0x0000dea8)
+2024/01/08 12:35:16.209 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/08 12:35:16.380 => protocol version = 2, send_recv buffer size = 32
+2024/01/08 12:35:17.807 => prepare exit thread..., name=ReadData, tid=57000(0x0000dea8)
+2024/01/08 12:35:17.835 => protocol version = 2, send_recv buffer size = 32
+2024/01/08 12:35:18.009 => protocol version = 2, send_recv buffer size = 32
+2024/01/08 12:35:18.026 => thread exit, name=ReadData, tid=57000(0x0000dea8)
+2024/01/08 12:35:18.026 => thread exit over, name=ReadData, tid=57000(0x0000dea8)
+2024/01/08 12:35:18.030 => Stop Realtime data show.
+2024/01/08 12:35:20.377 => Stop Realtime data show.
+2024/01/08 12:35:20.378 => Stop Noise scan.
+2024/01/08 12:35:20.378 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2024/01/08 12:35:20.540 => protocol version = 2, send_recv buffer size = 32
+2024/01/08 12:35:20.558 => Cancel Read Data
+2024/01/08 12:35:20.558 => CloseSerial: mSerialFile=0x0000095c
+2024/01/08 12:35:22.480 => Stop Realtime data show.
+2024/01/08 12:35:22.481 => Stop Noise scan.
+2024/01/08 12:35:22.483 => Cancel Read Data
+2024/01/08 12:35:22.483 => CloseSerial: mSerialFile=0xffffffff
+2024/01/08 12:35:22.483 => Cancel Read Data
+2024/01/08 12:35:22.483 => CloseSerial: mSerialFile=0xffffffff
+2024/01/08 12:35:22.483 => CloseSerial: mSerialFile=0xffffffff

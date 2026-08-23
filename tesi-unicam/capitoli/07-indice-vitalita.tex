@@ -1,0 +1,239 @@
+\chapter{L'indice di vitalità}
+\label{cap:vitalita}
+
+\begin{quote}\small
+Questo capitolo risponde all'obiettivo O6, formulato dal relatore come segue:
+\emph{oltre alla presenza sì/no, creare un indice di vitalità --- un algoritmo che
+valuti quanto una persona si muove: questa persona si muove 50 su 100, quindi è viva
+o moderatamente viva}. È l'obiettivo più avanzato della tesi ed è anche la
+dimostrazione costruttiva che i dati del radar abilitano ciò che con un bit non è
+rappresentabile. Alla data di questa stesura l'algoritmo è specificato e il percorso
+di taratura è definito; la taratura sui dati è in corso.
+\end{quote}
+
+\section{Motivazione: dalla presenza al triage}
+\label{sec:vitalita-motivazione}
+
+Nel contesto del progetto, la differenza fra ``presenza'' e ``vitalità'' è la
+differenza fra due domande distinte dei soccorritori:
+
+\begin{enumerate}[leftmargin=1.8em,itemsep=2pt]
+  \item \emph{C'è qualcuno sotto il banco?} --- è la domanda di presenza, cui
+        rispondono gli obiettivi O1--O3.
+  \item \emph{In che condizioni si trova?} --- si muove attivamente, quindi è
+        cosciente; compie solo micro-movimenti, quindi è ferito o intrappolato ma
+        vivo; oppure non dà segni rilevabili.
+\end{enumerate}
+
+Il PIR non può nemmeno porsi la seconda domanda: la sua uscita è un bit, e come
+mostrato in \cref{sec:interpretazione-pir} quel bit non misura nemmeno la durata del
+movimento. Il radar mmWave sì, perché espone l'\textbf{energia riflessa per gate di
+distanza}: una misura continua di \emph{quanto} si muove ciò che riflette, non solo
+del fatto che si muova.
+
+L'indice di vitalità è la sintesi di questa informazione in un numero fra 0 e 100,
+leggibile da un operatore non tecnico, accompagnato da una classificazione a quattro
+livelli.
+
+\section{Dati di ingresso}
+\label{sec:vitalita-ingressi}
+
+L'algoritmo lavora sui campioni a 5~Hz prodotti dal logger
+(\cref{sec:piattaforma}), usando i canali di \cref{tab:vitalita-ingressi}.
+
+\begin{table*}[htbp]
+\centering
+\caption{Segnali di ingresso dell'indice di vitalità.}
+\label{tab:vitalita-ingressi}
+\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Segnale} & \textbf{Colonna CSV} & \textbf{Che cosa misura} \\
+\midrule
+Energia del bersaglio in movimento & \texttt{moving\_energy} &
+  intensità del movimento rilevato (0--100) \\
+Energia per-gate, movimento & \texttt{menergy\_gate0..8} &
+  dove avviene il movimento \\
+Energia per-gate, stazionario & \texttt{senergy\_gate0..8} &
+  riflessione del corpo fermo; oscilla con il respiro \\
+Stato di presenza & \texttt{radar\_presence} &
+  condizione di guardia: se nulla, l'indice è forzato a zero \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+L'osservazione su cui poggia l'algoritmo è la seguente: una persona \textbf{viva ma
+immobile} ha energia in movimento prossima a zero, ma l'energia del suo gate
+\emph{oscilla} con il respiro nella banda 0,1--0,5~Hz. Una stanza vuota ha energia
+costante, a meno del rumore di fondo. La \textbf{variabilità} dell'energia è dunque
+il segnale di vita minimo, quello che sta sotto il movimento.
+
+\paragraph{Vincolo importante ereditato dal \cref{cap:moduli}.} La formulazione
+iniziale dell'algoritmo usava l'energia \emph{stazionaria} del gate attivo come
+sorgente del termine respiratorio. I risultati di \cref{sec:senergy-zero} e
+\cref{sec:respiro} impongono una correzione: sotto 1,5~m i canali stazionari per-gate
+sono strutturalmente nulli, e a tutte le distanze provate i canali stazionari
+risultano saturi o discordanti mentre i canali \emph{in movimento} forniscono stime
+concordi e non sature. L'implementazione deve quindi selezionare la sorgente del
+termine respiratorio fra i canali in movimento, o comunque scartare i canali saturi
+e quelli identicamente nulli con criterio esplicito. È un esempio di come la fase di
+caratterizzazione abbia modificato il progetto dell'algoritmo, e non solo confermato
+delle attese.
+
+\section{Algoritmo}
+\label{sec:vitalita-algoritmo}
+
+L'algoritmo ha due componenti, aggiornate a ogni campione, e una fusione.
+
+\begin{align}
+g^{*} &= \arg\max_i \; e_i && \text{gate attivo} \label{eq:gate-attivo}\\
+m_k &= \max\!\left(E_{\text{mov}},\; e^{\text{mov}}_{g^{*}}\right) && \text{movimento istantaneo} \\
+M_k &= \alpha_m \, m_k + (1-\alpha_m)\, M_{k-1} && \text{EWMA rapida, } \alpha_m = 0{,}1 \\
+d_k &= \left| e_{g^{*}}[k] - e_{g^{*}}[k-1] \right| && \text{variazione tick a tick} \\
+R_k &= \alpha_r \, d_k + (1-\alpha_r)\, R_{k-1} && \text{EWMA lenta, } \alpha_r = 0{,}02 \\
+V_k &= \mathrm{clamp}\!\left(M_k + k_r R_k,\; 0,\; 100\right) && \text{indice di vitalità}
+\label{eq:vitalita}
+\end{align}
+
+con la condizione di guardia $V_k = 0$ se \texttt{radar\_presence} $= 0$.
+
+\subsection{Razionale delle scelte}
+
+Ogni scelta ha una motivazione, ed è utile esplicitarla perché l'algoritmo deve
+girare identico in Python e su microcontrollore.
+
+\begin{description}[leftmargin=1.4em,style=nextline,itemsep=4pt]
+  \item[Media esponenziale e non finestra mobile] La EWMA costa $O(1)$ in memoria
+    (due variabili in virgola mobile) e gira senza modifiche sull'ESP32; una finestra
+    mobile richiederebbe un buffer circolare e darebbe risultati equivalenti. Poiché
+    l'algoritmo deve essere lo stesso in Python e in C++ per essere verificabile
+    (passo~5 di \cref{sec:webui-piano}), la formulazione più semplice è quella
+    giusta.
+  \item[Due costanti di tempo diverse] Il movimento deve reagire in circa 2~s, che a
+    5~Hz corrisponde a $\alpha_m = 0{,}1$; il respiro è un segnale lento e va
+    integrato su circa 10~s ($\alpha_r = 0{,}02$) per emergere dal rumore. Un'unica
+    costante non può servire entrambi gli scopi.
+  \item[Massimo fra energia del bersaglio e del gate] Le due grandezze talvolta
+    divergono, per effetto dei filtri interni del modulo. Prendere il massimo rende
+    l'indice \emph{conservativo verso il falso ``nessun segno''}, che è l'errore più
+    grave nel dominio applicativo: dichiarare vuoto un banco sotto cui c'è qualcuno.
+  \item[Il coefficiente $k_r$] La variazione $d_k$ è numericamente piccola, di
+    qualche unità di energia; $k_r$ la riporta nella scala 10--30 attesa per la classe
+    ``vitalità bassa''. È il parametro principale da tarare, con un intervallo
+    iniziale plausibile fra 5 e 15.
+\end{description}
+
+\section{Classificazione}
+\label{sec:vitalita-classi}
+
+\begin{table*}[htbp]
+\centering
+\caption{Classi dell'indice di vitalità e loro significato operativo. Le soglie
+riportate sono iniziali e vanno tarate sui dati (\cref{sec:vitalita-taratura}).}
+\label{tab:vitalita-classi}
+\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Indice} & \textbf{Classe} & \textbf{Significato operativo (triage)} \\
+\midrule
+0--9 & \texttt{nessun\_segno} & nessuna presenza, o nessuna variazione rilevabile \\
+10--39 & \texttt{vitalita\_bassa} & vivo: respiro e micro-movimenti, non si muove \\
+40--69 & \texttt{moderato} & movimenti limitati ma attivi \\
+70--100 & \texttt{attivo} & movimento pieno, persona reattiva \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\paragraph{Avvertenza da riportare anche nella tesi finale.} Le classi sono un
+supporto informativo al triage e \textbf{non costituiscono una diagnosi medica}. In
+particolare \texttt{nessun\_segno} significa ``il sensore non rileva variazioni'', non
+``persona deceduta'': la persona può essere fuori portata, schermata da materiale
+metallico, oppure priva di sensi ma viva. La formulazione dell'etichetta, in
+un'interfaccia destinata a soccorritori, è essa stessa una scelta di progetto con
+implicazioni: un'etichetta che suggerisca una conclusione clinica sarebbe
+inappropriata.
+
+\section{Percorso di sviluppo e taratura}
+\label{sec:vitalita-taratura}
+
+La regola metodologica adottata è: \textbf{l'algoritmo si sviluppa su PC, sui file
+CSV, dove si può iterare in secondi}. Il porting su ESP32 avviene solo a soglie
+validate. Il percorso è il seguente.
+
+\begin{enumerate}[leftmargin=1.8em,itemsep=4pt]
+  \item \textbf{Raccolta dei quattro scenari}, cinque trial ciascuno:
+        \texttt{vitalita\_0} (stanza vuota), \texttt{vitalita\_respiro} (soggetto
+        immobile), \texttt{vitalita\_micro} (micro-movimenti: mano, testa, busto),
+        \texttt{vitalita\_attivo} (movimento pieno). Distanza $\geq 1{,}5$~m per
+        evitare la saturazione (\cref{sec:saturazione}).
+  \item \textbf{Prototipo Python} (\texttt{analisi/vitalita\_proto.py}): implementa
+        le equazioni \eqref{eq:gate-attivo}--\eqref{eq:vitalita} e produce la serie
+        $V(t)$ per ogni trial.
+  \item \textbf{Taratura} di $\alpha_m$, $\alpha_r$, $k_r$ e delle tre soglie in modo
+        che i quattro scenari cadano nelle quattro classi attese. Il metodo scelto è
+        semplice e difendibile: si osservano le distribuzioni di $V$ per scenario
+        (diagrammi a scatola) e si collocano le soglie negli intervalli vuoti fra le
+        distribuzioni. Se le distribuzioni si sovrappongono, la sovrapposizione è
+        essa stessa un risultato da riportare, e indica che quei due scenari non sono
+        separabili con questo indice.
+  \item \textbf{Validazione su trial non usati per la taratura}: taratura su
+        T01--T03, validazione su T04--T05, con matrice di confusione
+        scenario/classe. La metrica finale è la percentuale di campioni classificati
+        nella classe attesa, per scenario.
+  \item \textbf{Porting} in \texttt{vitality.h} con le stesse costanti, e verifica
+        dal vivo nella dashboard (passo~5 di \cref{sec:webui-piano}).
+\end{enumerate}
+
+Il passo~4 fornisce il numero da riportare nella tesi: \emph{l'indice classifica
+correttamente l'$X\,\%$ dei campioni su scenari mai visti in fase di taratura}. La
+separazione fra trial di taratura e trial di validazione è ciò che distingue questo
+risultato da una descrizione dei dati su cui l'algoritmo è stato costruito.
+
+\todo{completare con i risultati della taratura: boxplot per scenario, valori
+scelti dei parametri, matrice di confusione sui trial di validazione}
+
+\section{Casi limite e comportamenti attesi}
+\label{sec:vitalita-limiti}
+
+\begin{table*}[htbp]
+\centering
+\caption{Casi limite dell'indice di vitalità e comportamento previsto.}
+\label{tab:vitalita-casilimite}
+\small
+\begin{tabularx}{\linewidth}{@{}XXX@{}}
+\toprule
+\textbf{Situazione} & \textbf{Comportamento atteso} & \textbf{Note} \\
+\midrule
+La persona esce dal campo & indice a 0 entro il timeout del radar ($\sim$5~s) &
+  forzatura sulla condizione di presenza \\
+La persona si addormenta & da \texttt{attivo} a \texttt{vitalita\_bassa} in
+  30--60~s & le medie esponenziali decadono con le loro costanti \\
+Ventilatore o tenda in movimento & possibile falso \texttt{moderato} &
+  limite da dichiarare; mitigazione tramite le soglie per-gate del radar \\
+Due persone & indice riferito al gate dominante &
+  coerente con il limite mono-bersaglio del LD2410B \\
+Persona oltre 4--5~m & respiro non più rilevabile, quindi sottostima &
+  va documentata la distanza massima utile per la classe
+  \texttt{vitalita\_bassa} \\
+Persona a meno di 1,5~m & canali stazionari per-gate non disponibili &
+  usare i canali in movimento (\cref{sec:senergy-zero}) \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\section{Estensioni possibili}
+
+Tre estensioni sono state individuate ma non sono necessarie per l'obiettivo, e
+vanno affrontate solo se il tempo lo consente.
+
+\begin{enumerate}[leftmargin=1.8em,itemsep=2pt]
+  \item Sostituire il termine respiratorio a media esponenziale con la
+        \textbf{potenza in banda 0,1--0,5~Hz} calcolata su una finestra scorrevole di
+        30~s, cioè una FFT ridotta eseguita a bordo. È più robusta agli artefatti ma
+        computazionalmente più costosa, e richiede un buffer: sarebbe una versione~2.
+  \item \textbf{Isteresi sulle classi}: una classe cambia solo dopo $N$ secondi di
+        stabilità, per evitare lo sfarfallio dell'etichetta nell'interfaccia.
+  \item \textbf{Indicatore di confidenza} affiancato all'indice, funzione della
+        stabilità del gate attivo: un indice calcolato su un gate che cambia
+        continuamente è meno affidabile e sarebbe onesto dichiararlo.
+\end{enumerate}

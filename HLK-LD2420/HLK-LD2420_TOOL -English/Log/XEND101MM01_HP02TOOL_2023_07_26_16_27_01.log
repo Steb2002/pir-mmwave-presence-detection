@@ -1,0 +1,17 @@
+2023/07/26 16:27:04.210 => CloseSerial: mSerialFile=0xffffffff
+2023/07/26 16:27:04.210 => Prepare Open Serial: Com=\\.\COM12 BaudRate=115200
+2023/07/26 16:27:04.210 => Open \\.\COM12 failed:5
+2023/07/26 16:27:04.210 => OpenSerial: Com=\\.\COM12 BaudRate=115200, Success=0, mSerialFile=0xffffffff
+2023/07/26 16:27:04.210 => CloseSerial: mSerialFile=0xffffffff
+2023/07/26 16:27:49.872 => CloseSerial: mSerialFile=0xffffffff
+2023/07/26 16:27:49.872 => Prepare Open Serial: Com=\\.\COM11 BaudRate=115200
+2023/07/26 16:27:49.872 => Open \\.\COM11 failed:5
+2023/07/26 16:27:49.872 => OpenSerial: Com=\\.\COM11 BaudRate=115200, Success=0, mSerialFile=0xffffffff
+2023/07/26 16:27:49.872 => CloseSerial: mSerialFile=0xffffffff
+2023/07/26 16:27:51.835 => Stop Realtime data show.
+2023/07/26 16:27:51.836 => Stop Noise scan.
+2023/07/26 16:27:51.837 => Cancel Read Data
+2023/07/26 16:27:51.837 => CloseSerial: mSerialFile=0xffffffff
+2023/07/26 16:27:51.837 => Cancel Read Data
+2023/07/26 16:27:51.837 => CloseSerial: mSerialFile=0xffffffff
+2023/07/26 16:27:51.837 => CloseSerial: mSerialFile=0xffffffff

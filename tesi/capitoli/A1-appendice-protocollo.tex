@@ -1,0 +1,142 @@
+\chapter{Protocollo seriale del LD2410B}
+\label{app:protocollo}
+
+Riferimento: \emph{LD2410B Serial communication protocol}
+V1.07~\cite{hilinkProtoV107}. Questa appendice riporta gli elementi effettivamente
+usati dal firmware realizzato, per rendere il lavoro riproducibile senza dover
+ricostruire il protocollo dal documento originale.
+
+\section{Parametri della porta seriale}
+
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+Baud rate & 256000 (fisso, non modificabile senza comando \texttt{0x00A1}) \\
+Formato & 8 bit di dati, nessuna parità, 1 bit di stop (8N1) \\
+Livelli & 3,3~V TTL \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Il baud di 256000 richiede una UART hardware: sull'ESP32 si usa \texttt{Serial2}
+(GPIO25 come RX, GPIO26 come TX nella nostra configurazione). Un'implementazione a
+software non regge questa velocità.
+
+\section{Struttura dei frame}
+
+\subsection{Frame di comando (dall'host al modulo)}
+
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Campo} & \textbf{Lunghezza} & \textbf{Valore} \\
+\midrule
+Intestazione & 4 byte & \texttt{FD FC FB FA} \\
+Lunghezza dati & 2 byte & little-endian \\
+Parola di comando & 2 byte & little-endian \\
+Valore del comando & variabile & dipende dal comando \\
+Chiusura & 4 byte & \texttt{04 03 02 01} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Il modulo risponde con un frame della stessa struttura, in cui la parola di comando
+ha il bit più significativo posto a uno, seguita da uno stato (zero = successo) e
+dagli eventuali dati di risposta.
+
+\subsection{Frame di dati (dal modulo all'host)}
+
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Campo} & \textbf{Lunghezza} & \textbf{Valore} \\
+\midrule
+Intestazione & 4 byte & \texttt{F4 F3 F2 F1} \\
+Lunghezza dati & 2 byte & little-endian \\
+Tipo di dato & 1 byte & \texttt{0x01} = engineering mode, \texttt{0x02} = normale \\
+Testa & 1 byte & \texttt{0xAA} \\
+Stato del bersaglio & 1 byte & maschera: \texttt{0x01} in movimento, \texttt{0x02} stazionario \\
+Distanza in movimento & 2 byte & cm, little-endian \\
+Energia in movimento & 1 byte & 0--100 \\
+Distanza stazionaria & 2 byte & cm, little-endian \\
+Energia stazionaria & 1 byte & 0--100 \\
+Distanza di rilevamento & 2 byte & cm, little-endian \\
+\multicolumn{3}{@{}l@{}}{\emph{solo in engineering mode:}} \\
+Gate massimo movimento & 1 byte & \\
+Gate massimo stazionario & 1 byte & \\
+Energie per-gate movimento & 9 byte & gate 0--8, valori 0--100 \\
+Energie per-gate stazionario & 9 byte & gate 0--8, valori 0--100 \\
+Sensore di luce & 1 byte & 0--255 \\
+Stato del pin OUT & 1 byte & \\
+\multicolumn{3}{@{}l@{}}{} \\
+Coda & 1 byte & \texttt{0x55} \\
+Controllo & 1 byte & \texttt{0x00} \\
+Chiusura & 4 byte & \texttt{F8 F7 F6 F5} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Comandi utilizzati}
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}llX@{}}
+\toprule
+\textbf{Parola} & \textbf{Funzione} & \textbf{Note d'uso} \\
+\midrule
+\texttt{0x00FF} & entra in configurazione & obbligatorio prima di ogni altro
+  comando; valore \texttt{0x0001} \\
+\texttt{0x00FE} & esce dalla configurazione & il modulo riprende a inviare frame di
+  dati \\
+\texttt{0x0062} & attiva engineering mode & va inviato dentro la modalità
+  configurazione \\
+\texttt{0x0063} & disattiva engineering mode & \\
+\texttt{0x00A0} & legge la versione firmware & restituisce tipo e versione
+  (nel nostro caso 2.44.25070917) \\
+\texttt{0x00A5} & legge il MAC Bluetooth & \\
+\texttt{0x0061} & legge i parametri correnti & restituisce risoluzione, gate massimi,
+  timeout e le 9+9 soglie; \textbf{è la lettura da usare per i parametri}, non lo
+  strumento da PC \\
+\texttt{0x0060} & imposta i parametri & usato per limitare il gate massimo nella prova
+  di selettività spaziale \\
+\texttt{0x00AA} & imposta la risoluzione di distanza & 0,75~m oppure 0,20~m per gate \\
+\texttt{0x000B} & auto-calibrazione del rumore di fondo & disponibile dal firmware
+  V2.44~\cite{hilinkV244} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Regola di rilevamento}
+
+Dal protocollo V1.07, \S1.2.2: il bersaglio in un gate è riconosciuto
+\textbf{solo se l'energia del gate supera la soglia configurata per quel gate}. Da
+questa regola derivano due fatti osservati sperimentalmente:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item i canali stazionari dei gate 0 e 1, che hanno soglia di fabbrica pari a~0 e
+        energia riportata sempre nulla, sono disattivati per costruzione
+        (\cref{sec:senergy-zero});
+  \item le soglie influiscono sulla \emph{decisione} di rilevamento, non sul valore
+        di energia riportato: non possono quindi risolvere la saturazione
+        (\cref{sec:saturazione}).
+\end{itemize}
+
+\section{Auto-calibrazione del firmware V2.44}
+
+Il documento delle novità del firmware V2.44~\cite{hilinkV244} descrive il
+rilevamento automatico del rumore di fondo, che tara le soglie di movimento e
+stazionarie. La procedura richiede 10~s per uscire dal campo del sensore più 60~s di
+misura, per un totale di 70~s da trascorrere fuori dalla portata del modulo, e
+l'applicazione mobile in versione adeguata (Android $\geq$ V1.5.12 oppure
+iOS $\geq$ V1.5.4).
+
+Due precisazioni utili, entrambe verificate:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item la funzione ``Detect noise floor'' presente nella schermata dei parametri
+        dell'applicazione è \emph{soltanto} una funzione di visualizzazione: mostra i
+        valori di rumore misurati ma non li applica come soglie. Non va confusa con
+        l'auto-calibrazione;
+  \item il documento non descrive alcuna procedura di aggiornamento del firmware, e
+        né lo strumento da PC né l'applicazione mobile offrono una funzione di flash.
+        La versione del firmware è quindi da considerare un dato dell'esemplare.
+\end{itemize}

@@ -1,0 +1,76 @@
+% =====================================================================
+%  PAGINA DI LAVORO — proposte di titolo
+%  Da eliminare (o commentare la riga in main.tex) nella versione consegnata.
+% =====================================================================
+\thispagestyle{empty}
+
+\begin{center}
+{\Large\bfseries Proposte di titolo}\\[2pt]
+{\small documento di lavoro --- 21 agosto 2026}
+\end{center}
+
+\vspace{0.5em}
+\noindent
+Elenco di titoli alternativi, raggruppati per taglio. La scelta va concordata con
+il relatore: il titolo definitivo va poi riportato nel file del frontespizio
+(\texttt{capitoli/}\allowbreak\texttt{00-frontespizio.tex}) e questa pagina va
+eliminata.
+
+\vspace{1em}
+\noindent\textbf{A. Taglio ``confronto sperimentale'' (il più aderente al contenuto)}
+\begin{enumerate}[label=A\arabic*.,leftmargin=2.2em,itemsep=3pt]
+  \item Sensori di presenza per la sicurezza sismica: confronto sperimentale tra
+        radar mmWave a 24~GHz e sensori PIR su piattaforma ESP32
+  \item Rilevare chi non si muove: valutazione sperimentale di radar mmWave e PIR
+        per il rilevamento di presenza in scenari di emergenza
+  \item Caratterizzazione e confronto quantitativo di sensori PIR e radar mmWave a
+        24~GHz per il rilevamento di persone in ambienti indoor
+  \item Oltre il movimento: analisi comparata PIR / mmWave FMCW per il rilevamento
+        di presenza statica
+\end{enumerate}
+
+\vspace{0.6em}
+\noindent\textbf{B. Taglio ``progetto UPRISE/SAFE'' (contesto applicativo in evidenza)}
+\begin{enumerate}[label=B\arabic*.,leftmargin=2.2em,itemsep=3pt]
+  \item Sensing di presenza per arredi salva-vita: il radar mmWave a 24~GHz come
+        evoluzione del nodo PIR nel progetto SAFE
+  \item Un sensore per chi è rimasto sotto: rilevamento di presenza e di vitalità
+        con radar mmWave per il soccorso post-sismico
+  \item Dal ``c'è qualcuno'' al ``in che condizioni è'': sensing mmWave a supporto
+        del triage in emergenza sismica
+  \item Nodi IoT per arredi antisismici: valutazione di sensori mmWave, PIR e UWB
+        per il rilevamento di persone intrappolate
+\end{enumerate}
+
+\vspace{0.6em}
+\noindent\textbf{C. Taglio ``sistema realizzato'' (firmware, web UI, indice di vitalità)}
+\begin{enumerate}[label=C\arabic*.,leftmargin=2.2em,itemsep=3pt]
+  \item Progetto e realizzazione di un nodo di sensing mmWave su ESP32 con
+        dashboard web e indice di vitalità
+  \item Acquisizione, visualizzazione e analisi di dati radar mmWave a 24~GHz: un
+        sistema completo su ESP32 per il rilevamento di presenza
+  \item Da micro-movimenti a indice di vitalità: elaborazione di dati radar mmWave
+        su microcontrollore
+\end{enumerate}
+
+\vspace{0.6em}
+\noindent\textbf{D. Taglio tecnico e breve}
+\begin{enumerate}[label=D\arabic*.,leftmargin=2.2em,itemsep=3pt]
+  \item Radar mmWave a 24~GHz per il rilevamento di presenza statica: misure e
+        confronto con sensori PIR
+  \item Presence sensing con mmWave ed ESP32: caratterizzazione sperimentale
+  \item Micro-movimenti e respiro: analisi dei dati per-gate di un radar FMCW a
+        24~GHz
+\end{enumerate}
+
+\vspace{1.2em}
+\noindent\textbf{Nota per la scelta.} Il risultato sperimentale centrale già
+acquisito è la \emph{cecità del PIR sulla persona ferma}: falsi negativi al
+$99{,}78 \pm 0{,}49\,\%$ contro lo $0{,}00\,\%$ del radar
+(\cref{sec:persona-ferma}). I titoli A2, B2 e D1 sono quelli che lo mettono in
+prima linea. Se il relatore preferisce che il titolo espliciti il progetto europeo,
+la coppia consigliata è B1 (sobria) oppure B2 (più comunicativa). Il taglio C è
+appropriato solo se l'implementazione della web UI e dell'indice di vitalità
+saranno completate: al momento sono progettate ma non realizzate.
+
+\cleardoublepage

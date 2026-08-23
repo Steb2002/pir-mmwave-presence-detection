@@ -1,0 +1,21 @@
+2023/12/26 15:45:24.796 => CloseSerial: mSerialFile=0xffffffff
+2023/12/26 15:45:24.796 => Prepare Open Serial: Com=\\.\COM13 BaudRate=115200
+2023/12/26 15:45:24.799 => OpenSerial: Com=\\.\COM13 BaudRate=115200, Success=1, mSerialFile=0x00000950
+2023/12/26 15:45:24.808 => protocol version = 2, send_recv buffer size = 32
+2023/12/26 15:45:24.975 => protocol version = 2, send_recv buffer size = 32
+2023/12/26 15:45:24.983 => GetVersion Return: v1.5.9_0.0
+2023/12/26 15:45:25.064 => ReadSetting_RadarOperatorConfig, result: Success
+2023/12/26 15:45:26.694 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2023/12/26 15:45:26.864 => protocol version = 2, send_recv buffer size = 32
+2023/12/26 15:45:26.944 => ReadSetting_RadarOperatorConfig, result: Success
+2023/12/26 15:45:28.634 => Stop Realtime data show.
+2023/12/26 15:45:28.635 => Stop Noise scan.
+2023/12/26 15:45:28.636 => CRadarProtocolDevice::OpenCmdMode: CMDID(0x00FF) failed with:A002
+2023/12/26 15:45:28.802 => protocol version = 2, send_recv buffer size = 32
+2023/12/26 15:45:28.819 => Cancel Read Data
+2023/12/26 15:45:28.819 => CloseSerial: mSerialFile=0x00000950
+2023/12/26 15:45:28.819 => Cancel Read Data
+2023/12/26 15:45:28.819 => CloseSerial: mSerialFile=0xffffffff
+2023/12/26 15:45:28.819 => Cancel Read Data
+2023/12/26 15:45:28.819 => CloseSerial: mSerialFile=0xffffffff
+2023/12/26 15:45:28.819 => CloseSerial: mSerialFile=0xffffffff

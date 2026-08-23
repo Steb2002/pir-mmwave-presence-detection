@@ -1,0 +1,53 @@
+% =====================================================================
+%  FRONTESPIZIO — adattato dal template per una laurea TRIENNALE
+%  (l'originale era impostato per il dottorato: School of Advanced
+%  Studies, ciclo, commissione d'esame).
+%
+%  DA COMPLETARE:
+%   - il titolo definitivo (vedi frontmatter/proposte-titolo.tex)
+%   - il logo di UNICAM in figures/ (vedi la riga \includegraphics)
+%   - verificare la dicitura ufficiale del corso di laurea e la matricola
+% =====================================================================
+
+\author{Stefano De Bernardinis}
+\title{Sensori di presenza per la sicurezza sismica: confronto
+sperimentale tra radar mmWave a 24~GHz e sensori PIR su piattaforma ESP32}
+
+% Permette di riusare il titolo nel colophon
+\makeatletter
+\newcommand{\TitleText}{\@title}
+\makeatother
+
+\begin{fullwidth}
+\begin{titlingpage}
+\setlength{\hoffset}{26pt}%
+  \begin{center}
+    \LARGE{\textsc{\textbf{Universit\`a degli Studi di Camerino}}}\\
+    \vspace{0.3em}
+    \large{\textsc{Scuola di Scienze e Tecnologie}}\\
+    \vspace{0.3em}
+    \textsc{\large{Corso di Laurea in Informatica \\ Classe L-31}}\\
+    \vspace{0.3em}
+    \vspace{4em}
+    % Inserire il logo di UNICAM in figures/ e decommentare:
+    % \includegraphics[width=0.45\textwidth]{figures/logo_unicam.png}\\
+    \vspace{2em}
+    \textbf{\LARGE\thetitle}
+    \vspace{5em}
+    \vspace{-.75cm}
+    \begin{tabular}{p{220pt}p{35pt}p{130pt}}
+      \normalsize{\textit{\textbf{Relatore}}\vspace{0.3em}} &&
+        \normalsize{\textit{\textbf{Laureando}}} \\
+      \normalsize{Dott. Massimo Callisto De Donato\vspace{1.3em}} &&
+        \theauthor{}\\
+    \end{tabular}\\
+    \vspace{1.2em} \vfill
+    \newlength{\rigatitolo}
+    \settowidth{\rigatitolo}{\Huge{\textsc{Universit\`a degli Studi di Camerino}}}
+    \rule{\rigatitolo}{.5pt}\\
+    \large{\textsc{Anno Accademico 2025--2026}}
+  \end{center}
+  \thispagestyle{empty}
+\setlength{\hoffset}{0pt}
+\end{titlingpage}
+\end{fullwidth}
