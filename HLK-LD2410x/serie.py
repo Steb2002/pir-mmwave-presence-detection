@@ -156,6 +156,10 @@ def main():
                          "analizza_test.py come --event-time o --release-time")
     ap.add_argument("--force", action="store_true", help="sovrascrivi file esistenti")
     ap.add_argument("--muto", action="store_true", help="niente segnali acustici")
+    ap.add_argument("--evento", choices=("entra", "esci"), default="entra",
+                    help="con --beep-at: cosa deve fare il soggetto all'istante "
+                         "dell'evento. 'entra' per il Test 2.1, 'esci' per il 2.2. "
+                         "Il primo annuncio e' automaticamente l'azione opposta")
     ap.add_argument("--prova-suono", action="store_true",
                     help="riproduce i quattro segnali e esce, per regolare il volume")
     ap.add_argument("--suono", choices=("voce", "tono", "sistema"), default="voce",
@@ -221,7 +225,7 @@ def main():
             "--ground_truth_state", args.gt_state,
         ]
         if args.beep_at is not None:
-            cmd += ["--beep-at", str(args.beep_at)]
+            cmd += ["--beep-at", str(args.beep_at), "--evento", args.evento]
         # stdout soppresso (sono le righe di dati), stderr NO: e' dove acquire.py scrive
         # a che istante ha suonato il beep. Quel numero e' il riferimento temporale del
         # trial, va visto.

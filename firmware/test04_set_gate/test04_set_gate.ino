@@ -264,6 +264,19 @@ void eseguiComando(String riga) {
         Serial.println("impostato un valore che il modulo non ha.");
         break;
       }
+      // Il protocollo V1.07 §2.2.3 dichiara il range configurabile 2-8. Sotto il 2 il
+      // modulo accetta il comando ma il comportamento non e' documentato, e con gate 0
+      // e' risultato ROTTO: distanza congelata a 72 cm e presenza sempre attiva su 650
+      // campioni (misurato il 23/08/2026). Gate 1 invece si comporta bene (portata 75 cm),
+      // ma resta fuori specifica: usabile solo dichiarandolo.
+      if (m < 2 || s < 2) {
+        Serial.println("*** ATTENZIONE: gate < 2 e' FUORI SPECIFICA ***");
+        Serial.println("    Il protocollo V1.07 dichiara il range configurabile 2-8.");
+        Serial.println("    Misurato il 23/08/2026 su questo esemplare:");
+        Serial.println("      gate 1 -> portata 75 cm, sembra funzionare (fuori spec)");
+        Serial.println("      gate 0 -> ROTTO: distanza fissa 72 cm, presenza sempre 1");
+        Serial.println("    Se procedi, dichiaralo nei dati acquisiti.");
+      }
       applicaGate((byte)m, (byte)s);
       break;
     }

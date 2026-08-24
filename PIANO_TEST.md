@@ -264,22 +264,33 @@ python acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv 
 
 ## FASE 2 — Confronto dinamico PIR vs mmWave (obiettivo 3)
 
+> 🔊 **Segnali vocali**: `acquire.py --beep-at` pronuncia le parole **"entra"** e
+> **"esci"** invece di due bip. Con i bip bisogna ricordare quale significhi cosa, e nei
+> due test il senso e' invertito: il 22/08/2026 un trial e' stato perso proprio cosi'.
+> L'opzione **`--evento entra|esci`** dice cosa fare all'istante dell'evento; il primo
+> annuncio e' automaticamente l'azione opposta, quindi non si possono scambiare.
+> Se SAPI non parte lo script lo dichiara e ripiega sui bip (grave = primo, acuto = evento).
+> Lo scarto residuo dell'annuncio e' comune ai due sensori e si cancella in `latenza_delta_s`.
+
 ### Test 2.1 — Latenza di rilevamento all'ingresso
 - **Metrica**: secondi tra ingresso nel campo e prima rilevazione, per sensore
 - ⚠️ **NON usare un timer sul telefono.** Tra l'apertura della porta seriale e la prima
   riga del CSV passano 2-3 s (reset dell'ESP32 + setup del logger + i 2 s di attesa in
   `acquire.py`): un timer avviato quando premi Invio sbaglia l'origine dei tempi di
   quella quantità, cioè **più della latenza che stai misurando**. Il riferimento lo dà
-  `acquire.py --beep-at`, che conta dalla prima riga di dati — la stessa origine che usa
+  `acquire.py --beep-at`, che emette i beep contando dalla prima riga di dati — la stessa origine che usa
   poi `analizza_test.py`
 - ⚠️ **L'evento va a 30 s, non a 10.** Dopo che esci dalla stanza il radar tiene la
   presenza per ~10 s (coda misurata nel Test 0.2). Con l'evento a 10 s il radar sarebbe
   ancora attivo all'ingresso e la latenza risulterebbe zero per costruzione. 30 s danno
   il tempo di uscire, chiudere la porta e far scadere la coda
-- Procedura per ogni trial: lancia → **beep grave** = via, esci dal campo e chiudi la
-  porta → **beep acuto** (a 30 s) = rientra subito e resta in movimento fino alla fine
+- Procedura per ogni trial: lancia → senti **"esci"** = esci dal campo e spostati di
+  lato → senti **"entra"** (a 30 s) = rientra subito e resta in movimento fino alla fine
+- ⚠️ Chiudere la porta NON ti nasconde al radar: il 24 GHz attraversa il legno. Quello
+  che conta e' uscire dal cono del sensore e allontanarsi di qualche metro. Lascia
+  pure la porta aperta, cosi' senti gli annunci
 ```powershell
-.venv\Scripts\python.exe serie.py --scenario ingresso --duration 60 --trials 10 --pausa 25 --beep-at 30 --gt-state moving
+.venv\Scripts\python.exe serie.py --scenario ingresso --duration 60 --trials 10 --pausa 25 --beep-at 30 --evento entra --gt-state moving
 ```
 - **10 trial** (la latenza varia molto, servono più ripetizioni). ~14 min in tutto
 - **Analisi**:
@@ -304,10 +315,10 @@ python acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv 
 
 ### Test 2.2 — Latenza di rilascio all'uscita
 - **Metrica**: dopo quanti secondi il sensore dichiara "stanza vuota"
-- Procedura per ogni trial: lancia → **beep grave** = via, entra nel campo a ~2 m e
-  muoviti → **beep acuto** (a 30 s) = esci di scatto e resta fuori fino alla fine
+- Procedura per ogni trial: lancia → senti **"entra"** = entra nel campo a ~2 m e
+  muoviti → senti **"esci"** (a 30 s) = esci di scatto e resta fuori fino alla fine
 ```powershell
-.venv\Scripts\python.exe serie.py --scenario uscita --duration 100 --trials 5 --pausa 15 --beep-at 30 --gt-presence 0 --gt-state absent
+.venv\Scripts\python.exe serie.py --scenario uscita --duration 100 --trials 5 --pausa 15 --beep-at 30 --evento esci --gt-presence 0 --gt-state absent
 ```
 - 70 s dopo l'uscita: la coda del radar è ~10 s, il margine serve perché un trial che
   finisce con il sensore ancora attivo esce come `MAI` e va rifatto
@@ -332,13 +343,34 @@ python acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv 
   il comportamento osservato); PIR 3.4-3.8 s, che è solo il suo timer RC e non una misura
   di presenza
 
-### Test 2.3 — Micro-movimenti (zona grigia tra i due sensori)
-- **Metrica**: tasso di rilevamento con soli micro-movimenti (digitare al telefono,
-  girare pagine) a 2 m, 3 min × 5 trial
+### Test 2.3 — Micro-movimenti (la zona grigia del PIR)
+- **Metrica**: tasso di rilevamento con soli micro-movimenti, **a 1 m** e in piedi
+- ⚠️ **Correzione del 23/08/2026: questo test va fatto a 1 m, non a 2 m.** La stesura
+  originale diceva 2 m, ma a quella distanza il PIR ha dato **0.0% anche con movimento
+  continuo** (Test 1.2 in L e in H): con micro-movimenti darebbe zero per definizione e
+  non si misurerebbe una zona grigia, solo di nuovo il limite di portata. La zona grigia
+  esiste **solo dove il PIR funziona**, cioe' a 1 m
+- **Serve a completare la curva dose-risposta** a geometria costante — stessa distanza,
+  stessa postura, stessa configurazione, cambia solo la quantita' di movimento:
+  | condizione | rilevamento PIR |
+  | immobile (`fermo_1m_H`) | 1.52 % |
+  | micro-movimenti | **da misurare** |
+  | cammino sul posto (`movimento_1m_H`) | 85.20 % |
+- **Setup**: identico a `fermo_1m_H` e `movimento_1m_H` — in piedi sul segno dell'1 m,
+  jumper su H. Micro-movimenti: scrivere al telefono, girare pagine, grattarsi. Niente
+  gesti ampi, ma nemmeno immobilita'
 ```powershell
-python acquire.py --port COM3 --duration 180 --output data/micromovimenti_T01.csv --scenario micromovimenti --trial T01 --ground_truth_presence 1 --ground_truth_state micro_movement
+.venv\Scripts\python.exe serie.py --scenario micromovimenti_1m_H --duration 220 --transitorio 20 --gt-state micro_movement
 ```
-- **Analisi**: `radar_rate_%` vs `pir_rate_%` — atteso: radar ~100%, PIR intermittente
+- Durata allineata a `fermo_1m_H` (220 s con 20 scartati = 200 s utili x 5 trial)
+- **Analisi**:
+```powershell
+.venv\Scripts\python.exe ..\analisi\analizza_test.py "data/*_1m_H_*.csv" --salta-inizio 20
+```
+  mette in fila le tre condizioni. Atteso: radar ~100% in tutte e tre, PIR in mezzo fra
+  1.5% e 85%
+- **Rilevanza per UPRISE**: e' la condizione realistica di una persona **cosciente ma
+  ferita**, che non cammina sul posto e non sta immobile come una statua
 
 ### Test 2.4 — Selettività spaziale (scenario "banchi adiacenti" UPRISE)
 - **Perché**: in un'aula reale i banchi sono affiancati e il radar vede attraverso il
@@ -347,11 +379,17 @@ python acquire.py --port COM3 --duration 180 --output data/micromovimenti_T01.cs
   del proprio banco riducendo il gate massimo
 - **Setup**: gate massimo **2** con lo sketch `firmware/test04_set_gate/` (comando
   `g 2 2`); persona A ferma a 1 m, persona B ferma a **3.5 m**
-- ⚠️ **Correzione rispetto alla stesura precedente di questo piano**: con risoluzione
-  75 cm/gate, gate massimo 2 significa gate 0+1+2 = **2.25 m**, non 1.5-2 m; gate 3
-  sarebbero 3 m. Quindi la persona B a 2.5-3 m sarebbe stata *dentro* il campo con gate 3,
-  e a soli 25 cm dal bordo con gate 2 — margine insufficiente. Da qui gate 2 fisso e B a
-  3.5 m: serve un margine, non un confine
+- ✔ **MISURATO il 23/08/2026 col comando `m`: gate massimo 2 = portata 1.50 m**, non 2.25 m.
+  Il monitor riporta distanze fino a 150 cm esatti e poi perde il bersaglio. La regola vera
+  e' `portata = gate_massimo x 75 cm`. (Le due stesure precedenti di questa nota dicevano
+  prima 1.5-2 m e poi 2.25 m: entrambe erano calcoli, questo e' una misura.)
+- ⚠️ Ne segue che anche il "range massimo 675 cm" della configurazione di fabbrica e'
+  sovrastimato: con gate 8 la portata e' **600 cm**. Il 675 viene da `getRange_cm()` di
+  MyLD2410, che calcola `(gate+1) x risoluzione`
+- 💡 **Provare anche `g 1 1` (portata 75 cm)**: la persona sotto il banco e' stata misurata
+  a 62-69 cm nel Test 1.4, quindi gate 1 la coprirebbe escludendo un vicino a 1 m di lato.
+  Margine stretto ma e' l'unica configurazione che puo' davvero isolare un banco: gate 2
+  (1.50 m) comprende gia' il banco accanto
 - Prima dei trial usare il comando `m` dello sketch per verificare dove il
   radar perde davvero il bersaglio: è la portata effettiva, e trovarla costa 1 minuto
   invece di tre trial da 3 minuti con una seconda persona

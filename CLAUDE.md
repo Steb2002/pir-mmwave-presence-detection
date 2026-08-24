@@ -724,6 +724,217 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       stazionario a ~6-7 atti/min, che è compatto perché sistematico. `analizza_respiro.py`
       ora riporta **tutti** i gruppi con la loro composizione (moving/stazionari) e segnala
       quelli implausibili; la stima aggregata usa i **soli canali moving**
+- [x] **TEST 2.1 COMPLETATO (23/08/2026) — latenza di rilevamento all'ingresso.**
+      10 trial, evento a 30 s annunciato a voce da `acquire.py --beep-at --evento entra`;
+      tutti e 10 validi (`pre_radar_%` = `pre_pir_%` = 0.00):
+      | | latenza |
+      | radar | **5.36 ± 0.30 s** |
+      | PIR | **5.96 ± 0.31 s** |
+      | differenza appaiata radar-PIR | **-0.60 ± 0.35 s** |
+      - **Il radar rileva per primo in 10 trial su 10.** Errore standard della media 0.11 s,
+        cioe' il vantaggio e' 5.4 volte l'incertezza; test dei segni 10/10, p ~ 0.002
+      - ⚠️ Le latenze **assolute** (~5-6 s) sono dominate dal tragitto di rientro e dal tempo
+        di reazione all'annuncio: vanno dichiarate come **latenza operativa**, limite
+        superiore di quella del sensore. La grandezza pulita e' la differenza appaiata,
+        dove tragitto e reazione si cancellano perche' identici per i due sensori
+      - ⚠️ **Previsione smentita**: si era ipotizzato che qui il PIR andasse alla pari o
+        meglio, perche' attraversare una porta e' lo stimolo per cui la lente di Fresnel e'
+        progettata. Non e' andata cosi'. Spiegazione plausibile (da verificare, non
+        dimostrata): il radar ha 6 m di portata e aggancia il soggetto mentre e' ancora in
+        avvicinamento, mentre il PIR richiede che il flusso IR attraversi le zone della
+        lente, cosa che avviene piu' tardi e piu' vicino
+- ⚠️ **Il LD2410B rileva oltre i ±60° dichiarati, di lato** (osservato il 23/08/2026
+      preparando il 2.1): mettendosi **di lato-dietro** rispetto al modulo il PIR non vedeva
+      nulla (`pre_pir_%` = 0) mentre il radar rilevava al 100%. **Precisazione del soggetto
+      che ha eseguito la prova: non era esattamente dietro, ma lateralmente arretrato**;
+      dietro in asse il radar non lo vedeva.
+      ⚠️ Quindi il dato accertato e' che **la copertura eccede il lobo principale sui lati**,
+      non che il modulo sia omnidirezionale. Il comportamento esattamente alle spalle NON e'
+      stato misurato: e' un'osservazione qualitativa, non una caratterizzazione.
+      **Rilevante per il Test 2.4**: se la copertura laterale supera i ±60°, un sensore sotto
+      un banco puo' vedere la persona sotto il banco **accanto**, e ridurre il gate massimo
+      (che limita la distanza, non l'angolo) non basta a isolarli. Servirebbe una misura
+      angolare dedicata prima di concludere
+- [x] **TEST 2.2 COMPLETATO (23/08/2026) — latenza di rilascio all'uscita.** 5 trial,
+      evento a 30 s (`--evento esci`), tutti e 5 misurati:
+      | | tempo di rilascio |
+      | radar | **18.36 ± 0.54 s** |
+      | PIR | **12.96 ± 1.40 s** |
+      | riaccensioni | **0** per entrambi |
+      - il radar impiega **5.4 s in piu'** del PIR a dichiarare la stanza vuota. Effetto
+        enorme rispetto alla dispersione: **8.0 sigma gia' con 5 trial** (nel 2.1 servivano
+        10 trial perche' l'effetto era 0.60 s contro una dispersione di 0.35)
+      - **zero riaccensioni**: rilascio netto in tutti i trial, a differenza del bersaglio
+        fantasma in decadimento visto nel Test 0.2
+      - 🔎 **Stima della coda propria del radar, usando il PIR come cronometro**: il PIR si
+        spegne 3.5 s dopo l'ultimo trigger (196 impulsi, dev.std 0.09 s), quindi il tempo di
+        uscita dal campo e' ~12.96 - 3.5 = **9.5 s** e la coda del radar ~18.36 - 9.5 =
+        **≈ 8.9 s**, contro i **5 s** di timeout letti via UART. ⚠️ E' una stima: i due
+        sensori hanno campi diversi, quindi i rispettivi istanti di "uscita" non coincidono
+        esattamente. Ma concorda con i ~10 s del Test 0.2 e i ~12 s di un trial preliminare
+      - 📌 **Il parametro dichiarato non descrive il comportamento osservato**: tre
+        osservazioni indipendenti danno 9-12 s contro i 5 s configurati. Per UPRISE
+        significa che una stanza appena svuotata risulta occupata per quasi 10 s
+- [x] 🎯 **TEST 2.3 COMPLETATO (23/08/2026) — la curva dose-risposta del PIR.** A 1 m, in
+      piedi, jumper H, stesso setup per tutte e tre le condizioni: cambia solo la quantita'
+      di movimento.
+      | condizione | rilevamento PIR | dev.std | dev. relativa | radar |
+      | immobile | **1.52 %** | ±1.03 | 68% | 100 % |
+      | micro-movimenti | **51.60 %** | ±21.72 | **42%** | 100 % |
+      | cammino sul posto | **85.20 %** | ±11.52 | 13% | 100 % |
+      - il PIR e' **monotono** con la quantita' di movimento, il radar resta al 100% ovunque
+      - ⚠️ **La dispersione esplode nella zona intermedia**: ±21.72 su 51.60. Vicino alla
+        soglia il PIR non e' solo meno sensibile, e' **imprevedibile** — due trial identici
+        per l'operatore danno risultati molto diversi. Per un'applicazione salvavita
+        l'imprevedibilita' e' peggio di un limite noto e dichiarato
+- [x] 🔑 **Il radar fornisce due indicatori GRADUATI del movimento** (rilevante per
+      l'obiettivo 6, indice di vitalita'): sulle tre condizioni entrambi sono monotoni
+      | | immobile | micro | cammino |
+      | `menergy_media` | 68.6 | 84.4 | 99.3 |
+      | `mdist_dev_cm` | 21.3 | 16.4 | 10.4 |
+      L'energia cresce col movimento; la dispersione della distanza cala perche' un eco piu'
+      forte da' una stima piu' stabile. **Sono due grandezze continue, non binarie**: e'
+      esattamente la base che serve all'indice di vitalita', e ora e' misurata su tre livelli
+      di movimento a geometria costante invece che ipotizzata
+- [x] **La regola `portata = gate x 75 cm` e' DOCUMENTATA dal costruttore** (verificato
+      23/08/2026, manuale V1.04 §5.2 p.8): *"Including the farthest door for motion detection
+      and the farthest door for static detection, the setting range is 1 to 8. For example,
+      if the farthest door is set to 2, only if there is a human body within 1.5m will it
+      effectively detect and output the result."* La nostra misura (gate 2 -> 150 cm) coincide
+      esattamente con l'esempio del manuale. Quindi:
+      | gate max | portata | fonte |
+      | 2 | 150 cm | manuale V1.04 p.8 + misurato |
+      | 1 | 75 cm | regola del manuale + misurato |
+      | 8 (fabbrica) | **600 cm** | regola del manuale; i 675 di `getRange_cm()` sono errati |
+- ⚠️ **I due documenti ufficiali si CONTRADDICONO sul range configurabile**:
+      - manuale V1.04 §5.2 p.8: *"the setting range is **1 to 8**"*
+      - protocollo V1.07 §2.2.3 p.8: *"(configuration range **2~8**)"*
+      Quindi **gate 1 non e' univocamente fuori specifica**: e' ammesso dal manuale e
+      escluso dal protocollo. Nella tesi va citata la discrepanza, non una sola delle due
+      fonti. Gate 0 invece e' fuori range in entrambi i documenti, ed e' quello che sul
+      nostro esemplare si e' rotto (distanza fissa 72 cm, presenza sempre 1)
+- [x] **Le soglie di fabbrica lette via UART coincidono con la Tabella 7 del protocollo
+      V1.07 (p.13)**, valore per valore: movimento 50 50 40 30 20 15 15 15 15 (gate 0-8),
+      stazionario 40 40 30 30 20 20 20 (gate 2-8).
+      La tabella ha due colonne distinte, e vanno tenute separate:
+      | | gate 0 | gate 1 | gate 2-8 |
+      | *Motion Sensitivity* | **50** | **50** | 40 40 30 30 20 20 20 |
+      | *Rest Sensitivity* | `-(cannot be set)` | `-(cannot be set)` | 40 40 30 30 20 20 20 |
+      Quindi la sensibilita' di **movimento** dei gate 0 e 1 vale 50 ed e' impostabile; e'
+      la sola sensibilita' **Rest** (stazionaria) che il documento riporta come non
+      impostabile per quei due gate. Questo spiega perche' `senergy_gate0` e `senergy_gate1`
+      risultino sempre 0 nei nostri dati: il canale stazionario non e' configurabile sotto
+      1.5 m. E' una spiegazione coerente col documento, non una citazione di una frase che
+      dica esplicitamente "il canale non esiste"
+- [x] 🔑 **TEST 2.5 COMPLETATO (24/08/2026) — il LD2410B riporta DUE persone insieme, una
+      per canale.** 3 trial x 102 s utili, A ferma a 2 m e B che cammina a 4 m, sfalsate di
+      ~50 cm di lato per evitare l'ombra reciproca:
+      | canale | mediana | corrisponde a |
+      | stazionario | **212 cm** | A, ferma a 2 m |
+      | moving | **389 cm** | B, in movimento a 4 m |
+      - **entrambi i canali attivi contemporaneamente nel 79.2% dei campioni** (1452/1833),
+        con separazione di 177 cm fra le due distanze riportate
+      - `menergy_media` = 38.4, coerente col valore misurato a 4 m nel Test 1.2 (35.1):
+        conferma indipendente che il canale moving stava inseguendo la persona lontana
+      - `senergy` saturo a 100, coerente con un bersaglio fermo a 2 m
+      📌 **Il limite del sensore va riformulato**: non e' "riporta un solo bersaglio", ma
+      **"riporta un bersaglio per canale"**. Separa bene due persone in **stati diversi**;
+      con due nello **stesso stato** la separazione degrada ma non si annulla — vedi la
+      quantificazione nel blocco successivo, che corregge questa frase. E' un paragrafo migliore per il capitolo sui limiti, e ha una conseguenza
+      pratica per UPRISE: sotto due banchi vicini, una persona ferma e una che si muove
+      verrebbero contate entrambe; due ferme no
+- ⚠️ Precisazione sul metodo: le due persone erano **sfalsate lateralmente di ~50 cm**
+      (14° fuori asse a 2 m, 7° a 4 m: entrambe dentro i ±60° del diagramma di p.11 del
+      manuale). In fila una dietro l'altra il corpo davanti fa da schermo e il test non
+      distinguerebbe "non separa i bersagli" da "il secondo era in ombra"
+- [x] 🔑 **Variante IN FILA del Test 2.5 (24/08/2026): un corpo ne nasconde completamente
+      un altro.** Stesse distanze (A ferma a 2 m, B cammina a 4 m) ma allineate sull'asse
+      del sensore, B esattamente dietro A. Confronto con il caso sfalsato:
+      | | sfalsate di lato | in fila |
+      | entrambi i canali attivi | 79.2 % | **42.4 %** |
+      | distanza stazionaria | 212 cm | 215 cm |
+      | distanza moving | **389 cm** | **215 cm** |
+      | differenza fra le due (mediana) | 176 cm | **3 cm** |
+      | differenza < 30 cm | 12 % | **99 %** |
+      | `menergy_media` | 38.4 | 58.1 |
+      | `mdist_dev_cm` | 49.1 | 14.2 |
+      - in fila i due canali riportano **lo stesso bersaglio**: la persona dietro non e'
+        riportata in nessuna forma. Energia piu' alta e dispersione piu' bassa confermano
+        che il radar ha agganciato saldamente un solo bersaglio vicino
+      - ⚠️ **`radar_rate_%` resta 100 % in entrambe le geometrie**: il radar non sbaglia mai
+        a dire "c'e' qualcuno". Quello che perde e' il **conteggio**, non la presenza
+      📌 **Conseguenza per UPRISE**: un singolo sensore non puo' censire piu' persone in
+      una stanza — chi sta dietro a qualcun altro e' invisibile. Questo **rafforza**
+      l'architettura del progetto (un sensore per banco, ciascuno che guarda il proprio
+      occupante) invece di indebolirla: e' un limite che l'architettura distribuita gia'
+      aggira. Ma va dichiarato, perche' esclude l'uso di un sensore singolo come contatore
+      di presenze in aula
+- [x] 🔑 **Capacita' di separare due persone: quantificata su tre geometrie (24/08/2026).**
+      Controllo preliminare superato: B **da sola** ferma a 4 m e' rilevata al 100% con
+      distanza 388.9 ± 3.7 cm ed energia stazionaria 99.3 — quindi il confondente "non vede
+      una ferma a 4 m" e' escluso.
+      | scenario | entrambi i canali | B riportata |
+      | B cammina, sfalsate di lato | 79.2 % | **73.8 %** |
+      | entrambe ferme, sfalsate | 21.2 % | **19.6 %** |
+      | B cammina, in fila dietro A | 42.4 % | **0.4 %** |
+      - ⚠️ **Correzione di un'affermazione precedente**: avevo scritto che due persone nello
+        stesso stato "non vengono separate". E' **troppo assoluto**: con entrambe ferme B
+        compare comunque nel 19.6% dei campioni — nel 7% sul canale stazionario e per il
+        resto sul canale moving, quando i suoi micro-movimenti involontari la registrano
+      - il meccanismo: **i due canali SONO lo strumento di separazione**. Funzionano quando
+        le due persone sono in stati diversi; con entrambe ferme competono per lo stesso
+        canale e **la piu' vicina vince nel 92.3% dei campioni** (istogramma delle distanze
+        stazionarie: 92.3% nella banda di A, 7.2% in quella di B)
+      - la dispersione lo conferma: `sdist_dev` passa da 3.7 cm (una sola persona ferma) a
+        40.9 cm (due ferme) — non e' rumore, sono le escursioni verso il bersaglio lontano
+      📌 **Il caso peggiore non e' "due ferme" ma "in fila"**: 0.4% contro 19.6%. Una persona
+      dietro un'altra e' praticamente invisibile; una ferma accanto a un'altra ferma e'
+      intermittente. In entrambi i casi `radar_rate_%` resta 100%: si perde il conteggio,
+      mai la presenza
+- [x] **Il vicino laterale NON sporca la lettura del proprio occupante (24/08/2026).**
+      Gate massimo 2 (portata 150 cm), occupante fermo a 1 m sull'asse, vicino fermo a 1 m
+      **perpendicolare** all'asse. Confronto appaiato con lo stesso soggetto nella stessa
+      posizione, 3 trial per scenario:
+      | grandezza | da solo | con vicino | significativita' |
+      | `sdist_media_cm` | 102.37 | 106.93 | 1.1 sigma |
+      | `sdist_dev_cm` | 14.47 | 16.07 | 1.7 sigma |
+      | `mdist_media_cm` | 101.73 | 105.70 | 0.9 sigma |
+      | `menergy_media` | 87.73 | 83.87 | 2.0 sigma |
+      Nessuna differenza supera le 2 sigma con 3 trial: la perturbazione e' al piu' di
+      pochi cm. `radar_rate_%` resta 100% in entrambi i casi
+- 🔎 **Il confronto con il caso a 2+4 m indica che conta l'ANGOLO, non la distanza**: la
+      dispersione della distanza era passata da 3.7 a 40.9 cm con due persone sfalsate di
+      soli 50 cm (14° e 7° fuori asse, entrambe in pieno lobo), mentre qui passa da 14.5 a
+      16.1 cm con il secondo corpo a **90°**. Un bersaglio molto fuori asse e' attenuato dal
+      diagramma di irradiazione e non compete con l'occupante che satura il canale.
+      ⚠️ Da questi dati **non** si puo' concludere che il radar non veda il vicino a 90°:
+      con l'occupante presente e saturo un eco debole sarebbe mascherato comunque. Lo
+      decide lo scenario `sel_laterale_1m`, con il solo vicino presente
+- [x] 🎯 **TEST 2.4 COMPLETATO (24/08/2026) — con gate massimo 2 la selettivita' spaziale
+      FUNZIONA, ma solo sul vicino immobile.** Portata tagliata a 150 cm, tutti gli scenari
+      con soggetto fermo, 3 trial ciascuno:
+      | scenario | `radar_rate_%` finestra intera | in regime (dopo 120 s) |
+      | occupante a 1 m sull'asse | **100 %** | 100 % |
+      | persona a 3 m sull'asse (oltre il taglio) | **0 %** | 0 % |
+      | persona a 1 m **di lato** (90°) | 24.8 ± 19.6 % | **0 %** |
+      - il **gate taglia davvero**: a 3 m zero rilevamenti, nemmeno un campione
+      - il vicino a 90° **non viene rilevato da fermo**: il 24.8% della finestra intera e'
+        interamente il **transitorio d'ingresso** (un unico tratto continuo da t=0, mai un
+        fronte di salita successivo). Il diagramma di irradiazione fa il lavoro che il gate
+        non puo' fare, perche' il gate limita la distanza e non l'angolo
+- ⚠️ **Due limiti da dichiarare, entrambi importanti per UPRISE**:
+      1. la selettivita' vale per un vicino **immobile**. Mentre si muove viene rilevato
+         eccome: e' proprio il transitorio a produrre quel 24.8%
+      2. la coda dopo che il vicino si ferma e' durata **29, 66 e 101 s** nei tre trial —
+         molto piu' dei ~9 s di coda misurati nel Test 2.2. Il radar tiene agganciato un
+         bersaglio laterale fermo per decine di secondi prima di perderlo. Quindi un banco
+         vuoto puo' risultare occupato fino a un minuto e mezzo dopo che qualcuno gli e'
+         passato accanto
+- ⚠️ **Lezione metodologica**: `--salta-inizio 20` non bastava. Negli scenari dove il
+      soggetto deve raggiungere una posizione, la finestra da scartare va dimensionata sulla
+      **coda del radar**, non sul tempo di spostamento. Qui servivano 120 s. Il sintomo che
+      lo rivela e' `fp_radar_eventi_h = 0` insieme a `radar_rate_%` alto: nessun fronte di
+      salita significa che la presenza era gia' attiva all'inizio della finestra
 - [ ] Test comparativo PIR vs mmWave con numeri
 - [ ] Test penetrazione ostacoli (cartongesso, legno, vetro, plastica)
 - [ ] Engineering mode + rilevamento respiro LD2410B
