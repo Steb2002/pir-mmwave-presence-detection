@@ -910,6 +910,31 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       ⚠️ Da questi dati **non** si puo' concludere che il radar non veda il vicino a 90°:
       con l'occupante presente e saturo un eco debole sarebbe mascherato comunque. Lo
       decide lo scenario `sel_laterale_1m`, con il solo vicino presente
+- [x] 🔑 **Domanda chiusa (25/08/2026): a regime il radar NON riporta il vicino a 90°.**
+      Rileggendo `sel_laterale_1m` nel tempo invece che come media: in tutti e 3 i trial
+      il radar è attivo **dall'istante zero**, si spegne **una sola volta** (dopo 65,6 /
+      29,4 / 100,8 s) e **non si riaccende mai più** nei restanti 100-170 s, con una
+      persona viva a 1 m. Zero fronti di salita in tutti i trial.
+      ⚠️ Quindi il **24,83 ± 19,55 %** calcolato con lo scarto standard di 20 s **non è
+      un rilevamento**: è la coda di presenza residua dalla fase di posizionamento che
+      decade. Scartando 120 s (oltre la coda più lunga) il quadro è netto:
+      | scenario (gate max 2) | finestra std. 20 s | a regime 120 s |
+      | occupante 1 m sull'asse | 100,00 % | **100,00 %** |
+      | persona a 3 m sull'asse | 0,00 % | **0,00 %** |
+      | persona a 1 m a 90° | 24,83 % | **0,00 %** |
+      | occupante + vicino a 90° | 100,00 % | **100,00 %** |
+- ⚠️ **Osservazione metodologica generale**: il transitorio di 20 s adottato negli altri
+      scenari **non basta** in quelli di selettività, dove la coda dal posizionamento
+      supera i 100 s. La deviazione standard enorme rispetto alla media (±19,55 su 24,83)
+      era il primo indizio. **Negli scenari di selettività usare `--salta-inizio 120`**
+- ⚠️ **Resta aperto**: in scenari 3 e 4 il vicino era **fermo**. Il vicino **in
+      movimento** a 90° non è stato provato, ed è il caso in cui il canale moving —
+      libero — potrebbe agganciarlo (è proprio il meccanismo visto in `due_persone`).
+      Prima estensione da fare su questo scenario
+- 📌 **Convenzioni di scarto del transitorio, ricostruite e da usare sempre** (riproducono
+      esattamente i numeri del registro): **20 s** negli scenari ordinari, **40 s** sotto
+      il banco (il soggetto deve anche posizionarsi), **120 s** negli scenari di
+      selettività. Con scarto sbagliato i numeri non coincidono con quelli pubblicati
 - [x] 🎯 **TEST 2.4 COMPLETATO (24/08/2026) — con gate massimo 2 la selettivita' spaziale
       FUNZIONA, ma solo sul vicino immobile.** Portata tagliata a 150 cm, tutti gli scenari
       con soggetto fermo, 3 trial ciascuno:
@@ -982,6 +1007,29 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - [ ] Incontro col professore: validazione protocollo + domande (lamiera, scadenza, UPRISE/SAFE, UWB)
 - [ ] Setup backup dati (git init + repo privato, o Drive/OneDrive)
 - [ ] Scheletro capitoli tesi in Overleaf (da SCALETTA_TESI.md)
+- [x] **Capitolo 4 "Confronto sperimentale" SCRITTO (25/08/2026)** —
+      `tesi-unicam/capitoli/04-confronto-sperimentale.tex`, da 612 a ~1450 righe, 13
+      tabelle. Copre fasi 1 e 2 complete. Restano marcate *in corso* solo: penetrazione
+      ostacoli, respiro a metronomo, confronto LD2420, misura angolare.
+      ⚠️ **Storico**: per un periodo sono esistite DUE cartelle LaTeX divergenti,
+      `tesi-unicam/` e `tesi/`.
+      ✔ **Duplicazione risolta (25/08/2026)**: la cartella `tesi/` è stata **cancellata**.
+      L'unica cartella LaTeX è ora `tesi-unicam/` (classe ufficiale `unicam-diss.cls`).
+      Verificato prima di cancellare che nulla andasse perso: `bib/tesi.bib` era
+      identico e i tre file `00-*` avevano già il loro equivalente adattato in
+      `tesi-unicam/frontmatter/` (`titlepage`, `proposte-titolo`, `abstract`). In ogni
+      caso il contenuto resta nella storia git fino al commit 2568d7b
+- 📌 **Numeri chiave del capitolo, tutti riverificati dai CSV il 25/08/2026** (se
+      compaiono valori diversi altrove in questo file, fanno fede questi):
+      distanza 1-5 m errore grezzo **-0,52 / +11,22 / +9,76 / +11,84 / +18,20 cm**,
+      dispersione entro trial **10,4 / 14,3 / 17,5 / 26,4 / 11,7 cm**, energia
+      **99,0 / 85,1 / 54,4 / 35,1 / 27,6**; residui dalla retta ≤ 4,9 cm.
+      ⚠️ L'errore **relativo** non è monotono: il massimo è a **2 m (+5,6 %)**, non a 5 m
+- 📌 **Struttura degli impulsi PIR, il dato che regge l'interpretazione**: in **L**
+      195 impulsi, media **3,46 ± 0,09 s**, nessuno oltre 5 s. In **H** a 1 m con cammino:
+      6 impulsi completi (media 14,1 s, max 29,8 s) **più 5 troncati, il più lungo ≥ 61,6 s**
+      (cioè l'intero trial). In **H** da fermo: **2 impulsi in 1010 s**. Il contrasto fra
+      queste tre righe è più convincente della percentuale
 - [ ] Cronoprogramma (dopo aver saputo la scadenza)
 
 ### Chiusura
