@@ -26,49 +26,135 @@ di questa informazione in un numero 0-100 leggibile da un non tecnico.
 
 ## 2. Dati di ingresso (dal firmware, 5 Hz)
 
-| Segnale | Colonna CSV | Cosa misura |
-|---|---|---|
-| Energia moving del target | `moving_energy` | intensità del movimento rilevato (0-100) |
-| Energia per-gate moving | `menergy_gate0..8` | dove avviene il movimento |
-| Energia per-gate stationary | `senergy_gate0..8` | riflessione del corpo fermo; oscilla col respiro |
-| Stato presenza | `radar_presence` | gate di guardia: se 0, vitalità forzata a 0 |
+| Segnale | Colonna CSV | Cosa misura | Utilizzabile? |
+|---|---|---|---|
+| Energia moving del target | `moving_energy` | intensità del movimento rilevato (0-100) | ✔ satura solo a movimento pieno |
+| Energia per-gate moving | `menergy_gate0..8` | *dove* e *quanto* si muove il bersaglio | ✔ **è il canale portante dell'indice** |
+| Energia per-gate stationary | `senergy_gate0..8` | riflessione del corpo fermo | ✘ **saturo a 100 in ogni scenario occupato** (§3.0) |
+| Energia stationary del target | `stationary_energy` | idem | ✘ saturo al 100 % dei campioni |
+| Stato presenza | `radar_presence` | gate di guardia: se 0, vitalità forzata a 0 | ✔ |
 
-Osservazione chiave (da verificare nei test): una persona **viva ma immobile** ha
-energia moving ≈ 0 ma l'energia stationary del suo gate **oscilla** con il respiro
-(banda 0.1-0.5 Hz — stessa fisica del test respiro, Fase 5). Una stanza vuota ha
-energia stazionaria costante (solo rumore). La *varianza* dell'energia stationary
-è quindi il segnale di vita minimo, sotto il movimento.
+⚠️ **Correzione rispetto alla prima stesura di questo documento.** L'ipotesi di
+partenza era: *"una persona viva ma immobile ha energia moving ≈ 0 mentre l'energia
+stationary del suo gate oscilla col respiro"*. La prima metà è falsa e la seconda è
+inutilizzabile:
 
-## 3. Algoritmo v1 — specifica
+- l'energia **moving** di una persona immobile **non** è ≈ 0: vale in media **30,9**
+  a 1 m (`fermo_1m_H`, 5 trial) contro **11,9** a stanza vuota. Il canale moving
+  raccoglie i micro-movimenti involontari, ed è proprio lì che si vede la vita;
+- l'energia **stationary** è satura e quindi costante: non oscilla con niente.
 
-Due componenti, aggiornate a ogni campione (5 Hz):
+L'indice si costruisce quindi **interamente sui canali moving**. È la stessa
+conclusione a cui erano già arrivati, per due strade indipendenti, il pilota del
+respiro (18/08) e il Test 1.3 (i canali stazionari danno un artefatto a ~7 atti/min).
+
+## 3. Algoritmo — specifica v2 (26/08/2026)
+
+### 3.0 Perché la v1 non era applicabile
+
+La v1 (conservata in §3.3) costruiva la componente di micro-vitalità sulla variazione
+tick-a-tick dell'energia **stazionaria** del gate attivo. Misurata sui CSV già
+acquisiti, scartando i transitori secondo le convenzioni del registro (20 s ordinari,
+40 s sotto il banco), quel canale risulta inchiodato al fondoscala:
+
+| scenario | trial | saturazione `senergy_gate2` | **dev.std** di `senergy_gate2` |
+|---|---|---|---|
+| `fermo_1m_H` | 5 | 98 % | **1,0** |
+| `micromovimenti_1m_H` | 5 | 100 % | **0,0** |
+| `movimento_1m_H` | 5 | 100 % | **0,0** |
+| `sotto_banco_immobile_H` | 5 | 100 % | **0,2** |
+| `sotto_banco_movimenti_H` | 5 | 100 % | **0,0** |
+| `stanza_vuota` (riferimento) | 1 | 0 % | 1,0 |
+
+Con deviazione standard 0,0 il termine `delta` della v1 è **identicamente nullo**: la
+seconda componente non contribuisce all'indice qualunque valore si dia a `k`. Non è un
+difetto del nostro esemplare — è la saturazione già documentata nel Test 0.2 (92 % dei
+campioni stazionari a fondoscala) e nel protocollo V1.07, dove l'energia è un valore
+normalizzato 0-100 che nessuna soglia e nessuna auto-calibrazione riportano in scala.
+
+### 3.1 Specifica v2
+
+Due componenti, aggiornate a ogni campione (5 Hz), entrambe sul canale **moving**:
 
 ```
-gate_attivo = argmax(senergy_gate[i])            # dov'è la persona
+g = gate_attivo                                              # vedi §3.2
 
-# Componente 1 — movimento (reattiva, ~2 s di memoria)
-mov_raw  = max(moving_energy, menergy_gate[gate_attivo])     # 0-100
+# Componente 1 — livello di movimento (reattiva, ~2 s di memoria)
+mov_raw  = max(moving_energy, menergy_gate[g])               # 0-100
 mov_ewma = α_m · mov_raw + (1-α_m) · mov_ewma                # α_m = 0.1
 
-# Componente 2 — micro-vitalità/respiro (lenta, ~10 s di memoria)
-delta    = |senergy_gate[gate_attivo] - senergy_prec|        # variazione tick-a-tick
-resp_ewma= α_r · delta + (1-α_r) · resp_ewma                 # α_r = 0.02
+# Componente 2 — variabilità del ritorno (lenta, ~10 s di memoria)
+var_raw  = |menergy_gate[g](t) - menergy_gate[g](t-1)|
+var_ewma = α_v · var_raw + (1-α_v) · var_ewma                # α_v = 0.02
 
 # Fusione
-vitality = clamp( mov_ewma + k · resp_ewma , 0, 100 )        # k da tarare (~5-15)
+vitality = clamp( mov_ewma + k · var_ewma , 0, 100 )         # k da tarare
 if radar_presence == 0: vitality = 0
 ```
 
-Razionale delle scelte:
-- **EWMA e non media mobile**: costa O(1) in RAM (2 float) — gira identica su ESP32
-  e in Python; una finestra mobile richiederebbe buffer e dà risultati simili
-- **Due costanti di tempo diverse**: il movimento deve reagire in ~2 s (α=0.1 a 5 Hz),
-  il respiro è un segnale lento che va integrato su ~10 s (α=0.02) per emergere dal rumore
-- **max(target, gate)**: l'energia target e quella per-gate a volte divergono
-  (filtri interni del radar); prendere il massimo rende l'indice conservativo
-  verso i falsi "nessun segno" — l'errore più grave nel dominio UPRISE
-- **k amplifica il respiro**: `delta` è piccolo (unità di energia); k lo porta nella
-  scala 10-30 attesa per la classe "vitalità bassa". È IL parametro da tarare
+Razionale, con i valori misurati sui trial già acquisiti (medie fra 5 trial, 1 m,
+gate 1, transitorio scartato):
+
+| scenario | `menergy_gate1` medio → **componente 1** | dev.std → **componente 2** |
+|---|---|---|
+| stanza vuota | 11,9 | 2,2 |
+| immobile che respira | 30,9 ± 7,2 | 20,7 |
+| micro-movimenti | 66,5 ± 4,7 | 31,0 |
+| movimento pieno | 98,9 ± 0,7 | 5,8 |
+
+- **la componente 1 da sola separa già i quattro scenari** ed è monotona. È l'asse
+  principale dell'indice;
+- **la componente 2 non è monotona** (sale fino ai micro-movimenti, poi crolla perché
+  a movimento pieno il canale satura a 100 e non può più variare). Non è un difetto se
+  entra come **termine additivo**: serve a sollevare la fascia bassa — dove separare
+  "vivo immobile" da "niente" è il compito difficile — mentre in alto è la componente 1,
+  già a 99, a determinare la classe. `k` va tarato per questo, non per massimizzare
+  la separazione in alto;
+- **EWMA e non media mobile**: costa O(1) in RAM (2 float), identica in Python e su
+  ESP32;
+- **due costanti di tempo diverse**: il movimento deve reagire in ~2 s (α=0.1 a 5 Hz),
+  la variabilità va integrata su ~10 s (α=0.02) per emergere dal rumore;
+- **`max(target, gate)`**: le due energie a volte divergono per i filtri interni del
+  radar; il massimo rende l'indice conservativo verso i falsi "nessun segno", che è
+  l'errore più grave nel dominio UPRISE.
+
+**Correzione del rumore di fondo (obbligatoria).** Prima di entrare nell'indice,
+l'energia del gate va portata al netto del rumore misurato a stanza vuota e riscalata:
+
+```
+e_netta = max(0, (menergy_gate[g] - fondo[g]) · 100 / (100 - fondo[g]))
+```
+
+dove `fondo[g]` è la media per-gate misurata su un file a stanza vuota (nel nostro
+ambiente: g0≈18, g1≈13, g2-g8 = 3-5, stabili su 6,5 h). Senza questa correzione i gate
+vicini portano ~19 unità di rumore dentro l'indice e la stanza vuota diventa
+indistinguibile da una persona immobile — vedi §5.3 per le due tabelle a confronto.
+
+⚠️ **Il livellamento è indispensabile, non un abbellimento.** Per singolo campione le
+distribuzioni si sovrappongono quasi completamente: in `fermo_1m_H` il 5°-95°
+percentile di `menergy_gate1` va da **10 a 100**. Sono le EWMA a rendere le classi
+separabili: la taratura di α_m e α_v è quindi parte dell'algoritmo, non una rifinitura.
+
+### 3.2 Scelta del gate attivo
+
+La v1 usava `argmax(senergy_gate)`, che su un canale saturo restituisce sempre lo
+stesso gate. Il prototipo implementa tre criteri selezionabili, da confrontare in
+taratura:
+
+| criterio | come | note |
+|---|---|---|
+| `energia` (default) | `argmax(menergy_gate[i])` | segue il bersaglio; a stanza vuota punta al rumore dei gate 0-1, ma lì interviene il gate di presenza |
+| `distanza` | dalla distanza riportata: `gate = dist // 75 cm` | usa la stima del radar; indefinito quando nessun target è riportato |
+| `fisso N` | gate imposto | per il confronto controllato fra trial della stessa geometria |
+
+### 3.3 Versione v1 (superata, conservata per storia)
+
+```
+gate_attivo = argmax(senergy_gate[i])
+mov_raw     = max(moving_energy, menergy_gate[gate_attivo])
+delta       = |senergy_gate[gate_attivo] - senergy_prec|      # <-- sempre 0: §3.0
+vitality    = clamp(mov_ewma + k · resp_ewma, 0, 100)
+```
 
 ## 4. Classificazione
 
@@ -89,24 +175,96 @@ non "deceduto" (la persona può essere fuori portata, schermata, svenuta ma viva
 Regola: **l'algoritmo si sviluppa su PC, sui CSV, dove si può iterare in secondi.**
 Il porting su ESP32 (`vitality.h`) avviene solo a soglie validate.
 
-Percorso (usa i dati della Fase 6 di PIANO_TEST.md):
+### 5.1 I dati ci sono già (verificato 26/08/2026)
 
-1. Raccogliere i 4 scenari: `vitalita_0` (stanza vuota), `vitalita_respiro`
-   (immobile), `vitalita_micro` (micro-movimenti), `vitalita_attivo` (movimento
-   pieno) — 5 trial ciascuno
-2. Script `analisi/vitalita_proto.py` (da scrivere in quella fase): implementa
-   l'algoritmo §3, lo esegue su tutti i CSV, produce la serie `vitality(t)` per trial
-3. **Taratura**: scegliere α_m, α_r, k e le 3 soglie in modo che i 4 scenari cadano
-   nelle 4 classi attese. Metodo semplice e difendibile: guardare le distribuzioni
-   (boxplot dei valori di vitality per scenario) e mettere le soglie nei "vuoti"
-   tra le distribuzioni
-4. **Validazione**: matrice di confusione scenario→classe sui trial NON usati per
-   la taratura (es. tarare su T01-T03, validare su T04-T05). Metrica di tesi:
-   % di campioni classificati nella classe attesa, per scenario
+La Fase 6 di PIANO_TEST.md prevedeva quattro acquisizioni dedicate. Non servono: la
+serie dose-risposta del Test 2.3 le copre tutte, a geometria costante (1 m, in piedi,
+jumper H) e con 5 trial ciascuna.
+
+| scenario previsto | CSV disponibile | trial | durata utile |
+|---|---|---|---|
+| `vitalita_0` | `stanza_vuota`, `stanza_vuota_notte` | 1 + notturna | 30 min + 6,5 h |
+| `vitalita_respiro` | `fermo_1m_H` | 5 | ~200 s |
+| `vitalita_micro` | `micromovimenti_1m_H` | 5 | ~200 s |
+| `vitalita_attivo` | `movimento_1m_H` | 5 | ~60 s |
+
+In più, **due scenari nella geometria UPRISE reale** che il piano non prevedeva:
+`sotto_banco_immobile_H` e `sotto_banco_movimenti_H` (5 trial × ~340 s). Servono come
+insieme di validazione **su geometria diversa da quella di taratura**, che è una prova
+molto più severa del semplice hold-out sui trial.
+
+### 5.2 Percorso
+
+1. ✔ **Dati**: già acquisiti (§5.1)
+2. ✔ **Prototipo**: `analisi/vitalita_proto.py` — implementa la v2 di §3.1, gira su
+   tutti i CSV, produce la serie `vitality(t)` per trial, le distribuzioni per scenario
+   e la matrice di confusione. Solo libreria standard. Opzioni pensate per la taratura:
+   `--alpha-mov --alpha-var --k --soglie` (parametri), `--gate` (criterio del gate
+   attivo, §3.2), `--fondo-da` (correzione del rumore, §3.1), `--trials` (separa
+   taratura e validazione), `--istogrammi` (distribuzioni per scegliere le soglie),
+   `--senza-gate-presenza` (§5.3), `--serie-out` (serie temporale per i grafici)
+3. **Taratura**: scegliere α_m, α_v, k e le 3 soglie sui trial **T01-T03** dei quattro
+   scenari a 1 m. Metodo: guardare le distribuzioni per scenario (istogrammi prodotti
+   dal prototipo) e mettere le soglie nei vuoti fra le distribuzioni
+4. **Validazione**, su due livelli:
+   - *hold-out*: trial **T04-T05**, mai usati in taratura, stessa geometria
+   - *trasferibilità*: scenari **sotto il banco**, geometria diversa. ⚠️ Da verificare:
+     lo stesso soggetto immobile dà `menergy_gate1` = 30,9 a 1 m e **54,0** sotto il
+     banco — le soglie tarate a 1 m potrebbero non trasferirsi. Se non si trasferiscono,
+     è un risultato da riportare, non un fallimento: significa che l'indice va tarato
+     per geometria di montaggio, cosa che in UPRISE è nota a priori (il sensore è
+     fissato sotto un arredo di dimensioni note)
 5. Porting in `vitality.h` (stesse costanti) + verifica live con la web UI (step 5)
 
-Il punto 4 dà il numero finale per la tesi: *"l'indice classifica correttamente
-l'X% dei campioni su scenari mai visti in taratura"*.
+Il punto 4 dà il numero finale per la tesi: *"l'indice classifica correttamente l'X %
+dei campioni su trial mai visti in taratura"*, con un secondo numero per la geometria
+diversa.
+
+### 5.3 Chi decide la classe "nessun segno" — e la correzione del fondo
+
+Con il gate di presenza attivo (`radar_presence == 0 → vitality = 0`), la classe
+`nessun_segno` a stanza vuota sarebbe decisa dal **bit di presenza del radar**, non
+dall'indice. Per verificare se l'indice sappia cavarsela da solo, il prototipo calcola
+anche la versione **senza gate** (`--senza-gate-presenza`). Il primo esito è stato
+negativo, e istruttivo:
+
+| scenario | indice senza gate, **senza** correzione del fondo |
+|---|---|
+| stanza vuota (6,5 h notturne) | **19,1** |
+| persona immobile a 2,3 m (`fermo_seduto`) | **21,2** |
+
+Indistinguibili. La causa non è l'algoritmo ma il **rumore di fondo per-gate**: i gate
+0-1 stanno a 13-18 unità anche a stanza vuota (già misurato nel Test 0.2 e stabile su
+6,5 h), e quel valore entra tale e quale nella componente 1.
+
+La correzione è sottrarre il fondo misurato e riscalare su 0-100
+(`--fondo-da <file_stanza_vuota.csv>`, ANALISI_VITALITA.md §3.1). Con il fondo
+sottratto (g0=18, g1=13, g2-g8 = 3-5):
+
+| scenario | senza gate, **con** correzione del fondo |
+|---|---|
+| stanza vuota (6,5 h) | **2,4** |
+| immobile a 2,3 m | **11,4** |
+| immobile a 1 m | **30,9** |
+| micro-movimenti a 1 m | **77,3** |
+| movimento pieno a 1 m | **99,7** |
+
+Ora l'indice separa la stanza vuota da una persona immobile **senza** appoggiarsi al
+bit di presenza del radar. Il gate di presenza resta come rete di sicurezza, ma non è
+più lui a produrre il risultato. In tesi vanno riportate entrambe le tabelle: la prima
+mostra perché la correzione serve.
+
+⚠️ **Problema aperto per la taratura — trasferibilità fra geometrie.** Con gli stessi
+parametri, `sotto_banco_immobile_H` dà **65,6**, cioè quasi quanto i micro-movimenti a
+1 m (77,3). Una sola terna di soglie non può quindi classificare correttamente
+entrambe le geometrie. Le strade possibili, da valutare in taratura:
+1. tarare per geometria di montaggio (in UPRISE il sensore è fissato sotto un arredo
+   di dimensioni note, quindi la geometria è nota a priori);
+2. normalizzare rispetto all'energia del bersaglio a riposo di quel sensore, cioè una
+   calibrazione una tantum all'installazione;
+3. accettare l'errore e dichiararlo — ma significa che sotto il banco una persona
+   immobile viene letta come "moderato" anziché "vitalità bassa", il che nel triage
+   è un errore **conservativo** (sovrastima la vitalità), quindi non innocuo.
 
 ## 6. Casi limite e comportamenti attesi
 
