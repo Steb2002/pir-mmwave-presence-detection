@@ -558,7 +558,10 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - **REGOLA FONTI (richiesta esplicita, 15/07/2026)**: ogni dato tecnico inserito nei documenti deve avere la fonte citata, preferibilmente certificata o autorevole (datasheet del produttore > manuale ufficiale > guide riconosciute tipo Adafruit/ESPHome > blog). Ogni documento di analisi ha la sua sezione "Fonti"; le fonti confluiranno in `bib/tesi.bib` su Overleaf. Se una fonte riporta valori sospetti (es. refusi mA/µA), annotarlo e far fede al datasheet
 - **La tesi si scrive in Overleaf (LaTeX)** — impostare lo scheletro dei capitoli presto e scrivere durante i test, non dopo: i documenti in `analisi/` sono già bozze di capitoli
 - **Validare PIANO_TEST.md col professore PRIMA della campagna di test** (~10 h di acquisizioni: se il protocollo non va bene si rifà tutto)
-- **Backup dei dati prima di iniziare le acquisizioni**: i CSV sono l'asset insostituibile della tesi — git init + repo privato, o cartella sincronizzata su Drive/OneDrive
+- ✔ **Backup dei dati: fatto (26/08/2026)** — i CSV sono l'asset insostituibile della
+  tesi ed è la ragione per cui il repo esiste. Sono su GitHub
+  (`Steb2002/Tesi-Presence-Sensing`), verificati 116 su 116 nel remoto. **Pushare dopo
+  ogni sessione di acquisizione**: un commit locale non è un backup
 - **Confronto con UWB da preparare a livello argomentativo** (il DIPME-DEVICE ha già un sensore UWB): la commissione può chiedere "perché mmWave e non UWB?" — rispondere da letteratura/datasheet (costo, maturità moduli consumer, dati per-gate), partendo dalla tabella comparativa qui sopra
 - Ogni sessione di test va annotata in `HLK-LD2410x/data/REGISTRO_SESSIONI.md` (temperatura stanza, soggetto, alimentazione)
 
@@ -1170,7 +1173,19 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - [x] Agenda incontro professore (`INCONTRO_PROFESSORE.md`)
 - [x] Analisi teorica PIR (`analisi/ANALISI_PIR.md` — sezione 6 da completare col modello reale)
 - [ ] Incontro col professore: validazione protocollo + domande (lamiera, scadenza, UPRISE/SAFE, UWB)
-- [ ] Setup backup dati (git init + repo privato, o Drive/OneDrive)
+- [x] **Setup backup dati COMPLETATO (26/08/2026)** — repo GitHub
+      `Steb2002/Tesi-Presence-Sensing`, allineato al remoto. Verificato per conteggio:
+      **116 CSV sperimentali su disco, 116 tracciati, 116 presenti in `origin/main`**,
+      più `REGISTRO_SESSIONI.md`; 28 MB in `HLK-LD2410x/data/`. Nessun file non
+      tracciato in quella cartella
+- ⚠️ **Nessuna regola ignora i CSV** in nessuno dei due `.gitignore`: i dati entrano nel
+      repo per default, quindi anche le acquisizioni della campagna LD2420 saranno
+      versionate senza doverci pensare. Rovescio della medaglia: con `git add -A` entra
+      **tutto**. Tenere gli eventuali CSV intermedi o di scarto **fuori** da
+      `HLK-LD2410x/data/`, altrimenti si mescolano ai trial buoni nella storia
+- ⚠️ Un `find . -name "*.csv"` grezzo ne conta 146, non 116: i 30 in più sono fixture di
+      test di numpy dentro `HLK-LD2410x/.venv/`, ignorate correttamente. Non sono dati
+      sperimentali
 - [ ] Scheletro capitoli tesi in Overleaf (da SCALETTA_TESI.md)
 - [x] **Capitolo 4 "Confronto sperimentale" SCRITTO (25/08/2026)** —
       `tesi-unicam/capitoli/04-confronto-sperimentale.tex`, da 612 a ~1450 righe, 13
