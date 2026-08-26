@@ -51,7 +51,7 @@ Obiettivo di contorno: valutare anche altri tipi di sensori.
 |---|---|---|
 | ESP32 (scheda nera 30-pin) | 1 | Chip Espressif ESP32-WROOM-32, USB-C |
 | HLK-LD2410B | 1 | ✅ **FUNZIONANTE (09/08/2026)**. Il "guasto" del 19/07/2026 era un errore di cablaggio: i colori dei cavi erano mappati al contrario. Mappatura corretta (datasheet Tabella 1): rosso=VCC, nero=GND, giallo=UART_Rx, verde=UART_Tx, blu=OUT |
-| HLK-LD2420 | 1 | Scheda arancione/verde, range maggiore |
+| HLK-LD2420 | 1 | Scheda arancione/verde, portata 8 m dichiarata (manuale V1.2) |
 | HLK-CH340E-V1.0 | 1 | Adattatore USB→Seriale, utile per connettere LD2420 direttamente al PC |
 | PIR **HC-SR501** | 1 | Identificato dalle foto (`PIR HC-SR501/`): BISS0001 + regolatore HT7133, uscita 3.3V ok per ESP32, 2 trimmer + jumper H/L — dettagli in `analisi/ANALISI_PIR.md` §6 |
 | Breadboard grande | 1 | |
@@ -141,12 +141,33 @@ i due in mezzo sono la seriale, sempre **incrociata** (Tx radar → Rx ESP32).
 
 ## HLK-LD2420 — Specifiche tecniche
 
-### Caratteristiche principali
-- Frequenza: **24 GHz**
-- Range: fino a **~12 m** (gate 0-14, 70 cm per gate)
-- Alimentazione: **3.3V** (diverso dal LD2410B che vuole 5V!)
+📄 **Documentazione ufficiale scaricata il 26/08/2026** in `HLK-LD2420/Documentazione/`:
+`HLK-LD2420-Product-Manual V1.2.pdf` (16 pagine) e `HLK-LD2420 Protocol Document.pdf`
+(5 pagine). Fino a quella data le specifiche qui sotto venivano da fonti secondarie e
+**diverse erano sbagliate** (portata, numero di gate, soglie): i valori attuali sono
+quelli del manuale.
+
+### Caratteristiche principali (manuale V1.2, Tabella 2-1)
+- Frequenza: **24-24.25 GHz** FMCW, banda di sweep 0.25 GHz, EIRP 11 dBm
+- Portata: **8 m** a parete su bersaglio in movimento, **6 m** su micro-movimento;
+  a soffitto **5 m** / **4 m**. ⚠️ Il valore "~12 m" scritto qui in precedenza era
+  errato: nasceva dal conto 15 gate × 70 cm, che è il campo *indirizzabile*, non la
+  portata dichiarata
+- **Accuratezza di distanza: ±0.35 m** (§8 *Cautions*: valore teorico, fluttua con
+  corporatura e RCS del bersaglio). Da confrontare con la dispersione di **1.5 cm**
+  misurata sul LD2410B da fermo a 2.3 m: è la differenza più pesante fra i due moduli
+- **Cadenza dati: 10 Hz** (il nostro logger LD2410B gira a 5 Hz)
+- Zona morta: nessuna, rilevamento dichiarato da **0.2 m**
+- Alimentazione: **3.0-3.6 V**, tipica **3.3V** (diverso dal LD2410B che vuole 5V!)
+- **Corrente media 50 mA** (LD2410B: 80 mA) — rilevante per l'obiettivo 4
+- Dimensioni 20 × 20 mm, temperatura -40/+85 °C
 - Bluetooth: **assente**
-- Calibrazione: **automatica** (firmware ≥ 1.5.4)
+- ⚠️ **Contraddizione interna al manuale sull'angolo**: §1.1 dichiara "±60°",
+  §5.2 dichiara "±45° in orizzontale e in elevazione" per il montaggio a parete.
+  In tesi vanno citate entrambe, non una sola
+- ⚠️ "Calibrazione automatica da firmware ≥ 1.5.4" è informazione **ESPHome**, non
+  compare nella documentazione ufficiale. Il manuale descrive solo la procedura
+  manuale di *bottom noise scan* dal tool PC (§4.2.2-4.2.3)
 
 ### ✅ VERIFICATO SU HARDWARE (17/07/2026) — il nostro esemplare
 
@@ -159,18 +180,25 @@ Testato collegando il LD2420 ai pin **GPIO16/17 dell'ESP32** (sketch
 - Alimentazione 3.3V OK, il sensore risponde ai movimenti
 - ⚠️ Versione firmware ESATTA e unità del "Range" ancora da leggere col tool HiLink (Test 0.5)
 
-### ATTENZIONE — Pinout dipende dalla versione firmware
+### Pinout — connettore J2 (manuale V1.2, Tabella 3-2)
+
+Il manuale ufficiale documenta **una sola** mappatura, che coincide con quella che
+usiamo e con il comportamento osservato sul nostro esemplare:
 
 ```
-Firmware ≤ 1.5.2:              Firmware ≥ 1.5.3:  ← IL NOSTRO
-Pin 1: 3.3V                    Pin 1: 3.3V
-Pin 2: GND                     Pin 2: GND
-Pin 3: OT1 (presenza digitale) Pin 3: OT1 → TX seriale → ESP32 RX
-Pin 4: RX  ← ESP32 TX          Pin 4: RX  ← ESP32 TX
-Pin 5: OT2 → TX → ESP32 RX     Pin 5: OT2 (presenza digitale)
+J2 Pin 1: 3V3   alimentazione 3.0-3.6 V
+J2 Pin 2: GND
+J2 Pin 3: OT1   UART_TX (0-3.3 V)  → GPIO16 ESP32
+J2 Pin 4: RX    UART_RX (0-3.3 V)  ← GPIO17 ESP32
+J2 Pin 5: OT2   uscita di presenza: alto = occupato, basso = libero
 ```
 
-**Verificare sempre la versione firmware prima di collegare!**
+C'è anche un connettore **J1** (GND, DIO, CLK, 3V3): è l'interfaccia **SWD** per la
+programmazione dell'MCU — non va toccata.
+
+⚠️ La variante "firmware ≤ 1.5.2 con OT1 e OT2 invertiti" (baud 256000) è
+informazione di **comunità (ESPHome)**, non compare nel manuale V1.2. Resta utile
+saperlo per moduli più vecchi, ma non è citabile come dato ufficiale.
 Tool ufficiale: Google Drive HiLink → cartella `HLK-LD2420_TOOL - English`
 
 ### Formato dati in modalità di fabbrica (ASCII, verificato)
@@ -180,55 +208,139 @@ ON            → presenza rilevata
 OFF           → nessuna presenza
 Range NN      → distanza del target (valore GREZZO, unità non documentata)
 ```
+- 🔑 **Questa È la modalità documentata, non un ripiego (verificato 26/08/2026).**
+  Il `Protocol Document` ufficiale descrive **solo i comandi di configurazione**
+  (0xFF/0xFE apri-chiudi modalità comandi, 0x00 versione, 0x68 riavvio, 0x07/0x08
+  scrivi/leggi parametri): **non documenta alcun frame di uscita dei dati**. Il
+  manuale §4.1 passo 3 dice di aprire un terminale a 115200 e "view the current radar
+  detection results", cioè proprio queste righe ASCII. Quindi, ufficialmente, il
+  LD2420 riporta **presenza + una distanza, e nulla più**
 - Limiti di questa modalità: solo presenza + un "range"; **niente energia per-gate,
-  niente distinzione moving/still**. Per l'engineering mode (necessario al respiro,
-  obiettivo 5) serve riconfigurare il sensore in modalità binaria via comandi UART/HiLink.
-- ⚠️ L'unità del "Range" NON è documentata nel datasheet in nostro possesso: i valori
-  osservati (7–37 muovendosi in stanza) sono compatibili con decimetri (~0.7–3.7 m) ma
-  va confermato prima di usarlo come distanza in metri nella tesi (regola fonti).
+  niente distinzione moving/still**
+- ⚠️ **L'energia per-gate esiste, ma non è documentata da Hi-Link.** Nella
+  documentazione ufficiale compare solo come valore *Peak* salvato su file dal *bottom
+  noise scan* del tool PC (manuale §4.2.2-4.2.3). La modalità che la trasmette in
+  continuo sulla seriale è **ricostruita dalla comunità** — vedi il blocco
+  "Modalità binaria (energy)" qui sotto
+- 📌 **Conseguenza per la tesi**: con l'interfaccia **documentata** il LD2420 non dà
+  la serie temporale dell'energia, quindi respiro e indice di vitalità (obiettivi 2 e 6)
+  restano sul LD2410B. Con la modalità binaria di comunità sarebbero tecnicamente
+  possibili — e per certi versi *meglio* (vedi sotto) — ma il dato non sarebbe citabile
+  come specifica ufficiale e andrebbe validato da noi
+- ⚠️ L'unità del "Range" NON è documentata **in nessuno dei due documenti ufficiali**:
+  i valori osservati (7–37 muovendosi in stanza) sono compatibili con decimetri
+  (~0.7–3.7 m) ma va confermato prima di usarlo come distanza in metri (regola fonti).
 - Collegamento diretto al PC via CH340E: script `HLK-LD2420/Test LD2420/ld2420_diag.py`
   (annusa-byte a 115200/256000). Lettura via ESP32: `firmware/ld2420_monitor/`.
+
+### Modalità binaria "energy" — NON ufficiale, ma dà molti più dati
+Ricostruita dal componente ESPHome `ld2420` (sorgenti `ld2420.h` / `ld2420.cpp`,
+consultati il 26/08/2026). ⚠️ **Fonte di comunità, non Hi-Link**: utilizzabile come
+scelta implementativa, **non** come dato tecnico citabile in tesi (regola fonti).
+
+- Si commuta con il comando **0x0012** (`CMD_WRITE_SYS_PARAM`):
+  valore **0x0004** = energy mode, **0x0064** = simple mode (l'ASCII di fabbrica)
+- Frame dati da **45 byte**, con **le stesse intestazioni del LD2410B**:
+  header `F4 F3 F2 F1`, footer `F8 F7 F6 F5`
+- Contenuto: **presenza** (1 byte, offset 6) + **distanza** (uint16, offset 7) +
+  **16 energie per-gate** (16 × uint16, offset 9)
+- 🔑 **Le energie sono uint16 (0-65535), non uint8 0-100 come nel LD2410B.** È
+  potenzialmente decisivo: il nostro problema più serio sul LD2410B è la
+  **saturazione a 100** (92% dei campioni stazionari clippati), che nessuna soglia e
+  nessuna auto-calibrazione risolvono. Un canale a 16 bit non satura. Sommato ai
+  **10 Hz** contro i nostri 5 Hz, il LD2420 in questa modalità sarebbe **più adatto
+  del LD2410B alla FFT del respiro**, non meno
+- ⚠️ Restano però i limiti strutturali, questi sì ufficiali: **un solo canale**
+  (niente separazione moving/still) e **nessuna distanza sul bersaglio fermo**
+- ⚠️ ESPHome documenta la distanza in **centimetri**; i valori che leggiamo in ASCII
+  sono 7-37 camminando per la stanza, incompatibili con i cm. O il formato ASCII è
+  diverso dal campo binario, o il nostro parser sbaglia riga. **Da chiarire con una
+  misura a distanza nota** (Test 0.5), non per deduzione
 
 ### Baud rate per versione firmware
 - Firmware < 1.5.3: **256000 baud**
 - Firmware ≥ 1.5.3: **115200 baud** ← il nostro esemplare (verificato 17/07/2026)
 
-### Parametri configurabili
-| Parametro | Range | Default |
-|---|---|---|
-| Gate minimo | 0 a (max-1) | 1 |
-| Gate massimo | 1-15 | 12 (~8.4m) |
-| Timeout presenza | variabile | 120s |
-| Soglia stazionario per gate | 0-1 | 0.5 |
-| Soglia movimento per gate | 0-1 | 0.5 |
+### Parametri configurabili (manuale §4.2.1 + Protocol Document Tabella 2)
+| Parametro | Nome cmd | Range ufficiale | Nostro esemplare |
+|---|---|---|---|
+| Gate minimo | 0x00 | 0-15 (0x00-0x0F) | non nel backup |
+| Gate massimo | 0x01 | 0-15, ≥ minimo | **12** |
+| Ritardo di scomparsa | 0x04 | 0-65535 ⚠️ | **30** |
+| Soglia **Trigger** per gate | 0x10-0x1F | 0-65535 | 16 valori |
+| Soglia **Maintain** per gate | 0x20-0x2F | 0-65535 | 16 valori |
 
-### Modalità operative
-1. **Normal** — energy reporting (firmware ≥ 1.5.4)
-2. **Calibrate** — raccoglie noise floor e peak energy per calibrazione automatica
-3. **Simple** — retrocompatibilità firmware ≤ 1.5.3
+- **16 gate (0-15)**, risoluzione **70 cm** ciascuno. ⚠️ Il "15 gate (0-14)" scritto
+  qui in precedenza era errato: il protocollo indirizza 0x10-0x1F, cioè 16 soglie
+- **Trigger** = soglia libero→occupato, consigliata > 5× il rumore di fondo;
+  **Maintain** = soglia per rilevare i micro-movimenti e *mantenere* la presenza,
+  consigliata 2-5× il rumore. **Non sono i canali moving/still del LD2410B**: sono
+  un'isteresi su un unico bersaglio
+- ⚠️ **Contraddizione fra i due documenti ufficiali sul ritardo**: il manuale §4.2.1
+  dà 0-65535, la Tabella 2 del protocollo dà `0x00-0x0F` — ma gli esempi del
+  protocollo stesso impostano 30 (0x1E) e 26 (0x1A), fuori da quel range. Il nostro
+  backup ha 30. In tesi va citata la discrepanza
 
-### Dati in uscita
-- Presenza binaria (moving o still)
-- Distanza approssimativa al target
-- Versione firmware
-- Meno granularità per-gate rispetto al LD2410B
+### 🔑 Le soglie del tool PC sono in dB: valore mostrato = 10·log₁₀(grezzo)
+Scoperto il 26/08/2026 incrociando `HLK-LD2420/Backup config/ld2420_config_fabbrica.xml`
+con gli esempi del Protocol Document (pagg. 4-5). I valori del **nostro** esemplare
+coincidono esattamente con quelli d'esempio del documento ufficiale:
+
+| gate | XML (dB) | grezzo | esempio ufficiale |
+|---|---|---|---|
+| 0 | 47.78 | 60000 | `60 EA 00 00` ✓ |
+| 1 | 44.77 | 30000 | `30 75 00 00` ✓ |
+| 2 | 34.77 | 3000 | `B8 0B 00 00` ✓ |
+| 3 | 33.01 | 2000 | `D0 07 00 00` ✓ |
+
+Coerente anche con `appConfig.xml` del tool, che ha `TriggerSensingScale="5.0"` e
+`HoldSensingScale="3.5"`, cioè proprio i moltiplicatori del rumore consigliati dal
+manuale. **Il nostro modulo ha le soglie di fabbrica documentate.**
+
+⚠️ **Errore aritmetico nel Protocol Document (pag. 2)**: legge `40 9C 00 00` e scrive
+"the value is 60000". È **40000** (0x9C40). Da non ricopiare.
+
+### Dati in uscita — quello che il LD2420 dà davvero
+Con l'interfaccia **documentata** (ASCII di fabbrica):
+- Presenza binaria (`ON`/`OFF` su UART, più il pin OT2)
+- **Distanza del solo bersaglio in MOVIMENTO**
+- Versione firmware (comando 0x00)
+- ❌ Niente energia per-gate, niente distinzione moving/still, niente sensore di luce
+
+Con la modalità binaria **di comunità**: in più le **16 energie per-gate a 16 bit**
+(vedi il blocco dedicato). Restano assenti la separazione moving/still, la distanza
+sul bersaglio fermo e il sensore di luce — quelle sono limitazioni del modulo, non
+dell'interfaccia.
+
+🚨 **Limite decisivo per UPRISE** (manuale §8 *Cautions*, citazione): il radar riporta
+la distanza dei corpi in movimento entro 8 m e *"does not support proximity ranging for
+stationary bodies at this time"*. Cioè: **sulla persona ferma il LD2420 dice se c'è, ma
+non dove**. È esattamente lo scenario del progetto (persona immobile sotto l'arredo),
+dove invece il LD2410B riporta distanza ed energia stazionarie.
 
 ---
 
 ## Confronto LD2410B vs LD2420
 
+Tabella allineata ai manuali ufficiali dei due moduli (26/08/2026).
+
 | Caratteristica | LD2410B | LD2420 |
 |---|---|---|
-| Alimentazione | 5V | 3.3V |
-| Range | ~5-6 m | ~12 m |
-| Gate | 8 (0-8) | 15 (0-14) |
+| Alimentazione | 5V | 3.0-3.6V (tip. 3.3V) |
+| Corrente media | 80 mA | **50 mA** |
+| Portata dichiarata | ~5-6 m | **8 m** movimento / 6 m micro-movimento (a parete) |
+| Accuratezza distanza | ~1.5 cm misurati (fermo, 2.3 m) | **±0.35 m** dichiarati |
+| Cadenza dati | 5 Hz (nostro logger) | **10 Hz** |
+| Gate | 9 (0-8) | **16 (0-15)** |
 | Risoluzione gate | 0.75m o 0.2m | 70 cm fisso |
-| Baud rate | 256000 fisso | 115200 o 256000 (dipende fw) |
+| Canali bersaglio | **2** (moving + stationary, separati) | **1** |
+| Distanza su bersaglio fermo | ✓ | ✗ (§8 del manuale) |
+| Energia per-gate | ✓ 9+9, **uint8 0-100 (satura)** | 16 valori **uint16** solo in modalità non ufficiale |
+| Sensore di luce | ✓ | ✗ |
+| Baud rate | 256000 fisso | 115200 |
 | Bluetooth | ✓ | ✗ |
-| Calibrazione | Manuale | Automatica (fw 1.5.4+) |
-| Dati per-gate | Molto dettagliati | Limitati |
-| Pinout fisso | ✓ | ✗ (cambia con fw) |
-| Uso consigliato | Respiro, dettaglio | Range lungo, copertura |
+| Soglie | 0-100 interi, movimento + stazionario | 0-65535, Trigger + Maintain (isteresi) |
+| Uso consigliato | Respiro, dettaglio, **scenario UPRISE** | Portata lunga, copertura di ambienti |
 
 ---
 
@@ -353,6 +465,14 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - `SCALETTA_TESI.md` — scaletta Overleaf in 8 capitoli con mappa obiettivi→capitoli, materiale già pronto per ciascuno e ordine di scrittura consigliato (cap. 5 e 2 scrivibili subito)
 - `INCONTRO_PROFESSORE.md` — agenda per l'incontro: cosa mostrare (PIANO_TEST, scaletta, consumi) e domande consolidate (validazione protocollo, montaggio sensore/lamiera, scadenza, UPRISE vs SAFE, ruolo UWB)
 - `PIANO_TEST.md` — piano di test completo in ordine di esecuzione (fasi 0-7)
+- `PIANO_TEST_LD2420.md` — piano di test dedicato al secondo radar (26/08/2026), scritto
+  dopo l'acquisizione della documentazione ufficiale. Distingue i **10 test radar da
+  ripetere** dai risultati che **non vanno rifatti** (tutto ciò che riguarda il PIR e il
+  risultato centrale della tesi, che non dipendono dal radar) e dai **3 non replicabili**
+  sul LD2420 (distanza su bersaglio fermo, separazione moving/still, respiro/vitalità).
+  Contiene lo schema CSV unico per far girare gli script esistenti senza modifiche, il
+  test nuovo sul **gate minimo** (funzione assente nel LD2410B) e la taratura bloccante
+  dell'unità del campo `Range`. Stima: ~9,5 h essenziali + 1 notturna
 
 ---
 
@@ -370,6 +490,17 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - esp32.co.uk LD2410+HA: https://esp32.co.uk/esp32-ld2410-mmwave-presence-sensor-with-home-assistant/
 - tastethecode.com guida pratica: https://www.tastethecode.com/human-presence-detection-with-millimeter-wave-sensors
 - Google Drive HiLink LD2420 (datasheet + tool): https://drive.google.com/drive/folders/1IggDH6ejNSOs8EklQbAXcqUI7KENSZLt
+- **Copie locali ufficiali LD2420** (scaricate 26/08/2026, in `HLK-LD2420/Documentazione/`)
+  — da citare in `bib/tesi.bib` come fonti primarie:
+  - `HLK-LD2420-Product-Manual V1.2.pdf` — manuale ufficiale, 16 pagine (specifiche
+    Tabella 2-1, piedinatura J1/J2 Tabelle 3-1/3-2, parametri del tool §4.2.1, bottom
+    noise scan §4.2.2-4.2.3, portate e montaggio §5, *Cautions* §8). ⚠️ Il frontespizio
+    dice "Version V1.0, Feb 24 2023" e lo storico si ferma alla V1.1, mentre il file
+    distribuito si chiama V1.2: incongruenza del produttore, da citare come "manuale
+    V1.2 (frontespizio V1.0)"
+  - `HLK-LD2420 Protocol Document.pdf` — protocollo seriale, 5 pagine. ⚠️ Copre **solo
+    i comandi di configurazione**: non documenta il frame dei dati in uscita. Contiene
+    un errore aritmetico a pag. 2 (`40 9C 00 00` letto come 60000 anziché 40000)
 - Google Drive HiLink **LD2410B** (manuale V1.04, protocollo seriale V1.07, tool PC `LD2410 Tool EN (英文版).zip`): https://drive.google.com/drive/folders/16zI-fium_BZeP08EyQke0rWp0BJTMvw3 — linkata dalla pagina prodotto ufficiale https://www.hlktech.net/index.php?id=1090. ⚠️ NON usare `HLK-LD2420_TOOL` col LD2410B: protocolli diversi, errore "Failed to set data transfer mode" (17/08/2026)
 - **Copie locali ufficiali LD2410B** (scaricate 18/08/2026, in `HLK-LD2410x/Documentazione/`) — da citare in `bib/tesi.bib` come fonti primarie:
   - `HLK LD2410B Life Presence Sensing Module Manual V1.04.pdf` — manuale ufficiale (specifiche, consumi, pinout)
@@ -409,7 +540,11 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 ## Note e avvertenze pratiche
 
 - Il LD2420 si alimenta a **3.3V**, non 5V come il LD2410B
-- Il pinout del LD2420 **cambia con la versione firmware** — verificare prima di collegare con HLK-CH340E
+- Il manuale V1.2 del LD2420 documenta **una sola** piedinatura J2 (OT1 = UART_TX,
+  OT2 = presenza); la variante invertita per firmware ≤ 1.5.2 è informazione di comunità
+  (ESPHome) — verificare comunque prima di collegare con HLK-CH340E
+- Il LD2420 **non riporta la distanza dei bersagli fermi** (manuale §8): sulla persona
+  immobile dice se c'è, non dove. Limite decisivo per lo scenario UPRISE
 - Entrambi i sensori usano **TX/RX incrociati** rispetto all'ESP32
 - Il baud rate 256000 richiede UART hardware dell'ESP32 (D25/D26), non softserial
 - Per il respiro serve **engineering mode** sul LD2410B (byte comando `0x62`)
@@ -442,6 +577,10 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - [x] Firmware logger esteso scritto (`firmware/ld2410b_logger/` — da compilare e verificare su hardware)
 - [~] Primo contatto LD2420 fatto via ESP32 (GPIO16/17, 115200, modalità ASCII) — resta
       da leggere versione firmware esatta + unità "Range" col tool HiLink (Test 0.5)
+- [x] **Documentazione ufficiale LD2420 acquisita (26/08/2026)** — manuale V1.2 +
+      Protocol Document in `HLK-LD2420/Documentazione/`. Specifiche di CLAUDE.md e del
+      cap. 3 corrette di conseguenza (portata 8 m non 12, 16 gate non 15, ±0.35 m di
+      accuratezza, 10 Hz, 50 mA)
 
 ### Sensori (obiettivi 1-2)
 - [x] LD2410B FUNZIONANTE (09/08/2026) — il "guasto" del 19/07 era cablaggio invertito.
@@ -515,7 +654,15 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
          atteso ("no-one duration", protocollo §1.2.2), ma va misurato come **latenza di
          rilascio** in fase 1 e non confuso con un falso positivo
 - [~] Setup e test LD2420 — collegato e letto (presenza + range in modalità ASCII,
-      sketch `firmware/ld2420_monitor/`); engineering mode binario ancora da attivare
+      sketch `firmware/ld2420_monitor/`)
+- ⚠️ **L'"engineering mode binario" del LD2420 non è documentato da Hi-Link (accertato
+      26/08/2026)**: il Protocol Document copre solo i comandi di configurazione e il
+      manuale indica le righe ASCII come l'uscita normale. **Esiste però** una modalità
+      binaria ricostruita dalla comunità (ESPHome, cmd 0x0012 valore 0x0004) che
+      trasmette 16 energie per-gate a 16 bit a 10 Hz — potenzialmente **migliore** del
+      LD2410B per il respiro, perché non satura. Decisione da prendere: tentarla come
+      esperimento dichiaratamente non ufficiale, o lasciarla fuori perimetro. Nel
+      frattempo respiro e vitalità restano sul LD2410B
 - [x] Identificazione PIR: HC-SR501 (foto + datasheet, `analisi/ANALISI_PIR.md` §6 completata)
 - [x] Configurazione e test PIR HC-SR501 (Test 0.3, 19/07/2026) — pinout verificato
       GND|OUT|+Power (visto dal lato trimmer), **OUT→D34** (18/08/2026: D25 è ora RX2 del
@@ -996,7 +1143,25 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - [x] **Buona notizia per la fase 6**: a 2.3 m i canali moving non saturano, quindi il test
       del respiro si può fare a distanza realistica senza accorgimenti geometrici
 - [x] Specifica dell'algoritmo (`analisi/ANALISI_VITALITA.md` — v1 da tarare sui dati)
-- [ ] Prototipo Python (`vitalita_proto.py`) + taratura sui CSV della Fase 6
+- [~] **Prototipo Python `analisi/vitalita_proto.py` SCRITTO (26/08/2026)** — implementa
+      la v2 della specifica, calcola vitality(t), distribuzioni per scenario e matrice di
+      confusione. Resta da fare la **taratura** (α, k, soglie) e la validazione
+- [x] **I dati della Fase 6 esistono gia'**: la serie dose-risposta del Test 2.3 copre i
+      quattro scenari previsti a geometria costante (1 m, jumper H, 5 trial ciascuno) —
+      `stanza_vuota` / `fermo_1m_H` / `micromovimenti_1m_H` / `movimento_1m_H`. In piu'
+      `sotto_banco_*_H` come insieme di validazione su geometria diversa
+- [x] ⚠️ **La v1 della specifica non era applicabile**: costruiva la componente di
+      micro-vitalita' sulla variazione dell'energia **stazionaria**, che e' satura a 100
+      con dev.std **0,0** in ogni scenario occupato -> termine identicamente nullo. La v2
+      usa i canali **moving** per entrambe le componenti
+- [x] 🔑 **Il rumore di fondo va sottratto, altrimenti l'indice non distingue una stanza
+      vuota da una persona immobile**: senza correzione la stanza vuota (6,5 h) da' 19,1 e
+      una persona immobile a 2,3 m da' 21,2. Sottraendo il fondo per-gate (g0≈18, g1≈13,
+      g2-8 = 3-5) e riscalando: **2,4** contro **11,4**. Con i parametri di default la
+      scala a 1 m diventa 2,4 / 30,9 / 77,3 / 99,7 sui quattro livelli di movimento
+- ⚠️ **Trasferibilita' fra geometrie da risolvere in taratura**: `sotto_banco_immobile_H`
+      da' **65,6**, vicino ai micro-movimenti a 1 m (77,3). Una sola terna di soglie non
+      copre entrambe le geometrie
 - [ ] Validazione (matrice di confusione su trial separati)
 - [ ] Porting su ESP32 (`vitality.h`)
 

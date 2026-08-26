@@ -10,7 +10,7 @@
 | Componente | Tensione | Corrente media | Potenza media | Fonte |
 |---|---|---|---|---|
 | **HLK-LD2410B** | 5 V (alimentatore >200 mA richiesto) | **80 mA** | ~400 mW | Manuale ufficiale Hi-Link V1.03, tabella parametri elettrici |
-| **HLK-LD2420** | 3.3 V (3.0–3.6 V) | **~50 mA** | ~165 mW | Datasheet Hi-Link / OpenELAB |
+| **HLK-LD2420** | 3.3 V (3.0–3.6 V) | **50 mA** | ~165 mW | Manuale ufficiale Hi-Link V1.2, Tab. 2-1 |
 | **PIR HC-SR501** (modello in dotazione ✔) | 4.5–20 V | **< 0.05 mA** (50 µA quiescente) | ~0.3 mW | Datasheet HC-SR501 (mirror electronicoscaldas.com) |
 
 Modello identificato dalle foto il 15/07/2026 (chip BISS0001 + regolatore HT7133,
@@ -70,6 +70,13 @@ PIR + mmWave invece della sostituzione secca: il PIR non è un concorrente ma il
 ## Fonti
 
 - Manuale HLK-LD2410 V1.03 (Shenzhen Hi-Link): "Power Requirements DC 5V, Power supply capability >200mA, Average operating current 80 mA" — https://seengreat.com/upload/file/86/HLK+LD2410+Life+Presence+Sensor+Module+Manual+V1.03(220629).pdf
-- HLK-LD2420 (OpenELAB/datasheet): 3.0–3.6 V, ~50 mA medi — https://openelab.io/blogs/learn/what-is-hlk-ld2420-and-how-to-use-it
+- HLK-LD2420 — **manuale ufficiale** `HLK-LD2420-Product-Manual V1.2.pdf`, Tabella 2-1
+  (copia locale in `HLK-LD2420/Documentazione/`, scaricata il 26/08/2026 dalla cartella
+  Drive Hi-Link https://drive.google.com/drive/folders/1IggDH6ejNSOs8EklQbAXcqUI7KENSZLt):
+  alimentazione 3.0–3.6 V (tipica 3.3 V), corrente media 50 mA.
+  Sostituisce la fonte secondaria usata in precedenza (OpenELAB,
+  https://openelab.io/blogs/learn/what-is-hlk-ld2420-and-how-to-use-it), che riportava
+  lo stesso valore: la sostituzione non cambia i numeri, allinea la citazione alla
+  regola delle fonti
 - ESP32-WROOM-32 Datasheet (Espressif), sezione "Current Consumption" — https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf
 - Datasheet HC-SR501 — https://www.electronicoscaldas.com/datasheet/HC-SR501.pdf (mirror; altra copia: https://www.mpja.com/download/31227sc.pdf)

@@ -100,10 +100,16 @@ python acquire.py --port COM3 --duration 30 --output data/prova_T01.csv --scenar
 
 ### Test 0.5 — Verifica firmware LD2420 (con CH340E, senza ESP32)
 - **Serve per**: decidere pinout e baud del LD2420 (Fase 4)
+- ➡️ Procedura completa in [PIANO_TEST_LD2420.md](PIANO_TEST_LD2420.md), Fase 0-2420:
+  va fatta **sia** col tool PC **sia** via UART (comandi 0x00 e 0x08), e i due risultati
+  vanno confrontati — sul LD2410B il tool PC diede valori sbagliati e la verità venne
+  dall'UART
 - Collegare il LD2420 al CH340E → PC, aprire il tool HiLink (Google Drive, cartella
   `HLK-LD2420_TOOL - English`), leggere la **versione firmware**
 - Annotare qui il risultato: firmware = ______ → pinout OT1/OT2 = ______, baud = ______
-- **Esito atteso**: versione letta; se ≥1.5.3 il TX seriale è OT1 (pin 3) a 115200 baud
+- **Esito atteso**: versione letta; se ≥1.5.3 il TX seriale è OT1 (pin 3) a 115200 baud.
+  Il manuale ufficiale V1.2 documenta **solo** questa mappatura (OT1 = UART_TX,
+  OT2 = presenza); la variante invertita per firmware ≤ 1.5.2 è informazione di comunità
 
 ### Test 0.6 — Configurazione via app Bluetooth (facoltativo ma consigliato)
 - App HLKRadarTool (password modulo: `HiLink`), verificare firmware LD2410B,
@@ -444,20 +450,23 @@ python acquire.py --port COM3 --duration 180 --output data/ostacolo_nessuno_T01.
 
 ## FASE 4 — LD2420 (obiettivo di contorno: altri sensori)
 
-Prerequisito: Test 0.5 completato (firmware noto).
+➡️ **Piano dedicato: [PIANO_TEST_LD2420.md](PIANO_TEST_LD2420.md)** (scritto il
+26/08/2026 dopo l'acquisizione della documentazione ufficiale del modulo). Contiene i
+10 test radar da ripetere, i 3 che **non sono replicabili** sul LD2420 e perché, il
+test nuovo sul gate minimo, e la stima oraria.
 
 ⚠️ **Mai tenere accesi LD2410B e LD2420 puntati sulla stessa scena**: lavorano
 entrambi a 24 GHz e possono interferire tra loro falsando i dati. Un radar alla
 volta — il confronto tra i due si fa ripetendo gli stessi scenari, non in simultanea
 (il PIR invece è passivo e può restare sempre collegato).
 
-### Test 4.1 — Collegamento e lettura dati
-- Cablare secondo la versione firmware (vedi CLAUDE.md); alimentazione **3.3V!**
-- Sketch dedicato da scrivere in base al firmware trovato (Serial2 raw)
-
-### Test 4.2 — Ripetere i test chiave in versione ridotta
-- `stanza_vuota` (30 min ×1), `fermo_seduto` (5 min ×3), `movimento_[2,4,6,8,10]m` (×3)
-- **Analisi**: tabella comparativa LD2410B vs LD2420: portata reale, FP/FN, granularità dati
+Tre punti del piano dedicato che conviene conoscere anche da qui:
+- il **Test 1.3-2420** (persona immobile) va eseguito **per primo**: è il punto di
+  decisione, se fallisce il resto della campagna non serve;
+- il campo `Range` va **tarato** prima di qualunque test di distanza (Test 0.5-bis):
+  l'unità non è documentata in nessuno dei due documenti ufficiali;
+- il LD2420 **non misura la distanza dei bersagli fermi** (manuale §8), quindi le
+  colonne `stationary_*` del CSV saranno 0 per costruzione, non per errore.
 
 ---
 

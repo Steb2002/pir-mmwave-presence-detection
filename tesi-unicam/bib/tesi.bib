@@ -73,6 +73,42 @@
   urldate      = {2026-08-18}
 }
 
+@manual{hilinkManualLD2420,
+  title        = {{HLK-LD2420} User Manual, V1.2},
+  author       = {{Shenzhen Hi-Link Electronic Co., Ltd.}},
+  year         = {2023},
+  note         = {Manuale ufficiale del modulo, 16 pagine. Il frontespizio riporta
+                  ``Version V1.0, Feb 24 2023'' e lo storico delle revisioni si
+                  ferma alla V1.1, mentre il file distribuito dal produttore \`e
+                  denominato V1.2. Copia locale in
+                  \texttt{HLK-LD2420/Documentazione/}},
+  url          = {https://drive.google.com/drive/folders/1IggDH6ejNSOs8EklQbAXcqUI7KENSZLt},
+  urldate      = {2026-08-26}
+}
+
+@manual{hilinkProtoLD2420,
+  title        = {{HLK-LD2420} Protocol Document},
+  author       = {{Shenzhen Hi-Link Electronic Co., Ltd.}},
+  year         = {2023},
+  note         = {Protocollo seriale, 5 pagine. Documenta i soli comandi di
+                  configurazione: non descrive alcun frame di uscita dei dati.
+                  Copia locale in \texttt{HLK-LD2420/Documentazione/}},
+  url          = {https://drive.google.com/drive/folders/1IggDH6ejNSOs8EklQbAXcqUI7KENSZLt},
+  urldate      = {2026-08-26}
+}
+
+@misc{esphomeLD2420src,
+  title        = {Componente {\texttt{ld2420}}: codice sorgente},
+  author       = {{ESPHome}},
+  year         = {2024},
+  note         = {Fonte di comunit\`a, non ufficiale Hi-Link. Documenta per
+                  reverse engineering la modalit\`a binaria ``energy'' del
+                  LD2420 (comando 0x0012, frame da 45 byte con 16 energie
+                  per-gate a 16 bit)},
+  url          = {https://github.com/esphome/esphome/tree/dev/esphome/components/ld2420},
+  urldate      = {2026-08-26}
+}
+
 @misc{hilinkDriveLD2420,
   title        = {{HLK-LD2420}: datasheet e strumento {PC} ufficiale},
   author       = {{Shenzhen Hi-Link Electronic Co., Ltd.}},
@@ -81,6 +117,9 @@
   urldate      = {2026-07-17}
 }
 
+% NOTA: superata da hilinkManualLD2420 (manuale ufficiale V1.2, Tab. 2-1), che
+% riporta lo stesso valore di 50 mA. Voce conservata come traccia della fonte
+% usata prima del 26/08/2026; non piu' citata nel testo.
 @misc{ld2420openelab,
   title        = {What is {HLK-LD2420} and how to use it},
   author       = {{OpenELAB}},

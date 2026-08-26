@@ -93,7 +93,8 @@ invertiti. Il modulo ha risposto al primo tentativo. La regola che ne deriva ---
 all'ordine apparente dei fili} --- è banale ma è costata tre settimane.
 
 Un secondo caso analogo si è presentato con lo strumento di configurazione da PC:
-il pacchetto \texttt{HLK-LD2420\_TOOL} non è utilizzabile con il LD2410B (protocolli
+il pacchetto \texttt{HLK-LD2420\_TOOL}~\cite{hilinkDriveLD2420} non è utilizzabile
+con il LD2410B (protocolli
 diversi, l'errore restituito è \emph{Failed to set data transfer mode}). Per il
 LD2410B va usato il \texttt{LD2410 Tool} distribuito nella cartella Drive del
 produttore~\cite{hilinkDriveLD2410B}.
@@ -197,40 +198,94 @@ da PC.
 \section{HLK-LD2420}
 \label{sec:ld2420}
 
-Il \ldc\ è il secondo radar 24~GHz in dotazione; la documentazione di
-riferimento è quella distribuita dal produttore~\cite{hilinkDriveLD2420}. Le differenze rilevanti rispetto
-al LD2410B sono riassunte nella \cref{tab:confronto-moduli}. Due meritano
-attenzione particolare:
+Il \ldc\ è il secondo radar 24~GHz in dotazione. La documentazione di
+riferimento è costituita dal manuale utente~\cite{hilinkManualLD2420} e dal
+documento di protocollo~\cite{hilinkProtoLD2420}, entrambi distribuiti dal
+produttore. Le differenze rilevanti rispetto al LD2410B sono riassunte nella
+\cref{tab:confronto-moduli}. Tre meritano attenzione particolare:
 
 \begin{itemize}[leftmargin=1.4em,itemsep=2pt]
   \item \textbf{alimentazione a 3,3~V} e non a 5~V: collegarlo come il LD2410B lo
         danneggerebbe;
-  \item \textbf{la piedinatura cambia con la versione firmware}. Fino alla 1.5.2 il
-        piedino 3 (OT1) è l'uscita di presenza digitale e il piedino 5 (OT2) è il
-        TX seriale; dalla 1.5.3 i ruoli sono invertiti, e cambia anche il baud
-        (256000 fino alla 1.5.2, 115200 dalla 1.5.3). Verificare la versione prima
-        di collegare non è un consiglio ma un prerequisito.
+  \item \textbf{accuratezza di distanza dichiarata di $\pm 0,35$~m}, contro una
+        dispersione di 1,5~cm misurata sul LD2410B con soggetto fermo a 2,3~m
+        (\cref{cap:confronto}). È la differenza più pesante fra i due moduli;
+  \item \textbf{il LD2420 non misura la distanza dei bersagli fermi}. Il manuale è
+        esplicito: il radar riporta la distanza in linea retta dei corpi in
+        movimento entro 8~m e \emph{``does not support proximity ranging for
+        stationary bodies at this time''}~\cite[§8]{hilinkManualLD2420}. Sulla
+        persona immobile il modulo dice \emph{se} c'è, non \emph{dove} --- che è
+        precisamente la condizione dello scenario applicativo di questa tesi.
 \end{itemize}
+
+La piedinatura del connettore J2 è documentata in un'unica versione
+(\cref{tab:ld2420-pin}); il connettore J1 adiacente è l'interfaccia SWD di
+programmazione dell'MCU e non va utilizzato. Diverse fonti di comunità riportano
+una variante con OT1 e OT2 invertiti per firmware fino alla 1.5.2, con baud
+256000 anziché 115200: la circostanza non trova riscontro nel manuale ufficiale,
+ma è un motivo sufficiente per verificare la versione del firmware prima di
+collegare il modulo.
+
+\begin{table}[htbp]
+\centering
+\caption{Piedinatura del connettore J2 del \ldc~\cite[Tab.~3-2]{hilinkManualLD2420}.}
+\label{tab:ld2420-pin}
+\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Pin} & \textbf{Nome} & \textbf{Funzione} \\
+\midrule
+J2--1 & 3V3 & alimentazione 3,0--3,6~V \\
+J2--2 & GND & massa \\
+J2--3 & OT1 & UART\_TX, 0--3,3~V \\
+J2--4 & RX  & UART\_RX, 0--3,3~V \\
+J2--5 & OT2 & uscita di presenza: alto occupato, basso libero \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Due incongruenze nella documentazione ufficiale.} Vanno dichiarate
+perché riguardano parametri che si userebbero in fase di progetto. La prima è
+sull'apertura angolare: il manuale dichiara $\pm 60\degree$ fra le caratteristiche
+principali~\cite[§1.1]{hilinkManualLD2420} e $\pm 45\degree$ in orizzontale e in
+elevazione descrivendo il montaggio a parete~\cite[§5.2]{hilinkManualLD2420}. La
+seconda è sul ritardo di scomparsa del bersaglio, per il quale il manuale indica
+un intervallo 0--65535~\cite[§4.2.1]{hilinkManualLD2420} mentre il documento di
+protocollo indica \texttt{0x00}--\texttt{0x0F}~\cite[Tab.~2]{hilinkProtoLD2420};
+gli esempi contenuti nel protocollo stesso impostano però i valori 30 e 26, fuori
+da quest'ultimo intervallo. Nel documento di protocollo si segnala inoltre un
+errore aritmetico: a pag.~2 il valore \texttt{40 9C 00 00} viene letto come 60000,
+mentre \texttt{0x9C40} vale 40000.
 
 \begin{table*}[htbp]
 \centering
-\caption{Confronto fra i due moduli radar in dotazione.}
+\caption{Confronto fra i due moduli radar in dotazione, secondo i rispettivi
+manuali ufficiali~\cite{hilinkManualV104,hilinkManualLD2420}.}
 \label{tab:confronto-moduli}
 \small
 \begin{tabularx}{\linewidth}{@{}lXX@{}}
 \toprule
 \textbf{Caratteristica} & \textbf{LD2410B} & \textbf{LD2420} \\
 \midrule
-Alimentazione & 5~V & 3,3~V \\
-Portata & circa 5--6~m & circa 12~m \\
-Gate & 9 (0--8) & 15 (0--14) \\
+Alimentazione & 5~V & 3,0--3,6~V (tipica 3,3~V) \\
+Corrente media & 80~mA & 50~mA \\
+Portata dichiarata & circa 5--6~m & 8~m su bersaglio in movimento, 6~m su
+  micro-movimento (montaggio a parete) \\
+Accuratezza distanza & 1,5~cm misurati (fermo, 2,3~m) & $\pm 0,35$~m dichiarati \\
+Cadenza dati & 5~Hz (logger sviluppato) & 10~Hz \\
+Gate & 9 (0--8) & 16 (0--15) \\
 Risoluzione gate & 0,75~m oppure 0,20~m & 0,70~m fisso \\
-Baud & 256000 fisso & 115200 o 256000 (dipende dal firmware) \\
+Canali bersaglio & 2, movimento e stazionario separati & 1 \\
+Distanza su bersaglio fermo & sì & no \\
+Energia per-gate & sì, 9+9 valori interi 0--100 & non prevista dall'interfaccia
+  documentata \\
+Sensore di luce & presente & assente \\
+Baud & 256000 fisso & 115200 \\
 Bluetooth & presente & assente \\
-Calibrazione & manuale (auto da V2.44) & automatica (firmware $\geq$ 1.5.4) \\
-Dati per-gate & molto dettagliati & limitati \\
-Piedinatura & fissa & varia con il firmware \\
-Uso più adatto & respiro, dettaglio & portata lunga, copertura \\
+Soglie & interi 0--100, movimento e stazionario & interi 0--65535,
+  \emph{trigger} e \emph{maintain} (isteresi) \\
+Uso più adatto & respiro, dettaglio, scenario applicativo di questa tesi &
+  portata lunga, copertura di ambienti \\
 \bottomrule
 \end{tabularx}
 \end{table*}
@@ -254,13 +309,49 @@ L'esemplare in prova è stato collegato all'ESP32 (GPIO16/17) e verificato il
         movimento e stazionario.
 \end{itemize}
 
+\paragraph{La modalità ASCII è l'interfaccia documentata, non un ripiego.} È un
+punto che merita di essere chiarito, perché a prima vista quelle righe di testo
+sembrano una modalità di compatibilità da abbandonare. Non lo sono: il documento
+di protocollo~\cite{hilinkProtoLD2420} descrive esclusivamente i comandi di
+\emph{configurazione} --- apertura e chiusura della modalità comandi
+(\texttt{0xFF}, \texttt{0xFE}), lettura della versione (\texttt{0x00}), riavvio
+(\texttt{0x68}), lettura e scrittura dei parametri (\texttt{0x08},
+\texttt{0x07}) --- e non documenta alcun frame di uscita dei dati. Il manuale, dal
+canto suo, indica di aprire un terminale seriale a 115200~baud per
+\emph{``view the current radar detection results''}~\cite[§4.1]{hilinkManualLD2420},
+cioè proprio quelle righe. Con l'interfaccia documentata dal produttore, quindi,
+il \ldc\ riporta presenza e una distanza, e nulla di più.
+
+L'energia per-gate esiste come grandezza interna --- il manuale la espone come
+valore \emph{Peak} nella procedura di scansione del rumore di fondo dallo
+strumento PC~\cite[§4.2.2--4.2.3]{hilinkManualLD2420} --- ma non come flusso
+disponibile sulla seriale.
+
+\paragraph{La modalità binaria non ufficiale.} Il componente \texttt{ld2420} di
+ESPHome~\cite{esphomeLD2420src} implementa, per reverse engineering, una modalità
+\emph{energy} che il produttore non documenta: si attiva con il comando
+\texttt{0x0012} e restituisce frame da 45~byte, delimitati dalle stesse
+intestazioni del LD2410B (\texttt{F4 F3 F2 F1} in apertura, \texttt{F8 F7 F6 F5}
+in chiusura), contenenti presenza, distanza e \textbf{sedici energie per-gate
+codificate a 16~bit}. Se confermata, la circostanza è tecnicamente interessante
+per gli obiettivi di questa tesi: la limitazione più seria riscontrata sul
+LD2410B è la saturazione dell'energia al fondo scala di 100
+(\cref{cap:confronto}), che un canale a 16~bit non presenterebbe, e la cadenza di
+10~Hz è doppia rispetto ai 5~Hz del logger sviluppato. Restano però i limiti
+strutturali del modulo, questi sì documentati: canale unico e assenza di
+telemetria di distanza sul bersaglio fermo.
+
+Trattandosi di una fonte di comunità e non del produttore, il dato non viene
+assunto come specifica in questa tesi; la modalità è segnalata come possibile
+estensione sperimentale, da validare in proprio prima di qualsiasi uso
+(\cref{sec:ld2420-risultati}).
+
 \paragraph{Limite dichiarato.} L'unità di misura del campo \texttt{Range} non è
-documentata nella documentazione in nostro possesso. I valori osservati
-(7--37 muovendosi nella stanza) sono compatibili con decimetri, cioè 0,7--3,7~m, ma
-in assenza di conferma il dato non viene usato come misura di distanza in questa
-tesi. Per accedere all'engineering mode del LD2420 occorre riconfigurare il modulo
-in modalità binaria; l'attività è rimasta fuori dal perimetro sperimentale
-completato (\cref{sec:ld2420-risultati}).
+documentata in nessuno dei due documenti ufficiali. I valori osservati
+(7--37 muovendosi nella stanza) sono compatibili con decimetri, cioè 0,7--3,7~m;
+la documentazione di comunità citata sopra indica invece i centimetri, valore
+incompatibile con quanto osservato. In assenza di una misura a distanza nota il
+dato non viene usato come misura di distanza in questa tesi.
 
 \section{Il sensore PIR in dotazione: HC-SR501}
 \label{sec:hcsr501}
