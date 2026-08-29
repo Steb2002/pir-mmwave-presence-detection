@@ -278,7 +278,18 @@ python acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv 
 
 ---
 
-### Test 1.5 — Attraversamento del campo (controllo di validità del PIR) — DA FARE
+### Test 1.5 — Attraversamento del campo (controllo di validità del PIR) — ✅ FATTO 29/08/2026
+
+> **ESITO: superato a tutte le distanze.** `pir_rate_%` = 100,00 / 100,00 / 98,83 / 98,73
+> a 2 / 3 / 4 / 5 m (3 trial ciascuna, jumper H, trimmer a metà corsa), contro **0,0 %**
+> del cammino sul posto alle stesse distanze. Radar `fn_radar_%` = 0,00 ovunque.
+> Il PIR non è né guasto né mal tarato: la variabile che decide è il **tipo di movimento**,
+> non la distanza. Dettagli e conseguenze in CLAUDE.md; riga nel registro sessioni.
+> ✔ Il trial facoltativo a **sensibilità massima è annullato**: superfluo, perché un
+> sensore che rileva a 5 m nel 98,7 % dei campioni non è poco sensibile — e non toccare
+> il trimmer protegge la comparabilità della campagna.
+> ⚠️ `errore_cm` di questi file **non** entra nella regressione del Test 1.2 (a 3 m è
+> passato da +9,5 a +19,2 cm fra due sessioni; la spazzata trasversale ne spiega solo 1-8).
 - **Perché esiste questo test**: nei Test 1.2/2.3 il PIR rileva lo **0%** a 2, 3, 4 e 5 m
   con soggetto in movimento continuo, mentre il datasheet dichiara **3-7 m**. Senza un
   controllo, quel dato è indistinguibile da "il sensore era guasto o tarato male" — che è

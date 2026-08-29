@@ -350,9 +350,15 @@ nel $100\,\%$ dei campioni a tutte e cinque le distanze.
 
 \paragraph{Il crollo non è graduale.} Fra 1 e 2 metri il PIR non degrada: passa da
 ``funziona'' a ``non vede nulla''. Non esiste una fascia intermedia in cui il
-rilevamento sia parziale ma utilizzabile. Questa è la caratterizzazione corretta della
-portata dell'esemplare in prova, misurata nella sua configurazione migliore e con il
-trimmer di sensibilità a metà corsa.
+rilevamento sia parziale ma utilizzabile.
+
+\begin{quote}
+\small
+\textbf{Attenzione:} questo limite vale \textbf{soltanto per il movimento sul posto}, ed è essenziale
+non leggerlo come la portata del sensore. Con un movimento di attraversamento lo
+stesso esemplare, alla stessa sensibilità, rileva fino a 5~m: si veda
+\cref{sec:attraversamento}, che riporta il controllo dedicato.
+\end{quote}
 
 \paragraph{Interpretazione.} Il comportamento è coerente con il meccanismo della lente
 di Fresnel (\cref{sec:fresnel}): il piroelettrico risponde al \emph{transito} del
@@ -384,6 +390,98 @@ distanza media (99,48~cm contro 103,76~cm) dovuto al rimontaggio: va dichiarato,
 per questo motivo \textbf{le serie in H non vanno unite a quelle originali} nella
 regressione della distanza di \cref{sec:distanza}, che resta costruita sui 25 trial
 originali.
+
+\section{Il controllo decisivo: l'attraversamento del campo}
+\label{sec:attraversamento}
+
+\paragraph{Perché questo controllo è necessario.} I risultati di
+\cref{sec:pir-movimento} --- zero rilevamenti a 2, 3, 4 e 5~m con un soggetto in
+movimento continuo --- sono in aperto contrasto con la portata di 3--7~m dichiarata
+dal costruttore. Presi da soli non distinguono fra due spiegazioni molto diverse: che
+il fallimento dipenda dal \emph{tipo} di movimento, come sostiene
+\cref{sec:fresnel}, oppure che l'esemplare in prova fosse guasto o tarato male. La
+seconda ipotesi invaliderebbe l'intera caratterizzazione del PIR, e nessun dato fin
+qui presentato la esclude.
+
+\paragraph{Procedura.} Il soggetto cammina in modo continuo \textbf{trasversalmente}
+all'asse del sensore, avanti e indietro lungo una linea tracciata a terra parallela
+alla parete su cui è montata la coppia di sensori, restando quindi a distanza
+costante. È l'esatto opposto della procedura di \cref{sec:pir-movimento}, dove il
+soggetto restava su un punto. Tutto il resto è invariato: stesse distanze, stesso
+soggetto, ponticello in posizione H e \textbf{trimmer di sensibilità nella stessa
+posizione} usata in tutta la campagna. Tre trial per distanza, 62~s utili ciascuno.
+
+\paragraph{Risultato.} Il contrasto è netto a ogni distanza
+(\cref{tab:attraversamento}). Il PIR, che non rilevava nulla, rileva quasi sempre; il
+radar resta al $100\,\%$ come in tutte le altre condizioni provate.
+
+\begin{table}[htbp]
+\centering
+\caption{Tasso di rilevamento del PIR in funzione del \emph{tipo} di movimento, a
+parità di distanza, configurazione e sensibilità. Tre trial per distanza per
+l'attraversamento, cinque per il movimento sul posto.}
+\label{tab:attraversamento}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Distanza & Movimento sul posto & Attraversamento & Radar \\
+\midrule
+2~m & $0{,}0\,\%$ & $\mathbf{100{,}00 \pm 0{,}00\,\%}$ & $100\,\%$ \\
+3~m & $0{,}0\,\%$ & $\mathbf{100{,}00 \pm 0{,}00\,\%}$ & $100\,\%$ \\
+4~m & $0{,}0\,\%$ & $\mathbf{98{,}83 \pm 2{,}02\,\%}$ & $100\,\%$ \\
+5~m & $0{,}0\,\%$ & $\mathbf{98{,}73 \pm 1{,}94\,\%}$ & $100\,\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Che cosa dimostra.} Anzitutto esclude l'ipotesi alternativa: un sensore che
+rileva un attraversamento a 5~m nel $98{,}7\,\%$ dei campioni non è né guasto né poco
+sensibile, e la portata dichiarata dal costruttore risulta confermata. Cade con essa
+anche l'obiezione sul trimmer di sensibilità, senza che sia stato necessario spostarlo
+--- il che avrebbe compromesso la confrontabilità di tutte le altre serie.
+
+In secondo luogo conferma per via sperimentale l'interpretazione avanzata in
+\cref{sec:pir-movimento}, che lì era rimasta un'ipotesi coerente con il principio di
+funzionamento. Un calo di sensibilità termica avrebbe degradato \emph{entrambe} le
+condizioni; la geometria della lente di Fresnel, invece, predice esattamente ciò che
+si osserva, perché è il transito fra le zone a generare il segnale.
+
+\paragraph{La caratterizzazione corretta del PIR.} Ne segue una formulazione più
+precisa, e più forte, di quella di \cref{sec:pir-movimento}: \textbf{la variabile che
+determina se il PIR rileva non è la distanza, ma il tipo di movimento}. A parità di
+distanza --- qualunque fra 2 e 5~m --- il tasso di rilevamento passa da zero a circa
+il $99\,\%$ cambiando soltanto la \emph{direzione} dello spostamento. È un esperimento
+a variabile singola più stringente di quello di \cref{sec:dose-risposta}, dove a
+variare era la \emph{quantità} di movimento.
+
+\paragraph{Conseguenza per il progetto UPRISE.} Il modo di muoversi per cui il PIR è
+progettato --- attraversare un varco, percorrere un corridoio --- è l'opposto di
+quello di una persona intrappolata sotto un arredo, che si muove sul posto quando si
+muove del tutto. Il limite del PIR non è quindi una questione di portata da compensare
+con un sensore più sensibile o più vicino: è strutturale rispetto allo scenario
+applicativo.
+
+\paragraph{Perché le distanze di questa serie non sono utilizzabili.} La distanza
+riportata dal radar in questi trial non entra nel modello di
+\cref{sec:distanza}. A 3~m l'errore medio è passato da $+9{,}5$ a $+19{,}2$~cm fra due
+sessioni distanti pochi minuti, con lo stesso soggetto e la stessa distanza nominale:
+la grandezza non è riproducibile in questa geometria. Parte dello scostamento è
+attesa, perché il radar misura la distanza \emph{radiale} e un soggetto che si sposta
+lateralmente è mediamente più lontano della sua distanza perpendicolare; ma il calcolo
+mostra che con una larghezza di spazzata di circa un metro l'effetto vale 1--8~cm, ben
+meno dello scostamento osservato. In questa sezione la grandezza d'interesse è il
+tasso di rilevamento del PIR, non la distanza.
+
+\paragraph{Un artefatto del canale stazionario.} Questi trial hanno reso evidente un
+comportamento del \ldb\ non emerso altrove. Con la scena occupata da un \emph{solo}
+bersaglio in movimento continuo, il canale stazionario riporta comunque un bersaglio,
+con energia \textbf{satura} a 100 e a distanza errata: a 3~m riporta $436{,}8$~cm con
+una dispersione di $113{,}4$~cm, mentre la persona si trova a 3~m e non si ferma mai.
+Il fenomeno è riproducibile su due sessioni indipendenti. È l'analogo, durante il
+movimento, del bersaglio fantasma già osservato nella coda di presenza dopo l'uscita
+dal campo (\cref{sec:rilascio}). La presenza non ne risente, perché è il canale in
+movimento a portarla; ma ne segue una regola pratica: \textbf{le grandezze del canale
+stazionario non vanno lette quando il bersaglio è in moto}.
 
 \section{L'esperimento controllato: la curva dose-risposta}
 \label{sec:dose-risposta}
@@ -656,6 +754,7 @@ più vicino. Questa spiegazione \emph{non è dimostrata} dai dati raccolti:
 verificarla richiederebbe di variare la distanza della porta dal sensore.
 
 \subsection{Latenza di rilascio all'uscita}
+\label{sec:rilascio}
 
 Cinque trial da 102~s, soggetto presente all'avvio, uscita annunciata a $t = 30$~s.
 Il rilascio è stato misurato in tutti e cinque i trial per entrambi i sensori.

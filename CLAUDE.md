@@ -714,6 +714,16 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
          un target fermo fantasma a ~5.2 m ed energia in decadimento. È il comportamento
          atteso ("no-one duration", protocollo §1.2.2), ma va misurato come **latenza di
          rilascio** in fase 1 e non confuso con un falso positivo
+      4. 🔑 **Il fantasma stazionario compare anche DURANTE il movimento** (scoperto col
+         Test 1.5, 29/08/2026 — estende il punto 3, che lo dava solo nella coda). Con la
+         scena occupata da **un solo bersaglio in movimento continuo**, il canale
+         stazionario riporta un target **saturo** (`senergy` = 100) a distanza sbagliata:
+         a 3 m riporta **436,8 cm con 113,4 cm di dispersione**, mentre la persona e' a
+         3 m e non si ferma mai. Riproducibile su due sessioni indipendenti e in
+         condizioni ambientali diverse.
+         📌 **Conseguenza pratica: `sdist_*` e `senergy` non vanno letti quando il
+         bersaglio e' in moto.** Non tocca la presenza (`radar_rate_%` resta 100 %, la
+         porta il canale moving), ma e' un limite citabile del modulo
 - [~] Setup e test LD2420 — collegato e letto (presenza + range in modalità ASCII,
       sketch `firmware/ld2420_monitor/`)
 - ⚠️ **L'"engineering mode binario" del LD2420 non è documentato da Hi-Link (accertato
@@ -821,8 +831,38 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - [x] **Portata utile del PIR con movimento sul posto: sotto i 2 metri.** In modalità H
       (la piu' favorevole) rileva l'85.2% del tempo a 1 m e **lo 0.0% a 2 m**. Non e' un
       degrado graduale: fra 1 e 2 metri passa da "funziona bene" a "non vede niente".
-      Con persona **immobile** e' cieco a ogni distanza. Questa e' la caratterizzazione
-      corretta del PIR, misurata nella sua configurazione migliore
+      Con persona **immobile** e' cieco a ogni distanza
+- 🚨 **NON generalizzare la riga precedente a "il PIR arriva a 2 m": e' FALSO, smentito
+      dal Test 1.5 (29/08/2026).** Quel limite vale **soltanto** per il movimento *sul
+      posto*. Con movimento di **attraversamento** lo stesso sensore, alla stessa
+      sensibilita' e nella stessa configurazione, rileva fino a 5 m:
+      | distanza | cammino sul posto | attraversamento |
+      | 2 m | 0,0 % | **100,00 ± 0,00 %** |
+      | 3 m | 0,0 % | **100,00 ± 0,00 %** |
+      | 4 m | 0,0 % | **98,83 ± 2,02 %** |
+      | 5 m | 0,0 % | **98,73 ± 1,94 %** |
+      (3 trial per distanza, jumper H, trimmer a meta' corsa, radar `fn_radar_%` = 0,00
+      in tutte e dodici le acquisizioni)
+- 📌 **Formulazione corretta della caratterizzazione del PIR**: la variabile che decide
+      se il PIR vede **non e' mai la distanza, e' il tipo di movimento**. La portata
+      dichiarata di 3-7 m e' reale. A parita' di distanza — qualunque fra 2 e 5 m — si
+      passa da 0 % a ~99 % cambiando solo la **direzione** del movimento. E' un
+      esperimento a variabile singola piu' pulito di quello immobile-vs-movimento, dove
+      cambiava la *quantita'* di movimento. Ed e' esattamente l'argomento che serve a
+      UPRISE: la persona intrappolata si muove **sul posto**, che e' il caso cieco a ogni
+      distanza
+- ✔ **Il confondente "il trimmer di sensibilita' era troppo basso" e' CHIUSO** senza aver
+      dovuto toccare il trimmer: un sensore che rileva un attraversamento a 5 m nel 98,7 %
+      dei campioni non e' poco sensibile. Il trial facoltativo a sensibilita' massima
+      previsto dal Test 1.5 **non serve piu'** — ed evitarlo protegge la comparabilita'
+      di tutta la campagna
+- ⚠️ **Conseguenza sulla Fase 8**: sul PIR non abbiamo ancora trovato il limite. La prova
+      di portata massima va iniziata da **6 m**, non da 2
+- ⚠️ **`errore_cm` dei file `attraversamento_*` NON e' utilizzabile** e resta fuori dalla
+      regressione del Test 1.2: a 3 m e' passato da +9,5 a +19,2 cm fra due sessioni a
+      pochi minuti di distanza. La spazzata trasversale (larghezza ~1 m) spiega solo
+      **1-8 cm** secondo il calcolo geometrico, il resto non e' spiegato. In questo test
+      la grandezza d'interesse e' `pir_rate_%`, non la distanza
 - ⚠️ **Non mescolare le serie `_H` con quelle originali nella regressione della distanza**:
       il setup e' stato smontato e rimontato, e il sensore risulta spostato di ~4-7 cm
       (errore a 2 m: +11.22 cm nella serie originale, +18.68 cm in quella nuova). La retta
