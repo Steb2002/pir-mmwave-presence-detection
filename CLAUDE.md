@@ -456,6 +456,38 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
   coerenza gate di picco↔distanza, rumore di fondo per-gate a stanza vuota, transizioni di
   presenza. Solo libreria standard. Da lanciare a ogni sessione di acquisizione
 - `analisi/analizza_respiro.py` — FFT della serie di energia, picco in banda 0.1-0.5 Hz, stima atti/min, export spettro CSV per Excel. Richiede numpy. Modalità **`--scan`**: prova tutti i 20 canali di energia, scarta saturi e piatti, ordina per SNR e riporta la mediana delle stime concordi — nata dal pilota respiro del 18/08/2026, dove il canale di default (`stationary_energy`) era saturo al 100% mentre il respiro era leggibile benissimo su `menergy_gate2`
+- 🔑 **`analisi/rigenera_tutto.py` — un comando solo per rifare tutti i materiali derivati**
+  (26/08/2026). Esegue in ordine i tre script qui sotto e poi la stampa in PDF; ~13 s.
+  L'ordine è obbligato (la pagina incorpora i PNG, il PDF stampa la pagina) e lo script si
+  ferma al primo errore senza sovrascrivere i passi successivi. Opzioni `--salta-figure`
+  (riusa i PNG esistenti, utile se cambia solo il testo) e `--senza-pdf`.
+  Trova Chrome o Edge da solo; se non c'è, dice come stampare a mano invece di piantarsi
+- `analisi/grafici_tesi.py` — le **13 figure della tesi** in `tesi-unicam/figures/`, sia
+  `.pdf` (vettoriale, per `\includegraphics`) sia `.png` 300 dpi (slide/anteprima).
+  🔑 **Importa le funzioni di `analizza_test.py`** invece di ricalcolare: i numeri nei
+  grafici coincidono per costruzione con quelli del capitolo 4. Applica le convenzioni di
+  scarto del transitorio (20/40/120 s, più **60 s a stanza vuota**: a 20 s la coda
+  dell'operatore che esce vale ancora 0,6 % e non è un falso positivo).
+  ⚠️ Il R² = 0,99965 del capitolo 4 è calcolato sulle **5 medie** per distanza, non sui 25
+  trial singoli (che darebbero 0,99949 e un residuo massimo di 6,0 cm invece di 4,9): la
+  fig. 4 mostra entrambi e lo dichiara
+- `analisi/esporta_excel.py` — `analisi/dati_tesi.xlsx`, 11 fogli. Il foglio
+  `tutti_i_trial` ha **una riga per trial** con tutte le metriche (è quello da cui fare
+  pivot a mano); gli altri hanno i dati già aggregati per figura, con 6 grafici Excel
+  nativi modificabili. Stesse funzioni e stesse convenzioni di `grafici_tesi.py`
+- `analisi/genera_pagina.py` — `RIEPILOGO_INCONTRO.html`, pagina unica di riepilogo per
+  l'incontro col professore: stato dei 6 obiettivi, le 13 figure con didascalie che
+  spiegano cosa dimostrano, domande da porre. Le immagini sono incorporate come data URI
+  WebP, quindi **la pagina si apre offline e si manda per mail così com'è**. Ha un foglio
+  di stile per la stampa (tema chiaro forzato, figure che non si spezzano fra pagine) →
+  il PDF a 10 pagine A4 esce da qui.
+  ⚠️ La stampa headless vuole `--virtual-time-budget=20000`: senza, Chrome stampa prima
+  che arrivino i font da Google Fonts e l'impaginazione cambia
+- ⚠️ **I materiali generati NON sono versionati** (regola aggiunta al `.gitignore` di
+  radice il 26/08/2026): figure, xlsx, HTML e PDF si rifanno in 13 s dai CSV e pesano ~8 MB
+  a ogni rigenerazione. I **CSV restano tracciati**: sono l'unico dato non ricostruibile.
+  Il filtro è `tesi-unicam/figures/fig*`, quindi `LEGGIMI.txt` e un futuro
+  `logo_unicam.png` continuano a entrare nel repo
 - `analisi/ANALISI_CONSUMI.md` — obiettivo 4 completato in bozza (consumi da datasheet + stime autonomia + argomentazione architettura ibrida PIR+mmWave)
 - `analisi/ANALISI_WEB_UI.md` — progetto della web UI (obiettivo 5): architettura ESP32 self-hosted (ESPAsyncWebServer + WebSocket + LittleFS, tutto offline), formato JSON, layout pagina, struttura codice `firmware/ld2410b_web/`, piano di sviluppo in 5 step. Decisione chiave: il CSV esportato dal browser usa le stesse colonne di acquire.py → un solo formato dati in tutta la tesi. §9: analisi del riferimento UI "LD2410 Configurator" (cosa prendere/cosa no) + opzione D di riserva via Web Serial
 - `analisi/PROGETTO_SITO_DETTAGLIO.md` — progetto di dettaglio implementativo del sito: struct/pseudocodice firmware, protocollo WS con riconnessione, strutture dati JS, config dei 3 grafici, export CSV client-side, gestione errori, criteri di accettazione per step
@@ -503,8 +535,34 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
     un errore aritmetico a pag. 2 (`40 9C 00 00` letto come 60000 anziché 40000)
 - Google Drive HiLink **LD2410B** (manuale V1.04, protocollo seriale V1.07, tool PC `LD2410 Tool EN (英文版).zip`): https://drive.google.com/drive/folders/16zI-fium_BZeP08EyQke0rWp0BJTMvw3 — linkata dalla pagina prodotto ufficiale https://www.hlktech.net/index.php?id=1090. ⚠️ NON usare `HLK-LD2420_TOOL` col LD2410B: protocolli diversi, errore "Failed to set data transfer mode" (17/08/2026)
 - **Copie locali ufficiali LD2410B** (scaricate 18/08/2026, in `HLK-LD2410x/Documentazione/`) — da citare in `bib/tesi.bib` come fonti primarie:
-  - `HLK LD2410B Life Presence Sensing Module Manual V1.04.pdf` — manuale ufficiale (specifiche, consumi, pinout)
-  - `LD2410B Serial communication protocol V1.07.pdf` — protocollo seriale completo (frame, comandi, engineering mode)
+  - 🚨 **I FRONTESPIZI DI ENTRAMBI SONO SBAGLIATI** (accertato 29/08/2026 leggendo le
+    tabelle di *revision records* con `pypdf`). Con Hi-Link la versione va letta **dalla
+    tabella di revisione, mai dalla copertina** — vale per tutti e tre i documenti
+    ufficiali che abbiamo, LD2420 compreso:
+    | documento | frontespizio | verità dalla tabella | PDF CreationDate |
+    |---|---|---|---|
+    | Manuale LD2410B | V1.04, "Revised date: 2022-6-29" | V1.04 = **2022-08-19** (il 2022-6-29 è la **V1.03**) | 2022-08-30 |
+    | Protocollo LD2410B | V1.07, "Revised date: 2024-8-5" | contiene una riga **1.08 del 2024-11-22** | 2024-11-26 |
+    | Manuale LD2420 | V1.0, Feb 24 2023 | file distribuito come V1.2 | — |
+  - `HLK LD2410B Life Presence Sensing Module Manual V1.04.pdf` — manuale ufficiale
+    (specifiche, consumi, pinout), 17 pagine. **Data reale: 2022-08-19.** Storico:
+    1.01 (2022-5-26) → 1.02 (2022-6-8) → 1.03 (2022-6-29) → 1.04 (2022-8-19,
+    "Modification of bluetooth description"). La V1.04 è l'**ultima** versione del
+    manuale: non è stato più revisionato
+  - `LD2410B Serial communication protocol V1.07.pdf` — protocollo seriale completo
+    (frame, comandi, engineering mode), 23 pagine.
+    🚨 **Il contenuto è in realtà la revisione 1.08 del 2024-11-22**: la tabella a p.22
+    la elenca, il frontespizio la ignora, e il piè di pagina della copertina dice
+    "Page 1 / **19**" mentre tutte le altre pagine dicono "/ **23**" — residuo di
+    un'edizione da 19 pagine mai rigenerata. Tre indizi indipendenti concordi
+    - ⚠️ **Rilevante per noi**: la 1.08 dichiara *"Modify some instruction reply errors
+      and **add engineering mode data parsing**"*. Noi citiamo **§2.3.2 *Target data
+      composition*** (p.19) per spiegare `senergy_gate0/1 = 0`: quella sezione **c'è**
+      nella nostra copia, ma un V1.07 autentico potrebbe non contenerla. Citare quindi
+      come "frontespizio V1.07, contenuto rev. 1.08 del 2024-11-22"
+    - la rev. **1.07 (2024-08-05)** è quella che introduce i comandi di *background noise
+      detection* e *sensitivity automatic configuration*, cioè l'auto-calibrazione del
+      firmware V2.44: i due documenti si datano a vicenda coerentemente
   - `LD2410B V2.44 (24073110)- introduction of new features.pdf` — novità del firmware V2.44: **rilevamento automatico del rumore di fondo** (auto-calibrazione delle soglie movimento+stazionario). Procedura: pulsante "Auto" nell'app, 10 s per uscire dal campo + 60 s di misura = 70 s totali, restando fuori dal range. Richiede app Android ≥ V1.5.12 / iOS ≥ V1.5.4. Da non confondere con il "Detect noise floor" della schermata parametri, che è **solo** una funzione dell'app (mostra i valori, non li applica). Il documento NON descrive alcuna procedura di aggiornamento del firmware
 - Tool PC ufficiale `LD2410 Tool (v1.0.0.0)` — copia locale in `HLK-LD2410x/LD2410 Tool/LD2410 Tool.exe`. ⚠️ Non mostra la versione firmware e **non** ha funzione di flash/update
 - App mobile Bluetooth `HLKRadarTool` (Android/iOS, password `HiLink`): cercare "HLKRadarTool" negli app store, oppure download ufficiale https://www.hlktech.com/Mobile/App/12.html (link dal documento V2.44)
@@ -956,13 +1014,34 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       | 2 | 150 cm | manuale V1.04 p.8 + misurato |
       | 1 | 75 cm | regola del manuale + misurato |
       | 8 (fabbrica) | **600 cm** | regola del manuale; i 675 di `getRange_cm()` sono errati |
-- ⚠️ **I due documenti ufficiali si CONTRADDICONO sul range configurabile**:
-      - manuale V1.04 §5.2 p.8: *"the setting range is **1 to 8**"*
-      - protocollo V1.07 §2.2.3 p.8: *"(configuration range **2~8**)"*
-      Quindi **gate 1 non e' univocamente fuori specifica**: e' ammesso dal manuale e
-      escluso dal protocollo. Nella tesi va citata la discrepanza, non una sola delle due
-      fonti. Gate 0 invece e' fuori range in entrambi i documenti, ed e' quello che sul
-      nostro esemplare si e' rotto (distanza fissa 72 cm, presenza sempre 1)
+- 🔑 **La contraddizione sul range configurabile e' INTERNA al protocollo** (accertato
+      29/08/2026 estraendo il testo dei PDF con `pypdf`; la stesura precedente, che la
+      descriveva come "manuale contro protocollo", era incompleta):
+      | fonte | range dichiarato |
+      |---|---|
+      | Protocollo **p.5, §1.2.2** *The role of configuration parameters* | *"the range can be set **from 1 to 8**"* |
+      | Protocollo **p.8, §2.2.3** *Maximum distance gate…command* (cmd 0x0060) | *"(configuration range **2~8**)"* |
+      | Manuale V1.04 p.8, §5.2 (stesso titolo di sezione) | *"the setting range is **1 to 8**"* |
+      Il paragrafo del manuale §5.2 e' lo **stesso testo copiaincollato** del §1.2.2 del
+      protocollo (quest'ultimo aggiunge solo l'inciso sulla risoluzione 0.2/0.75 m).
+      Quindi non ci sono due documenti che divergono: c'e' **un paragrafo descrittivo
+      duplicato in due file** contro **una parentesi nella specifica del comando**
+- 🚫 **L'argomento della recenza non ha oggetto**: le due frasi stanno nello stesso
+      documento, nella stessa versione, a tre pagine di distanza — non sono ordinabili
+      per data. In tesi **non** scrivere ne' "una versione precedente lo permetteva" ne'
+      "i due documenti divergono": citare la **contraddizione interna** e il dato misurato
+- ⚖️ **Come pesare le due letture**: a favore di 1-8 ci sono due sezioni descrittive,
+      l'esempio numerico *"if the farthest door is set to 2, only… within 1.5m"* presente
+      in entrambe e **coincidente con la nostra misura** (gate 2 → 150 cm), e gate 1 che
+      da' esattamente i 75 cm previsti dalla regola. A favore di 2~8 c'e' la sola
+      parentesi di §2.2.3 — che pero' e' la sezione **normativa** per "quale valore posso
+      scrivere via UART". Gate 0 e' escluso da tutte e tre le formulazioni ed e' quello
+      che sul nostro esemplare si e' rotto (distanza fissa 72 cm, presenza sempre 1)
+- ⚠️ **"Il modulo lo ha accettato" non prova nulla da solo: il firmware non valida
+      l'input.** Gate 0 e' stato accettato senza errore e ha prodotto comportamento rotto.
+      Prova qualcosa solo la *differenza*: gate 0 accettato e **sbagliato**, gate 1
+      accettato e **conforme alla regola documentata**. Impostazione completa e paragrafo
+      gia' redatto in `PIANO_TEST.md`, Test 2.4, blocco "Gate 1"
 - [x] **Le soglie di fabbrica lette via UART coincidono con la Tabella 7 del protocollo
       V1.07 (p.13)**, valore per valore: movimento 50 50 40 30 20 15 15 15 15 (gate 0-8),
       stazionario 40 40 30 30 20 20 20 (gate 2-8).
@@ -1178,9 +1257,21 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **116 CSV sperimentali su disco, 116 tracciati, 116 presenti in `origin/main`**,
       più `REGISTRO_SESSIONI.md`; 28 MB in `HLK-LD2410x/data/`. Nessun file non
       tracciato in quella cartella
-- ⚠️ **Nessuna regola ignora i CSV** in nessuno dei due `.gitignore`: i dati entrano nel
-      repo per default, quindi anche le acquisizioni della campagna LD2420 saranno
-      versionate senza doverci pensare. Rovescio della medaglia: con `git add -A` entra
+- 🚨 **CORREZIONE (26/08/2026): la frase «nessuna regola ignora i CSV» era SBAGLIATA.**
+      `HLK-LD2410x/.gitignore` riga 66 contiene `*.csv` (eredità del repo del professore) e
+      la riga 72 lo annulla con `!data/*.csv`. Verificato con `git check-ignore -v`:
+      | percorso | esito |
+      | `HLK-LD2410x/data/prova.csv` | tracciato ✔ |
+      | `HLK-LD2410x/data/**sotto**/prova.csv` | **IGNORATO** ✗ |
+      | `HLK-LD2410x/prova.csv` | **IGNORATO** ✗ |
+      | `HLK-LD2420/Test LD2420/prova.csv` | tracciato ✔ |
+      | `analisi/prova.csv` | tracciato ✔ |
+      ⚠️ **Il negativo `!data/*.csv` non copre le sottocartelle**: un CSV messo in una
+      sottocartella di `data/` sparisce dal repo **senza un avviso**. Vale la pena saperlo
+      prima della campagna LD2420, non dopo. Se si vogliono organizzare i dati in
+      sottocartelle, cambiare la riga 72 in `!data/**/*.csv` **prima** di acquisire
+- ⚠️ Fuori da `HLK-LD2410x/` non c'è alcuna regola sui CSV, quindi i dati del LD2420
+      entrano nel repo per default. Rovescio della medaglia: con `git add -A` entra
       **tutto**. Tenere gli eventuali CSV intermedi o di scarto **fuori** da
       `HLK-LD2410x/data/`, altrimenti si mescolano ai trial buoni nella storia
 - ⚠️ Un `find . -name "*.csv"` grezzo ne conta 146, non 116: i 30 in più sono fixture di
@@ -1210,6 +1301,15 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       6 impulsi completi (media 14,1 s, max 29,8 s) **più 5 troncati, il più lungo ≥ 61,6 s**
       (cioè l'intero trial). In **H** da fermo: **2 impulsi in 1010 s**. Il contrasto fra
       queste tre righe è più convincente della percentuale
+- [x] **13 figure della campagna generate (26/08/2026)** — `analisi/rigenera_tutto.py`.
+      Coprono gli obiettivi 1-4: dose-risposta PIR vs radar, scenario sotto il banco,
+      accuratezza della distanza, energia e portata, latenze, impulsi PIR, due persone,
+      selettività spaziale, dati per-gate in engineering mode, saturazione, respiro,
+      consumi. Da inserire nel cap. 4 con `\includegraphics{figures/figNN_...}`
+- [x] **Materiali per l'incontro pronti**: `RIEPILOGO_INCONTRO.pdf` (10 pagine A4, stato
+      dei 6 obiettivi + tutte le figure con didascalie + domande da porre) e
+      `analisi/dati_tesi.xlsx` (una riga per trial, per le pivot in Excel). Entrambi
+      rigenerabili in 13 s, entrambi fuori dal repo per scelta (vedi `.gitignore`)
 - [ ] Cronoprogramma (dopo aver saputo la scadenza)
 
 ### Chiusura

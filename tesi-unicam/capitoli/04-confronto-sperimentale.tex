@@ -990,6 +990,33 @@ adatta a coprire lo spazio sotto un banco e non oltre.
 linea di principio dentro la zona coperta. La domanda sperimentale è quindi doppia:
 il limite di distanza funziona davvero, e il vicino laterale disturba?
 
+\paragraph{Perché non si è usato il gate 1.} La persona sotto il banco è stata
+misurata a 62--69~cm (\cref{sec:sotto-banco}), quindi un gate massimo pari a~1, con
+portata di 75~cm, la coprirebbe escludendo un vicino a un metro: sarebbe l'unica
+impostazione capace di isolare davvero un banco, dato che il gate~2 arriva già a
+150~cm. Non è stata adottata perché il protocollo ufficiale \textbf{si contraddice
+al proprio interno} sul valore minimo ammesso. Il \S1.2.2 (p.~5) afferma che
+\emph{``the range can be set from 1 to 8''}, e il manuale~\cite{hilinkManualV104}
+riporta al \S5.2 un paragrafo pressoché identico; il \S2.2.3 (p.~8), che definisce
+il comando \texttt{0x0060} e la codifica del suo parametro, dichiara invece
+\emph{``(configuration range 2\textasciitilde8)''}. Poiché le due formulazioni
+compaiono nello stesso documento e nella stessa revisione, non sono ordinabili
+cronologicamente: la sola discriminante disponibile è di natura normativa, e la
+sezione che definisce il comando prevale su quella descrittiva.
+
+Sul nostro esemplare il gate~1 risponde correttamente, con portata misurata di
+75~cm, coerente con la regola \emph{portata $=$ gate $\times$ 75~cm} e con
+l'esempio numerico presente in entrambe le sezioni descrittive. Questa osservazione
+non è però sufficiente a sanare la discrepanza, perché il firmware
+\textbf{non convalida il parametro ricevuto}: il gate~0, escluso da ogni
+formulazione, viene accettato senza segnalazione di errore e produce un
+comportamento anomalo --- distanza riportata costantemente a 72~cm e presenza
+sempre attiva. L'accettazione del comando non costituisce quindi prova di
+conformità; ciò che resta significativo è la differenza fra i due casi, con il
+gate~0 accettato e scorretto e il gate~1 accettato e conforme alla regola
+documentata. Il gate~1 è pertanto riportato come misura su un singolo esemplare e
+non è proposto come scelta di progetto per il dispositivo del progetto UPRISE.
+
 \paragraph{Procedura.} Gate massimo impostato a 2 e riletto dal modulo per conferma.
 Quattro scenari, tre trial da 182~s ciascuno, occupante sempre \emph{fermo}:
 

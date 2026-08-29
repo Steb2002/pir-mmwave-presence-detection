@@ -20,16 +20,22 @@ riassunte nella \cref{tab:ld2410b-specs}.
 
 \begin{table*}[htbp]
 \centering
-\caption{Specifiche del \ldb\ (fonti: manuale ufficiale
-V1.04~\cite{hilinkManualV104}, manuale V1.03~\cite{hilinkManualV103},
-datasheet~\cite{ld2410bDatasheet}).}
+\caption{Specifiche del \ldb. La frequenza di lavoro e i parametri elettrici sono
+quelli dichiarati al \S7 del manuale ufficiale V1.04~\cite{hilinkManualV104}
+(\emph{Operating frequency 24GHz\,\textasciitilde\,24.25GHz}); la V1.04, del
+19 agosto 2022, \`e l'ultima versione emessa del manuale, e la data \`e desunta
+dalla tabella delle revisioni al \S9 perch\'e il frontespizio riporta quella
+della V1.03;
+le altre voci provengono dal manuale V1.03~\cite{hilinkManualV103} e dal
+datasheet~\cite{ld2410bDatasheet}.}
 \label{tab:ld2410b-specs}
 \small
 \begin{tabular}{@{}ll@{}}
 \toprule
 \textbf{Parametro} & \textbf{Valore} \\
 \midrule
-Tecnologia & FMCW, banda ISM 24~GHz \\
+Frequenza di lavoro & 24~GHz--24,25~GHz, banda ISM \\
+Tecnologia & FMCW (onda continua modulata in frequenza) \\
 Portata dichiarata & 5--6~m \\
 Campo visivo & $\pm 60\degree$ \\
 Alimentazione & 5~V, alimentatore con capacità $>$200~mA \\
@@ -103,7 +109,21 @@ produttore~\cite{hilinkDriveLD2410B}.
 \label{sec:protocollo-seriale}
 
 La comunicazione avviene su UART a 256000 baud, 8N1, con due tipi di frame
-distinti da intestazione e chiusura (protocollo V1.07~\cite{hilinkProtoV107}, i
+distinti da intestazione e chiusura (protocollo V1.07~\cite{hilinkProtoV107},%
+\footnote{Il documento \`e distribuito con un frontespizio che dichiara
+``Version: V1.07, Revised date: 2024-8-5'', ma la tabella delle revisioni al
+\S3 (p.~22) elenca una revisione successiva, la \textbf{1.08 del 22 novembre
+2024}, descritta come ``\emph{Modify some instruction reply errors and add
+engineering mode data parsing}''. Che il contenuto distribuito sia
+quest'ultima \`e confermato da due indizi indipendenti: il pi\`e di pagina
+della sola copertina riporta ``Page 1 / 19'' mentre tutte le altre pagine
+riportano ``/ 23'', residuo di un'edizione precedente pi\`u breve, e i
+metadati del file datano la creazione del PDF al 26 novembre 2024, quattro
+giorni dopo la revisione 1.08. La distinzione non \`e pedanteria
+bibliografica: il \S2.3.2, usato in \cref{sec:senergy-zero}, ricade tra le
+aggiunte di quella revisione. Nel seguito il documento \`e citato con la sigla
+del frontespizio, V1.07, per coerenza con il nome del file distribuito dal
+produttore.} i
 dettagli completi sono in \cref{app:protocollo}):
 
 \begin{itemize}[leftmargin=1.4em,itemsep=2pt]
@@ -226,7 +246,7 @@ una variante con OT1 e OT2 invertiti per firmware fino alla 1.5.2, con baud
 ma è un motivo sufficiente per verificare la versione del firmware prima di
 collegare il modulo.
 
-\begin{table}[htbp]
+\begin{table*}[htbp]
 \centering
 \caption{Piedinatura del connettore J2 del \ldc~\cite[Tab.~3-2]{hilinkManualLD2420}.}
 \label{tab:ld2420-pin}
@@ -242,7 +262,7 @@ J2--4 & RX  & UART\_RX, 0--3,3~V \\
 J2--5 & OT2 & uscita di presenza: alto occupato, basso libero \\
 \bottomrule
 \end{tabularx}
-\end{table}
+\end{table*}
 
 \paragraph{Due incongruenze nella documentazione ufficiale.} Vanno dichiarate
 perché riguardano parametri che si userebbero in fase di progetto. La prima è

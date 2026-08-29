@@ -89,9 +89,15 @@ media e deviazione standard — è questo che rende il confronto "numerico" (obi
 cd HLK-LD2410x
 python -m venv .venv
 .venv\Scripts\Activate.ps1
-pip install pyserial numpy
+pip install pyserial numpy pypdf
 mkdir data
 ```
+- A cosa serve ciascuna: **pyserial** ad `acquire.py`/`serie.py` (acquisizione),
+  **numpy** ad `analizza_respiro.py` (FFT), **pypdf** a leggere i PDF ufficiali Hi-Link.
+  ⚠️ Quest'ultimo non e' un vezzo: i frontespizi dei manuali Hi-Link **riportano versioni
+  e date sbagliate** (vedi CLAUDE.md, sezione fonti), la verita' sta nella tabella di
+  *revision records* in fondo, e quei PDF hanno i metadati compressi e il testo in font
+  CID — quindi `strings` e i parser artigianali non funzionano, `pypdf` si
 - Prova rapida (30 s, tu presente in movimento):
 ```powershell
 python acquire.py --port COM3 --duration 30 --output data/prova_T01.csv --scenario prova --trial T01 --ground_truth_presence 1 --ground_truth_state moving
@@ -143,6 +149,10 @@ python acquire.py --port COM3 --duration 1800 --output data/stanza_vuota_T01.csv
   **diagonale** della stanza — ma cambia la geometria, quindi va trattata come serie
   separata e non mescolata con questi 25 trial
 - Per ogni distanza: stare in piedi sul segno e **camminare sul posto**, senza spostarsi
+- ⚠️ **Questo movimento è il caso peggiore per il PIR** ed è la ragione dello 0% di
+  rilevamento a 2-5 m. NON è la condizione con cui si misurano i 3-7 m del datasheet →
+  il **Test 1.5** aggiunge il controllo per attraversamento; meccanismo in
+  `analisi/ANALISI_PIR.md` §2.1
 - ⚠️ **Riferimento**: qui il soggetto e' **in piedi**, quindi il torace sta sulla verticale
   dei piedi e il segno a terra va bene. (L'offset di ~30 cm visto nel Test 1.3 riguardava
   il soggetto **seduto**, con il busto arretrato rispetto al segno.) Non sporgersi avanti
@@ -268,6 +278,54 @@ python acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv 
 
 ---
 
+### Test 1.5 — Attraversamento del campo (controllo di validità del PIR) — DA FARE
+- **Perché esiste questo test**: nei Test 1.2/2.3 il PIR rileva lo **0%** a 2, 3, 4 e 5 m
+  con soggetto in movimento continuo, mentre il datasheet dichiara **3-7 m**. Senza un
+  controllo, quel dato è indistinguibile da "il sensore era guasto o tarato male" — che è
+  l'obiezione più probabile della commissione. Questo test dimostra che il PIR **alle
+  stesse distanze rileva benissimo un attraversamento**, e che il fallimento dipende dal
+  **tipo di movimento**, non dalla distanza né dalla taratura (meccanismo in
+  `analisi/ANALISI_PIR.md` §2.1)
+- **Metrica**: fronti di salita del PIR e `pir_rate_%`, confrontati con il cammino sul
+  posto alla stessa distanza (Test 1.2)
+- ⚠️ **NON toccare il trimmer di sensibilità**: deve restare nella posizione usata in
+  tutta la campagna, altrimenti il confronto con il Test 1.2 non vale più
+- **Jumper su H**, ritenuta al minimo, come tutta la fase 2
+- **Movimento**: camminare **trasversalmente** all'asse del sensore, avanti e indietro in
+  modo continuo, restando a **distanza costante** dal sensore (segnare a terra una linea
+  parallela alla parete del sensore, non un punto). È l'opposto del Test 1.2, dove il
+  soggetto sta su un punto e cammina sul posto
+- **Distanze**: 2, 3, 5 m — le stesse del Test 1.2, così il confronto è appaiato
+- **3 trial per distanza**, 80 s (20 di transitorio + 60 utili)
+- Comando:
+```powershell
+.venv\Scripts\python.exe serie.py --scenario attraversamento_2m --gt-state moving --trials 3
+```
+  (ripetere con `attraversamento_3m` e `attraversamento_5m`)
+- **Analisi**:
+```powershell
+python ..\analisi\analizza_test.py data\attraversamento_*.csv --salta-inizio 20
+```
+  Confrontare `pir_rate_%` e i fronti con `data\movimento_{2,3,5}m*.csv` alla stessa
+  distanza. ⚠️ Il transitorio da scartare qui **non** è il posizionamento: il soggetto è
+  già in movimento trasversale dall'inizio. I 20 s servono solo a uniformare la finestra
+  con le altre serie
+- **Esito atteso**: `pir_rate_%` alto (in H, plausibilmente > 80%) a tutte e tre le
+  distanze. Il riscontro incidentale già disponibile — `pir_jumper_attraversamento_T01`,
+  1 trial in **L** a ~2.2 m — dà 9 fronti in 92 s e 32.8% di tempo alto, che in L è il
+  **57% del tetto strutturale** della modalità (~58%)
+- ⚠️ **Se invece il PIR NON rilevasse l'attraversamento a 3 m**: allora il problema è il
+  sensore o la taratura, e va rivista tutta la caratterizzazione del PIR prima di
+  scrivere il capitolo 4. È l'esito che questo test serve a escludere
+- **Facoltativo, per chiudere del tutto il confondente sensibilità** (~5 min): 1 trial di
+  cammino **sul posto** a 2 m con il **trimmer di sensibilità al massimo**. Se resta 0%,
+  il trimmer è escluso per via sperimentale invece che per deduzione.
+  🚨 Rimetterlo subito a metà corsa e annotarlo nel registro: lasciarlo spostato
+  invaliderebbe la comparabilità di tutto il resto della campagna
+- **Tempo stimato**: ~30-40 min (+5 min con la prova facoltativa)
+- **Dove finisce in tesi**: cap. 4, subito accanto alla tabella delle distanze del
+  Test 1.2, come riga di controllo
+
 ## FASE 2 — Confronto dinamico PIR vs mmWave (obiettivo 3)
 
 > 🔊 **Segnali vocali**: `acquire.py --beep-at` pronuncia le parole **"entra"** e
@@ -392,10 +450,79 @@ python acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv 
 - ⚠️ Ne segue che anche il "range massimo 675 cm" della configurazione di fabbrica e'
   sovrastimato: con gate 8 la portata e' **600 cm**. Il 675 viene da `getRange_cm()` di
   MyLD2410, che calcola `(gate+1) x risoluzione`
-- 💡 **Provare anche `g 1 1` (portata 75 cm)**: la persona sotto il banco e' stata misurata
-  a 62-69 cm nel Test 1.4, quindi gate 1 la coprirebbe escludendo un vicino a 1 m di lato.
-  Margine stretto ma e' l'unica configurazione che puo' davvero isolare un banco: gate 2
-  (1.50 m) comprende gia' il banco accanto
+
+#### Gate 1 (portata 75 cm) — da misurare, ma NON raccomandabile come scelta di progetto
+
+- **Perche' interessa**: gate 2 (1.50 m) comprende gia' il banco accanto, quindi non
+  isola nulla. La persona sotto il banco e' stata misurata a **62-69 cm** nel Test 1.4:
+  gate 1 la coprirebbe escludendo un vicino a 1 m di lato. E' l'**unica** configurazione
+  che potrebbe davvero isolare un banco — margine stretto, ma e' quella o niente
+- 🔑 **La contraddizione e' INTERNA al protocollo, non fra due documenti**
+  (accertato 29/08/2026 estraendo il testo dei PDF con `pypdf`):
+  | fonte | range dichiarato |
+  |---|---|
+  | Protocollo p.5, §1.2.2 *The role of configuration parameters* | *"the range can be set **from 1 to 8**"* |
+  | Protocollo p.8, §2.2.3 *Maximum distance gate…command* | *"(configuration range **2~8**)"* |
+  | Manuale V1.04 p.8, §5.2 (stesso titolo di sezione) | *"the setting range is **1 to 8**"* |
+  Il paragrafo del manuale §5.2 e' lo **stesso testo copiaincollato** di §1.2.2 del
+  protocollo (il protocollo aggiunge solo l'inciso sulla risoluzione 0.2/0.75 m).
+  Quindi non ci sono "due documenti che divergono": c'e' **un paragrafo descrittivo
+  duplicato in due file** contro **una parentesi nella specifica del comando 0x0060**
+- 🚫 **L'argomento della recenza non ha oggetto**: le due frasi stanno nello stesso
+  documento e nella stessa versione, a tre pagine di distanza. Non sono ordinabili per
+  data. (Le date ci sono comunque, vedi sotto, ma non servono a questa domanda.)
+  Gate 0 e' fuori range in **tutte e tre** le formulazioni
+- ⚖️ **Come pesare le due letture.** A favore di 1-8: due sezioni descrittive su due
+  documenti, l'esempio numerico *"if the farthest door is set to 2, only… within 1.5m"*
+  presente in entrambe che **coincide con la nostra misura** (gate 2 -> 150 cm), e gate 1
+  che sul nostro esemplare da' esattamente i 75 cm previsti dalla regola. A favore di
+  2~8: la parentesi di §2.2.3 — che pero' e' la sezione **normativa** per "quale valore
+  posso scrivere via UART", perche' definisce il comando 0x0060 e la codifica del suo
+  parametro. §1.2.2 e manuale §5.2 sono prosa esplicativa
+- ⚠️ **Attenzione all'argomento "il modulo lo ha accettato": non prova nulla da solo.**
+  Il firmware **non valida l'input** — gate 0 e' stato accettato senza errore e ha
+  prodotto comportamento rotto. Quello che prova qualcosa e' la *differenza*: gate 0
+  accettato e **sbagliato**, gate 1 accettato e **conforme alla regola documentata**
+- 📌 **Formula corretta**: non "la documentazione dice di no", ma *"la documentazione e'
+  internamente incoerente, e la misura sta dalla parte della sezione descrittiva"*.
+  Resta il motivo per non raccomandarlo in un progetto: la sezione normativa lo esclude
+- ✔ **Portata gia' misurata**: gate 1 -> **75 cm** (registro 23/08/2026, comando `m`).
+  Sullo stesso banco di prova **gate 0 e' risultato rotto** (distanza fissa 72 cm,
+  presenza sempre 1): e' la prova sperimentale che i valori fuori specifica possono
+  davvero non funzionare, ed e' la ragione per cui gate 1 **non va raccomandato** come
+  configurazione di montaggio per il DIPME-DEVICE pur funzionando sul nostro esemplare
+- **Cosa manca davvero**: non la portata, ma la **selettivita'** con gate 1. Ripetere due
+  scenari `sel_*` con `g 1 1`, 3 trial ciascuno, soggetti **fermi**:
+```powershell
+.venv\Scripts\python.exe serie.py --scenario sel_g1_dentro_60cm --duration 260 --transitorio 120 --trials 3 --gt-state static
+.venv\Scripts\python.exe serie.py --scenario sel_g1_laterale_1m --duration 260 --transitorio 120 --trials 3 --gt-presence 0 --gt-state absent
+```
+  (`sel_g1_dentro_60cm`: occupante rannicchiato sotto il banco. `sel_g1_laterale_1m`:
+  **solo** il vicino a 1 m di lato, nessuno sotto il banco -> `radar_rate_%` e' il tasso
+  di falso vicino). ⚠️ Transitorio **120 s**, come tutti gli scenari di selettivita':
+  con 20 s si misura la coda di posizionamento e non il regime (vedi CLAUDE.md)
+- **Analisi**: `..\analisi\analizza_test.py "data/sel_g1_*.csv" --salta-inizio 120`,
+  da confrontare con `sel_dentro_1m` / `sel_laterale_1m` acquisiti a gate 2
+- **Come citarlo in tesi** — versione aggiornata al 29/08/2026:
+  > Il protocollo seriale ufficiale si contraddice al proprio interno sul range
+  > configurabile del gate massimo: il \S1.2.2 (p.5) dichiara che *"the range can be set
+  > from 1 to 8"*, mentre il \S2.2.3 (p.8), che definisce il comando 0x0060, dichiara
+  > *"(configuration range 2~8)"*. Il manuale \S5.2 (p.8) riporta la prima formulazione,
+  > in un paragrafo pressoche' identico a quello del \S1.2.2. Sul nostro esemplare gate 1
+  > risponde correttamente, con portata misurata di 75 cm, coerente con la regola
+  > *portata = gate x 75 cm* e con l'esempio numerico presente in entrambi i documenti;
+  > gate 0, escluso da ogni formulazione, produce invece un comportamento anomalo
+  > (distanza fissa a 72 cm, presenza sempre attiva). Poiche' il firmware non convalida
+  > il parametro ricevuto, l'accettazione del comando non costituisce di per se' prova di
+  > conformita': il dato e' riportato come misura su un singolo esemplare e la
+  > configurazione non e' proposta come scelta progettuale, essendo esclusa dalla sezione
+  > normativa del protocollo.
+- 📌 **Se gate 1 resta fuori, la conclusione del Test 2.4 cambia** e va scritta cosi': la
+  selettivita' spaziale **non e' ottenibile per via di configurazione**, perche' l'unica
+  portata entro specifica (gate 2 = 150 cm) comprende gia' il banco accanto. Ne segue che
+  a fare il lavoro deve essere il **diagramma di irradiazione**, il che rende bloccanti i
+  due punti ancora aperti: la **misura angolare dedicata** e il **vicino a 90° in
+  movimento** (finora provato solo da fermo)
 - Prima dei trial usare il comando `m` dello sketch per verificare dove il
   radar perde davvero il bersaglio: è la portata effettiva, e trovarla costa 1 minuto
   invece di tre trial da 3 minuti con una seconda persona
@@ -525,7 +652,7 @@ Da sviluppare in parallelo alle fasi 1-6 (indipendente):
 | Fase | Test | Tempo effettivo di misura |
 |---|---|---|
 | 0 | Preparazione | mezza giornata |
-| 1 | Caratterizzazione | ~4 h di acquisizioni |
+| 1 | Caratterizzazione | ~4.5 h di acquisizioni (incl. Test 1.5, ~40 min) |
 | 2 | Confronto dinamico | ~2 h |
 | 3 | Ostacoli | ~1.5 h |
 | 4 | LD2420 | mezza giornata (incluso sketch) |
