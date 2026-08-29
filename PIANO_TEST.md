@@ -647,6 +647,74 @@ Da sviluppare in parallelo alle fasi 1-6 (indipendente):
 
 ---
 
+## FASE 8 — Portata massima dei tre sensori (richiesta dal professore, 29/08/2026)
+
+⏱️ **Va fatta PER ULTIMA**, dopo tutte le fasi in stanza: richiede di spostare PC e
+sensori in **corridoio**, e una volta smontato il setup della stanza le serie
+precedenti non sono piu' riproducibili a parita' di geometria.
+
+### 8.0 — Baseline di rumore in corridoio (BLOCCANTE, ~20 min)
+🔑 **Il rumore misurato in stanza NON vale in corridoio, e serve proprio ai gate
+lontani** — cioe' quelli su cui verte tutta questa fase. Un corridoio ha pareti
+parallele ravvicinate (multipath) e bersagli fissi reali (porte, fondo) proprio a 6-8 m,
+dove in stanza non c'era nulla. Senza baseline non si distingue "rilevamento a 7 m" da
+"eco della parete di fondo".
+- ⚠️ **Non servono altre 7 ore.** La notturna ha mostrato che il fondo e' **stabile**
+  (gate0 17,4 → 17,8 fra prima e seconda meta' della notte): non e' una grandezza che
+  deriva lentamente, quindi una finestra breve la caratterizza. **20 minuti bastano**
+- ⚠️ Quello che 20 minuti **non** danno e' un limite sui falsi positivi confrontabile con
+  lo 0,43 eventi/h (regola del tre: 20 min → ≤ 9 eventi/h, inutile). Non e' un problema:
+  la dichiarazione sui falsi positivi riguarda lo **scenario d'impiego** (aula/stanza),
+  non il banco di prova della portata. Non rifarla in corridoio
+```powershell
+python acquire.py --port COM3 --duration 1200 --output data/corridoio_vuoto_T01.csv --scenario corridoio_vuoto --trial T01 --ground_truth_presence 0 --ground_truth_state absent
+python ..\analisi\verifica_engineering.py data\corridoio_vuoto_T01.csv
+```
+
+### 8.1 — LD2410B: 6 m e' il tetto, non "oltre i 5 m"
+🚨 **Da dire al professore.** Il LD2410B **non puo'** andare oltre i 6 m: gate massimo 8
+x 75 cm = **600 cm**, ed e' la regola documentata al §5.2 del manuale, gia' verificata da
+noi. L'altra risoluzione disponibile (0,2 m/gate) **peggiora** il tetto, portandolo a
+1,6 m. Quindi la richiesta si traduce in **un solo punto nuovo: 6 m**.
+- Le 5 distanze 1-5 m sono gia' fatte. L'estrapolazione dell'energia dava ~27 a 6 m
+  contro soglia 15, quindi il rilevamento e' atteso funzionante fino al tetto
+- 5 trial, stesso protocollo del Test 1.2 (cammino sul posto, 80 s, 20 di transitorio)
+```powershell
+.venv\Scripts\python.exe serie.py --scenario movimento_6m_corridoio --gt-state moving
+```
+- ⚠️ **NON mescolare con la regressione dei 25 trial in stanza**: geometria diversa,
+  setup rimontato. Stessa lezione delle serie `_H` (scarto di ~4 cm dal rimontaggio).
+  Serie separata, dichiarata
+
+### 8.2 — PIR a sensibilita' massima
+🚨 **Il movimento deve essere di ATTRAVERSAMENTO, non sul posto.** Con il cammino sul
+posto abbiamo gia' misurato **0 % a 2 m**: rifarlo a sensibilita' massima misurerebbe di
+nuovo zero e non direbbe nulla. I 3-7 m del datasheet sono dichiarati per un bersaglio
+che **attraversa** il campo — vedi Test 1.5 e `analisi/ANALISI_PIR.md` §2.1
+- Distanze: 2, 4, 6, 8 m finche' il corridoio lo consente, 3 trial ciascuna
+- ⚠️ **Serie dichiaratamente separata**: sensibilita' al massimo rompe la comparabilita'
+  con tutta la campagna, fatta a meta' corsa. Nome scenario con suffisso `_smax`
+- 🚨 **A fine fase rimettere il trimmer a meta' e annotarlo nel registro.** Se resta
+  spostato, qualunque acquisizione futura non e' confrontabile con le fasi 1-3
+- 📌 Il Test 1.5 resta **a sensibilita' di campagna**: serve a confrontarsi con il Test
+  1.2, quindi non va accorpato a questa serie ne' fatto a sensibilita' massima
+
+### 8.3 — LD2420 fino a 8 m
+🚨 **BLOCCATO** finche' non e' tarata l'unita' del campo `Range` (Test 0.5-bis di
+`PIANO_TEST_LD2420.md`): i valori osservati sono 7-37 muovendosi in stanza, incompatibili
+con i centimetri di ESPHome. Senza taratura una prova a 8 m produce numeri non
+interpretabili.
+- ⚠️ **Mai LD2410B e LD2420 accesi insieme**: entrambi a 24 GHz, interferiscono. Un radar
+  alla volta, gli stessi scenari ripetuti (il PIR e' passivo e puo' restare collegato)
+
+### 8.4 — Cosa NON va rifatto in corridoio
+I risultati portanti della tesi (persona immobile, sotto il banco, curva dose-risposta
+del PIR) sono stati acquisiti in stanza e **restano validi**: spostare il setup dopo non
+disfa una misura gia' presa. La stanza va dichiarata come perimetro sperimentale di
+quelle serie, il corridoio come perimetro di questa fase.
+
+---
+
 ## Riepilogo tempi stimati
 
 | Fase | Test | Tempo effettivo di misura |
@@ -659,6 +727,10 @@ Da sviluppare in parallelo alle fasi 1-6 (indipendente):
 | 5 | Respiro | ~1 h |
 | 6 | Vitalità | ~1.5 h |
 | 7 | Web UI | 2-4 giorni di sviluppo |
+| 8 | **Portata massima (corridoio)** | **~2.5 h** (0.3 baseline + 0.5 LD2410B + 1 PIR + 0.7 LD2420) |
 
-Ordine consigliato: 0 → 1 → 2 → 3 → 5 → 6 → 4 → 7 (la fase 4 può slittare senza
+⚠️ **La Fase 8 va per ultima fra le acquisizioni** (dopo la 4, prima o in parallelo alla
+7): smontare il setup della stanza rende non riproducibili tutte le serie precedenti.
+
+Ordine consigliato: 0 → 1 → 2 → 3 → 5 → 6 → 4 → 8 → 7 (la fase 4 può slittare senza
 bloccare nulla; la 7 si sviluppa nei tempi morti tra le acquisizioni).

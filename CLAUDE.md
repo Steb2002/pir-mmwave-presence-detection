@@ -1251,7 +1251,25 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - [x] Scaletta della tesi (`SCALETTA_TESI.md` — da trasporre in Overleaf)
 - [x] Agenda incontro professore (`INCONTRO_PROFESSORE.md`)
 - [x] Analisi teorica PIR (`analisi/ANALISI_PIR.md` — sezione 6 da completare col modello reale)
-- [ ] Incontro col professore: validazione protocollo + domande (lamiera, scadenza, UPRISE/SAFE, UWB)
+- [x] **INCONTRO COL PROFESSORE FATTO (29/08/2026) — tre decisioni**:
+      1. **Test di portata massima su tutti e tre i sensori**, da fare **per ultimi**
+         perche' richiedono di spostare PC e sensori in corridoio: LD2410B oltre i 5 m,
+         PIR con **sensibilita' al massimo** per ottenere il range dichiarato, LD2420
+         fino agli 8 m di documentazione. Piano in `PIANO_TEST.md`, **Fase 8**
+      2. **Il sito si fa self-hosted sull'ESP32** (opzione A di `ANALISI_WEB_UI.md`,
+         confermata). Motivazione del professore: e' un'ottima casistica di **scenario
+         senza connessione**, che e' esattamente lo scenario UPRISE. `ANALISI_SITO_SERVER.md`
+         (piano B) resta come **alternativa valutata e scartata**, con la motivazione —
+         e' materiale buono per la tesi, non lavoro sprecato
+      3. **L'indice di vitalita' va calcolato a bordo**, dentro il sito, accanto ai
+         grafici. Il porting su ESP32 passa quindi da opzionale a **richiesto**
+         (per fortuna la v2 e' tutta EWMA, niente FFT: e' portabile a costo quasi zero)
+- 📌 **Come il professore vuole che si parli dell'indice di vitalita'**: NON dire "misura
+      il movimento toracico", ma presentarlo come **indice generico** con **3 classi**
+      (erano 4 nella specifica). Vedi `analisi/ANALISI_VITALITA.md` §4 per i nomi
+      proposti e per la ragione **metodologica** per cui questa scelta e' anche la piu'
+      difendibile: senza ground truth non possiamo validare una frequenza respiratoria,
+      quindi definire l'indice per quello che **calcola** evita di sovradichiarare
 - [x] **Setup backup dati COMPLETATO (26/08/2026)** — repo GitHub
       `Steb2002/Tesi-Presence-Sensing`, allineato al remoto. Verificato per conteggio:
       **116 CSV sperimentali su disco, 116 tracciati, 116 presenti in `origin/main`**,

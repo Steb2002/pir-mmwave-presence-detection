@@ -158,22 +158,78 @@ vitality    = clamp(mov_ewma + k · resp_ewma, 0, 100)
 
 ## 4. Classificazione
 
-| vitality | classe | significato operativo (triage) |
-|---|---|---|
-| 0-9 | `nessun_segno` | nessuna presenza o nessuna variazione rilevabile |
-| 10-39 | `vitalita_bassa` | vivo: respiro/micro-movimenti, non si muove |
-| 40-69 | `moderato` | movimenti limitati ma attivi |
-| 70-100 | `attivo` | movimento pieno, persona reattiva |
+📌 **Decisione dell'incontro col professore (29/08/2026): TRE classi, non quattro.**
+La presenza/assenza non è una classe di vitalità, è il **gate** che sta a monte:
+se `radar_presence == 0` non c'è nessuno da classificare. Le classi descrivono
+*quanto si muove chi c'è*.
+
+| vitality | classe | cosa significa | priorità per i soccorritori |
+|---|---|---|---|
+| — | (nessuna presenza) | il sensore non rileva nessuno | — |
+| 0-33 | `vitalita_bassa` | presenza confermata, movimento minimo | 🔴 **la più alta** |
+| 34-66 | `vitalita_moderata` | micro-movimenti, persona che si aggiusta | 🟠 media |
+| 67-100 | `vitalita_alta` | movimento ampio, persona reattiva | 🟡 la più bassa |
+
+🔑 **L'ordine di priorità è INVERSO rispetto all'indice, ed è il punto più
+interessante da scrivere in tesi.** Un segnale debole ma presente significa
+"c'è qualcuno che non si muove", cioè **possibilmente incosciente**: è il caso
+che va raggiunto per primo. Un segnale forte significa "c'è qualcuno che si
+muove attivamente", quindi probabilmente cosciente e in grado di aspettare.
+L'indice misura la vitalità; la priorità è il suo complemento.
+
+### 4.1 Come va PRESENTATO l'indice — richiesta esplicita del professore
+
+Non descriverlo come *"misura del movimento toracico"* o *"rilevamento del
+respiro"*, ma come **indice generico di vitalità** calcolato dall'energia radar.
+
+⚠️ **Questa non è solo una preferenza di forma: è anche la scelta più difendibile.**
+Senza ground truth non possiamo validare una frequenza respiratoria — è
+esattamente il motivo per cui il pilota del 18/08/2026 non è citabile — quindi
+dichiarare "misuriamo il respiro" sarebbe una **sovradichiarazione**. Definire
+l'indice per quello che effettivamente *calcola* (una funzione delle energie
+per-gate del canale moving) è al tempo stesso più generico e più rigoroso.
+
+Formulazione consigliata: definire l'indice in modo operativo, e dedicare **una
+sola frase** a cosa lo produce fisicamente — i micro-movimenti involontari del
+corpo, fra cui quelli respiratori — senza costruirci sopra alcuna misura.
+
+⚠️ **Sui nomi delle classi**: evitare formule come *"poco vivo"*. In un contesto
+di triage descrivere una persona come poco viva è impreciso (la classe descrive
+il **segnale**, non la persona) e sgradevole per chi legge la mappa. I nomi
+proposti sopra qualificano l'indice, non l'individuo. Alternative accettabili se
+si vuole staccarsi ancora di più dal lessico clinico: `attività: debole /
+moderata / marcata`.
 
 ⚠️ Soglie **iniziali e arbitrarie**: la taratura vera si fa sui dati (sotto).
 Nella tesi va detto chiaramente: le classi sono un supporto informativo al triage,
-NON una diagnosi medica — "nessun_segno" significa "il sensore non rileva variazioni",
-non "deceduto" (la persona può essere fuori portata, schermata, svenuta ma viva).
+NON una diagnosi medica — assenza di segnale significa "il sensore non rileva
+variazioni", non "deceduto" (la persona può essere fuori portata, schermata,
+svenuta ma viva).
+
+✔ **Effetto collaterale utile**: passando da 4 a 3 classi si elimina un confine,
+il che **allevia** (non risolve) il problema di trasferibilità fra geometrie del
+§ più avanti — `sotto_banco_immobile_H` dà 65,6 contro i 77,3 dei micro-movimenti
+a 1 m, e con soglie a 33/66 le due cadono comunque in classi diverse.
 
 ## 5. Sviluppo e taratura — Python prima, C++ poi
 
 Regola: **l'algoritmo si sviluppa su PC, sui CSV, dove si può iterare in secondi.**
 Il porting su ESP32 (`vitality.h`) avviene solo a soglie validate.
+
+📌 **Il porting è ora RICHIESTO, non opzionale** (incontro del 29/08/2026): il
+professore vuole che l'indice sia calcolato **a bordo**, dentro il sito
+self-hosted, accanto ai grafici di presenza. Vedi `analisi/ANALISI_WEB_UI.md`.
+
+✔ **Buona notizia: costa quasi nulla.** La v2 dell'algoritmo è interamente basata
+su **EWMA** (medie mobili esponenziali) e su differenze fra campioni consecutivi:
+nessuna FFT, nessun buffer lungo, nessuna libreria. Sono poche moltiplicazioni per
+campione a 5 Hz, con uno stato di manciate di byte. Ci sta comodamente accanto al
+web server asincrono senza toccare il budget di RAM.
+⚠️ È la ragione per cui l'indice **non** deve diventare una misura di frequenza
+respiratoria: quella richiederebbe una FFT su finestra lunga (300 campioni per
+60 s a 5 Hz), fattibile ma tutt'altro impegno, e comunque non validabile senza
+ground truth. La FFT resta uno strumento di **analisi offline** in
+`analizza_respiro.py`, non entra nel firmware.
 
 ### 5.1 I dati ci sono già (verificato 26/08/2026)
 
