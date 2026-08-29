@@ -59,9 +59,16 @@ void printInfo() {
   Serial.print("Risoluzione gate:  ");
   Serial.print(sensor.getResolution());
   Serial.println(" cm");
-  Serial.print("Range massimo:     ");
-  Serial.print(sensor.getRange_cm());
+  // Portata = gate massimo x risoluzione (manuale V1.04 §5.2, verificato il
+  // 23/08/2026 col monitor di test04_set_gate: gate 2 -> 150 cm, gate 1 -> 75 cm).
+  // ⚠️ getRange_cm() di MyLD2410 fa (gate+1) x risoluzione e sovrastima di un gate:
+  // con gate 8 riporta 675 cm invece di 600. Nel registro va il primo valore.
+  Serial.print("Portata (gate x ris.): ");
+  Serial.print((int)sensor.getMovingThresholds().N * (int)sensor.getResolution());
   Serial.println(" cm");
+  Serial.print("  MyLD2410 getRange_cm(): ");
+  Serial.print(sensor.getRange_cm());
+  Serial.println(" cm  <- sovrastima di un gate, non usarlo");
 
   // Soglie per-gate in tabella: vanno confrontate riga per riga col rumore di fondo
   // misurato a stanza vuota (analisi/verifica_engineering.py). Regola del protocollo

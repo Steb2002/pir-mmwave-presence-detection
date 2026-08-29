@@ -83,9 +83,17 @@ bool stampaParametri(const char *intestazione) {
   Serial.print("Risoluzione gate:         ");
   Serial.print(res);
   Serial.println(" cm");
-  Serial.print("Range massimo dichiarato: ");
-  Serial.print(sensor.getRange_cm());
+  // Portata: si calcola come gate_massimo x risoluzione. E' la regola del manuale
+  // V1.04 §5.2 ("if the farthest door is set to 2, only ... within 1.5m"), verificata
+  // sul nostro esemplare il 23/08/2026 col monitor 'm'.
+  // ⚠️ getRange_cm() di MyLD2410 calcola (gate+1) x risoluzione e sovrastima di un
+  // gate: con gate 8 riporta 675 cm invece di 600. Stampato qui solo per confronto.
+  Serial.print("Portata (gate x ris.):    ");
+  Serial.print((int)mThr.N * (int)res);
   Serial.println(" cm");
+  Serial.print("  MyLD2410 getRange_cm(): ");
+  Serial.print(sensor.getRange_cm());
+  Serial.println(" cm  <- sovrastima di un gate, non usarlo");
   Serial.print("Timeout presenza:         ");
   Serial.print(sensor.getNoOneWindow());
   Serial.println(" s");
@@ -232,7 +240,8 @@ void menu() {
   Serial.println("\n--------------------------------------------------------------");
   Serial.println(" p           rileggi e stampa i parametri correnti");
   Serial.println(" g <m> <s>   imposta gate massimo movimento / stazionario (0-8)");
-  Serial.println("             es. 'g 2 2' = portata ~2.25 m (Test 2.4)");
+  Serial.println("             portata = gate x 75 cm (manuale V1.04 5.2, misurato");
+  Serial.println("             il 23/08/2026): 'g 2 2' = 150 cm, 'g 8 8' = 600 cm");
   Serial.println(" w <sec>     imposta il timeout presenza (no-one window)");
   Serial.println(" m           monitor presenza/distanza in tempo reale");
   Serial.println(" d           RIPRISTINA la configurazione di fabbrica (da fare a");
