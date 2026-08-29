@@ -149,7 +149,23 @@ di emergenza, ed è il punto di partenza di questa tesi.
 \subsection{Principio: FMCW e gate di distanza}
 
 I moduli in esame sono radar \emph{FMCW} (\emph{Frequency Modulated Continuous
-Wave}) operanti nella banda ISM a 24~GHz. Il principio è il seguente: il
+Wave}) operanti nella banda ISM 24--24,25~GHz, come dichiarato dai rispettivi
+manuali ufficiali: il \S7 del manuale del LD2410B riporta
+\emph{operating frequency 24GHz\,\textasciitilde\,24.25GHz}~\cite{hilinkManualV104}
+e la Tabella~2-1 del manuale del LD2420 indica la stessa banda con una banda di
+sweep massima di 0,25~GHz~\cite{hilinkDriveLD2420}. Si tratta di
+un'allocazione SRD/ISM: un modulo che dichiari conformità FCC e CE deve
+necessariamente restare in quei 250~MHz, il che rende il dato verificabile
+indipendentemente dalla scheda tecnica del produttore.\footnote{Una precisazione
+terminologica: l'espressione \emph{mmWave}, di uso corrente in letteratura e
+nella documentazione commerciale, è in senso stretto impropria a questa
+frequenza. La banda delle onde millimetriche (EHF) va da 30 a 300~GHz, cioè
+lunghezze d'onda fra 10 e 1~mm; a 24,125~GHz la lunghezza d'onda è
+$\lambda = c/f \approx 12{,}4$~mm, dunque ancora in banda SHF. In questo lavoro
+si mantiene la dizione \emph{mmWave} perché è quella adottata dai produttori e
+dalla letteratura citata.}
+
+Il principio è il seguente: il
 trasmettitore emette un segnale continuo la cui frequenza cresce linearmente nel
 tempo (\emph{chirp}); l'eco riflessa dal bersaglio torna con un ritardo
 proporzionale alla distanza, e poiché la frequenza istantanea è cambiata nel

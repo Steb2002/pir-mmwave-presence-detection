@@ -7,3 +7,14 @@ __pycache__/
 # File temporanei
 *.tmp
 ~$*
+
+# Materiali generati da analisi/rigenera_tutto.py.
+# Sono ricostruibili in ~13 s dai CSV grezzi, e pesano ~8 MB a ogni rigenerazione:
+# versionarli gonfierebbe la storia del repo senza aggiungere nulla che i tre
+# script non sappiano rifare. I CSV di acquisizione restano tracciati: quelli
+# sono l'unico dato che non si puo' ricostruire.
+tesi-unicam/figures/fig*.pdf
+tesi-unicam/figures/fig*.png
+analisi/dati_tesi.xlsx
+RIEPILOGO_INCONTRO.html
+RIEPILOGO_INCONTRO.pdf
