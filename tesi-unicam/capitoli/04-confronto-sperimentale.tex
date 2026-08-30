@@ -1559,19 +1559,104 @@ scenario, perché è lì che ha valore applicativo.
 \subsection{La prova definitiva: respiro a ritmo imposto}
 \label{sec:respiro-metronomo}
 
-\emph{Acquisizione in corso.}
+Le stime riportate finora poggiano sulla concordanza fra canali indipendenti, che è
+un indizio di consistenza ma non una verifica: nulla esclude che venti canali dello
+stesso modulo concordino su un artefatto comune. La verifica richiede una ground
+truth, e il modo più semplice di ottenerla è \textbf{imporre il ritmo}.
 
-La misura valida per la tesi richiede una ground truth, e il modo più semplice di
-ottenerla è imporre il ritmo: il soggetto respira seguendo un metronomo a
-frequenza nota (per esempio 10, 15 e 20 atti al minuto), a distanza $\geq 1{,}5$~m,
-per cinque trial per ritmo. Il confronto fra stima e ritmo imposto è la vera prova,
-e permette di riportare un errore assoluto in atti al minuto invece di una
-concordanza fra canali.
+\paragraph{Procedura.} Soggetto seduto a 2~m, rivolto verso il sensore in modo che
+l'escursione toracica avvenga lungo la linea di vista, immobile a parte il respiro.
+Il ritmo è scandito da un metronomo impostato al doppio della frequenza
+respiratoria, inspirando su un battito ed espirando sul successivo: tre ritmi (10,
+15 e 20 atti al minuto), cinque trial ciascuno, 162~s utili per trial. La distanza
+di 2~m non è arbitraria: a 1~m i canali in movimento saturano
+(\cref{sec:saturazione}) e il segnale respiratorio sparisce nel fondoscala. Un
+\textbf{controllo negativo} di tre trial a stanza vuota completa la serie.
 
-È inoltre necessario un \textbf{controllo negativo}: la stessa analisi applicata a
-una registrazione di stanza vuota deve \emph{non} produrre un picco in banda
-respiratoria. Senza questo controllo, un picco nello spettro non dimostra nulla, e
-la banda 0,1--0,5~Hz è abbastanza larga da ospitare artefatti.
+\begin{table}[htbp]
+\centering
+\caption{Validazione della stima respiratoria contro ritmo imposto. ``Trial
+concordi'' conta quelli in cui l'analisi ha restituito la fondamentale; nei
+rimanenti ha restituito esattamente il doppio (si veda il testo).}
+\label{tab:respiro-metronomo}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Ritmo imposto & Trial concordi & Stima & Errore \\
+\midrule
+10 atti/min & 4/5 & $10{,}00 \pm 0{,}00$ & $0{,}00$ \\
+15 atti/min & 4/5 & $14{,}95 \pm 0{,}30$ & $-0{,}05$ \\
+20 atti/min & 5/5 & $19{,}64 \pm 0{,}09$ & $-0{,}36$ \\
+\midrule
+Stanza vuota & --- & \multicolumn{2}{c}{\textbf{nessuna stima in 3 trial su 3}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Risultato.} Dove l'analisi identifica la fondamentale, la stima è
+accurata: l'errore assoluto medio sui tredici trial concordi è di \textbf{0,22 atti
+al minuto}, con un massimo di 0,4. È un'accuratezza ampiamente sufficiente allo scopo
+applicativo, dove interessa distinguere un respiro presente da uno assente e non
+misurare una frequenza a fini clinici. Il controllo negativo non produce alcuna stima
+in nessuno dei tre trial: i picchi osservati con soggetto presente non sono
+artefatti di banda.
+
+\paragraph{L'ambiguità di ottava, e perché non è un errore di misura.} Nei due trial
+non concordi l'analisi non ha restituito un valore casuale: ha restituito
+\emph{esattamente il doppio} del ritmo imposto. Non esiste alcun trial con una stima
+intermedia. La stima di frequenza è quindi precisa; ciò che resta ambiguo è la scelta
+dell'ottava.
+
+La ragione è fisica prima che algoritmica. L'energia per-gate risponde all'entità
+dello spostamento del bersaglio, non al suo verso: un ciclo respiratorio completo
+--- inspirazione più espirazione --- produce \emph{due} escursioni di energia, e
+quindi una componente spettrale a $2f$ che può superare la fondamentale. La scelta
+fra $f$ e $2f$ non è ricavabile dallo spettro di un singolo canale, e va risolta con
+un criterio esterno.
+
+\paragraph{Il criterio di selezione, e la sua revisione.} La procedura di analisi
+raggruppa i canali che concordano entro il 10\,\% e sceglie un gruppo. La versione
+usata fino a questa prova adottava due regole che il confronto con la ground truth ha
+mostrato essere sbagliate, ed entrambe sono state riviste:
+
+\begin{enumerate}[leftmargin=1.8em,itemsep=3pt]
+  \item \textbf{I gruppi misti non vanno scartati.} La regola precedente accettava
+    solo gruppi composti \emph{esclusivamente} da canali in movimento, per evitare
+    l'artefatto stazionario a 6--7 atti/min. L'effetto era però di buttare via le
+    stime migliori: a 20 atti/min imposti, sette canali in movimento e sette
+    stazionari concordavano su 19,6 e il gruppo veniva scartato in blocco. La
+    concordanza fra i due tipi di canale è corroborazione, non contaminazione, perché
+    l'artefatto noto cade a una frequenza diversa. La regola attuale richiede almeno
+    $N$ canali in movimento nel gruppo, senza vincoli sugli altri.
+  \item \textbf{Fra due gruppi in rapporto armonico vince il più basso.} La regola
+    precedente sceglieva il gruppo più numeroso: a 15 atti/min imposti, in tre trial
+    su cinque il gruppo a 29,6 era più numeroso di quello a 14,8 e vinceva. La regola
+    attuale scarta un gruppo la cui frequenza sia circa il doppio o il triplo di
+    quella di un altro candidato plausibile.
+\end{enumerate}
+
+A queste si aggiunge un criterio di \textbf{plausibilità fisiologica}: un gruppo
+sotto gli 8 atti al minuto non è accettato come stima. È un'assunzione dichiarata
+--- soggetto adulto sveglio --- e non una proprietà del sensore; va tenuta presente
+come limite, perché renderebbe il metodo cieco a una respirazione molto lenta.
+Applicata in modo uniforme, è anche ciò che rende pulito il controllo negativo: senza
+di essa, uno dei tre trial a stanza vuota restituiva una stima spuria a 7,0 atti al
+minuto, cioè proprio alla frequenza dell'artefatto stazionario già documentato.
+
+\paragraph{Effetto sulle stime precedenti.} La revisione è stata verificata sui dati
+già acquisiti. Il valore riportato in \cref{sec:sotto-banco} passa da
+$21{,}0 \pm 2{,}5$ a $21{,}3 \pm 2{,}3$ atti al minuto: la conclusione di quella
+sezione non cambia. Le nuove regole non riscrivono quindi i risultati precedenti,
+ma li poggiano per la prima volta su un criterio validato.
+
+\paragraph{Due limiti dichiarati.} Il metronomo impone la frequenza ma tende anche ad
+approfondire il respiro: il rapporto segnale-rumore di questi trial è verosimilmente
+migliore di quello di una respirazione spontanea, e la validazione riguarda
+l'accuratezza della \emph{frequenza}, non l'ampiezza del segnale in condizioni
+realistiche. Inoltre la soglia sul numero di canali concordi è un parametro di
+comodo: con la soglia a tre canali i trial concordi sono undici su quindici anziché
+tredici, e le stime dei trial già concordi restano identiche. Cambia la copertura,
+non l'accuratezza.
 
 \section{Confronto fra i due moduli radar}
 \label{sec:ld2420-risultati}

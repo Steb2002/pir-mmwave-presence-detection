@@ -629,7 +629,18 @@ Tre punti del piano dedicato che conviene conoscere anche da qui:
 
 ---
 
-## FASE 5 — Respiro (test avanzato, obiettivi 2-3)
+## FASE 5 — Respiro (test avanzato, obiettivi 2-3) — ✅ FATTA 31/08/2026
+
+> **ESITO**: 10 -> 10,00 ± 0,00 · 15 -> 14,95 ± 0,30 · 20 -> 19,64 ± 0,09 atti/min,
+> errore assoluto medio **0,22**; controllo negativo **senza stime in 3 trial su 3**.
+> Dettagli e revisione del criterio di analisi in CLAUDE.md; sezione del cap. 4 scritta.
+
+🚨 **Correzioni al protocollo qui sotto**, se la fase va ripetuta:
+1. **2 m, non 1 m**: a 1 m i canali moving saturano e il respiro sparisce nel fondoscala
+2. **Rivolto verso il sensore**, cosi' l'escursione toracica e' lungo la linea di vista
+3. **Metronomo al doppio del ritmo**: inspira su un battito, espira sul seguente
+4. In analisi serve **`--salta-inizio`** pari al transitorio: i secondi del posizionamento
+   dominano la FFT e coprono il respiro
 
 Prerequisito: engineering mode funzionante (Test 0.2), campionamento a 5 Hz.
 

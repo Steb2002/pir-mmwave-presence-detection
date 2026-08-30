@@ -126,6 +126,18 @@ def solo_moving(g):
     return all(n.startswith("menergy") or n == "moving_energy" for _, n, _ in g)
 
 
+def f_ok(g, atti_min):
+    """Il gruppo cade in banda fisiologicamente plausibile? Applicata in modo uniforme
+    a tutti i gruppi, cosi' il criterio dichiarato in tesi vale sia sui trial con
+    soggetto sia sul controllo negativo."""
+    return float(np.median([e[2]["f_picco"] for e in g])) * 60 >= atti_min
+
+
+def n_moving(g):
+    """Quanti canali MOVING ci sono nel gruppo (indipendentemente dagli altri)."""
+    return sum(1 for _, n, _ in g if n.startswith("menergy") or n == "moving_energy")
+
+
 def scansiona(path, snr_min, toll, salta=0.0):
     """Analizza un file. Ritorna (esiti, gruppi) oppure (None, None)."""
     righe, campi = apri(path, salta)
@@ -145,15 +157,48 @@ def scansiona(path, snr_min, toll, salta=0.0):
     return esiti, gruppi_concordi(esiti, toll)
 
 
-def stima_moving(gruppi, minimo=3):
-    """La stima dai soli canali moving: il gruppo moving piu' numeroso con >= minimo
-    canali. E' il criterio giustificato dai dati — i canali stazionari producono in
-    ogni sessione un artefatto compatto a ~6-7 atti/min."""
-    candidati = [g for g in gruppi if solo_moving(g) and len(g) >= minimo]
+# Soglia di plausibilita' fisiologica: sotto questo valore un gruppo non e' accettato
+# come fondamentale. Serve a impedire che l'artefatto stazionario a ~6-7 atti/min faccia
+# scartare la stima vera trattandola come propria armonica. E' un'assunzione dichiarata
+# (adulto sveglio), non una proprieta' del sensore.
+ATTI_MIN_PLAUSIBILI = 8.0
+
+
+def stima_moving(gruppi, minimo=3, toll_arm=0.10, atti_min=ATTI_MIN_PLAUSIBILI):
+    """Stima del ritmo respiratorio dai gruppi di canali concordi.
+
+    Due regole, entrambe ricavate dai dati del test a metronomo del 31/08/2026:
+
+    1. Un gruppo e' candidato se contiene almeno `minimo` canali MOVING, anche se ne
+       contiene altri stazionari. La versione precedente pretendeva un gruppo composto
+       *esclusivamente* da canali moving, e questo scartava le stime migliori: a 20
+       atti/min imposti, sette canali moving e sette stazionari concordavano su 19,6 e
+       il gruppo veniva buttato via. La concordanza fra i due tipi di canale e'
+       corroborazione, non contaminazione — l'artefatto stazionario noto sta a 6-7
+       atti/min, cioe' a una frequenza diversa.
+    2. Fra i candidati si scartano le **armoniche**: un gruppo la cui frequenza e'
+       circa 2x o 3x quella di un altro candidato plausibile non e' la fondamentale.
+       Senza questa regola vinceva il gruppo piu' numeroso, e a 15 atti/min imposti in
+       3 trial su 5 vinceva l'armonica a 29,6.
+
+    A parita' di canali moving decide l'SNR complessivo.
+    """
+    candidati = [(g, float(np.median([e[2]["f_picco"] for e in g])))
+                 for g in gruppi if n_moving(g) >= minimo and f_ok(g, atti_min)]
     if not candidati:
         return None
-    g = candidati[0]
-    return float(np.median([e[2]["f_picco"] for e in g])), len(g)
+
+    plausibili = [f for _, f in candidati]
+    tenuti = [(g, f) for g, f in candidati
+              if not any(abs(f - k * f0) / f <= toll_arm
+                         for f0 in plausibili for k in (2, 3)
+                         if abs(f - f0) / f > toll_arm)]
+    if not tenuti:
+        tenuti = candidati
+
+    tenuti.sort(key=lambda gf: (n_moving(gf[0]), sum(e[0] for e in gf[0])), reverse=True)
+    g, f = tenuti[0]
+    return f, n_moving(g)
 
 
 def main():
@@ -172,6 +217,9 @@ def main():
                     help="SNR minimo perche' un canale sia 'utilizzabile' (default 3.0). "
                          "E' una soglia di comodo, non una proprieta' del sensore: "
                          "dichiarare nella tesi il valore usato")
+    ap.add_argument("--min-canali", type=int, default=3, metavar="N", dest="min_canali",
+                    help="quanti canali MOVING concordi servono perche' un gruppo sia "
+                         "candidato (default 3). Dichiarare il valore usato in tesi")
     ap.add_argument("--salta-inizio", type=float, default=0.0, metavar="SEC",
                     dest="salta_inizio",
                     help="scarta i primi SEC secondi (default 0). Nei test del respiro "
@@ -201,7 +249,7 @@ def main():
             if not esiti:
                 print(f"{Path(path).name:35s} nessun canale utilizzabile")
                 continue
-            m = stima_moving(gruppi)
+            m = stima_moving(gruppi, args.min_canali)
             if m is None:
                 print(f"{Path(path).name:35s}      --        (nessun gruppo moving >=3)"
                       f"   {len(gruppi)}")

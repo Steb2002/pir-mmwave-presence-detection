@@ -1349,7 +1349,49 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       di progetto che il PIR non concede: per funzionare deve affacciarsi direttamente
       sull'ambiente. Il metallo resta l'unico vincolo assoluto, e nel banco reale la
       lamiera sta **dietro** al modulo, non davanti
-- [ ] Engineering mode + rilevamento respiro LD2410B
+- [x] 🎯 **FASE 5 COMPLETATA (31/08/2026) — respiro validato contro ritmo imposto.**
+      E' la **prima misura di respiro con ground truth** della tesi: tutte le stime
+      precedenti poggiavano sulla concordanza fra canali, che e' un indizio, non una
+      verifica. Seduto a **2 m** rivolto al sensore (a 1 m i canali moving saturano),
+      metronomo al doppio del ritmo, 5 trial per ritmo da 162 s utili:
+      | ritmo imposto | trial concordi | stima | errore |
+      | 10 atti/min | 4/5 | **10,00 ± 0,00** | 0,00 |
+      | 15 atti/min | 4/5 | **14,95 ± 0,30** | −0,05 |
+      | 20 atti/min | 5/5 | **19,64 ± 0,09** | −0,36 |
+      | stanza vuota | — | **nessuna stima in 3/3** | — |
+      Errore assoluto medio **0,22 atti/min**, massimo 0,4. Il controllo negativo pulito
+      dimostra che i picchi non sono artefatti di banda
+- 🔑 **AMBIGUITA' DI OTTAVA: nei 2 trial non concordi la stima e' ESATTAMENTE il doppio**,
+      mai un valore intermedio. Quindi la stima di frequenza e' precisa e ambigua e' solo
+      la scelta dell'ottava. **La ragione e' fisica, non algoritmica**: l'energia per-gate
+      risponde all'*entita'* dello spostamento e non al suo verso, quindi un ciclo
+      completo (inspirazione + espirazione) produce **due** escursioni di energia, cioe'
+      una componente a 2f che puo' superare la fondamentale. Non e' risolvibile dallo
+      spettro di un canale singolo: serve un criterio esterno
+- [x] ⚠️ **`analizza_respiro.py`: due regole di selezione riscritte, smentite dalla ground
+      truth** (31/08/2026). Erano entrambe nella versione del 22/08:
+      1. **I gruppi misti non vanno scartati.** La regola "solo canali moving" buttava via
+         le stime migliori: a 20 atti/min sette canali moving e sette stazionari
+         concordavano su 19,6 e il gruppo veniva scartato in blocco. La concordanza fra i
+         due tipi di canale e' **corroborazione, non contaminazione** — l'artefatto
+         stazionario noto sta a 6-7 atti/min, cioe' a un'altra frequenza. Ora serve solo
+         che il gruppo contenga >= N canali moving
+      2. **Fra due gruppi in rapporto armonico vince il piu' basso**, non il piu' numeroso:
+         a 15 atti/min in 3 trial su 5 vinceva l'armonica a 29,6
+      \+ **soglia di plausibilita' a 8 atti/min** applicata in modo uniforme: senza, un
+      trial di stanza vuota dava una stima spuria a 7,0 atti/min. ⚠️ E' un'assunzione
+      dichiarata (adulto sveglio), e rende il metodo **cieco a una respirazione molto
+      lenta**: da citare come limite
+- ✔ **Verificato che la revisione NON cambi i risultati gia' pubblicati**:
+      `sotto_banco_immobile` passa da 21,0 ± 2,5 a **21,3 ± 2,3** atti/min. Le nuove regole
+      non riscrivono nulla, poggiano i numeri precedenti su un criterio validato
+- ⚠️ **Nuove opzioni**: `--salta-inizio SEC` (obbligatoria nei test del respiro: i secondi
+      del posizionamento dominano la FFT) e `--min-canali N` (default 3; con 2 i trial
+      concordi passano da 11 a 13 su 15 e **le stime dei trial gia' concordi non cambiano**
+      — varia la copertura, non l'accuratezza)
+- ⚠️ **Il metronomo approfondisce il respiro**: l'SNR di questi trial e' verosimilmente
+      migliore di quello spontaneo. La validazione riguarda l'accuratezza della
+      **frequenza**, non l'ampiezza del segnale in condizioni realistiche
 
 ### Web UI e dati (obiettivo 5)
 - [x] Progetto architetturale della web UI (`analisi/ANALISI_WEB_UI.md`)
