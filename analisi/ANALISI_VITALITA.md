@@ -114,9 +114,13 @@ gate 1, transitorio scartato):
   ESP32;
 - **due costanti di tempo diverse**: il movimento deve reagire in ~2 s (α=0.1 a 5 Hz),
   la variabilità va integrata su ~10 s (α=0.02) per emergere dal rumore;
-- **`max(target, gate)`**: le due energie a volte divergono per i filtri interni del
-  radar; il massimo rende l'indice conservativo verso i falsi "nessun segno", che è
-  l'errore più grave nel dominio UPRISE.
+- 🚨 **`max(target, gate)`: SUPERATO dalla v3 (§4.5).** La motivazione qui sotto era
+  ragionevole ma i dati l'hanno smentita: `moving_energy` è l'energia **aggregata** del
+  bersaglio, a distanza ravvicinata satura a 100 e vince il massimo qualunque gate si
+  scelga, distruggendo la dinamica dell'indice sotto il banco. La v3 usa la **sola**
+  energia del gate attivo. *Motivazione originale, conservata:* le due energie a volte
+  divergono per i filtri interni del radar; il massimo rende l'indice conservativo verso
+  i falsi "nessun segno", che è l'errore più grave nel dominio UPRISE.
 
 **Correzione del rumore di fondo (obbligatoria).** Prima di entrare nell'indice,
 l'energia del gate va portata al netto del rumore misurato a stanza vuota e riscalata:
