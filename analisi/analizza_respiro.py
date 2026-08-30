@@ -47,9 +47,13 @@ INTESTAZIONE = ([
 CANALI = ["moving_energy", "stationary_energy"] + MGATE + SGATE
 
 
-def apri(path):
+def apri(path, salta=0.0):
     """Legge il CSV del logger. Ricostruisce l'intestazione se manca (capita
-    quando si apre il Serial Monitor a sketch gia' avviato)."""
+    quando si apre il Serial Monitor a sketch gia' avviato).
+
+    Con salta > 0 scarta i primi `salta` secondi. Serve nei test del respiro: i
+    secondi iniziali contengono il soggetto che raggiunge la posizione, e un
+    movimento ampio nella finestra domina la FFT coprendo il respiro."""
     with open(path, newline="", encoding="utf-8", errors="ignore") as f:
         prima = f.readline()
         f.seek(0)
@@ -61,6 +65,13 @@ def apri(path):
             reader = csv.DictReader(f)
             campi = reader.fieldnames or []
         righe = [r for r in reader]
+    if salta > 0 and righe:
+        try:
+            t0 = int(righe[0]["timestamp_ms"])
+            righe = [r for r in righe
+                     if int(r["timestamp_ms"]) - t0 >= salta * 1000]
+        except (KeyError, TypeError, ValueError):
+            pass
     return righe, campi
 
 
@@ -115,9 +126,9 @@ def solo_moving(g):
     return all(n.startswith("menergy") or n == "moving_energy" for _, n, _ in g)
 
 
-def scansiona(path, snr_min, toll):
+def scansiona(path, snr_min, toll, salta=0.0):
     """Analizza un file. Ritorna (esiti, gruppi) oppure (None, None)."""
-    righe, campi = apri(path)
+    righe, campi = apri(path, salta)
     esiti = []
     for c in CANALI:
         if c not in campi:
@@ -161,6 +172,12 @@ def main():
                     help="SNR minimo perche' un canale sia 'utilizzabile' (default 3.0). "
                          "E' una soglia di comodo, non una proprieta' del sensore: "
                          "dichiarare nella tesi il valore usato")
+    ap.add_argument("--salta-inizio", type=float, default=0.0, metavar="SEC",
+                    dest="salta_inizio",
+                    help="scarta i primi SEC secondi (default 0). Nei test del respiro "
+                         "va messo pari al transitorio usato in acquisizione: il "
+                         "soggetto che raggiunge la posizione produce un movimento "
+                         "ampio che domina la FFT e copre il respiro")
     ap.add_argument("--tolleranza", type=float, default=0.10,
                     help="scarto relativo entro cui due canali si dicono concordi "
                          "(default 0.10)")
@@ -179,7 +196,8 @@ def main():
         print("file                                stima moving   canali   gruppi")
         stime = []
         for path in percorsi:
-            esiti, gruppi = scansiona(path, args.snr_min, args.tolleranza)
+            esiti, gruppi = scansiona(path, args.snr_min, args.tolleranza,
+                                       args.salta_inizio)
             if not esiti:
                 print(f"{Path(path).name:35s} nessun canale utilizzabile")
                 continue
@@ -207,7 +225,7 @@ def main():
         return
 
     args.file = percorsi[0]
-    righe, campi = apri(args.file)
+    righe, campi = apri(args.file, args.salta_inizio)
 
     if args.scan:
         print(f"\n--- scansione di tutti i canali ({args.file}) ---")
