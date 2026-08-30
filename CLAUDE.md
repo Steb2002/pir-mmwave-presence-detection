@@ -1292,7 +1292,63 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       lo rivela e' `fp_radar_eventi_h = 0` insieme a `radar_rate_%` alto: nessun fronte di
       salita significa che la presenza era gia' attiva all'inizio della finestra
 - [ ] Test comparativo PIR vs mmWave con numeri
-- [ ] Test penetrazione ostacoli (cartongesso, legno, vetro, plastica)
+- [x] 🎯 **FASE 3 COMPLETATA (30/08/2026) — il radar attraversa tutto tranne il metallo,
+      il PIR e' bloccato da tutto.** Baseline mediata sui 6 trial di inizio e fine
+      (**53,45 ± 3,58**; vedi sotto perche' va mediata), soggetto in movimento sul posto,
+      pannello a 20 cm dal sensore:
+      | materiale | spessore | copertura | attenuazione radar | PIR a 1 m |
+      | nessuno | — | — | — | **79,6 %** |
+      | plastica (tanica cava) | 2x5 mm + aria | ±42° | **-7,5 %** | 0 % |
+      | cartone (scatola) | 2x5 mm + aria | ±54° | **-17,2 %** | 0 % |
+      | vetroresina | **1 mm** | ±70° | **-19,6 %** | 0 % |
+      | vetro | 5 mm | ±61° | **-40,9 %** | ~0 % |
+      | legno | 10 mm | ±54° | **-41,6 %** | ~0 % |
+      | metallo | 1 mm | ±50° | **blocca del tutto** | 0 % |
+      `radar_rate_%` resta **100 %** con tutti i dielettrici. Il caso del **vetro** e' la
+      dimostrazione piu' immediata che i due sensori misurano fenomeni diversi:
+      trasparente alla luce, attraversato dal radar, **completamente opaco al PIR**
+      (il vetro comune non trasmette oltre 4-5 um, l'emissione del corpo e' a ~10 um)
+- ⚠️ **Serve un soggetto IN MOVIMENTO, non fermo** (correzione al piano originale): su
+      bersaglio immobile `senergy` satura a 100 anche a 4 m, quindi l'attenuazione non
+      sarebbe osservabile. E servono **due distanze**: 3 m per il radar (energia a meta'
+      scala) e 1 m per il PIR (a 3 m non rileva il movimento sul posto, quindi partirebbe
+      gia' da zero e la misura sarebbe vuota)
+- 🔑 **Controllo col metallo, da fare per SECONDO** (subito dopo la baseline): con la
+      lastra interposta il radar riporta un bersaglio a **30,0 cm con dispersione 0,00**
+      in tutti i trial — e' il pannello, e della persona a 3 m non resta traccia. Prova
+      che l'aggiramento e' sotto soglia e che la geometria a 20 cm regge. Farlo presto
+      permette di correggere la geometria prima di acquisire tutto il resto
+- ⚠️ **`radar_rate_%` non basta a dire se il radar vede la persona**: col metallo era
+      100 % ma riferito al pannello. **Guardare sempre `mdist_media_cm` prima di
+      `menergy_media`**: ~320 cm = segue la persona (energia valida), ~30 cm con
+      dispersione 0 = segue il pannello (energia priva di significato)
+- 🔑 **La BASELINE e' la misura meno riproducibile della serie**: 6 trial senza ostacolo
+      da 47,8 a 57,3 (quasi 10 punti), mentre 6 trial con la tanica — presi negli stessi
+      due istanti — stanno fra 48,4 e 50,5. Le tendenze interne ai due gruppi sono
+      **opposte**, quindi non e' deriva ma rumore; verosimilmente senza pannello arrivano
+      anche i cammini multipli dell'ambiente. **Va mediata sui trial di inizio e fine**,
+      non presa una volta sola. La ripetizione `ostacolo_plastica_fine` (49,47 contro
+      49,37) ha confermato che l'ambiente era stabile e ha salvato il dato piu' fragile
+- ⚠️ **`menergy` NON e' una potenza**: e' un indice normalizzato 0-100 con elaborazione
+      interna (lo prova il decadimento con la distanza, molto piu' lento di 1/D^4). Le
+      percentuali **non vanno convertite in dB** ne' confrontate con i coefficienti di
+      trasmissione teorici. La graduatoria fra materiali e' valida, i valori assoluti sono
+      in unita' dello strumento
+- ⚠️ **Il pannello deve essere RIGIDO**: una lastra di cartone 105x71x0,4 mm ha dato
+      letture instabili (distanza oscillante di oltre 1 m *dentro* il singolo trial),
+      mentre una lastra di vetroresina ancora piu' ampia e' stata stabilissima. Non e' la
+      dimensione: un foglio sottile e largo flette e diventa **bersaglio in movimento**.
+      File conservati come `ostacolo_cartone_lastra_*`, esclusi dai risultati
+- ⚠️ **I pannelli avevano coperture diverse (±42° … ±70°)**, quindi parte della differenza
+      fra materiali e' geometria: le attenuazioni sono **limiti inferiori**. Il confronto
+      piu' pulito e' legno vs cartone, entrambi a ±54°
+- ⚠️ **Cartongesso non provato** (non disponibile): e' il materiale piu' rilevante per le
+      pareti di un'aula ed e' la lacuna principale della fase, da dichiarare in tesi
+- 📌 **Conseguenza per UPRISE**: il sensore puo' essere **incassato nell'arredo** — dietro
+      legno o dentro un guscio di vetroresina — e continuare a funzionare. E' una liberta'
+      di progetto che il PIR non concede: per funzionare deve affacciarsi direttamente
+      sull'ambiente. Il metallo resta l'unico vincolo assoluto, e nel banco reale la
+      lamiera sta **dietro** al modulo, non davanti
 - [ ] Engineering mode + rilevamento respiro LD2410B
 
 ### Web UI e dati (obiettivo 5)

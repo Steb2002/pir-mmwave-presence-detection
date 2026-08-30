@@ -655,6 +655,7 @@ del sensore ($\sim$1,5~cm): il fattore limitante dell'accuratezza in questo scen
 è il soggetto, non lo strumento.
 
 \subsection{Decadimento dell'energia con la distanza}
+\label{sec:energia-distanza}
 
 L'energia media del bersaglio decade da 99 a 1~m fino a 28 a 5~m
 (\cref{tab:distanza}). Il decadimento è \emph{molto} più lento di quanto
@@ -1359,23 +1360,123 @@ localizzare un bersaglio non frontale.
 \section{Penetrazione degli ostacoli}
 \label{sec:ostacoli}
 
-\section{Penetrazione degli ostacoli}
-\label{sec:ostacoli}
+\paragraph{Due misure, due distanze.} Il confronto richiede che entrambi i sensori
+abbiano margine di misura, e le due condizioni non coincidono. Il canale
+\emph{stazionario} del radar satura a fondoscala su qualunque bersaglio immobile,
+anche a 4~m (\cref{sec:due-persone}): con soggetto fermo l'attenuazione non sarebbe
+osservabile fino a diventare totale. Si è quindi usato un soggetto \textbf{in
+movimento sul posto}, leggendo l'energia del canale in movimento. Questa però a 1~m
+satura a sua volta, mentre il PIR a 3~m non rileva affatto il movimento sul posto
+(\cref{sec:pir-movimento}). Ogni materiale è stato perciò acquisito \textbf{a due
+distanze}: 3~m per il radar, dove l'energia vale circa metà scala, e 1~m per il PIR,
+dove il suo tasso di rilevamento di riferimento è del $79{,}6\,\%$.
 
-\emph{Acquisizione in corso.}
+Il pannello è interposto a \textbf{20~cm dal sensore}, perpendicolare all'asse e
+libero di reggersi da solo --- un pannello sorretto a mano introdurrebbe un secondo
+bersaglio in movimento. Tre trial per materiale a 3~m, due a 1~m, 62~s utili
+ciascuno.
 
-\paragraph{Metodo previsto.} Ripetizione dello scenario ``persona ferma'' con
-l'interposizione di un pannello fra sensore e soggetto, per i materiali disponibili:
-cartongesso, legno, vetro, plastica. Metrica: tasso di falsi negativi e riduzione
-dell'energia del bersaglio rispetto al caso senza ostacolo, a parità di distanza.
+\paragraph{Il controllo con il metallo.} A 20~cm un pannello di mezzo metro copre
+circa $\pm 50$\textdegree, mentre la copertura del radar arriva ad almeno
+$\pm 90$\textdegree\ (\cref{sec:angolare}): parte del segnale può quindi aggirare
+l'ostacolo, e ogni attenuazione misurata è un \emph{limite inferiore}. La lastra
+metallica serve a quantificare questo residuo. Il risultato è netto: con il metallo
+interposto il radar riporta un bersaglio a $30{,}0$~cm con dispersione
+\textbf{esattamente nulla} in tutti i trial --- è il pannello stesso --- e del
+soggetto a 3~m non resta traccia. L'aggiramento è dunque sotto la soglia di
+rilevamento, e la geometria adottata è valida.
 
-\paragraph{Attese da letteratura.} Il radar a 24~GHz attraversa cartongesso, legno,
-vetro e plastica con attenuazione contenuta, mentre è bloccato da metallo e da
-cemento armato di spessore rilevante. Il PIR è invece bloccato da \emph{tutti} i
-materiali elencati, vetro compreso: la finestra ottica 5--14~\textmu m del corpo
-umano non attraversa il vetro comune. Quest'ultimo punto è un risultato atteso ma
-importante per il confronto, perché rende il PIR inutilizzabile per qualunque
-montaggio incassato o protetto.
+Va dichiarato che questa prova non distingue formalmente ``il metallo blocca'' da
+``l'eco del pannello maschera quella del soggetto'', poiché il modulo riporta un
+bersaglio per canale e il più vicino prevale. La fisica non lascia però margine:
+alla frequenza di lavoro la profondità di penetrazione in un conduttore è inferiore
+al micrometro, contro un millimetro di lastra.
+
+\paragraph{Il riferimento va mediato, non preso una volta sola.} La baseline senza
+ostacolo è risultata la misura \emph{meno} riproducibile dell'intera serie: i sei
+trial acquisiti a inizio e fine sessione spaziano da $47{,}8$ a $57{,}3$, quasi dieci
+punti, mentre i sei trial con la tanica di plastica --- acquisiti agli stessi due
+istanti --- stanno tutti fra $48{,}4$ e $50{,}5$. Le tendenze interne ai due gruppi
+di baseline sono inoltre opposte, il che esclude una deriva sistematica. La
+spiegazione plausibile è che senza pannello il modulo riceva anche i cammini multipli
+dell'ambiente, più variabili; il pannello ne intercetta una parte e stabilizza la
+lettura. Il riferimento adottato è perciò la media dei sei trial,
+$\mathbf{53{,}45 \pm 3{,}58}$.
+
+\begin{table*}[htbp]
+\centering
+\caption{Attenuazione dell'energia del bersaglio in movimento a 3~m, riferita alla
+baseline mediata sui sei trial ($53{,}45$). La copertura angolare è quella sottesa
+dal pannello a 20~cm dal sensore e misura quanto del lobo viene effettivamente
+intercettato: i valori sono limiti inferiori dell'attenuazione vera.}
+\label{tab:ostacoli}
+\small
+\begin{tabular}{@{}llccrc@{}}
+\toprule
+Materiale & Dimensioni & Spessore & Copertura & Attenuazione & PIR a 1~m \\
+\midrule
+Nessuno (riferimento) & --- & --- & --- & --- & $79{,}6\,\%$ \\
+Plastica (tanica cava) & $36 \times 39$~cm & $2 \times 5$~mm + aria & $\pm 42$\textdegree & $-7{,}5\,\%$ & $0\,\%$ \\
+Cartone (scatola) & $56 \times 49$~cm & $2 \times 5$~mm + aria & $\pm 54$\textdegree & $-17{,}2\,\%$ & $0\,\%$ \\
+Vetroresina & $111 \times 64$~cm & 1~mm & $\pm 70$\textdegree & $-19{,}6\,\%$ & $0\,\%$ \\
+Vetro & $72 \times 39$~cm & 5~mm & $\pm 61$\textdegree & $-40{,}9\,\%$ & $\sim 0\,\%$ \\
+Legno & $55 \times 37$~cm & 10~mm & $\pm 54$\textdegree & $-41{,}6\,\%$ & $\sim 0\,\%$ \\
+Metallo & $48{,}5 \times 49{,}5$~cm & 1~mm & $\pm 50$\textdegree & \textbf{blocca} & $0\,\%$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\paragraph{Il risultato centrale.} Il radar rileva la presenza nel $100\,\%$ dei
+campioni attraverso \emph{tutti} i materiali dielettrici provati, con attenuazioni
+comprese fra il 7 e il 42\,\% dell'energia del bersaglio; il PIR è azzerato da
+\emph{ognuno} di essi. È il contrasto più immediato dell'intero capitolo, e il caso
+del vetro lo rende evidente: un materiale trasparente alla luce visibile, che il
+radar attraversa perdendo il 41\,\% dell'energia ma continuando a rilevare, e che per
+il PIR è completamente opaco, perché il vetro comune non trasmette oltre i 4--5
+\textmu m mentre l'emissione del corpo umano è centrata sui 10.
+
+\paragraph{Che cosa significano queste percentuali, e che cosa no.} Il valore di
+energia riportato dal modulo è un \textbf{indice normalizzato 0--100 con elaborazione
+interna}, non una misura di potenza: lo mostra il suo decadimento con la distanza,
+molto più lento di quanto previsto dall'equazione del radar
+(\cref{sec:energia-distanza}). Le percentuali della \cref{tab:ostacoli} sono quindi
+variazioni di quell'indice, e \textbf{non vanno convertite in decibel né confrontate
+con coefficienti di trasmissione teorici}. La graduatoria fra materiali è
+significativa; i valori assoluti sono espressi nelle unità dello strumento.
+
+Con questa avvertenza, due osservazioni restano interessanti. Cinque millimetri di
+vetro attenuano quanto dieci di legno, coerentemente con la permittività molto più
+alta del primo, che riflette di più alle interfacce. E \textbf{un solo millimetro di
+vetroresina costa quasi un quinto del segnale}: è il materiale con cui si
+realizzerebbe l'involucro di un dispositivo come il DIPME-DEVICE, e il manuale del
+modulo dedica una sezione proprio ai criteri di progetto dei radome.
+
+\paragraph{Due limiti del metodo.} Il primo è che i pannelli disponibili avevano
+dimensioni diverse, da $\pm 42$ a $\pm 70$\textdegree\ di copertura: parte della
+differenza fra materiali è quindi geometria e non materiale. Il confronto più
+affidabile è fra legno e cartone, che condividono la stessa copertura
+($\pm 54$\textdegree). Il secondo riguarda un materiale escluso dai risultati: una
+lastra di cartone sottile di grandi dimensioni ($105 \times 71$~cm, 0,4~mm) ha
+prodotto letture instabili, con la distanza riportata che oscillava di oltre un metro
+\emph{entro} il singolo trial. Poiché una lastra di vetroresina ancora più ampia si è
+comportata in modo perfettamente stabile, la spiegazione non è la dimensione: è
+verosimile che un foglio sottile e ampio flettesse, diventando esso stesso un
+bersaglio in movimento. Il dato è escluso dalla tabella e riportato qui come
+avvertenza di metodo, perché la rigidità del pannello si è rivelata un requisito
+sperimentale non ovvio.
+
+Il cartongesso, previsto dal protocollo, non era disponibile e non è stato provato:
+è il materiale più rilevante per le pareti di un'aula, e resta la lacuna principale
+di questa serie.
+
+\paragraph{Conseguenza per UPRISE.} Il sensore può essere \textbf{incassato
+nell'arredo}, dietro un pannello di legno o dentro un guscio di vetroresina, e
+continuare a funzionare: nessun materiale strutturale ordinario impedisce il
+rilevamento. È una libertà di progetto che il PIR non concede in alcun modo --- per
+funzionare deve affacciarsi direttamente sull'ambiente, e questo espone il sensore a
+urti, polvere e occlusioni accidentali proprio nella circostanza in cui dovrebbe
+lavorare. Il metallo resta l'unico vincolo assoluto, e nel banco reale la lamiera di
+rinforzo si trova dietro al modulo e non davanti.
 
 \section{Il rilevamento del respiro}
 \label{sec:respiro}

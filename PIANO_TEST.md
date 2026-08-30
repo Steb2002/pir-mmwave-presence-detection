@@ -565,12 +565,33 @@ python acquire.py --port COM3 --duration 120 --output data/due_persone_T01.csv -
 
 ---
 
-## FASE 3 — Penetrazione ostacoli (obiettivo 3)
+## FASE 3 — Penetrazione ostacoli (obiettivo 3) — ✅ FATTA 30/08/2026
 
-Setup: persona ferma seduta a 2 m dal sensore; pannello di materiale interposto
+> **ESITO**: il radar attraversa **tutti** i dielettrici provati (plastica -7,5 %,
+> cartone -17,2 %, vetroresina 1 mm -19,6 %, vetro 5 mm -40,9 %, legno 10 mm -41,6 %)
+> restando al 100 % di rilevamento; il **metallo blocca del tutto**; il **PIR e' azzerato
+> da tutti e sei**, contro il 79,6 % senza ostacolo. Tabella completa e avvertenze in
+> CLAUDE.md; sezione del cap. 4 scritta. Cartongesso non disponibile: lacuna dichiarata.
+
+🚨 **Il protocollo qui sotto e' quello ORIGINALE ed e' SBAGLIATO in due punti.** Se la
+fase va ripetuta (per esempio col LD2420), usare le correzioni seguenti:
+1. **Soggetto in MOVIMENTO sul posto, non fermo.** Su bersaglio immobile `senergy`
+   satura a 100 anche a 4 m: l'attenuazione non sarebbe osservabile
+2. **Due distanze, non una**: **3 m** per il radar (energia a meta' scala) e **1 m** per
+   il PIR (a 3 m non rileva il movimento sul posto, quindi partirebbe gia' da zero)
+
+Altre tre cose imparate sul campo:
+- **il controllo col metallo va fatto per secondo**, subito dopo la baseline: se non
+  bloccasse, la geometria andrebbe corretta prima di acquisire tutto il resto
+- **il pannello deve essere rigido**: un foglio sottile e ampio flette e diventa un
+  bersaglio in movimento (successo con una lastra di cartone 105x71x0,4 mm)
+- **la baseline va mediata su inizio E fine sessione**: e' la misura piu' rumorosa della
+  serie (6 trial da 47,8 a 57,3), e prenderla una volta sola falsa tutte le percentuali
+
+Setup originale: persona ferma seduta a 2 m dal sensore; pannello di materiale interposto
 a ~20 cm davanti al sensore. Prima una baseline senza ostacolo, stesso giorno.
 
-### Test 3.1 — Baseline senza ostacolo
+### Test 3.1 — Baseline senza ostacolo — ✅ FATTO 30/08/2026
 ```powershell
 python acquire.py --port COM3 --duration 180 --output data/ostacolo_nessuno_T01.csv --scenario ostacolo_nessuno --trial T01 --ground_truth_presence 1 --ground_truth_state static
 ```
