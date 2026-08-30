@@ -7,8 +7,8 @@ Questo capitolo risponde all'obiettivo O6, formulato dal relatore come segue:
 valuti quanto una persona si muove: questa persona si muove 50 su 100, quindi è viva
 o moderatamente viva}. È l'obiettivo più avanzato della tesi ed è anche la
 dimostrazione costruttiva che i dati del radar abilitano ciò che con un bit non è
-rappresentabile. Alla data di questa stesura l'algoritmo è specificato e il percorso
-di taratura è definito; la taratura sui dati è in corso.
+rappresentabile. L'algoritmo è specificato, tarato su un sottoinsieme dei trial e
+validato su trial mai usati per la taratura; resta da portare a bordo dell'ESP32.
 \end{quote}
 
 \section{Motivazione: dalla presenza al triage}
@@ -220,6 +220,106 @@ Persona a meno di 1,5~m & canali stazionari per-gate non disponibili &
 \bottomrule
 \end{tabularx}
 \end{table*}
+
+\section{Taratura e validazione}
+\label{sec:vitalita-taratura}
+
+\paragraph{Impostazione.} I parametri --- le due costanti di tempo $\alpha_m$ e
+$\alpha_v$, il peso $k$ e le due soglie fra le classi --- sono stati scelti sui trial
+\texttt{T01--T03} dei tre scenari a 1~m della curva dose-risposta
+(\cref{sec:dose-risposta}), e la prestazione è misurata sui trial \texttt{T04--T05},
+mai usati per la scelta. È una separazione necessaria: usando gli stessi trial per
+tarare e per misurare, qualunque algoritmo appare migliore di quello che è.
+
+Un secondo insieme di validazione, più severo, è dato dagli scenari \emph{sotto il
+banco}: geometria diversa, distanza diversa (60--70~cm contro 1~m) e postura diversa.
+Nessun parametro è stato scelto su quei dati.
+
+\begin{table}[htbp]
+\centering
+\caption{Prestazione dell'indice a tre classi. La recall è media per classe e per
+campione. I parametri tarati sono $\alpha_m = 0{,}05$, $\alpha_v = 0{,}01$,
+$k = 0{,}5$, soglie a 45 e 95.}
+\label{tab:vitalita-validazione}
+\small
+\begin{tabular}{@{}lc@{}}
+\toprule
+Insieme & Recall media \
+\midrule
+Taratura (\texttt{T01--T03}, 1~m) & $95{,}1\,\%$ \
+Validazione (\texttt{T04--T05}, 1~m) & $\mathbf{88{,}0\,\%}$ \
+Validazione su geometria diversa (sotto il banco) & $51{,}2\,\%$ \
+\midrule
+\emph{Discriminazione critica per il triage}, entrambe le geometrie
+  & $\mathbf{96{,}1\,\%}$ \
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Una correzione all'algoritmo, imposta dai dati.} La prima taratura ha
+fallito il trasferimento fra geometrie in modo netto: sotto il banco la recall era
+dell'$8{,}8\,\%$, con un soggetto \emph{immobile} che leggeva 50,2 invece dei 25 circa
+del caso equivalente a 1~m, e uno con piccoli movimenti che leggeva 99,9 con il
+$97\,\%$ dei campioni a fondoscala. La causa non era la scelta dei parametri ma una
+riga della specifica: la componente di livello era definita come
+$\max(\texttt{moving\_energy},\ \texttt{menergy\_gate}[g])$. A distanza ravvicinata
+\texttt{moving\_energy}, che è l'energia aggregata del bersaglio, satura a 100 e
+prevale sul massimo \emph{qualunque gate si scelga} --- verificato provando tutti i
+criteri di selezione del gate, con saturazione fra il 94 e il $97\,\%$ in ogni caso.
+
+Definendo la componente di livello sulla \textbf{sola energia del gate attivo} gli
+scenari a 1~m restano invariati (25,8 / 65,4 / 98,4 contro 25,3 / 66,2 / 98,5) mentre
+quello sotto il banco rientra in scala: il soggetto immobile passa da 50,2 a
+\textbf{22,1}, allineandosi ai 25,8 della condizione equivalente a 1~m, e la
+saturazione scende dal 97 all'$1\,\%$. La recall sulla geometria diversa sale dall'8,8
+al $51{,}2\,\%$.
+
+\paragraph{Che cosa significa il $51{,}2\,\%$.} Il valore è basso, ma è dominato da un
+solo scenario e merita di essere scomposto:
+
+\begin{center}\small
+\begin{tabular}{@{}lccr@{}}
+\toprule
+Scenario & Indice & Classe attesa & Corretti \
+\midrule
+Immobile a 1~m & 28,6 & bassa & $89{,}9\,\%$ \
+Micro-movimenti a 1~m & 71,0 & moderata & $90{,}5\,\%$ \
+Movimento pieno a 1~m & 99,2 & alta & $96{,}3\,\%$ \
+\textbf{Immobile sotto il banco} & \textbf{25,7} & bassa & $\mathbf{97{,}5\,\%}$ \
+Movimenti sotto il banco & 98,8 & moderata & $4{,}8\,\%$ \
+\bottomrule
+\end{tabular}
+\end{center}
+
+Quattro scenari su cinque sono classificati correttamente, e fra questi c'è
+\textbf{quello che conta per il progetto}: la persona immobile sotto il banco, cioè
+il caso della vittima incosciente, è riconosciuta nel $97{,}5\,\%$ dei campioni pur
+essendo in una geometria su cui nulla è stato tarato.
+
+Il caso che fallisce è ``movimenti sotto il banco'', classificato \emph{alta} anziché
+\emph{moderata}. Va però osservato che l'etichetta attesa per quello scenario è stata
+assegnata per analogia con il caso a 1~m e \textbf{non poggia su una ground truth
+indipendente}: a 60~cm una persona che si aggiusta produce un ritorno molto forte, e
+non è dimostrato che ``moderata'' sia l'etichetta giusta. Il dato onesto è che
+l'indice colloca quello scenario in alto, non che sbagli.
+
+\paragraph{La discriminazione che conta davvero.} Per il triage la distinzione critica
+non è fra tre classi ma fra \textbf{presente e immobile} --- possibile incoscienza,
+massima priorità --- e \textbf{presente e in movimento}. Su questa distinzione binaria,
+misurata su tutti e cinque gli scenari e su entrambe le geometrie, la recall media è
+del $\mathbf{96{,}1\,\%}$: $89{,}9$ e $97{,}5\,\%$ sui due scenari immobili, fra
+$93{,}3$ e $100\,\%$ sui tre in movimento. È il numero che descrive l'utilità
+operativa dell'indice.
+
+\paragraph{Limiti dichiarati.} Le soglie restano \textbf{specifiche della geometria di
+installazione}: il trasferimento funziona per la classe bassa ma non garantisce la
+collocazione delle classi intermedie. Per il progetto questo è gestibile, perché ogni
+sensore è montato in posizione fissa sotto il proprio arredo e può essere tarato una
+volta sola in quella posizione; sarebbe invece un problema per un dispositivo
+portatile. La via naturale è una \textbf{auto-taratura all'installazione}, che registri
+il fondo a stanza vuota e un riferimento di movimento, ed è la prima estensione da
+considerare. Resta inoltre che l'insieme di validazione è di due trial per scenario e
+un solo soggetto.
 
 \section{Estensioni possibili}
 

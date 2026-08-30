@@ -47,19 +47,24 @@ BASE = [
 INTESTAZIONE = BASE + MGATE + SGATE + ["light_level", "out_level"]
 
 RISOLUZIONE_GATE_CM = 75          # risoluzione di fabbrica del nostro esemplare
-CLASSI = ["nessun_segno", "vitalita_bassa", "moderato", "attivo"]
+# TRE classi di vitalita' (decisione del professore, incontro del 29/08/2026), piu'
+# lo stato "assente" che NON e' una classe di vitalita': e' il gate di presenza a monte.
+# Se non c'e' nessuno non c'e' vitalita' da classificare, e chiamare "vitalita' bassa"
+# una stanza vuota sarebbe l'errore piu' pericoloso possibile in un contesto di triage.
+CLASSI = ["assente", "vitalita_bassa", "vitalita_moderata", "vitalita_alta"]
+CLASSI_VITALI = CLASSI[1:]
 
 # Classe attesa per gli scenari gia' acquisiti. Serve alla matrice di confusione; gli
 # scenari non elencati vengono comunque riassunti, ma restano fuori dalla matrice.
 ATTESE = {
-    "stanza_vuota": "nessun_segno",
-    "stanza_vuota_notte": "nessun_segno",
+    "stanza_vuota": "assente",
+    "stanza_vuota_notte": "assente",
     "fermo_1m_H": "vitalita_bassa",
     "fermo_seduto": "vitalita_bassa",
     "sotto_banco_immobile_H": "vitalita_bassa",
-    "micromovimenti_1m_H": "moderato",
-    "sotto_banco_movimenti_H": "moderato",
-    "movimento_1m_H": "attivo",
+    "micromovimenti_1m_H": "vitalita_moderata",
+    "sotto_banco_movimenti_H": "vitalita_moderata",
+    "movimento_1m_H": "vitalita_alta",
 }
 
 # Convenzioni di scarto del transitorio gia' usate in tutta la campagna (CLAUDE.md):
@@ -137,7 +142,7 @@ def netta(valore, fondo_gate):
     return max(0.0, (valore - fondo_gate) * 100.0 / (100.0 - fondo_gate))
 
 
-def calcola(righe, alpha_m, alpha_v, k, criterio_gate, fondo=None):
+def calcola(righe, alpha_m, alpha_v, k, criterio_gate, fondo=None, sorgente="gate"):
     """Applica la v2 a tutta la serie. Le EWMA partono dal PRIMO campione del file,
     anche quando poi si scarta il transitorio: cosi' all'inizio della finestra utile
     sono gia' a regime, invece di partire da zero e simulare un finto 'nessun segno'."""
@@ -150,7 +155,15 @@ def calcola(righe, alpha_m, alpha_v, k, criterio_gate, fondo=None):
     for r in righe:
         g = scegli_gate(r, criterio_gate)
         e_gate = netta(r[MGATE[g]], fondo[g] if fondo else None)
-        mov_raw = max(float(r["moving_energy"]), e_gate)
+        # v3 (31/08/2026): si usa la SOLA energia del gate attivo.
+        # La v2 faceva max(moving_energy, e_gate), e questo era la causa del fallimento
+        # di trasferibilita' fra geometrie: `moving_energy` e' l'energia aggregata del
+        # bersaglio e a distanza ravvicinata satura a 100, vincendo il max qualunque
+        # gate si scelga. Sotto il banco l'indice risultava pinnato al fondoscala
+        # (97 % dei campioni) e un soggetto immobile leggeva 50,2 invece di ~25.
+        # Con la sola energia di gate gli scenari a 1 m restano invariati e quello
+        # sotto il banco rientra in scala: 22,1 contro i 25,8 di `fermo_1m_H`.
+        mov_raw = e_gate if sorgente == "gate" else max(float(r["moving_energy"]), e_gate)
 
         if mov_ewma is None:
             mov_ewma = float(mov_raw)
@@ -174,11 +187,16 @@ def calcola(righe, alpha_m, alpha_v, k, criterio_gate, fondo=None):
     return out
 
 
-def classifica(v, soglie):
+def classifica(v, soglie, presente=True):
+    """Due soglie fra le tre classi di vitalita'. L'assenza NON e' decisa da una soglia
+    sull'indice ma dal gate di presenza del radar: e' una condizione qualitativamente
+    diversa, non il gradino piu' basso della stessa scala."""
+    if not presente:
+        return "assente"
     for i, s in enumerate(soglie):
         if v < s:
-            return CLASSI[i]
-    return CLASSI[-1]
+            return CLASSI_VITALI[i]
+    return CLASSI_VITALI[-1]
 
 
 def istogramma(valori, larghezza=40):
@@ -205,8 +223,13 @@ def main():
                     help="EWMA della componente variabilita' (default 0.02 = ~10 s)")
     ap.add_argument("--k", type=float, default=0.5,
                     help="peso della componente variabilita' (default 0.5, DA TARARE)")
-    ap.add_argument("--soglie", default="10,40,70",
-                    help="tre soglie fra le 4 classi (default 10,40,70)")
+    ap.add_argument("--soglie", default="33,66",
+                    help="DUE soglie fra le tre classi di vitalita' (default 33,66). "
+                         "L'assenza non ha soglia: la decide il gate di presenza")
+    ap.add_argument("--sorgente", default="gate", choices=("gate", "max"),
+                    help="da dove viene la componente 1: 'gate' (v3, default) usa la sola "
+                         "energia del gate attivo; 'max' riproduce la v2, che prendeva il "
+                         "massimo fra questa e moving_energy e saturava a corta distanza")
     ap.add_argument("--gate", default="energia",
                     help="criterio per il gate attivo: energia | distanza | un numero 0-8")
     ap.add_argument("--salta-inizio", default="auto",
@@ -232,8 +255,8 @@ def main():
     args = ap.parse_args()
 
     soglie = [float(x) for x in args.soglie.split(",")]
-    if len(soglie) != 3 or soglie != sorted(soglie):
-        sys.exit("--soglie vuole tre valori crescenti, es. 10,40,70")
+    if len(soglie) != 2 or soglie != sorted(soglie):
+        sys.exit("--soglie vuole due valori crescenti, es. 33,66")
 
     criterio = args.gate
     if criterio.isdigit():
@@ -280,7 +303,8 @@ def main():
 
         salta = (transitorio_atteso(scenario) if args.salta_inizio == "auto"
                  else float(args.salta_inizio))
-        serie = calcola(righe, args.alpha_mov, args.alpha_var, args.k, criterio, fondo)
+        serie = calcola(righe, args.alpha_mov, args.alpha_var, args.k, criterio, fondo,
+                        args.sorgente)
         utili = [s for s in serie if s["t_s"] >= salta]
         if len(utili) < 25:
             saltati.append((Path(path).name, f"nulla oltre il transitorio di {salta:.0f} s"))
@@ -288,7 +312,8 @@ def main():
 
         valori = [s[campo] for s in utili]
         valori_ord = sorted(valori)
-        classi = [classifica(v, soglie) for v in valori]
+        classi = [classifica(s_["vitality"], soglie, s_["presenza"] != 0)
+                  for s_ in utili]
         conteggio = {c: classi.count(c) for c in CLASSI}
         modale = max(CLASSI, key=lambda c: conteggio[c])
 
@@ -319,7 +344,7 @@ def main():
                     w.writerow([round(s["t_s"], 2), s["gate"], round(s["mov_ewma"], 2),
                                 round(s["var_ewma"], 2), round(s["vitality"], 2),
                                 round(s["vitality_no_gate"], 2), s["presenza"],
-                                classifica(s[campo], soglie)])
+                                classifica(s[campo], soglie, s["presenza"] != 0)])
             print(f"\nSerie temporale di {Path(path).name} salvata in {args.serie_out}")
 
     if not risultati:

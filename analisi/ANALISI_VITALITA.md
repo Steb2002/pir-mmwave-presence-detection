@@ -211,6 +211,83 @@ il che **allevia** (non risolve) il problema di trasferibilità fra geometrie de
 § più avanti — `sotto_banco_immobile_H` dà 65,6 contro i 77,3 dei micro-movimenti
 a 1 m, e con soglie a 33/66 le due cadono comunque in classi diverse.
 
+## 4.5 v3 dell'algoritmo — la componente 1 usa la SOLA energia di gate (31/08/2026)
+
+🔑 **Una riga della v2 era la causa del fallimento di trasferibilità fra geometrie.**
+La componente di livello era definita come:
+
+```
+mov_raw = max(moving_energy, menergy_gate[g])      # v2
+mov_raw = menergy_gate[g]                          # v3
+```
+
+`moving_energy` è l'energia **aggregata** del bersaglio, non quella del gate. A distanza
+ravvicinata satura a 100 e **vince il `max` qualunque gate si scelga** — verificato
+provando tutti i criteri di selezione del gate (`energia`, `distanza`, gate 2 fisso,
+gate 3 fisso): saturazione fra il 94 e il 97 % in ogni caso.
+
+| scenario | v2 | **v3** | saturazione v2 → v3 |
+|---|---|---|---|
+| `fermo_1m_H` | 25,3 | 25,8 | 0 % → 0 % |
+| `micromovimenti_1m_H` | 66,2 | 65,4 | 0 % → 0 % |
+| `movimento_1m_H` | 98,5 | 98,4 | 66 % → 37 % |
+| **`sotto_banco_immobile_H`** | **50,2** | **22,1** | 0 % → 0 % |
+| **`sotto_banco_movimenti_H`** | 99,9 | **97,0** | **97 % → 1 %** |
+
+Gli scenari a 1 m **non cambiano**; quello sotto il banco rientra in scala e l'immobile
+si allinea al caso equivalente a 1 m. Nel prototipo l'opzione `--sorgente gate|max`
+permette di riprodurre la v2 per confronto.
+
+## 4.6 Taratura e validazione — risultati (31/08/2026)
+
+Parametri scelti sui trial **T01-T03** dei tre scenari a 1 m, prestazione misurata su
+**T04-T05**, mai usati per la scelta. Configurazione tarata:
+
+| parametro | valore |
+|---|---|
+| α_m (livello) | **0,05** |
+| α_v (variabilità) | **0,01** |
+| k (peso della componente 2) | **0,5** |
+| soglie fra le 3 classi | **45** e **95** |
+
+| insieme | recall media per classe |
+|---|---|
+| taratura (T01-T03, 1 m) | 95,1 % |
+| **validazione (T04-T05, 1 m)** | **88,0 %** |
+| validazione su **geometria diversa** (sotto il banco) | 51,2 % |
+| 🔑 **immobile vs in movimento**, entrambe le geometrie | **96,1 %** |
+
+Dettaglio per scenario, parametri tarati, tutti i trial:
+
+| scenario | indice | classe attesa | corretti |
+|---|---|---|---|
+| immobile a 1 m | 28,6 | bassa | 89,9 % |
+| micro-movimenti a 1 m | 71,0 | moderata | 90,5 % |
+| movimento pieno a 1 m | 99,2 | alta | 96,3 % |
+| **immobile sotto il banco** | **25,7** | bassa | **97,5 %** |
+| movimenti sotto il banco | 98,8 | moderata | 4,8 % |
+
+📌 **Il 51,2 % è dominato da un solo scenario.** Quattro su cinque sono corretti, e fra
+questi c'è quello che conta per il progetto: la persona **immobile sotto il banco** —
+il caso della vittima incosciente — riconosciuta nel **97,5 %** dei campioni in una
+geometria su cui nulla è stato tarato.
+
+⚠️ Il caso che fallisce, `sotto_banco_movimenti_H`, è classificato *alta* invece di
+*moderata*. Ma quell'etichetta era stata assegnata **per analogia** con il caso a 1 m e
+**non poggia su una ground truth indipendente**: a 60 cm una persona che si aggiusta
+produce un ritorno molto forte, e non è dimostrato che "moderata" sia l'etichetta
+giusta. Il dato onesto è che l'indice colloca quello scenario in alto, non che sbagli.
+
+⚠️ **Le soglie restano specifiche della geometria di installazione.** Il trasferimento
+funziona per la classe bassa ma non garantisce la collocazione delle classi intermedie.
+Per UPRISE è gestibile — ogni sensore sta fisso sotto il proprio arredo e si tara una
+volta in quella posizione — ma sarebbe un problema su un dispositivo portatile. La via
+naturale è una **auto-taratura all'installazione**: fondo a stanza vuota più un
+riferimento di movimento.
+
+⚠️ Perimetro: **due trial per scenario** nell'insieme di validazione e **un solo
+soggetto**.
+
 ## 5. Sviluppo e taratura — Python prima, C++ poi
 
 Regola: **l'algoritmo si sviluppa su PC, sui CSV, dove si può iterare in secondi.**

@@ -1444,7 +1444,41 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - ⚠️ **Trasferibilita' fra geometrie da risolvere in taratura**: `sotto_banco_immobile_H`
       da' **65,6**, vicino ai micro-movimenti a 1 m (77,3). Una sola terna di soglie non
       copre entrambe le geometrie
-- [ ] Validazione (matrice di confusione su trial separati)
+- [x] 🎯 **TARATURA E VALIDAZIONE FATTE (31/08/2026).** Parametri scelti sui trial
+      **T01-T03** dei tre scenari a 1 m e prestazione misurata su **T04-T05**, mai usati
+      per tarare. Configurazione: **α_m = 0,05 · α_v = 0,01 · k = 0,5 · soglie 45 e 95**,
+      **3 classi** + gate di presenza:
+      | insieme | recall media per classe |
+      | taratura (T01-T03, 1 m) | 95,1 % |
+      | **validazione (T04-T05, 1 m)** | **88,0 %** |
+      | validazione su **geometria diversa** (sotto il banco) | 51,2 % |
+      | 🔑 **discriminazione immobile vs in movimento**, entrambe le geometrie | **96,1 %** |
+- 🔑 **v3 DELL'ALGORITMO: la componente di livello usa la SOLA energia del gate attivo.**
+      La v2 faceva `max(moving_energy, menergy_gate[g])`, ed **era la causa del
+      fallimento di trasferibilita' fra geometrie** (recall 8,8 % sotto il banco):
+      `moving_energy` e' l'energia **aggregata** del bersaglio, a distanza ravvicinata
+      satura a 100 e vince il `max` **qualunque gate si scelga** — verificato provando
+      tutti i criteri di selezione, saturazione fra 94 e 97 % in ogni caso.
+      Con la sola energia di gate:
+      | scenario | v2 | **v3** |
+      | fermo 1 m | 25,3 | 25,8 |
+      | micro 1 m | 66,2 | 65,4 |
+      | movimento 1 m | 98,5 | 98,4 |
+      | **sotto banco immobile** | **50,2** | **22,1** |
+      | **sotto banco movimenti** | 99,9 (97 % saturo) | **97,0 (1 % saturo)** |
+      Gli scenari a 1 m **non cambiano**, quello sotto il banco rientra in scala. Opzione
+      `--sorgente gate|max` nel prototipo per riprodurre la v2
+- 📌 **Il 51,2 % sulla geometria diversa e' dominato da UN solo scenario**: 4 su 5 sono
+      corretti, e fra questi **la persona immobile sotto il banco al 97,5 %** — cioe'
+      proprio il caso della vittima incosciente, in una geometria su cui nulla e' stato
+      tarato. Il caso che fallisce e' `sotto_banco_movimenti_H`, classificato *alta*
+      invece di *moderata*: ⚠️ ma quell'etichetta era stata assegnata **per analogia** col
+      caso a 1 m e **non poggia su ground truth**. A 60 cm una persona che si aggiusta
+      da' un ritorno molto forte, e non e' dimostrato che "moderata" sia giusto
+- ⚠️ **Le soglie restano specifiche della geometria di installazione.** Per UPRISE e'
+      gestibile — ogni sensore sta fisso sotto il proprio arredo e si tara una volta —
+      ma sarebbe un problema su un dispositivo portatile. Via naturale: **auto-taratura
+      all'installazione** (fondo a stanza vuota + un riferimento di movimento)
 - [ ] Porting su ESP32 (`vitality.h`)
 
 ### Processo
