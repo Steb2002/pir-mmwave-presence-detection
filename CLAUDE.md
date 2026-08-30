@@ -938,7 +938,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - [x] **Rumore di fondo stabile su 6.5 h**: gate0 media 17.4 → 17.8, gate1 13.3 → 13.1 tra
       prima e seconda metà della notte; massimo gate0 = 34 contro soglia 50. Conferma su
       tempi lunghi la decisione di non ricalibrare le soglie
-- [ ] Definire il protocollo di test (scenari, metriche: accuratezza, latenza, FP/FN)
+- [x] Protocollo di test definito — `PIANO_TEST.md`, fasi 0-8 con metriche e comandi
 - [x] **TEST 1.3 COMPLETATO (18/08/2026, 27 °C) — il risultato centrale della tesi**.
       5 trial × 302 s puliti, soggetto immobile a 2.30 m, ground truth dichiarata
       dall'operatore via `acquire.py` (`data/fermo_seduto_T01..T05.csv`):
@@ -1291,7 +1291,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **coda del radar**, non sul tempo di spostamento. Qui servivano 120 s. Il sintomo che
       lo rivela e' `fp_radar_eventi_h = 0` insieme a `radar_rate_%` alto: nessun fronte di
       salita significa che la presenza era gia' attiva all'inizio della finestra
-- [ ] Test comparativo PIR vs mmWave con numeri
+- [x] **Test comparativo PIR vs mmWave con numeri** — fasi 1, 2, 3 e 5 complete
 - [x] 🎯 **FASE 3 COMPLETATA (30/08/2026) — il radar attraversa tutto tranne il metallo,
       il PIR e' bloccato da tutto.** Baseline mediata sui 6 trial di inizio e fine
       (**53,45 ± 3,58**; vedi sotto perche' va mediata), soggetto in movimento sul posto,
@@ -1529,7 +1529,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - ⚠️ Un `find . -name "*.csv"` grezzo ne conta 146, non 116: i 30 in più sono fixture di
       test di numpy dentro `HLK-LD2410x/.venv/`, ignorate correttamente. Non sono dati
       sperimentali
-- [ ] Scheletro capitoli tesi in Overleaf (da SCALETTA_TESI.md)
+- [x] Scheletro capitoli in Overleaf — `tesi-unicam/`: 8 capitoli + 2 appendici, ~4200 righe
 - [x] **Capitolo 4 "Confronto sperimentale" SCRITTO (25/08/2026)** —
       `tesi-unicam/capitoli/04-confronto-sperimentale.tex`, da 612 a ~1450 righe, 13
       tabelle. Copre fasi 1 e 2 complete. Restano marcate *in corso* solo: penetrazione
