@@ -863,6 +863,31 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       pochi minuti di distanza. La spazzata trasversale (larghezza ~1 m) spiega solo
       **1-8 cm** secondo il calcolo geometrico, il resto non e' spiegato. In questo test
       la grandezza d'interesse e' `pir_rate_%`, non la distanza
+- [x] 🔑 **A STIMOLO RADAR COSTANTE, IL TIPO DI MOVIMENTO DECIDE IL PIR (30/08/2026).**
+      Quattro prove a 1 m nella stessa sessione, stessa stanza, stessa temperatura:
+      | movimento | `menergy` (testimone radar) | PIR |
+      | braccia, in piedi | 96,5 | **2,0 %** |
+      | braccia, "corsetta" | 98,1 | 23,9 % |
+      | braccia, seduto | 98,0 | 4,4 % |
+      | **busto laterale, seduto** | 96,5 | **100,0 %** |
+      **Per il radar sono lo stesso movimento** — energia fra 96,5 e 98,1, uno scarto di
+      1,6 punti. Per il PIR vanno dal 2 % al 100 %.
+      📌 **Non e' che un sensore sia piu' sensibile dell'altro: misurano due grandezze
+      diverse.** Il radar misura la velocita' radiale; il PIR i **transiti attraverso le
+      zone della lente di Fresnel**. Il movimento laterale del busto e' una traversata in
+      miniatura e attraversa le zone; quello delle braccia resta dentro una zona sola.
+      E' la dimostrazione piu' pulita del meccanismo finora, perche' il testimone radar
+      certifica che la *quantita'* di movimento era costante e cambiava solo il suo
+      **carattere** — piu' stringente della curva dose-risposta, dove variava la quantita'
+- ⚠️ **Ipotesi TEMPERATURA sollevata e SMENTITA** (30/08/2026): davanti al 4,4 % avevo
+      proposto che i 28 °C della stanza (contro i 25-27 di agosto) avessero azzerato il
+      contrasto termico contro la superficie degli indumenti. **Falso**: stessa
+      temperatura e stessa sessione, il solo cambio di movimento ha riportato il PIR al
+      100 %. Il sensore non e' degradato. La prova termica vera resta da fare, ma va fatta
+      **in piedi**, replicando esattamente `movimento_1m_H`, altrimenti misura la postura
+- ⚠️ **Nel confrontare serie del PIR, la postura e' una variabile al pari della
+      distanza**: seduto con le braccia e in piedi camminando sul posto **non sono lo
+      stesso stimolo**, anche se il radar li registra identici. Annotare sempre la postura
 - ⚠️ **Non mescolare le serie `_H` con quelle originali nella regressione della distanza**:
       il setup e' stato smontato e rimontato, e il sensore risulta spostato di ~4-7 cm
       (errore a 2 m: +11.22 cm nella serie originale, +18.68 cm in quella nuova). La retta
@@ -1003,6 +1028,43 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       un banco puo' vedere la persona sotto il banco **accanto**, e ridurre il gate massimo
       (che limita la distanza, non l'angolo) non basta a isolarli. Servirebbe una misura
       angolare dedicata prima di concludere
+- [x] ✅ **MISURA ANGOLARE FATTA (30/08/2026, 01:00-03:10, 28 °C) — l'osservazione
+      qualitativa era corretta.** Soggetto **seduto** su arco di raggio 100 cm, sedia
+      orientata verso il sensore a ogni azimut (cosi' il bersaglio presenta sempre la
+      stessa faccia e resta l'angolo come unica variabile), oscillazione **laterale** del
+      busto, gate massimo 2:
+      | azimut | radar | PIR | energia radar |
+      | 0° | **100 %** | 100,0 % | 96,5 |
+      | 45° | **100 %** | 77,7 ± 38,6 % | 95,3 |
+      | 60° | **100 %** | 67,8 ± 16,7 % | 95,7 |
+      | 75° | **100 %** | 76,7 ± 32,8 % | 94,1 |
+      | 90° | **100 %** | 12,0 ± 10,1 % | 94,3 |
+      | 120° | **6,6 ± 11,4 %** | 0,0 % | 59,6 |
+      **Il radar copre almeno ±90°**, con l'energia che cala di appena 2 punti fra asse e
+      90°; il crollo sta fra 90 e 120°. La copertura **eccede nettamente i ±60°** del
+      diagramma di p.11 del manuale
+- 🚨 **CONSEGUENZA: la selettivita' spaziale per configurazione NON e' ottenibile.**
+      Incrociando `angolo_090` con `sel_laterale_1m` (stessa distanza, stesso angolo,
+      stesso gate 2):
+      | vicino a 1 m, 90° | rilevato |
+      | **fermo** | 0 % (a regime) |
+      | **in movimento** | **100 %** |
+      Quello che nel Test 2.4 sembrava selettivita' era la **debolezza dell'eco di un
+      bersaglio immobile**, non il diagramma di irradiazione. Ridurre il gate non protegge
+      perche' limita la distanza e non l'angolo. Per UPRISE: **un banco vuoto accanto a una
+      persona che si muove risulta occupato** → la separazione fra arredi adiacenti va
+      cercata nel **montaggio fisico** (orientamento verso il basso, schermatura del lobo
+      laterale), non nei parametri del modulo. Il paragrafo del cap. 4 §selettivita' e'
+      stato corretto di conseguenza
+- ⚠️ **Il PIR ha un campo piu' stretto, ma soprattutto NON e' ripetibile**: fra 45 e 75°
+      la dispersione fra trial e' dello stesso ordine dell'effetto (a 45°: 100/100/33 %;
+      a 75°: 39/91/100 %). In quell'intervallo l'andamento angolare **non e' risolvibile**.
+      Sostenibili solo i tre estremi: 100 % sull'asse, collasso a 90°, zero a 120°.
+      E' la **terza occorrenza indipendente** della stessa irripetibilita' dopo la zona
+      grigia dei micro-movimenti (±21,7 su 51,6)
+- ⚠️ **La distanza fuori asse e' sottostimata**: 108 / 107 / 95 / 94 / 85 cm da 0 a 90°,
+      con il soggetto sempre sull'arco a raggio 100 cm. Verosimilmente il modulo aggancia
+      la porzione di corpo piu' vicina invece del centro di massa
 - [x] **TEST 2.2 COMPLETATO (23/08/2026) — latenza di rilascio all'uscita.** 5 trial,
       evento a 30 s (`--evento esci`), tutti e 5 misurati:
       | | tempo di rilascio |

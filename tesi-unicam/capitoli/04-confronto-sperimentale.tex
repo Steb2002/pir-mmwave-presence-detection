@@ -1254,13 +1254,110 @@ riportato --- ma non la chiudono: serve una caratterizzazione angolare dedicata,
 il soggetto a distanza fissa e angolo variato per passi noti, che è pianificata e non
 ancora svolta.
 
-\paragraph{Conseguenza per UPRISE.} Con gate massimo 2 un sensore per banco riporta il
-proprio occupante in modo affidabile e non è corrotto da un vicino fermo, né in asse
-oltre la portata né a 90\textdegree. Il rischio residuo non è la corruzione della
-lettura, è l'\textbf{attribuzione errata}: un banco vuoto il cui sensore rilevasse il
-vicino segnalerebbe un occupante inesistente. Nella condizione provata questo non
-avviene, ma il caso del vicino in movimento resta da verificare prima di considerare
-chiusa la questione.
+\paragraph{Conseguenza per UPRISE, e il suo limite.} Con gate massimo 2 un sensore per
+banco riporta il proprio occupante in modo affidabile e non è corrotto da un vicino
+\emph{fermo}, né in asse oltre la portata né a 90\textdegree. Il rischio residuo non è
+la corruzione della lettura, è l'\textbf{attribuzione errata}: un banco vuoto il cui
+sensore rilevasse il vicino segnalerebbe un occupante inesistente.
+
+\textbf{Nella condizione con vicino fermo questo non avviene; con vicino in movimento
+avviene sistematicamente.} La misura è riportata in \cref{sec:angolare}, e ribalta la
+lettura ottimistica di questa sezione: la selettività osservata qui non era prodotta
+dalla geometria, ma dalla debolezza dell'eco di un bersaglio immobile.
+
+\section{Copertura angolare dei due sensori}
+\label{sec:angolare}
+
+\paragraph{Perché serviva la misura.} Tre risultati precedenti dipendono da quanto
+ampio sia il campo di vista del radar, e nessuno di essi lo misura. Il manuale dichiara
+$\pm 60$\textdegree, ma nel corso della campagna si era osservato in modo qualitativo
+che il modulo rileva anche di lato, oltre il lobo principale. Se così fosse, la
+selettività fra banchi adiacenti non sarebbe garantita, perché il gate massimo limita
+la \emph{distanza} e non l'\emph{angolo}.
+
+\paragraph{Procedura.} Soggetto \emph{seduto} su un arco di raggio 100~cm centrato sul
+sensore, a sei azimut: 0, 45, 60, 75, 90 e 120\textdegree. A ogni posizione la sedia è
+orientata \textbf{verso il sensore}, così che il bersaglio presenti sempre la stessa
+faccia e resti l'angolo come unica variabile; il movimento è un'oscillazione laterale
+del busto di ampiezza costante, perpendicolare alla linea di vista a tutti gli azimut.
+Gate massimo 2, da uno a tre trial per angolo, 82~s utili ciascuno.
+
+\begin{table}[htbp]
+\centering
+\caption{Copertura angolare a 1~m, soggetto seduto in oscillazione laterale. Il radar
+è piatto fino a 90\textdegree; il PIR collassa prima e con dispersione elevata.}
+\label{tab:angolare}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Azimut & Radar & PIR & Energia radar \\
+\midrule
+0\textdegree & $100\,\%$ & $100{,}0\,\%$ & 96,5 \\
+45\textdegree & $100\,\%$ & $77{,}7 \pm 38{,}6\,\%$ & 95,3 \\
+60\textdegree & $100\,\%$ & $67{,}8 \pm 16{,}7\,\%$ & 95,7 \\
+75\textdegree & $100\,\%$ & $76{,}7 \pm 32{,}8\,\%$ & 94,1 \\
+90\textdegree & $\mathbf{100\,\%}$ & $12{,}0 \pm 10{,}1\,\%$ & 94,3 \\
+120\textdegree & $\mathbf{6{,}6 \pm 11{,}4\,\%}$ & $0{,}0\,\%$ & 59,6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Il radar copre almeno $\pm 90$\textdegree.} Il rilevamento resta al
+$100\,\%$ fino a 90\textdegree\ compresi, e l'energia del bersaglio cala di appena due
+punti fra l'asse e i 90\textdegree\ (da 96,5 a 94,3). Il crollo avviene fra 90 e
+120\textdegree, dove in due trial su tre il soggetto non è rilevato affatto. La
+copertura effettiva \textbf{eccede quindi in modo netto i $\pm 60$\textdegree\
+dichiarati}: l'osservazione qualitativa raccolta in corso di campagna era corretta.
+
+\paragraph{Il vicino in movimento viene rilevato, quello fermo no.} Confrontando questo
+risultato con lo scenario di \cref{sec:selettivita}, alla stessa distanza, allo stesso
+angolo e con lo stesso gate:
+
+\begin{center}\small
+\begin{tabular}{@{}lc@{}}
+\toprule
+Vicino a 1~m, 90\textdegree & Rilevamento \\
+\midrule
+Fermo & $0\,\%$ (a regime) \\
+In movimento & $\mathbf{100\,\%}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Ne segue la revisione già anticipata: \textbf{la selettività spaziale per configurazione
+non è ottenibile}. Ridurre il gate massimo non protegge, perché limita la distanza e non
+l'angolo; e il diagramma di irradiazione non attenua abbastanza a 90\textdegree\ da
+escludere un bersaglio in movimento. Ciò che nella prova precedente sembrava
+selettività era la debolezza dell'eco di un corpo immobile. Per il progetto significa
+che la separazione fra arredi adiacenti va cercata nel \textbf{montaggio fisico} ---
+orientamento verso il basso, schermatura del lobo laterale --- e non nei parametri del
+modulo.
+
+\paragraph{Il PIR: un campo più stretto, ma soprattutto irripetibile.} Il PIR collassa
+prima del radar, passando dal $100\,\%$ sull'asse al $12\,\%$ a 90\textdegree\ e a zero
+a 120\textdegree. Fra 45 e 75\textdegree, però, \textbf{la dispersione fra trial è dello
+stesso ordine dell'effetto}: a 45\textdegree\ i tre trial danno 100, 100 e
+$33\,\%$; a 75\textdegree\ danno 39, 91 e $100\,\%$. Con questa variabilità non è
+possibile risolvere un andamento angolare in quell'intervallo, e le uniche affermazioni
+sostenibili sono le tre agli estremi: pieno rilevamento sull'asse, collasso a
+90\textdegree, assenza a 120\textdegree.
+
+L'irripetibilità è essa stessa un risultato, ed è la terza occorrenza indipendente dello
+stesso fenomeno dopo la zona grigia dei micro-movimenti
+(\cref{sec:dose-risposta}). Per un'applicazione di soccorso una prestazione non
+riproducibile pesa quanto un limite noto: un limite dichiarato si progetta attorno, una
+dispersione di sessanta punti percentuali no.
+
+\paragraph{Una nota sulla distanza fuori asse.} La distanza riportata dal radar cala al
+crescere dell'azimut --- 108, 107, 95, 94 e 85~cm da 0 a 90\textdegree\ --- mentre il
+soggetto resta sull'arco a raggio costante. Fuori asse il modulo sottostima di una
+quindicina di centimetri, verosimilmente agganciando la porzione di corpo più vicina
+anziché il centro di massa. È un errore sistematico modesto rispetto alla dispersione
+già documentata in \cref{sec:distanza}, ma va tenuto presente se si usa la distanza per
+localizzare un bersaglio non frontale.
+
+\section{Penetrazione degli ostacoli}
+\label{sec:ostacoli}
 
 \section{Penetrazione degli ostacoli}
 \label{sec:ostacoli}
@@ -1553,9 +1650,11 @@ I limiti da dichiarare esplicitamente sono i seguenti.
     una misura puntuale a 90\textdegree\ con bersaglio fermo, ma non una curva. La
     misura è pianificata (soggetto a distanza fissa, angolo variato per passi noti) e
     non ancora svolta.
-  \item[Vicino sempre fermo negli scenari di selettività] Il caso del vicino
-    \emph{in movimento} a 90\textdegree\ non è stato provato ed è quello in cui il
-    canale in movimento, libero, potrebbe agganciarlo.
+  \item[Copertura angolare misurata a una sola distanza] La mappa di
+    \cref{sec:angolare} è stata rilevata a 1~m e con soggetto seduto. Il diagramma di
+    irradiazione non dipende dalla distanza, ma il rapporto segnale-rumore sì: a
+    distanze maggiori, dove l'eco è più debole, il limite angolare utile potrebbe
+    risultare più stretto di quello misurato qui.
   \item[Un solo esemplare per modello] Nessuna stima della variabilità fra esemplari.
     Il coefficiente di scala del $+3{,}81\,\%$ potrebbe essere specifico dell'esemplare
     in prova.
