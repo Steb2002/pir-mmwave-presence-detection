@@ -18,3 +18,6 @@ tesi-unicam/figures/fig*.png
 analisi/dati_tesi.xlsx
 RIEPILOGO_INCONTRO.html
 RIEPILOGO_INCONTRO.pdf
+
+# Log del tool PC Hi-Link LD2420: rigenerati a ogni avvio, come quelli del LD2410 Tool
+HLK-LD2420/HLK-LD2420_TOOL -English/Log/

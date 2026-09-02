@@ -726,6 +726,42 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
          porta il canale moving), ma e' un limite citabile del modulo
 - [~] Setup e test LD2420 — collegato e letto (presenza + range in modalità ASCII,
       sketch `firmware/ld2420_monitor/`)
+- 🔑 **SESSIONE LD2420 DEL 01-02/09/2026 — cosa e' stato accertato** (dettagli riga per riga
+      nel registro):
+      - **firmware v1.6.1** (Test 0.5 chiuso); `GateMax=12`, ritardo 30 s; **32 soglie lette
+        via UART** con `firmware/test06_ld2420_set_gate/` e coincidenti tutte con l'XML di
+        fabbrica → conversione `grezzo = 10^(dB/10)` validata su ogni parametro
+      - logger `firmware/ld2420_logger/` scritto: stesse 9 colonne del LD2410B, 5 Hz,
+        **presenza da OT2 (GPIO19)**, PIR su GPIO21 (non su 34: irraggiungibile sulla
+        breadboard attuale). ⚠️ OT2 NON su GPIO15: e' di strapping e blocca l'upload
+      - ❌ **la presenza ASCII e' inutilizzabile**: dump grezzo (`test05_ld2420_raw`) = 2528
+        `ON`, 0 `OFF` in 4 min, stanza vuota inclusa. La notturna a stanza vuota
+        (`stanza_vuota_2420_T01`, 79,4 % di presenza) e' **NON VALIDA** per questo motivo
+      - ❌ **nemmeno OT2 rilascia** a configurazione di fabbrica: 100 % con stanza vuota per
+        120 s. Causa plausibile e documentata da ESPHome ("a wall within the gate max range
+        can result in signal reflections"): 840 cm di campo in una stanza di ~5 m, con soglie
+        *hold* di fabbrica a **100** sui gate 7-15
+      - `Range`: **centimetri** quando c'e' un bersaglio (105 a ~1 m, 414-425 a ~4,5 m,
+        130 a ~1,3 m), **valore di riposo 0-6** quando non c'e'. I "7-37" del 17/07 erano
+        il riposo. Aggiorna di rado (5 cambi in 60 s) e va letto solo con OT2 alto
+      - ⚠️ **la scrittura dei parametri via UART e' accettata ma NON persistente**: riletta
+        correttamente, sopravvive alla chiusura/riapertura della modalita' comandi, ma il
+        riavvio `0x68` la scarta. Nessun comando di salvataggio nel Protocol Document
+      - ❓ **APERTO**: nei due test con gate 8 impostato via UART il `Range` e' rimasto
+        congelato per tutti i 180 s, persona a 1-2 m compresa. Ipotesi: **qualunque
+        sessione di comandi ferma il rilevamento finche' il modulo non viene riavviato** —
+        e il riavvio scarta la configurazione. Se confermata, via UART il gate non e'
+        configurabile e resta il tool PC (mai riuscito a collegarsi al modulo, finora: i 5
+        tentativi del 02/09 alle 18:43 parlavano con l'ESP32 sulla COM3)
+      - 📌 **Il confronto sta prendendo una direzione precisa**: il LD2410B funziona fuori
+        scatola con soglie di fabbrica (0 falsi positivi in 6,55 h); il LD2420 nella stessa
+        stanza dichiara presenza permanente e richiede una taratura per installazione. Per
+        centinaia di banchi e' una differenza operativa sostanziale — ma va **misurato dopo
+        la taratura**, non concluso dal fallimento di fabbrica
+- ⚠️ **Lezione di processo (02/09/2026)**: tre giri di prove sono stati attribuiti al
+      modulo mentre l'ESP32 eseguiva un **binario vecchio** — lo sketch non compilava (una
+      stringa spezzata) e l'IDE non caricava nulla. Da allora gli sketch stampano un
+      **marcatore `BUILD n`** all'avvio: verificarlo prima di interpretare qualsiasi output
 - ⚠️ **L'"engineering mode binario" del LD2420 non è documentato da Hi-Link (accertato
       26/08/2026)**: il Protocol Document copre solo i comandi di configurazione e il
       manuale indica le righe ASCII come l'uscita normale. **Esiste però** una modalità

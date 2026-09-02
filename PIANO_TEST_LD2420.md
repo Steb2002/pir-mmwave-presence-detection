@@ -96,8 +96,9 @@ sperimentale nel cap. 4 — non va riaperto qui.
   coincidenti col backup XML, cioè con l'esempio ufficiale
 - 🔑 **Verifica utile**: il tool mostra le soglie in **dB = 10·log₁₀(grezzo)**. Se via UART
   leggi 60000 e il tool mostra 47,78, la corrispondenza è confermata sull'esemplare
-- Annotare in `REGISTRO_SESSIONI.md`: versione firmware = ______, GateMax = ______,
-  ritardo = ______
+- ✔ **Annotato (02/09/2026)**: firmware = **v1.6.1**, GateMax = **12**, ritardo = **30 s**,
+  32 soglie lette via UART e coincidenti con l'XML di fabbrica (conversione dB→grezzo
+  validata su tutti i parametri)
 
 ### Test 0.5-bis — 🔴 Taratura dell'unità del campo `Range` (BLOCCANTE)
 - **Serve per**: qualunque test di distanza. Senza questo il Test 1.2-2420 non è
