@@ -83,6 +83,15 @@ void loop() {
   // Se il modulo tace a lungo lo si deve sapere: un silenzio prolungato spiegherebbe
   // da solo lo stato "incollato" del logger, perche' l'ultimo valore resta valido.
   static unsigned long ultimoAvviso = 0;
+  // Caso "mai arrivato nulla": prima l'avviso partiva solo dopo la PRIMA riga, quindi
+  // un modulo completamente muto lasciava lo sketch in silenzio (02/09/2026). Ora si
+  // avvisa anche se dall'avvio non e' arrivato un solo byte.
+  if (!ultimaRiga && millis() - t0 > 5000 && millis() - ultimoAvviso > 5000) {
+    ultimoAvviso = millis();
+    Serial.print("!! NESSUN BYTE dal modulo da ");
+    Serial.print((millis() - t0) / 1000);
+    Serial.println(" s: o il filo OT1->GPIO16 e' staccato, o il modulo non trasmette");
+  }
   if (ultimaRiga && millis() - ultimaRiga > 5000 && millis() - ultimoAvviso > 5000) {
     ultimoAvviso = millis();
     Serial.print("... nessuna riga da ");
