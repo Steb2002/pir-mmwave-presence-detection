@@ -24,6 +24,11 @@ BASE = [
 ]
 GATE = [f"menergy_gate{i}" for i in range(9)] + [f"senergy_gate{i}" for i in range(9)]
 LUCE = ["light_level", "out_level"]
+# Logger binario del LD2420 (firmware/ld2420_logger_bin). ⚠️ Dal BUILD 4 (04/09/2026,
+# tolta la colonna ot2_level) sono 27 colonne come il LD2410B in engineering mode: per
+# conteggio non si distinguono, e nel dubbio vince il LD2410B (vedi intestazione_di_riserva).
+# I file del BUILD 2-3 (28 colonne, con ot2_level) restano riconoscibili.
+LD2420_VECCHIO = [f"energy2420_gate{i}" for i in range(16)] + ["ot2_level", "frames_ok", "dist_raw_cm"]
 
 
 def intestazione_di_riserva(n_colonne):
@@ -34,6 +39,8 @@ def intestazione_di_riserva(n_colonne):
         return BASE + GATE
     if n_colonne == len(BASE) + len(GATE) + len(LUCE):
         return BASE + GATE + LUCE
+    if n_colonne == len(BASE) + len(LD2420_VECCHIO):
+        return BASE + LD2420_VECCHIO
     return None
 # -------------------------------------------------------------------------------
 
@@ -121,14 +128,45 @@ def main():
                              "Passare lo stesso SEC ad analizza_test.py come --event-time "
                              "o --release-time")
 
+    parser.add_argument("--tappe", nargs="+", default=None, metavar="SEC:TESTO",
+                        help="annunci a voce a istanti prefissati dalla prima riga di dati, "
+                             "es. --tappe 60:'vai a un metro' 100:'vai a due metri' 300:fine. "
+                             "Per le prove a piu' posizioni (portata LD2420, 04/09/2026): "
+                             "il file resta uno solo e le finestre si passano poi a "
+                             "analisi/portata2420.py")
+
     args = parser.parse_args()
+
+    tappe = []
+    if args.tappe:
+        for spec in args.tappe:
+            try:
+                sec, testo = spec.split(":", 1)
+                tappe.append((float(sec), testo))
+            except ValueError:
+                sys.exit(f"tappa malformata: {spec!r} (atteso SEC:TESTO)")
+        tappe.sort()
+    prossima_tappa = 0
 
     parola_evento = args.evento
     parola_inizio = "esci" if parola_evento == "entra" else "entra"
-    segnale = Segnale() if args.beep_at is not None else None
+    segnale = Segnale() if (args.beep_at is not None or tappe) else None
 
     ser = serial.Serial(args.port, args.baud, timeout=2)
-    time.sleep(2)   # reset ESP32; intanto PowerShell finisce di scaldarsi
+    # Reset ESPLICITO dell'ESP32. Aprire la porta di solito lo resetta da solo, ma il
+    # 04/09/2026 e' successo due volte che non accadesse (primo timestamp a 4993 s e a
+    # 6807 s): senza reset l'intestazione non arriva e la ricostruzione per conteggio
+    # sbaglia i nomi quando i logger hanno lo stesso numero di colonne (LD2420 binario e
+    # LD2410B engineering: 27 entrambi). Impulso su RTS (= EN) con DTR basso (= IO0 alto,
+    # modalita' normale, non bootloader): e' la sequenza usata da esptool.
+    try:
+        ser.dtr = False
+        ser.rts = True
+        time.sleep(0.1)
+        ser.rts = False
+    except Exception:
+        pass
+    time.sleep(2)   # boot ESP32 + setup del logger; intanto PowerShell finisce di scaldarsi
 
     start = time.time()
     righe_scritte = 0
@@ -148,6 +186,15 @@ def main():
 
             if line.startswith("ERROR"):
                 print(line)
+                continue
+
+            # Righe di servizio del logger ('# ...'): vanno mostrate ma non scritte nel
+            # CSV. Prima dell'intestazione venivano gia' scartate perche' non numeriche;
+            # DOPO l'intestazione sarebbero finite nel file come riga di dati sbagliata
+            # (il logger LD2420 ora ne stampa una quando riattiva l'energy mode).
+            if line.startswith("#"):
+                sys.stderr.write(line + "\n")
+                sys.stderr.flush()
                 continue
 
             parts = line.split(",")
@@ -194,6 +241,15 @@ def main():
                                      f"Fra {args.beep_at:.0f} s: '{parola_evento.upper()}'\n")
                     sys.stderr.flush()
 
+            while (prossima_tappa < len(tappe)
+                   and time.time() - t_prima_riga >= tappe[prossima_tappa][0]):
+                sec, testo = tappe[prossima_tappa]
+                prossima_tappa += 1
+                segnale.di(testo, 1000)
+                sys.stderr.write(f"TAPPA t=+{time.time() - t_prima_riga:.1f} s "
+                                 f"(prevista {sec:.0f}): {testo}\n")
+                sys.stderr.flush()
+
             if (args.beep_at is not None and not beep_fatto
                     and time.time() - t_prima_riga >= args.beep_at):
                 beep_fatto = True
@@ -235,6 +291,10 @@ def main():
                              "caricato, cavo USB, baud (atteso 115200),\n"
                              "e che il Serial Monitor dell'IDE sia chiuso.\n")
         sys.stderr.flush()
+
+    if prossima_tappa < len(tappe):
+        sys.stderr.write(f"ATTENZIONE: {len(tappe) - prossima_tappa} tappe NON annunciate "
+                         "(durata troppo breve). Trial da rifare.\n")
 
     if args.beep_at is not None and not beep_fatto:
         sys.stderr.write("ATTENZIONE: il beep di evento NON e' stato emesso (durata "

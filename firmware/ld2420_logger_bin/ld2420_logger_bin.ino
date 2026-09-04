@@ -1,13 +1,13 @@
 /*
  * Logger CSV per HLK-LD2420 in MODALITA' BINARIA ("energy mode") — tutto via UART,
- * come per il LD2410B. Sostituisce `ld2420_logger` (modalita' ASCII + pin OT2).
+ * come per il LD2410B. Sostituisce `ld2420_logger` (modalita' ASCII), ora superato.
  *
  * PERCHE' (03/09/2026). L'interfaccia ASCII di fabbrica non fornisce una presenza
  * utilizzabile: in 4 minuti il modulo ha emesso 2528 `ON` e zero `OFF`, stanza vuota
- * inclusa. Il ripiego sul pin OT2 ha portato solo errori di cablaggio (D15 e' di
- * strapping, D2 accende il LED) e comunque nella configurazione di fabbrica non
- * rilasciava. Questa modalita' trasmette presenza, distanza e 16 energie per gate
- * dentro un frame binario: esattamente quello che leggiamo dal LD2410B.
+ * inclusa. Questa modalita' trasmette presenza, distanza e 16 energie per gate
+ * dentro un frame binario: esattamente quello che leggiamo dal LD2410B. Il pin OT2
+ * (uscita di presenza) NON viene letto: la presenza e' quella del frame, che e' la
+ * stessa decisione del modulo (04/09/2026: tolto tutto il codice OT2, non serviva).
  *
  * ⚠️ FONTE: componente ESPHome `ld2420` (sorgenti ld2420.h / ld2420.cpp), NON Hi-Link.
  *   Il Protocol Document ufficiale non documenta ne' il comando 0x0012 ne' il frame di
@@ -24,24 +24,34 @@
  * ⚠️ ALIMENTAZIONE 3.3V — NON 5V.
  *   J2 pin 1  3V3 -> 3V3    | J2 pin 3  OT1 -> GPIO16 (RX2)   [il radar parla]
  *   J2 pin 2  GND -> GND    | J2 pin 4  RX  -> GPIO17 (TX2)   [il radar ascolta]
- *   J2 pin 5  OT2 -> GPIO19  facoltativo: solo per la colonna di confronto `ot2_level`
+ *   J2 pin 5  OT2   non collegato
  *   PIR OUT       -> GPIO21  facoltativo
  *
  * ⏱️ Dopo l'accensione il modulo resta muto ~55 s (misurato il 03/09/2026): aspettare
  *    90 s dal collegamento del 3V3 prima di lanciare acquire.py.
  * 🚨 MAI con il LD2410B alimentato (interferenza a 24 GHz).
  *
- * CSV: le 9 colonne standard della tesi + 16 energie grezze + ot2_level. Le energie
+ * CSV: le 9 colonne standard della tesi + 16 energie grezze + frames_ok + dist_raw_cm.
+ * ⚠️ Sono 27 colonne, lo stesso numero del logger LD2410B in engineering mode: se
+ * acquire.py perde la riga di intestazione, la ricostruzione per conteggio sceglie i nomi
+ * del LD2410B. L'intestazione viene stampata a ogni avvio, quindi succede solo se il reset
+ * dell'ESP32 all'apertura della porta non scatta. Le energie
  * sono uint16 0-65535, NON la scala 0-100 del LD2410B: per questo la colonna si chiama
  * `energy2420_gateN` e non `menergy_gateN`, cosi' nessuno script le confonde.
  * `moving_energy` e `stationary_energy` restano 0: quelle grandezze in scala 0-100 il
  * LD2420 non le ha. `moving_target` = presenza (canale unico), `stationary_*` = 0.
  */
 
+// Gate massimo da scrivere a ogni avvio (0 = non toccare quello in flash). Serve alla
+// prova di portata del 04/09/2026: 8 → 7 → 6 con le soglie tarate dal tool, senza dover
+// ricablare al CH340E a ogni cambio. ⚠️ La scrittura via UART vive in RAM: il modulo
+// la perde se gli si toglie il 3V3, ma il reset dell'ESP32 per l'upload non lo spegne.
+// Il valore letto dopo la scrittura finisce nel commento '#' in testa al CSV.
+#define GATE_MAX_DA_IMPOSTARE 0
+
 #define RADAR_RX_PIN 16
 #define RADAR_TX_PIN 17
 #define RADAR_BAUD   115200
-#define OT2_PIN      19
 #define PIR_PIN      21
 #define sensorSerial Serial2
 
@@ -85,10 +95,32 @@ bool cmd2420(uint16_t cmd, const uint8_t *dati, uint16_t nDati) {
   return nRisp >= 6 && (risp[4] | (risp[5] << 8)) == 0x0000;
 }
 
-// Commuta in energy mode. Ritorna true se il modulo ha accettato ogni passo.
+bool leggiParam(uint16_t nome, uint32_t &valore) {
+  uint8_t d[] = {(uint8_t)(nome & 0xFF), (uint8_t)(nome >> 8)};
+  if (!cmd2420(0x0008, d, 2)) return false;
+  if (nRisp - 4 < 10) return false;          // len(2) cmd(2) stato(2) valore(4)
+  valore = (uint32_t)risp[6] | ((uint32_t)risp[7] << 8) |
+           ((uint32_t)risp[8] << 16) | ((uint32_t)risp[9] << 24);
+  return true;
+}
+
+bool scriviParam(uint16_t nome, uint32_t valore) {
+  uint8_t d[6] = {(uint8_t)(nome & 0xFF), (uint8_t)(nome >> 8),
+                  (uint8_t)(valore & 0xFF), (uint8_t)((valore >> 8) & 0xFF),
+                  (uint8_t)((valore >> 16) & 0xFF), (uint8_t)((valore >> 24) & 0xFF)};
+  return cmd2420(0x0007, d, 6);
+}
+
+static uint32_t gateMaxLetto = 0;
+static bool     gateMaxOk = false;
+
+// Una sola sessione di comandi: apre, (opzionale) scrive il gate massimo, rilegge il
+// gate massimo, commuta in energy mode, chiude. Ritorna true se l'energy mode e' passato.
 bool attivaEnergyMode() {
   const uint8_t apri[] = {0x01, 0x00};
   if (!cmd2420(0x00FF, apri, 2)) return false;
+  if (GATE_MAX_DA_IMPOSTARE > 0) scriviParam(0x0001, (uint32_t)GATE_MAX_DA_IMPOSTARE);
+  gateMaxOk = leggiParam(0x0001, gateMaxLetto);
   // 0x0012: parametro 0x0000 (system mode), valore 0x00000004 (energy)
   const uint8_t modo[] = {0x00, 0x00, 0x04, 0x00, 0x00, 0x00};
   bool ok = cmd2420(0x0012, modo, 6);
@@ -141,26 +173,50 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
   pinMode(PIR_PIN, INPUT_PULLDOWN);
-  pinMode(OT2_PIN, INPUT_PULLDOWN);
   sensorSerial.begin(RADAR_BAUD, SERIAL_8N1, RADAR_RX_PIN, RADAR_TX_PIN);
   delay(500);
 
   // Righe di servizio come commenti '#': acquire.py le ignora.
-  Serial.println("# ld2420_logger_bin BUILD 1 - energy mode via 0x0012, presenza dal frame");
+  Serial.println("# ld2420_logger_bin BUILD 5 - energy mode via 0x0012, presenza dal frame, dist_raw_cm, gate max opzionale, senza OT2");
   bool ok = attivaEnergyMode();
   Serial.print("# energy mode: ");
   Serial.println(ok ? "attivata" : "!! il modulo NON ha accettato (0x0012) - restera' in ASCII");
+  Serial.print("# gate max: ");
+  if (gateMaxOk) { Serial.print("letto "); Serial.print(gateMaxLetto); }
+  else           { Serial.print("!! lettura fallita"); }
+  Serial.print(" (GATE_MAX_DA_IMPOSTARE = "); Serial.print(GATE_MAX_DA_IMPOSTARE);
+  Serial.println(GATE_MAX_DA_IMPOSTARE > 0 ? ", scritto in RAM a questo avvio)" : ", flash non toccata)");
   delay(300);
 
   Serial.print("timestamp_ms,radar_presence,moving_target,stationary_target,"
                "moving_distance_cm,stationary_distance_cm,moving_energy,"
                "stationary_energy,pir_presence");
   for (int g = 0; g < 16; g++) { Serial.print(",energy2420_gate"); Serial.print(g); }
-  Serial.println(",ot2_level,frames_ok");
+  Serial.println(",frames_ok,dist_raw_cm");
 }
 
 void loop() {
   leggiFrame();
+
+  // Se il modulo non ha ancora mandato un frame, ritenta l'energy mode ogni 5 s.
+  // Serve quando il modulo e' stato appena alimentato: per ~55 s dopo l'accensione non
+  // risponde ai comandi (misurato il 03/09/2026), quindi il comando dato in setup() va
+  // perso e il modulo resta in ASCII per tutta l'acquisizione (successo il 04/09/2026,
+  // `altezza2420_h180_T01`: 230 s con frames_ok = 0). Il ritentativo e' silenzioso sul
+  // CSV; `frames_ok` dice da che momento i frame sono arrivati.
+  static unsigned long ultimoTentativoMs = 0;
+  if (!ultimoFrameMs && millis() - ultimoTentativoMs > 5000) {
+    ultimoTentativoMs = millis();
+    if (attivaEnergyMode()) Serial.println("# energy mode attivata al ritentativo");
+  }
+  // Oltre i 90 s (mutezza dopo l'accensione gia' passata) l'assenza di frame e' un
+  // guasto di cablaggio: il 04/09/2026 un OT1->D16 sganciato ha prodotto 230 s di righe
+  // a frames_ok = 0 senza nessun avviso. acquire.py mostra le righe '#' in console.
+  static unsigned long ultimoAvvisoMs = 0;
+  if (!ultimoFrameMs && millis() > 90000 && millis() - ultimoAvvisoMs > 30000) {
+    ultimoAvvisoMs = millis();
+    Serial.println("# ATTENZIONE: nessun frame dal modulo - controllare OT1->D16, RX->D17, 3V3, GND");
+  }
 
   static unsigned long lastPrint = 0;
   unsigned long now = millis();
@@ -183,6 +239,8 @@ void loop() {
   Serial.print(0);    Serial.print(',');      // stationary_energy: non esiste
   Serial.print(digitalRead(PIR_PIN));         // pir_presence
   for (int g = 0; g < 16; g++) { Serial.print(','); Serial.print(frameFresco ? energia[g] : 0); }
-  Serial.print(','); Serial.print(digitalRead(OT2_PIN));
-  Serial.print(','); Serial.println(frameFresco ? 1 : 0);
+  Serial.print(','); Serial.print(frameFresco ? 1 : 0);
+  // Distanza grezza dal frame ANCHE con presenza 0: serve alla diagnosi, perche' dice
+  // se il modulo sta agganciando qualcosa pur non dichiarando presenza.
+  Serial.print(','); Serial.println(frameFresco ? distanzaCm : 0);
 }

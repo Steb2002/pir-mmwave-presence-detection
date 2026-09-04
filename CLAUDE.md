@@ -272,6 +272,20 @@ scelta implementativa, **non** come dato tecnico citabile in tesi (regola fonti)
 
 - **16 gate (0-15)**, risoluzione **70 cm** ciascuno. ⚠️ Il "15 gate (0-14)" scritto
   qui in precedenza era errato: il protocollo indirizza 0x10-0x1F, cioè 16 soglie
+- ❓ **Portata di "gate max = N": N × 70 cm oppure (N+1) × 70 cm? NON documentato**
+  (03/09/2026). Sul LD2410B la regola e' documentata e misurata: *"maximum of 8
+  distance gates"*, range 1-8, gate 2 → 1,5 m, cioe' **portata = N × 0,75 m** e il gate 0
+  del frame di engineering non conta. Il manuale LD2420 (Tab. 4-2) da' solo "0~15" per
+  gate minimo e massimo, senza esempi. Indizi contrari: l'analogia col LD2410B e il
+  valore di fabbrica 12 = 840 cm (~8 m dichiarati) dicono N × 70; il gate 0 selezionabile
+  come minimo e "max = 0" ammesso dicono (N+1) × 70. **Da misurare** con persona ferma a
+  4,5 m e gate max 6: vista → 490 cm, non vista → 420 cm. Fino ad allora **non scrivere
+  in tesi la portata in metri del gate massimo del LD2420** senza questa riserva.
+  Ricerca web del 03/09/2026 (solo fonti di comunita', nessuna primaria): ESPHome dice
+  `min_gate_distance` 0..max-1 e `max_gate_distance` 1..15, "15 ≈ 12 m, 12 ≈ 9 m"
+  (numeri arrotondati: 13 × 0,7 = 9,1 fa pensare a (N+1) × 70); esp32.co.uk mette il
+  gate 1 a 0,7 m, quindi gate 0 = 0-70 cm. Nessuno dice esplicitamente se il gate
+  massimo e' incluso. **Propende per 490 cm, ma resta da misurare**
 - **Trigger** = soglia libero→occupato, consigliata > 5× il rumore di fondo;
   **Maintain** = soglia per rilevare i micro-movimenti e *mantenere* la presenza,
   consigliata 2-5× il rumore. **Non sono i canali moving/still del LD2410B**: sono
@@ -758,6 +772,42 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
         stanza dichiara presenza permanente e richiede una taratura per installazione. Per
         centinaia di banchi e' una differenza operativa sostanziale — ma va **misurato dopo
         la taratura**, non concluso dal fallimento di fabbrica
+- 🚨 **STATO LD2420 AL 04/09/2026: l'esemplare vede una persona solo fino a ~2 m** (dettagli
+      riga per riga nel registro, sessioni 03-04/09). Cosa e' accertato:
+      - **modalita' binaria (energy) funzionante** via `firmware/ld2420_logger_bin/` (BUILD 4:
+        16 energie uint16 a 10 Hz, presenza e distanza dal frame, gate max opzionale a ogni
+        avvio, **niente OT2**: tolto il 04/09, non serviva). Il tool PC mostra gli stessi
+        numeri in dB = 10·log10(grezzo): parser assolto
+      - **le soglie in flash erano quelle di fabbrica, mai tarate** (i due XML del 17/07 e
+        03/09 sono identici agli esempi del Protocol Document). Tarate col tool il 03-04/09
+        (`Calc. Thres.` = bottom noise scan del manuale §4.2.2-4.2.3: trigger 5x rumore, hold
+        3,5x, scarto costante 1,55 dB). Con gate max 6 il modulo **rilascia** (il muro a ~5 m
+        stava nel gate 7 e teneva l'hold nel 4 % dei campioni). Backup:
+        `ld2420_config_tarato_max_6.xml` (e `_max_8.xml` per la prima taratura)
+      - **portata misurata** (`portata2420_g8_T01/T02`, tacche 100-480 cm, oscillazione e
+        cammino sul posto): 100 cm → dist 105, gate 2 x4; 200 cm → dist **204**, gate 3
+        appena sopra il fondo; **da 300 cm in su energie identiche alla stanza vuota**. Stesso
+        risultato in ASCII (`Range` max 206) e nel tool (`Range VS Time` ≤ 2 m)
+      - **diagnosi**: ricevitore a norma (rumore ai gate 12-15 = 35 grezzi, esattamente il
+        progetto delle soglie di fabbrica 200/100), **accoppiamento TX→RX al gate 0 = 110
+        contro ~12000 di progetto** (e `Avg 8656` nell'esempio ESPHome) → trasmettitore
+        ~20-25 dB sotto → portata 8 m / 10^(25/40) ≈ **1,9 m**, che e' quanto misurato.
+        Escluse con misure: soglie, gate, firmware (1.6.1 e' l'ultimo, Hi-Link non pubblica
+        i .bin), parser, orientamento, geometria, cavo corto sull'adattatore, danno visibile,
+        5 V (mai). Non provata: alimentazione da pile (non disponibili). **Conclusione:
+        esemplare difettoso dall'origine, con ogni probabilita'**
+      - ⚠️ **la "prova" del 02/09 01:25 (Range 414-425 a 4,5 m) era il MURO**: valore
+        costante per 50 s mentre il soggetto camminava; lo stesso riflettore compare nel tool
+        come "5 m fisso" con gate 7-8 e sparisce con gate 6. Non c'e' evidenza che il modulo
+        abbia mai visto oltre 2 m
+      - **convenzione dei gate, due punti coerenti**: 105 cm → gate 2, 204 cm → gate 3, cioe'
+        il gate che copre (N−1)·70…N·70 come nel LD2410B → **portata = N × 70 cm**, gate 6 =
+        420 cm. Da confermare con un esemplare sano
+      - **decisione**: ordinare un secondo esemplare; nel frattempo la Fase 4 e' sospesa e si
+        passa all'obiettivo 5 (sito). Tenere il pezzo attuale: il confronto fra i due sulla
+        stessa tacca e' un dato di tesi (variabilita' fra esemplari). Nuovi strumenti:
+        `acquire.py --tappe` (annunci vocali a istanti prefissati) e `analisi/portata2420.py`
+        (analisi per finestre temporali)
 - ⚠️ **Lezione di processo (02/09/2026)**: tre giri di prove sono stati attribuiti al
       modulo mentre l'ESP32 eseguiva un **binario vecchio** — lo sketch non compilava (una
       stringa spezzata) e l'IDE non caricava nulla. Da allora gli sketch stampano un

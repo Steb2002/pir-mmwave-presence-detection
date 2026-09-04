@@ -1,4 +1,8 @@
 /*
+ * ⛔ SUPERATO (04/09/2026): usare `firmware/ld2420_logger_bin/`. Questo logger legge la
+ *    modalita' ASCII (che non emette mai OFF) e la presenza dal pin OT2. Resta nel repo
+ *    solo come documentazione di come e' andata la prima campagna; non va piu' caricato.
+ *
  * Logger CSV per HLK-LD2420 — schema identico al logger del LD2410B.
  *
  * Emette le STESSE 9 colonne di `firmware/ld2410b_logger/`, cosi' acquire.py,
