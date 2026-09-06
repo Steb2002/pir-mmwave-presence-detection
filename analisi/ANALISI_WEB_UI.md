@@ -6,6 +6,16 @@
 
 ---
 
+> 📝 **Revisione del 05/09/2026** (rilettura prima di iniziare l'implementazione). Sei
+> decisioni, tutte riportate nelle sezioni marcate «rev. 05/09»: rete **solo Access
+> Point** (l'ESP32 non si collega a nessun WiFi esistente: crea il suo); frontend in
+> **JavaScript puro** (Angular valutato e scartato, §4); pagina incorporata nel firmware
+> come **PROGMEM gzip** invece che su LittleFS; librerie server nei fork **ESP32Async**
+> (le uniche che compilano sul core ESP32 3.x installato); schema di partizione **Huge
+> APP**; indice di vitalità allineato alla **v3 a tre classi** con sottrazione del fondo;
+> CSV a **29 colonne** come il logger attuale. Il documento di dettaglio
+> (`PROGETTO_SITO_DETTAGLIO.md`) è stato aggiornato di conseguenza.
+
 ## 1. Scelta architetturale
 
 ### Opzioni considerate
@@ -43,12 +53,23 @@ Motivazioni:
 3. La persistenza lunga non serve a bordo: lo storico si accumula **nel browser**,
    che ha memoria abbondante e fa lui l'export CSV
 
-### Modalità WiFi: doppia, selezionabile
+### Modalità WiFi: **solo Access Point** (rev. 05/09/2026)
 
-- **Station (STA)**: l'ESP32 si collega al WiFi di casa → comodo durante lo sviluppo
-- **Access Point (AP)**: l'ESP32 crea la propria rete (`UPRISE-Sensor`) → demo
-  ovunque senza infrastruttura, scenario emergenza. Fallback automatico: se lo STA
-  non si connette entro 15 s, parte l'AP
+L'ESP32 **crea la propria rete** (`UPRISE-Sensor`, WPA2, IP fisso `192.168.4.1`) e
+non si collega a nessun WiFi esistente. È una scelta di coerenza col progetto, decisa
+dall'autore il 05/09/2026: nello scenario UPRISE la rete di casa **non esiste**, e un
+firmware che la cerca prima di ripiegare sull'AP racconterebbe una storia diversa da
+quella della tesi. Conseguenze:
+- nessuna credenziale nel firmware → niente `config.h` da tenere fuori dal repo
+- nessun timeout di connessione all'avvio: l'AP è su in ~1 s
+- il PC/tablet di chi guarda la dashboard deve **collegarsi alla rete dell'ESP32**
+  e perde internet nel frattempo. ⚠️ Alcuni telefoni, non vedendo internet, tornano
+  da soli ai dati mobili o mostrano «rete senza internet»: si gestisce con un **DNS
+  catch-all** a bordo (libreria `DNSServer`, già nel core) che risponde `192.168.4.1`
+  a qualunque nome → si può scrivere `uprise.local` o qualsiasi indirizzo e si arriva
+  alla dashboard, e il sistema operativo riconosce il portale
+- la modalità Station (collegarsi a una rete esistente) resta nell'elenco delle
+  estensioni (§8), non nel percorso realizzativo
 
 ---
 
@@ -67,8 +88,11 @@ riprende le stesse grandezze del CSV, più i campi calcolati:
   "pir": 1,                    // sensore PIR (confronto live!)
   "gates_m": [0,5,60,10,0,0,0,0,0],   // energia per-gate moving (eng. mode)
   "gates_s": [0,0,45,8,0,0,0,0,0],    // energia per-gate stationary
+  "light": 25, "out": 1,       // light_level e out_level del frame (rev. 05/09: come il logger)
   "vitality": 54,              // indice di vitalità 0-100 (obiettivo 6, calcolato a bordo)
-  "vitality_class": "attivo"   // nessun_segno | vitalita_bassa | moderato | attivo
+  "vitality_class": "vitalita_moderata"  // vitalita_bassa | vitalita_moderata | vitalita_alta
+                               // (rev. 05/09: TRE classi, ANALISI_VITALITA.md §4;
+                               //  con presence = 0 il campo è "" e vitality = 0)
 }
 ```
 
@@ -137,27 +161,61 @@ firmware CSV (superset)  ==  CSV acquire.py  ==  CSV export web  →  Excel / sc
 
 ```
 firmware/ld2410b_web/
-├── ld2410b_web.ino          # setup WiFi/AP, loop: radar → stato condiviso
+├── ld2410b_web.ino          # setup AP + DNS catch-all, loop: radar → stato condiviso
 ├── radar_task.h             # lettura MyLD2410 (riuso logica di ld2410b_logger)
-├── vitality.h               # indice di vitalità: EWMA energia moving del gate
-│                            #   attivo, normalizzata 0-100 + classificazione
-├── web_server.h             # ESPAsyncWebServer: statiche da LittleFS + WebSocket /ws
-└── data/                    # → caricata su LittleFS (tutto locale, ZERO CDN)
+├── vitality.h               # indice di vitalità v3: fondo per gate sottratto, doppia
+│                            #   EWMA sull'energia del gate attivo, 3 classi
+├── web_server.h             # ESPAsyncWebServer: statiche da PROGMEM (gzip) + WebSocket /ws
+├── web_assets.h             # GENERATO da tools/embed_web.py: i file di web/ in gzip
+└── web/                     # sorgenti della pagina (tutto locale, ZERO CDN)
     ├── index.html           # struttura pagina (aree A-D)
     ├── style.css            # dark theme (dashboard di monitoraggio)
     ├── app.js               # WebSocket client, statistiche, buffer, export CSV
-    └── chart.umd.min.js     # Chart.js in locale (~70 KB) — offline by design
+    └── chart.umd.min.js     # Chart.js v4 (~200 KB in chiaro, ~70 KB in gzip)
+tools/embed_web.py           # comprime web/* e scrive web_assets.h (rev. 05/09)
 ```
 
-### Stack e librerie
+**Perché PROGMEM e non LittleFS (rev. 05/09/2026)**: il plugin «ESP32 Sketch Data
+Upload» previsto in origine **non esiste per l'Arduino IDE 2.x**; l'alternativa è un
+VSIX esterno da installare a mano. Incorporare i file compressi in un header evita
+tutto questo: **un solo upload**, nessuno strumento in più, e il server risponde con
+`Content-Encoding: gzip` (tutti i browser lo decomprimono). Costo: ogni modifica alla
+pagina richiede di rilanciare lo script e ricompilare (~1 min). Accettabile.
+
+### Stack e librerie (rev. 05/09/2026)
 
 | Componente | Scelta | Perché |
 |---|---|---|
-| Server HTTP+WS | **ESPAsyncWebServer** + AsyncTCP | non blocca il loop radar; WebSocket integrato |
+| Server HTTP+WS | **ESP32Async/ESPAsyncWebServer** + **ESP32Async/AsyncTCP** | non blocca il loop radar; WebSocket integrato. ⚠️ Il core ESP32 installato è il **3.3.11**: la libreria originale di me-no-dev **non compila** sul core 3.x, servono questi fork (nel Library Manager con lo stesso nome, autore «ESP32Async»). Nessuna delle due è ancora installata |
+| DNS catch-all | **DNSServer** (nel core) | qualunque nome → `192.168.4.1`; portale riconosciuto dai telefoni |
 | JSON | **ArduinoJson 7** | già installata |
-| File system | **LittleFS** | per servire la pagina; upload da Arduino IDE (plugin) |
-| Grafici | **Chart.js** (bundle locale) | leggero, niente dipendenze, funziona offline |
+| Pagina in flash | **PROGMEM gzip** (header generato) | vedi sopra; niente plugin, un solo upload |
+| Grafici | **Chart.js v4** (bundle locale, gzip) | leggero, niente dipendenze, funziona offline |
 | Export CSV | **Blob + download lato browser** | zero carico sull'ESP32, storico illimitato |
+| Partizione flash | **Huge APP (3 MB No OTA / 1 MB SPIFFS)** | lo schema di default dà 1,2 MB all'applicazione; WiFi + server asincrono + ArduinoJson + MyLD2410 stanno intorno a 1,0-1,2 MB → «Sketch too big». Da impostare in Strumenti → Partition Scheme **prima** di compilare |
+
+### Framework frontend: Angular valutato e scartato (rev. 05/09/2026)
+
+Proposta dell'autore: scrivere la pagina in **Angular**, «così c'è il caricamento in
+tempo reale dei dati». Valutazione:
+
+- **Il tempo reale non dipende dal framework**: lo dà il WebSocket. Venti righe di
+  JavaScript puro ricevono il messaggio a 5 Hz e aggiornano il DOM nello stesso
+  istante di un componente Angular. Su questo punto Angular non aggiunge nulla
+- Angular è comunque **fattibile**: `ng build` produce file statici che l'ESP32 serve
+  come qualsiasi altro, e il proxy del dev server (`proxy.conf.json` con `ws: true`)
+  permette di sviluppare sul PC parlando con l'ESP32 vero
+- Costi: bundle di **100-200 KB in più**, toolchain Node da mantenere, ogni modifica
+  passa per build → script di embed → compilazione → upload; il debug sul
+  microcontrollore si fa su codice minificato
+- L'applicazione è **una pagina con quattro riquadri**, circa 500 righe di JS:
+  l'architettura a componenti e RxJS risolvono problemi che qui non ci sono
+
+**Decisione: JavaScript puro.** Angular resta documentato qui come alternativa
+considerata, con la motivazione: è la stessa logica con cui `ANALISI_SITO_SERVER.md`
+documenta il server esterno scartato. Se in futuro la UI crescesse (più sensori, più
+pagine, configurazione dal browser), la valutazione andrebbe rifatta: il firmware non
+cambierebbe, solo la cartella `web/`.
 
 ### Flusso dati
 
@@ -205,8 +263,10 @@ CSV. L'analisi vera resta nella pipeline già costruita.
 
 Ogni step è funzionante e dimostrabile da solo:
 
-1. **Step 1 — WiFi + pagina statica** (mezza giornata)
-   ESP32 in STA/AP, LittleFS, index.html "hello". Verifica: pagina raggiungibile da telefono
+1. **Step 1 — Access Point + pagina statica** (mezza giornata)
+   ESP32 in AP con DNS catch-all, pagina «hello» servita da PROGMEM gzip. Verifica:
+   collegando il telefono alla rete `UPRISE-Sensor`, la pagina si apre sia su
+   `192.168.4.1` sia su un nome qualsiasi (rev. 05/09)
 2. **Step 2 — WebSocket live** (mezza giornata)
    JSON a 5 Hz, area A (stato testuale). Verifica: valori cambiano muovendosi davanti al sensore
 3. **Step 3 — Grafici** (1 giorno)
@@ -214,8 +274,10 @@ Ogni step è funzionante e dimostrabile da solo:
 4. **Step 4 — Sessioni, statistiche, export CSV** (1 giorno)
    form metadati, accumulo, download. Verifica di accettazione: CSV esportato dal
    browser analizzato con `analizza_test.py` → stessi numeri del CSV seriale equivalente
-5. **Step 5 — Indice di vitalità** (dopo la Fase 6 dei test: algoritmo tarato sui dati)
-   `vitality.h` a bordo + gauge. Verifica: i 4 scenari `vitalita_*` producono le 4 classi
+5. **Step 5 — Indice di vitalità** (algoritmo v3 già tarato e validato il 31/08/2026)
+   `vitality.h` a bordo + gauge. Verifica: riproducendo davanti al sensore i tre
+   scenari a 1 m (immobile / micro-movimenti / cammino sul posto) la gauge dà le tre
+   classi attese, e la stanza vuota dà vitality 0 (rev. 05/09: tre classi, non quattro)
 
 **Test di accettazione finale** (chiude l'obiettivo 5): sessione di 10 min con la web UI
 in parallelo al logging seriale → i due CSV devono dare le stesse statistiche.
@@ -244,7 +306,13 @@ l'ESP32 tiene solo l'ultimo campione, lo storico vive nel browser.
 | CSV esportato | ~2 MB/ora (18.000 righe) | Excel: 1.048.576 righe | ~58 h in un file |
 
 Limite reale: **client simultanei** (~4-5 browser per la RAM delle connessioni TCP) —
-sufficiente per demo e test.
+sufficiente per demo e test. In modalità AP il limite dei client WiFi associati è
+configurabile (default 4): coincide con quello dei client WebSocket.
+
+⚠️ **Flash, non RAM, è il vincolo che morde per primo** (rev. 05/09/2026): non per i
+dati ma per il **codice**. Con lo schema di partizione di default l'applicazione ha
+1,2 MB e lo stack WiFi + server asincrono la riempie quasi tutta. Con «Huge APP» ne ha
+3 MB e la pagina compressa (~80 KB con Chart.js) ci sta con ampio margine.
 
 ### Quando servirebbe un server esterno (nessuno dei casi riguarda la tesi)
 
@@ -265,6 +333,10 @@ solo superfluo.
   sotto il banco: SÌ/NO + vitalità") → mockup del tablet soccorritore UPRISE
 - Grafico spettro FFT live del respiro (porting di analizza_respiro.py in JS)
 - Salvataggio sessioni in LittleFS per funzionare senza browser collegato
+- Modalità **Station** (l'ESP32 si collega a una rete esistente, con fallback all'AP):
+  comoda in sviluppo, esclusa dalla v1 il 05/09/2026 per coerenza con lo scenario
+  senza infrastruttura
+- Frontend in Angular, se la UI crescesse oltre la pagina singola (valutazione in §4)
 
 ---
 

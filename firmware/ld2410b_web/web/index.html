@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UPRISE Sensor</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="testata">
+  <div class="stato">
+    <span id="pallino" class="pallino off"></span>
+    <span id="stato-testo">connessione…</span>
+  </div>
+  <h1>UPRISE Sensor <small>· LD2410B + PIR</small></h1>
+  <div class="dist-testata" id="dist-testata">—</div>
+</header>
+
+<div id="banner" class="banner" hidden></div>
+
+<main class="griglia">
+
+  <!-- A. STATO LIVE -->
+  <section class="riquadro" id="area-a">
+    <h2>A · Stato live</h2>
+    <div class="pillole">
+      <div class="pillola" id="p-radar"><span class="etichetta">radar</span><span class="valore" id="radar-stato">—</span></div>
+      <div class="pillola" id="p-pir"><span class="etichetta">PIR</span><span class="valore" id="pir-stato">—</span></div>
+    </div>
+    <dl class="dati">
+      <dt>in movimento</dt>   <dd id="mov">—</dd>
+      <dt>energia mov.</dt>   <dd><div class="barra"><div id="barra-m" class="riempi mov"></div></div><span id="menergy" class="num">—</span></dd>
+      <dt>fermo</dt>          <dd id="still">—</dd>
+      <dt>energia ferm.</dt>  <dd><div class="barra"><div id="barra-s" class="riempi still"></div></div><span id="senergy" class="num">—</span></dd>
+      <dt>luce</dt>           <dd id="light">—</dd>
+      <dt>pin OUT</dt>        <dd id="out">—</dd>
+      <dt>messaggi</dt>       <dd id="contatore">0 <span class="muto">(<span id="hz">0</span> Hz)</span></dd>
+    </dl>
+  </section>
+
+  <!-- B. VITALITÀ (step 5) -->
+  <section class="riquadro attesa">
+    <h2>B · Indice di vitalità</h2>
+    <p class="muto">Step 5: gauge 0–100 con tre classi, calcolato a bordo.</p>
+  </section>
+
+  <!-- C. GRAFICI (step 3) -->
+  <section class="riquadro attesa larga">
+    <h2>C · Grafici</h2>
+    <p class="muto">Step 3: energia nel tempo, energia per gate con soglie, timeline radar vs PIR.</p>
+    <div class="gate-grezzi">
+      <div><span class="etichetta">gate mov.</span> <code id="gm">—</code></div>
+      <div><span class="etichetta">gate ferm.</span> <code id="gs">—</code></div>
+    </div>
+  </section>
+
+  <!-- D. SESSIONE (step 4) -->
+  <section class="riquadro attesa">
+    <h2>D · Sessione ed export</h2>
+    <p class="muto">Step 4: metadati, statistiche, CSV con le colonne di acquire.py.</p>
+  </section>
+
+  <!-- DIAGNOSTICA -->
+  <section class="riquadro">
+    <h2>Diagnostica ESP32</h2>
+    <dl class="dati compatta">
+      <dt>build</dt>          <dd id="build">—</dd>
+      <dt>indirizzo</dt>      <dd id="ip">—</dd>
+      <dt>acceso da</dt>      <dd id="uptime">—</dd>
+      <dt>client</dt>         <dd id="client">—</dd>
+      <dt>heap libero</dt>    <dd id="heap">—</dd>
+      <dt>pagina (hash)</dt>  <dd id="hash">—</dd>
+    </dl>
+  </section>
+
+</main>
+
+<footer class="pie">
+  Tesi triennale UNICAM · progetto UPRISE · <span id="ora">—</span>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+/* Tema scuro da dashboard di monitoraggio (PROGETTO_SITO_DETTAGLIO.md §3.7).
+   Colori di stato centralizzati: gli stessi valori andranno nei grafici e nella gauge. */
+:root {
+  --fondo: #121417;
+  --riquadro: #1b1e23;
+  --bordo: #2a2e35;
+  --testo: #e8eaed;
+  --testo-muto: #9aa0a6;
+  --ok: #34c759;        /* presenza / connesso */
+  --warn: #ffb020;      /* solo stazionario / sensore muto */
+  --alert: #ff453a;     /* disconnesso / vitalita' bassa (priorita' alta) */
+  --off: #5f6368;       /* vuoto */
+  --accento: #4da3ff;
+  --mov: #4da3ff;       /* canale moving nei grafici */
+  --still: #b57bff;     /* canale stationary nei grafici */
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--testo);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- testata ---- */
+.testata {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--bordo);
+  background: var(--riquadro);
+  flex-wrap: wrap;
+}
+.testata h1 { font-size: 1.15rem; margin: 0; font-weight: 600; flex: 1; }
+.testata h1 small { color: var(--testo-muto); font-weight: 400; font-size: 0.85rem; }
+.dist-testata { font-size: 1.3rem; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 5ch; text-align: right; }
+
+.stato { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; min-width: 12rem; }
+.pallino {
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--off);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
+  transition: background 0.15s;
+}
+.pallino.on    { background: var(--ok);    box-shadow: 0 0 10px var(--ok); }
+.pillola.on .valore { color: var(--ok); }
+.pallino.warn  { background: var(--warn);  box-shadow: 0 0 10px var(--warn); }
+.pallino.alert { background: var(--alert); }
+
+/* ---- banner di stato (WS caduto, sensore muto) ---- */
+.banner {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  background: var(--alert);
+  color: #fff;
+}
+.banner.warn { background: var(--warn); color: #000; }
+
+/* ---- griglia ---- */
+.griglia {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  flex: 1;
+  align-content: start;
+}
+.larga { grid-column: 1 / -1; }
+@media (max-width: 700px) {
+  .griglia { grid-template-columns: 1fr; }
+  .larga { grid-column: auto; }
+}
+
+.riquadro {
+  background: var(--riquadro);
+  border: 1px solid var(--bordo);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+}
+.riquadro h2 { margin: 0 0 0.6rem; font-size: 1rem; font-weight: 600; color: var(--accento); }
+.riquadro p { margin: 0 0 0.75rem; color: var(--testo-muto); }
+.riquadro.attesa { border-style: dashed; }
+.muto { color: var(--testo-muto); }
+
+/* ---- area A ---- */
+.pillole { display: flex; gap: 0.75rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+.pillola {
+  flex: 1; min-width: 8rem;
+  border: 1px solid var(--bordo);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  display: flex; justify-content: space-between; align-items: baseline;
+  transition: border-color 0.15s;
+}
+.pillola .etichetta { color: var(--testo-muto); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.pillola .valore { font-weight: 600; }
+.pillola.on   { border-color: var(--ok); }
+.pillola.warn { border-color: var(--warn); }
+.pillola.warn .valore { color: var(--warn); }
+.pillola.off .valore { color: var(--testo-muto); }
+
+.dati {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.4rem 1rem;
+  margin: 0;
+  align-items: center;
+}
+.dati.compatta { gap: 0.25rem 1rem; font-size: 0.9rem; }
+.dati dt { color: var(--testo-muto); }
+.dati dd { margin: 0; font-family: ui-monospace, Consolas, monospace; display: flex; align-items: center; gap: 0.6rem; }
+.dati .num { min-width: 3ch; text-align: right; }
+
+.barra { flex: 1; height: 10px; background: var(--bordo); border-radius: 5px; overflow: hidden; }
+.riempi { height: 100%; width: 0; transition: width 0.15s; }
+.riempi.mov   { background: var(--mov); }
+.riempi.still { background: var(--still); }
+
+.gate-grezzi { font-size: 0.85rem; display: grid; gap: 0.3rem; }
+.gate-grezzi .etichetta { color: var(--testo-muto); display: inline-block; min-width: 6rem; }
+.gate-grezzi code { font-family: ui-monospace, Consolas, monospace; letter-spacing: 0.05em; }
+
+/* ---- pie' ---- */
+.pie {
+  padding: 0.6rem 1.25rem;
+  border-top: 1px solid var(--bordo);
+  color: var(--testo-muto);
+  font-size: 0.8rem;
+}

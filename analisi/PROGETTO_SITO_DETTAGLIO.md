@@ -7,21 +7,32 @@
 
 ---
 
+> 📝 **Revisione del 05/09/2026**: allineato alle decisioni di `ANALISI_WEB_UI.md`
+> (rete solo AP, JavaScript puro, PROGMEM gzip, fork ESP32Async, partizione Huge APP,
+> vitalità v3 a tre classi con fondo sottratto, CSV a 29 colonne). Le parti toccate
+> sono marcate «rev. 05/09».
+
 ## 1. Mappa dei file e responsabilità
 
 ```
 firmware/ld2410b_web/
 ├── ld2410b_web.ino     # entry point: setup + loop
-├── config.h            # SSID/password, pin, costanti (unico file da toccare per configurare)
+├── config.h            # SSID/password dell'AP, pin, costanti, fondo per gate
+│                       #   (nessun segreto: l'AP è pubblico per definizione → resta nel repo)
 ├── radar_task.h        # lettura MyLD2410 → struct RadarSample (riuso da ld2410b_logger)
-├── vitality.h          # calcolo indice vitalità → int 0-100 + classe
-├── web_server.h        # HTTP statico + WebSocket /ws + broadcast JSON
-└── data/               # → LittleFS (upload con plugin "ESP32 Sketch Data Upload")
+├── vitality.h          # indice di vitalità v3 → int 0-100 + classe (3 classi)
+├── web_server.h        # HTTP statico da PROGMEM (gzip) + WebSocket /ws + broadcast JSON
+├── web_assets.h        # GENERATO: array PROGMEM dei file di web/ compressi (non editare)
+└── web/                # sorgenti della pagina (rev. 05/09: era data/ per LittleFS)
     ├── index.html      # markup delle 4 aree (nessuna logica inline)
     ├── style.css       # tema scuro, layout grid, classi di stato
     ├── app.js          # TUTTA la logica client (WS, stats, buffer, CSV, grafici)
-    └── chart.umd.min.js# Chart.js v4 locale (~70 KB) — NIENTE CDN
+    └── chart.umd.min.js# Chart.js v4 locale (~200 KB, ~70 KB gzip) — NIENTE CDN
+tools/embed_web.py      # gzip di web/* → web_assets.h (da rilanciare a ogni modifica della pagina)
 ```
+
+Prerequisiti Arduino IDE (rev. 05/09): librerie **ESP32Async/ESPAsyncWebServer** e
+**ESP32Async/AsyncTCP** (core 3.x), Partition Scheme **Huge APP (3MB No OTA/1MB SPIFFS)**.
 
 Regola: **una direzione sola dei dati** — il firmware pubblica, il browser elabora.
 L'ESP32 non riceve comandi dal browser (v1): niente configurazione radar via web,
@@ -42,8 +53,10 @@ struct RadarSample {
   uint8_t  menergy, senergy;  // 0-100
   bool     pir;
   uint8_t  gatesM[9], gatesS[9];  // engineering mode
+  uint8_t  light;             // light_level 0-255 (rev. 05/09: come il logger a 29 colonne)
+  bool     outLevel;          // out_level, stato del pin OUT letto dal frame
   uint8_t  vitality;          // 0-100 (calcolato da vitality.h)
-  const char* vitalityClass;  // puntatore a stringa statica
+  const char* vitalityClass;  // puntatore a stringa statica ("" se presence = 0)
 };
 extern RadarSample lastSample;   // scritto dal loop, letto dal broadcast
 ```
@@ -63,6 +76,11 @@ void loop() {
     stampaCSVSeriale(lastSample);          // canale seriale SEMPRE attivo (test/debug)
     wsBroadcast(lastSample);               // → tutti i client connessi
   }
+  if (millis() - lastCleanup >= 1000) {    // rev. 05/09: richiesto da ESPAsyncWebServer,
+    lastCleanup = millis();                //   libera i client WS chiusi male (refresh,
+    ws.cleanupClients();                   //   tab chiuse); senza, si esauriscono i client
+  }
+  dns.processNextRequest();                // DNS catch-all dell'AP (rev. 05/09)
 }
 ```
 
@@ -80,7 +98,7 @@ void wsBroadcast(const RadarSample& s) {
   if (ws.count() == 0) return;      // nessun client: zero lavoro
   doc.clear();
   doc["t"] = s.t;  doc["presence"] = s.presence ? 1 : 0;
-  // ... campi come da schema in ANALISI_WEB_UI.md §2 ...
+  // ... campi come da schema in ANALISI_WEB_UI.md §2, compresi "light" e "out" ...
   JsonArray gm = doc["gates_m"].to<JsonArray>();
   for (int i = 0; i < 9; i++) gm.add(s.gatesM[i]);
   // idem gates_s
@@ -95,30 +113,49 @@ L'algoritmo è un **obiettivo di tesi a sé** (obiettivo 6) e ha il suo document
 specifica: **`ANALISI_VITALITA.md`** (algoritmo, razionale, taratura sui CSV della
 Fase 6, validazione, casi limite). Qui interessa solo il contratto verso il sito:
 
-- `vitality.h` implementa l'algoritmo di ANALISI_VITALITA.md §3 con le costanti
-  tarate in Python — il porting avviene SOLO a soglie validate (step 5)
-- output per il JSON: `vitality` (int 0-100) e `vitality_class` (stringa)
-- mappatura classe → colore nella UI: `nessun_segno`=grigio, `vitalita_bassa`=giallo,
-  `moderato`=arancio, `attivo`=verde (stesse variabili CSS di §3.7)
-- se `presence == 0` → vitality = 0 (forzatura, definita nella specifica)
+- `vitality.h` implementa la **v3** di ANALISI_VITALITA.md §4.5 (rev. 05/09), tarata
+  e validata il 31/08/2026 su `vitalita_proto.py`: componente di livello dalla **sola
+  energia del gate attivo** (non `moving_energy`, che satura), doppia EWMA con
+  **α_m = 0,05**, **α_v = 0,01**, **k = 0,5**, soglie di classe **45** e **95**
+- ⚠️ **fondo per gate sottratto prima di tutto** (§5.3 della specifica): senza, la
+  stanza vuota e una persona immobile danno lo stesso indice (19 contro 21). Il
+  firmware tiene in `config.h` i nove valori misurati a stanza vuota (g0 ≈ 18, g1 ≈ 13,
+  g2-8 = 3-5) e riscala `(E − fondo) · 100 / (100 − fondo)`. Estensione naturale:
+  misurarli all'avvio con 60 s di stanza vuota (auto-taratura all'installazione)
+- output per il JSON: `vitality` (int 0-100) e `vitality_class`, **tre valori**:
+  `vitalita_bassa` (0-45), `vitalita_moderata` (46-95), `vitalita_alta` (96-100)
+- mappatura classe → colore nella UI, con la **priorità di soccorso inversa**
+  all'indice (specifica §4): `vitalita_bassa`=**rosso** (presenza confermata, movimento
+  minimo: la più urgente), `vitalita_moderata`=arancio, `vitalita_alta`=giallo;
+  con `presence == 0` la gauge è grigia e riporta «nessuna presenza»
+- se `presence == 0` → vitality = 0 e classe vuota (gate di presenza, definito nella
+  specifica: l'assenza non è una classe di vitalità)
 
 ### 2.5 Endpoint HTTP
 
 | Rotta | Risposta | Note |
 |---|---|---|
-| `GET /` | index.html da LittleFS | |
-| `GET /style.css`, `/app.js`, `/chart.umd.min.js` | statici LittleFS | cache header 1h |
+| `GET /` | index.html da PROGMEM, `Content-Encoding: gzip` | rev. 05/09 |
+| `GET /style.css`, `/app.js`, `/chart.umd.min.js` | statici PROGMEM gzip | cache header 1h |
 | `GET /ws` | upgrade WebSocket | max 4 client: il 5° viene rifiutato |
 | `GET /info` | JSON: versione fw, uptime, heap libero, client WS | diagnostica |
+| qualunque altro percorso / nome host | redirect 302 a `http://192.168.4.1/` | portale: i controlli di connettività dei telefoni (`connectivitycheck.*`, `captive.apple.com`, `msftconnecttest.com`) atterrano sulla dashboard |
 
-### 2.6 WiFi (config.h)
+### 2.6 WiFi — solo Access Point (rev. 05/09/2026)
 
 ```
-1. prova STA con SSID/password di config.h, timeout 15 s
-2. fallback AP: SSID "UPRISE-Sensor", password "uprise2026", IP 192.168.4.1
-3. stampa su seriale l'IP effettivo (unica riga NON-CSV, prefissata con "# " così
-   acquire.py e analizza_test.py la ignorano)
+1. WiFi.mode(WIFI_AP); WiFi.softAP("UPRISE-Sensor", "uprise2026", canale 1, hidden 0, max 4)
+2. IP fisso 192.168.4.1 (default del softAP), gateway = se stesso
+3. DNSServer sulla porta 53: risponde 192.168.4.1 a QUALUNQUE nome
+4. stampa su seriale "# AP UPRISE-Sensor attivo, http://192.168.4.1" (riga prefissata
+   con "# ", che acquire.py scarta)
 ```
+
+Niente modalità Station, niente credenziali di reti esistenti, niente timeout di
+connessione: l'ESP32 è la rete. Decisione dell'autore del 05/09/2026, coerente con lo
+scenario UPRISE (in emergenza non c'è infrastruttura) e con la motivazione del
+professore per il sito self-hosted. La modalità Station è nell'elenco estensioni di
+`ANALISI_WEB_UI.md` §8.
 
 ---
 
@@ -201,6 +238,7 @@ per non sovrapporsi al radar — si legge come due timeline parallele.
 const HEADER = "timestamp_ms,radar_presence,moving_target,stationary_target," +
   "moving_distance_cm,stationary_distance_cm,moving_energy,stationary_energy," +
   "pir_presence," + gateCols() +                       // menergy_gate0..8,senergy_gate0..8
+  ",light_level,out_level" +                           // rev. 05/09: 29 colonne come il logger
   ",pc_time_s,group_id,trial_id,scenario,ground_truth_presence,ground_truth_state";
 
 function scaricaCSV() {
@@ -256,6 +294,8 @@ ultima rilevazione X s fa, distanza min/med/max, vitalità min/max
 | Refresh pagina durante sessione | dati di sessione PERSI (stanno in RAM JS) → warning `beforeunload` se REC attivo |
 | Heap ESP32 basso (<20 KB) | `/info` lo espone; il firmware chiude il client WS più vecchio |
 | Valori mancanti nel frame radar (engineering off) | gates a 0 nel JSON; C2 mostra barre vuote, il resto vive |
+| Telefono collegato all'AP «senza internet» che torna ai dati mobili (rev. 05/09) | il DNS catch-all fa riconoscere l'AP come portale; se il telefono insiste, disattivare i dati mobili per la demo. Da PC il problema non esiste |
+| Pagina modificata ma l'ESP32 serve quella vecchia (rev. 05/09) | `web_assets.h` non rigenerato: rilanciare `tools/embed_web.py` prima di compilare. Lo script stampa l'hash dei file, che il firmware espone in `/info` |
 
 Il refresh che perde la sessione è accettato in v1 (i test "ufficiali" hanno comunque
 il canale seriale in parallelo); l'alternativa (persistenza in localStorage/IndexedDB)
@@ -269,11 +309,11 @@ Riprende i 5 step di ANALISI_WEB_UI.md §6, con il "definition of done" di ciasc
 
 | Step | Contenuto | Accettazione (verificabile) |
 |---|---|---|
-| 1 | config.h, WiFi STA+fallback AP, LittleFS, index statico | pagina raggiungibile da telefono in entrambe le modalità; IP stampato su seriale |
+| 1 | AP + DNS catch-all, `embed_web.py`, index statico da PROGMEM gzip | telefono e PC collegati a `UPRISE-Sensor` aprono la pagina su `192.168.4.1` e su un nome qualsiasi; lo sketch compila con Huge APP e le due librerie ESP32Async (rev. 05/09) |
 | 2 | WS + broadcast JSON + area A testuale | valori cambiano <0.5 s dopo un movimento; riconnessione automatica dopo reset ESP32 |
 | 3 | Chart.js locale + C1/C2/C3 + gauge B | 10 min di run senza rallentamenti su tablet; C3 mostra PIR che cade e radar che resta con persona ferma |
 | 4 | form sessione, stats, export CSV | **CSV web di 5 min analizzato da analizza_test.py = stessi numeri (±1 campione) del CSV seriale acquisito in parallelo** |
-| 5 | vitality.h a bordo + gauge collegata | i 4 scenari `vitalita_*` della Fase 6 producono le 4 classi attese |
+| 5 | vitality.h a bordo + gauge collegata | i **tre** scenari a 1 m (immobile / micro / cammino) danno le tre classi; stanza vuota → vitality 0; **controllo numerico**: il CSV esportato dal browser passato a `vitalita_proto.py` con gli stessi parametri riproduce l'indice calcolato a bordo entro ±1 (rev. 05/09) |
 
 L'accettazione dello step 4 è il cuore: dimostra che web UI e pipeline dati della tesi
 sono lo stesso sistema, non due sistemi paralleli.
@@ -283,6 +323,8 @@ sono lo stesso sistema, non due sistemi paralleli.
 ## 6. Cosa resta fuori (v1) — deciso, non dimenticato
 
 - Configurazione del radar dal browser (si usa l'app Bluetooth HLKRadarTool)
+- Modalità WiFi Station: l'ESP32 non si collega a reti esistenti (decisione 05/09/2026)
+- Frontend con framework (Angular): valutato e scartato in `ANALISI_WEB_UI.md` §4
 - Persistenza sessioni su ESP32/localStorage
 - Autenticazione (rete locale/AP dedicato: superflua per la tesi)
 - HTTPS/WSS (l'ESP32 lo reggerebbe a fatica; inutile su rete propria)
