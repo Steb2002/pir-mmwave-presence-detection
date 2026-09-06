@@ -885,6 +885,19 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **montaggio e zero del metro vanno annotati** prima di citare errori assoluti.
       Con queste soglie la portata dell'esemplare e' definita meglio di prima: non "vede
       fino a 2 m" ma "si accende entro 1 m e non si spegne fino a 2"
+- 🚨 **STATO ANOMALO DEL LD2420 DOPO RIAVVIO A CALDO (06-07/09/2026)** — dopo ~10 h acceso,
+      un ciclo di alimentazione breve ha lasciato il modulo con **tutti i 16 gate a ×10-20**
+      (g0 ~510 invece di ~105, g2 ~210 invece di ~13), piedistallo costante al 2-3 % fra
+      file diversi, presenza 100 % e `dist_raw` a riposo, **nessuna risposta alla persona**
+      (a 4 m fermo e a 1 m camminando: numeri uguali). Sopravvissuto ai reset dell'ESP32 e
+      a un secondo ciclo rapido; escluse alimentazione, cavi, porta USB, caricatore. La
+      prova a mano (gate a migliaia a 20 cm) dice che l'antenna riceve: e' il fondo interno
+      che si e' alzato. **Rientrato dopo 15 min spento.** Cinque trial del Test 2.1 acquisiti
+      in quello stato sono NON VALIDI (`ingresso2420_rumore_*`, tenuti come documentazione).
+      📌 **Regola**: a ogni sessione e dopo ogni ciclo di alimentazione, 60 s di
+      `check2420_fondo` prima di acquisire — g0 ~100 e g2 ~13, altrimenti ≥ 15 min spento.
+      Vale anche per il rilascio: e' un altro comportamento del modulo che il frame non
+      spiega e che il LD2410B non ha mai mostrato in 6,55 h
 - 🚪 **Seconda richiesta del professore, stessa mail: quantificare l'attenuazione**
       *("se prima arrivava a 5 mt, con una porta di mezzo quanto si attenua il segnale?")*.
       Non è una rilettura dei dati della Fase 3: quelli sono in punti percentuali di
