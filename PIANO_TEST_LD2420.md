@@ -472,6 +472,24 @@ esiste la grandezza continua su cui il LD2410B costruisce l'indice di vitalità 
 esaurita. La frazione di `dist_raw` valida cresce con il movimento (0-9 → 25-86 → 100 %)
 ma i valori sono spesso stantii (133 cm ricorrente): non è un indicatore usabile.
 
+#### 📏 Test 1.2-2420 (06/09/2026): presenza 100 % a 0,5-2 m, distanza solo fino a 1 m
+
+| distanza | presenza | trigger superato /min | distanza riportata | errore | valori distinti /60 s |
+|---|---|---|---|---|---|
+| 0,5 m | 100 % | 33-64 | **59 ± 5** | +9 cm | 22-38 |
+| 1 m | 100 % | 24-34 | **121 ± 9** | +21 cm | 4-11 |
+| 1,5 m | 100 % | **0-8** | stantia (47/61/71 o riposo) | — | **0-1** |
+| 2 m | 100 % | **1-13** | stantia (60/212/258/134 o riposo) | — | **0-1** |
+
+- **acquisisce fino a ~1 m, mantiene fino a 2 m**: oltre il metro la persona sta appena
+  sopra il fondo (p95 26-41 vs max 25 a vuoto) e supera l'hold ogni 5-12 s, ma quasi mai il
+  trigger. La presenza a 1,5-2 m era già accesa dal passaggio a 1 m
+- **la distanza a 1,5-2 m non è una misura**: un solo valore per trial, agganciato e mai
+  aggiornato. Retta non costruibile. Dove riporta (≤ 1 m) sbaglia del ~20 %; LD2410B alle
+  stesse distanze: −0,5 / +11 cm, con inseguimento continuo fino a 5 m
+- ⚠️ zero del metro e montaggio da annotare: la tacca da 1 m ha dato 105 / 118 / 105 / 121
+  in quattro momenti diversi. Gli errori assoluti valgono solo con lo zero dichiarato
+
 ---
 
 ### Test 1.4-2420 — Persona sotto il banco (~60 cm)

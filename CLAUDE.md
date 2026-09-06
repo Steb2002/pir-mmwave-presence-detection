@@ -873,6 +873,18 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       (9,3) — l'inverso del PIR. `dist_raw` valida 0-9 → 25-86 → 100 % col movimento, ma
       con valori **stantii** (133 cm ricorre in tre trial diversi con la persona a 105):
       distanza usabile solo su bersaglio in moto continuo, come dice il §8
+- 📏 **TEST 1.2-2420 (06/09/2026): presenza 100 % da 0,5 a 2 m, distanza riportata solo
+      fino a 1 m.** 20 trial, cammino sul posto. **Acquisisce fino a ~1 m, mantiene fino a
+      2 m**: a 1,5-2 m il gate 3 della persona sta a p95 26-41 contro un fondo max 25,
+      supera l'hold (29) ogni 5-12 s ma il trigger (42) solo 0-13 volte al minuto — la
+      presenza era gia' alta dal passaggio a 1 m. **Distanza**: 0,5 m → 59 ± 5 (+9 cm,
+      22-38 valori distinti/min), 1 m → 121 ± 9 (+21 cm, 4-11 valori), **1,5-2 m → un solo
+      valore stantio per trial** (0-1 distinti): non e' una misura, retta non costruibile.
+      LD2410B stesse distanze: −0,5 / +11 cm, inseguimento continuo fino a 5 m.
+      ⚠️ Lo zero della tacca da 1 m e' cambiato fra sessioni (105 / 118 / 105 / 121):
+      **montaggio e zero del metro vanno annotati** prima di citare errori assoluti.
+      Con queste soglie la portata dell'esemplare e' definita meglio di prima: non "vede
+      fino a 2 m" ma "si accende entro 1 m e non si spegne fino a 2"
 - 🚪 **Seconda richiesta del professore, stessa mail: quantificare l'attenuazione**
       *("se prima arrivava a 5 mt, con una porta di mezzo quanto si attenua il segnale?")*.
       Non è una rilettura dei dati della Fase 3: quelli sono in punti percentuali di
