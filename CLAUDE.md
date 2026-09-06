@@ -863,6 +863,16 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       - abbassare il gate max **non** avrebbe risolto il mancato rilascio (simulato: a gate
         2 il gate 2 stesso teneva l'hold, gap max 24,4 s). Se in futuro si scende a gate 2,
         il gemello LD2410B e' `sel_dentro_1m`, non `fermo_1m_H`
+- 📉 **DOSE-RISPOSTA A 1 m SUL LD2420: PIATTA (06/09/2026)** — `micromovimenti2420_1m`
+      5/5 al 100 %, ma gate 2: vuoto 13,4 · immobile **41,0 ± 9,3** · micro **34,8 ± 1,0** ·
+      cammino **31,0**. Ordine **rovesciato** rispetto al LD2410B (68,6 → 84,4 → 99,3) e
+      condizioni sovrapposte. Il canale separa vuoto/occupato e poi non gradua: **su questo
+      esemplare non esiste la grandezza continua per l'indice di vitalita'** (obiettivo 6
+      resta sul LD2410B, e il confronto va scritto come limite dell'esemplare). Curiosita':
+      i micro-movimenti sono la condizione piu' ripetibile (dev 1,0), l'immobile la meno
+      (9,3) — l'inverso del PIR. `dist_raw` valida 0-9 → 25-86 → 100 % col movimento, ma
+      con valori **stantii** (133 cm ricorre in tre trial diversi con la persona a 105):
+      distanza usabile solo su bersaglio in moto continuo, come dice il §8
 - 🚪 **Seconda richiesta del professore, stessa mail: quantificare l'attenuazione**
       *("se prima arrivava a 5 mt, con una porta di mezzo quanto si attenua il segnale?")*.
       Non è una rilettura dei dati della Fase 3: quelli sono in punti percentuali di

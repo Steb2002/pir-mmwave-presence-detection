@@ -454,6 +454,24 @@ stanza vuota. Con quella, negativo e positivi passano e i cinque trial da fermo 
 - rilascio a stanza vuota ~55 s (30 s di ritardo + coda dell'ultimo superamento);
   per questo lo scarto dei trial da fermo è **90 s**, non 60
 
+#### 📉 Dose-risposta a 1 m (06/09/2026): presenza piatta al 100 %, energia NON graduata
+
+`micromovimenti2420_1m_T01..T05`, stessa sessione e posizione dei trial da fermo:
+
+| condizione | LD2410B `menergy` | **LD2420 gate 2** | presenza LD2420 |
+|---|---|---|---|
+| immobile | 68,6 | **41,0 ± 9,3** | 100 % |
+| micro-movimenti | 84,4 | **34,8 ± 1,0** | 100 % |
+| cammino sul posto | 99,3 | **31,0** | 100 % |
+
+Sul LD2410B la scala è monotona; qui è rovesciata e le tre condizioni si sovrappongono
+entro la dispersione dell'immobile. Il canale d'energia dell'esemplare separa vuoto (13) da
+occupato (30-50) e basta: **è un bit, non una scala**. Conseguenza: su questo LD2420 non
+esiste la grandezza continua su cui il LD2410B costruisce l'indice di vitalità (obiettivo 6)
+— va scritto come limite dell'esemplare, con l'ipotesi (non dimostrata) della dinamica
+esaurita. La frazione di `dist_raw` valida cresce con il movimento (0-9 → 25-86 → 100 %)
+ma i valori sono spesso stantii (133 cm ricorrente): non è un indicatore usabile.
+
 ---
 
 ### Test 1.4-2420 — Persona sotto il banco (~60 cm)
