@@ -837,6 +837,32 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       modalità binaria obbligatoria, **gate max 6 + soglie tarate** (deroga dichiarata alla
       parità di configurazione: a soglie di fabbrica il modulo non rilascia), e ogni numero
       attribuito **all'esemplare**, mai al modello. ~9,5 h + 1 notturna
+- 🎯 **TEST 1.3-2420 COMPLETATO (06/09/2026): il LD2420 MANTIENE la persona in piedi
+      immobile a 1 m in 5 trial su 5** — `radar_rate_%` = 100,00 ± 0,00 su 202 s × 5, zero
+      fronti. Riga a tre sensori a geometria identica: **LD2410B 100 % · LD2420 100 % ·
+      PIR 1,52 %**. Non e' coda: sul gate 2 l'hold e' superato nel 17-44 % dei campioni con
+      intervallo massimo 5,8-16 s (< 30 s di ritardo), energia 30-51 contro fondo 13.
+      🚨 **Ma la strada per arrivarci e' essa stessa un risultato**: la taratura del tool
+      del 04/09 **non rilasciava** a stanza vuota, e nemmeno **due nuove scansioni** — l'hold
+      del gate 5 esce **13,84 / 13,82 / 13,84 dB in tre scansioni indipendenti** (rumore
+      stimato ~7) contro una **media misurata di 15 e massimo 34** su 120 s. Il *bottom noise
+      scan* ufficiale sottostima le code in modo ripetibile su questo esemplare. Soglie
+      finali `ld2420_config_fondo120s_max_6.xml`: **formula del manuale** (5× / 3,5×) su
+      **rumore = media a 120 s** del nostro file. Deroga piu' ampia di quella del piano, da
+      dichiarare cosi'. Meccanismo verificato con simulazione sul file stesso prima di
+      caricare: gap max 52,6 s > 30 s
+      - **§8 del manuale misurato**: `dist_raw` a riposo (2-5 cm) con presenza al 100 % in
+        4/5 trial; T04 riporta **133 cm costanti per 202 s**. Dice *se*, non *dove*
+      - ⚠️ **il gate 2 NON distingue immobile da cammino sul posto**: positivo a 105 cm
+        media 29 / p95 68, persona ferma media 30-51 / p95 80-121. Sul LD2410B le stesse
+        condizioni davano `menergy` 68,6 vs 99,3. Ipotesi (non dimostrata): dinamica
+        dell'esemplare ~6,5 dB, esaurita a 1 m → **la dose-risposta 2.3-2420 puo' uscire
+        piatta**; farla comunque
+      - rilascio a stanza vuota **~55 s** (LD2410B: 9-12 s con timeout 5 s). Scarto dei
+        trial da fermo alzato a **90 s** (`--duration 292 --transitorio 90`)
+      - abbassare il gate max **non** avrebbe risolto il mancato rilascio (simulato: a gate
+        2 il gate 2 stesso teneva l'hold, gap max 24,4 s). Se in futuro si scende a gate 2,
+        il gemello LD2410B e' `sel_dentro_1m`, non `fermo_1m_H`
 - 🚪 **Seconda richiesta del professore, stessa mail: quantificare l'attenuazione**
       *("se prima arrivava a 5 mt, con una porta di mezzo quanto si attenua il segnale?")*.
       Non è una rilettura dei dati della Fase 3: quelli sono in punti percentuali di

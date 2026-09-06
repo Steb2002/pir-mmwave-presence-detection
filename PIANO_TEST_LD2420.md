@@ -428,6 +428,34 @@ descrive l'esemplare.
 
 ---
 
+#### ✅ ESITO (06/09/2026): **mantiene** — 5 trial su 5, `radar_rate_%` = 100,00 ± 0,00
+
+Ma con una premessa che va nel testo: la configurazione `tarato_max_6` del 04/09 **non
+rilasciava** a stanza vuota (presenza 100 % per 120 s, `vuoto2420_1m_norilascio_T01`), e
+**nemmeno due nuove scansioni del tool** lo facevano — l'hold del gate 5 esce 13,82-13,84 dB
+in tre scansioni indipendenti, cioè rumore stimato ~7 contro una media misurata di 15 su
+120 s. La configurazione usata è `ld2420_config_fondo120s_max_6.xml`: **stessa formula del
+manuale** (trigger 5×, hold 3,5× il rumore) ma rumore = media su 120 s del nostro file a
+stanza vuota. Con quella, negativo e positivi passano e i cinque trial da fermo danno:
+
+| | LD2410B `fermo_1m_H` | **LD2420 `fermo2420_1m`** | PIR `fermo_1m_H` |
+|---|---|---|---|
+| presenza, 202 s × 5 | 100,00 ± 0,00 % | **100,00 ± 0,00 %** | 1,52 ± 1,03 % |
+| fronti di presenza | — | **0** in ogni trial | — |
+| gate 2: hold superato | — | 17-44 % dei campioni, gap max 5,8-16 s | — |
+
+- non è coda: l'hold è alimentato dai micro-movimenti (gate 2 media 30-51, p95 80-121,
+  contro fondo 13 / max 34), con intervalli fra superamenti sempre sotto i 30 s di ritardo
+- **§8 del manuale misurato**: `dist_raw` a riposo in 4/5 trial con presenza al 100 %;
+  T04 riporta 133 cm costanti per 202 s. Dice *se*, non *dove*
+- ⚠️ **il gate 2 non distingue immobile da cammino sul posto** (chiusura a 105 cm: media
+  29, p95 68 — meno della persona ferma). Ipotesi: dinamica dell'esemplare esaurita a 1 m.
+  La dose-risposta a 1 m (Test 2.3-2420) va fatta comunque, ma può uscire piatta
+- rilascio a stanza vuota ~55 s (30 s di ritardo + coda dell'ultimo superamento);
+  per questo lo scarto dei trial da fermo è **90 s**, non 60
+
+---
+
 ### Test 1.4-2420 — Persona sotto il banco (~60 cm)
 - **Metrica**: tasso di rilevamento nello scenario reale del progetto
 - 5 trial × 302 s, sensore fissato sotto il piano, soggetto rannicchiato
