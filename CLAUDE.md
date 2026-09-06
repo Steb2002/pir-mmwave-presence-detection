@@ -465,6 +465,20 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - `firmware/ld2410b_logger/ld2410b_logger.ino` — logger riscritto con MyLD2410: 5 Hz, engineering mode (colonne extra `menergy_gate0..8`, `senergy_gate0..8`, più `light_level` e `out_level` — quest'ultimo è lo **stato del pin OUT del radar, letto dal frame UART**: il cavo blu non va collegato), pin corretti per il nostro cablaggio, CSV retro-compatibile con acquire.py (da compilare e verificare su hardware)
 - `analisi/analizza_test.py` — metriche automatiche dai CSV: accuratezza, FP eventi/h, FN%, latenza di rilevamento (`--event-time`, con la differenza appaiata `latenza_delta_s` radar−PIR e il flag dei trial in cui un sensore era già attivo prima dell'evento), latenza di **rilascio** (`--release-time`, Test 2.2: riporta anche le riaccensioni nella coda e distingue i casi `MAI`/`PRIMA`), statistiche distanza/energia, aggregazione per scenario (media ± dev.std). Solo libreria standard
 - `firmware/test04_set_gate/` — configurazione del **gate massimo** via UART per il Test 2.4 (selettività spaziale / banchi adiacenti): imposta, **rilegge sempre per conferma**, avvisa quando la configurazione è diversa da quella di fabbrica, e col comando `d` riscrive le 9+9 soglie di fabbrica del nostro esemplare + gate 8/8 + timeout 5 s. Ha anche un monitor live per trovare la portata effettiva prima di acquisire
+- 🚨 **Marcatore "dato assente" per il PIR (06/09/2026)** — nei test del solo LD2420 il
+  PIR non viene cablato, e un pin in pull-down leggerebbe 0 per tutto il file: gli script
+  ne ricaverebbero `fn_pir_% = 100,0` **con una persona davanti**, un numero finto che
+  sembra una misura. Peggio, `esporta_excel.py > foglio_tutti` scandisce **tutti** i CSV
+  della cartella con una glob, quindi il valore entrerebbe da solo nel foglio da cui si
+  fanno le pivot. Catena di guardia, dal dato all'uscita:
+  `ld2420_logger_bin` ha `#define PIR_COLLEGATO` (default **0**) e scrive **-1** invece
+  di 0 → `analizza_test.py` omette *tutte* le metriche del PIR (rate, accuratezza, falsi
+  positivi/negativi, latenza, rilascio, impulsi) e marca `pir_stato = NON COLLEGATO` →
+  in Excel le celle del PIR restano **vuote** e la colonna `pir_stato` dice perché.
+  ✔ Verificato che sui file con PIR cablato non cambi nulla: `fermo_1m_H` resta
+  98,48 ± 1,03 di falsi negativi, le latenze 5,36 / 5,96 / −0,60 s, i rilasci 18,36 / 12,96 s.
+  📌 **Regola generale**: un dato mancante va marcato **alla sorgente**, non annotato in un
+  registro che gli script non leggono
 - `analisi/verifica_engineering.py` — controllo di qualità di un CSV del logger prima di
   usarlo: cadenza reale e jitter, presenza delle colonne per-gate, % di saturazione a 100,
   coerenza gate di picco↔distanza, rumore di fondo per-gate a stanza vuota, transizioni di
@@ -503,7 +517,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
   Il filtro è `tesi-unicam/figures/fig*`, quindi `LEGGIMI.txt` e un futuro
   `logo_unicam.png` continuano a entrare nel repo
 - `analisi/ANALISI_CONSUMI.md` — obiettivo 4 completato in bozza (consumi da datasheet + stime autonomia + argomentazione architettura ibrida PIR+mmWave)
-- `analisi/ANALISI_WEB_UI.md` — progetto della web UI (obiettivo 5): architettura ESP32 self-hosted (ESPAsyncWebServer + WebSocket + LittleFS, tutto offline), formato JSON, layout pagina, struttura codice `firmware/ld2410b_web/`, piano di sviluppo in 5 step. Decisione chiave: il CSV esportato dal browser usa le stesse colonne di acquire.py → un solo formato dati in tutta la tesi. §9: analisi del riferimento UI "LD2410 Configurator" (cosa prendere/cosa no) + opzione D di riserva via Web Serial
+- `analisi/ANALISI_WEB_UI.md` — progetto della web UI (obiettivo 5): architettura ESP32 self-hosted (**solo Access Point**, nessuna connessione a reti esistenti — decisione 05/09/2026; fork ESP32Async di ESPAsyncWebServer + WebSocket + pagina in PROGMEM gzip, JavaScript puro con Angular valutato e scartato, tutto offline), formato JSON, layout pagina, struttura codice `firmware/ld2410b_web/`, piano di sviluppo in 5 step. Decisione chiave: il CSV esportato dal browser usa le stesse colonne di acquire.py → un solo formato dati in tutta la tesi. §9: analisi del riferimento UI "LD2410 Configurator" (cosa prendere/cosa no) + opzione D di riserva via Web Serial
 - `analisi/PROGETTO_SITO_DETTAGLIO.md` — progetto di dettaglio implementativo del sito: struct/pseudocodice firmware, protocollo WS con riconnessione, strutture dati JS, config dei 3 grafici, export CSV client-side, gestione errori, criteri di accettazione per step
 - `analisi/ANALISI_SITO_SERVER.md` — piano B dell'obiettivo 5 (19/07/2026): progetto completo del sito "vero" su server esterno nel caso il professore intenda una piattaforma e non il sito self-hosted. Architettura ESP32→MQTT (Mosquitto)→FastAPI+SQLite→browser, codice firmware/backend di riferimento, export CSV compatibile acquire.py, confronto A vs B e domanda di decisione per l'incontro (aggiunta a INCONTRO_PROFESSORE.md, domanda 7). Frontend condiviso ~85% con l'opzione A → cambiare rotta costa ~2-3 giorni. Default resta l'opzione A
 - `analisi/ANALISI_VITALITA.md` — specifica dell'indice di vitalità (obiettivo 6, documento autonomo): algoritmo v1 (doppia EWMA movimento+respiro), classificazione a 4 classi per il triage, percorso di taratura Python-prima sui CSV della Fase 6 con validazione su trial separati, casi limite, collocazione nella tesi
@@ -803,11 +817,42 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       - **convenzione dei gate, due punti coerenti**: 105 cm → gate 2, 204 cm → gate 3, cioe'
         il gate che copre (N−1)·70…N·70 come nel LD2410B → **portata = N × 70 cm**, gate 6 =
         420 cm. Da confermare con un esemplare sano
-      - **decisione**: ordinare un secondo esemplare; nel frattempo la Fase 4 e' sospesa e si
+      - **decisione** *(la sospensione della Fase 4 e' SUPERATA dalla voce successiva,
+        05/09/2026)*: ordinare un secondo esemplare; nel frattempo si
         passa all'obiettivo 5 (sito). Tenere il pezzo attuale: il confronto fra i due sulla
         stessa tacca e' un dato di tesi (variabilita' fra esemplari). Nuovi strumenti:
         `acquire.py --tappe` (annunci vocali a istanti prefissati) e `analisi/portata2420.py`
         (analisi per finestre temporali)
+- 🔑 **RISPOSTA DEL PROFESSORE (05/09/2026) E DECISIONE CONSEGUENTE**: il modulo non era
+      mai stato provato prima, quindi nessuno sa se il difetto sia noto. Indicazione:
+      *"Nella tesi riporterei esattamente quello che scrivi qui, descrivi i test, riporti i
+      risultati. Se hai riscontrato problemi o limitazioni e hai fatto differenti prove su
+      pc/esp32 allora va bene."* → il limite dell'esemplare **è materiale di tesi, non un
+      buco da tappare prima di scrivere**.
+      📌 **La Fase 4 non resta sospesa: si esegue una CAMPAGNA RIDOTTA ENTRO 2 m**, cioè
+      dentro la zona in cui l'esemplare funziona (piano dettagliato in
+      `PIANO_TEST_LD2420.md` §0-bis). Restano fuori solo i test che *richiedono* più di
+      2 m; entrano invariati i due più preziosi — **dose-risposta a 1 m** (tre sensori sulla
+      stessa scala di movimento) e **sotto il banco a 60 cm** (scenario UPRISE). Vincoli:
+      modalità binaria obbligatoria, **gate max 6 + soglie tarate** (deroga dichiarata alla
+      parità di configurazione: a soglie di fabbrica il modulo non rilascia), e ogni numero
+      attribuito **all'esemplare**, mai al modello. ~9,5 h + 1 notturna
+- 🚪 **Seconda richiesta del professore, stessa mail: quantificare l'attenuazione**
+      *("se prima arrivava a 5 mt, con una porta di mezzo quanto si attenua il segnale?")*.
+      Non è una rilettura dei dati della Fase 3: quelli sono in punti percentuali di
+      `menergy`, che **non è una potenza** e non si converte in dB. Due misure nuove,
+      complementari:
+      1. **Portata residua in metri** sul LD2410B — `PIANO_TEST.md` **Test 3.6**: stessa
+         geometria della Fase 3 ma percorrendo 1-5 m, per ogni materiale. Risposta in
+         un'unità fisica e senza ipotesi sullo strumento. Priorità: **porta interna chiusa**
+         (l'esempio del professore, e copre tutto il campo → cade l'avvertenza "attenuazioni
+         come limiti inferiori"), poi legno, vetro, **cartongesso** (richiesto di nuovo:
+         procurare uno sfrido, costa pochi euro)
+      2. **Attenuazione in dB** sul LD2420 — `PIANO_TEST_LD2420.md` §0-ter: è l'unica cosa
+         che il LD2420 misura **meglio**, perché le sue energie sono `uint16` grezzi e il
+         tool le mostra come 10·log₁₀(grezzo). ⚠️ Ipotesi dichiarata (Hi-Link non documenta
+         il campo) e dinamica dell'esemplare limitata a ~6,5 dB sopra il rumore: quantifica
+         gli attenuatori deboli, satura sui forti
 - ⚠️ **Lezione di processo (02/09/2026)**: tre giri di prove sono stati attribuiti al
       modulo mentre l'ESP32 eseguiva un **binario vecchio** — lo sketch non compilava (una
       stringa spezzata) e l'IDE non caricava nulla. Da allora gli sketch stampano un
@@ -1481,7 +1526,22 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 
 ### Web UI e dati (obiettivo 5)
 - [x] Progetto architetturale della web UI (`analisi/ANALISI_WEB_UI.md`)
-- [ ] ESP32 pubblica i dati (WiFi)
+- [x] **Revisione dei due documenti prima dell'implementazione (05/09/2026)**: rete solo
+      AP con DNS catch-all; JS puro; PROGMEM gzip al posto di LittleFS (il plugin di upload
+      non esiste per l'IDE 2.x); librerie **ESP32Async** (il core 3.3.11 non compila
+      l'originale); partizione **Huge APP** (lo schema di default da' 1,2 MB, troppo poco);
+      `ws.cleanupClients()` nel loop; vitalita' v3 a 3 classi con fondo per gate; CSV a
+      29 colonne con `light_level`/`out_level`
+- [~] **`firmware/ld2410b_web/` avviato (06/09/2026) — step 1-2 di 5 fatti** (BUILD 2):
+      Access Point + DNS catch-all + pagina statica + `/info`; lettura radar e PIR, CSV
+      sulla seriale con le stesse 29 colonne del logger (quindi `acquire.py` gira in
+      parallelo alla web UI) e spinta WebSocket a 5 Hz. La pagina sta in `web/`
+      (index.html, style.css, app.js) e `tools/embed_web.py` la comprime in gzip dentro
+      `web_assets.h`. ⚠️ **`web_assets.h` e' GENERATO ma versionato di proposito**: l'IDE
+      Arduino non esegue passi di build, quindi senza il file committato lo sketch non
+      compila su un'altra macchina. Rigenerarlo dopo ogni modifica in `web/` con
+      `python tools/embed_web.py`
+- [x] ESP32 pubblica i dati (Access Point proprio, WebSocket)
 - [ ] Sito web visualizzazione tempo reale
 - [ ] Salvataggio dati + statistiche
 - [ ] Export CSV → analisi in Excel

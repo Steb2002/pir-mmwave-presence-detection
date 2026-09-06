@@ -129,8 +129,8 @@ def impulsi_pir(righe, salta_inizio_s=0.0):
     faceva concludere "nessun impulso" su un file che conteneva un impulso da 9.2 s
     (verificato il 22/08/2026).
     """
-    if not righe:
-        return [], []
+    if not righe or any(r["pir"] < 0 for r in righe):
+        return [], []          # -1 = PIR non cablato, vedi analizza_file
     t0 = righe[0]["t_ms"]
     sel = [r for r in righe if (r["t_ms"] - t0) / 1000.0 >= salta_inizio_s]
     if not sel:
@@ -170,6 +170,17 @@ def analizza_file(path, event_time_s=None, salta_inizio_s=0.0, release_time_s=No
     n = len(righe)
     durata_s = (righe[-1]["t_ms"] - righe[0]["t_ms"]) / 1000.0
     gt = righe[0]["gt"]
+
+    # 🚨 PIR NON CABLATO. I logger scrivono -1 nella colonna `pir_presence` quando il
+    # sensore non e' collegato (`#define PIR_COLLEGATO 0`). Senza quel marcatore il pin
+    # con pull-down leggerebbe 0 per tutto il file e OGNI metrica del PIR uscirebbe come
+    # una misura plausibile — "fn_pir_% = 100,0" con una persona davanti — invece che
+    # come un dato mancante. Non e' un rischio teorico: `esporta_excel.py > foglio_tutti`
+    # passa in rassegna TUTTI i CSV della cartella con una glob, quindi il numero finto
+    # entrerebbe da solo nel foglio da cui si fanno le pivot.
+    # Qui le metriche del PIR vengono semplicemente OMESSE: le celle restano vuote in
+    # Excel (`r.get(c, "")`) e l'aggregato per scenario non le calcola.
+    pir_assente = any(r["pir"] < 0 for r in righe)
     ris = {
         "file": Path(path).name,
         "scenario": righe[0]["scenario"],
@@ -179,8 +190,11 @@ def analizza_file(path, event_time_s=None, salta_inizio_s=0.0, release_time_s=No
         "n_campioni": n,
         "durata_s": round(durata_s, 1),
         "radar_rate_%": round(100 * sum(r["radar"] for r in righe) / n, 1),
-        "pir_rate_%": round(100 * sum(r["pir"] for r in righe) / n, 1),
     }
+    if pir_assente:
+        ris["pir_stato"] = "NON COLLEGATO"
+    else:
+        ris["pir_rate_%"] = round(100 * sum(r["pir"] for r in righe) / n, 1)
 
     # Accuratezza per campione rispetto alla ground truth.
     # ⚠️ Nei file con un EVENTO (test 2.1 e 2.2) la ground truth scritta nel CSV e'
@@ -193,24 +207,28 @@ def analizza_file(path, event_time_s=None, salta_inizio_s=0.0, release_time_s=No
     # e' davvero costante.
     if gt in (0, 1) and release_time_s is None and event_time_s is None:
         ris["radar_acc_%"] = round(100 * sum(1 for r in righe if r["radar"] == gt) / n, 1)
-        ris["pir_acc_%"] = round(100 * sum(1 for r in righe if r["pir"] == gt) / n, 1)
+        if not pir_assente:
+            ris["pir_acc_%"] = round(100 * sum(1 for r in righe if r["pir"] == gt) / n, 1)
+        canali = ("radar",) if pir_assente else ("radar", "pir")
         if gt == 0:
             # Falsi positivi: eventi di attivazione (fronti di salita) per ora
-            for col, nome in (("radar", "radar"), ("pir", "pir")):
+            for col in canali:
                 fronti = sum(1 for a, b in zip(righe, righe[1:]) if a[col] == 0 and b[col] == 1)
                 ore = durata_s / 3600 if durata_s > 0 else 1
-                ris[f"fp_{nome}_eventi_h"] = round(fronti / ore, 2)
+                ris[f"fp_{col}_eventi_h"] = round(fronti / ore, 2)
         else:
             # Falsi negativi: % di tempo in cui il sensore perde la persona
             ris["fn_radar_%"] = round(100 - ris["radar_acc_%"], 1)
-            ris["fn_pir_%"] = round(100 - ris["pir_acc_%"], 1)
+            if not pir_assente:
+                ris["fn_pir_%"] = round(100 - ris["pir_acc_%"], 1)
 
     # Latenza (solo per scenari di ingresso, con evento a tempo noto)
     if event_time_s is not None:
         lr = latenza_s(righe, event_time_s, "radar")
-        lp = latenza_s(righe, event_time_s, "pir")
+        lp = None if pir_assente else latenza_s(righe, event_time_s, "pir")
         ris["latenza_radar_s"] = round(lr, 2) if lr is not None else "MAI"
-        ris["latenza_pir_s"] = round(lp, 2) if lp is not None else "MAI"
+        if not pir_assente:
+            ris["latenza_pir_s"] = round(lp, 2) if lp is not None else "MAI"
 
         # Differenza appaiata radar-PIR sullo stesso trial. E' il confronto pulito: la
         # latenza assoluta contiene il tempo di reazione al beep e il tragitto verso il
@@ -228,11 +246,13 @@ def analizza_file(path, event_time_s=None, salta_inizio_s=0.0, release_time_s=No
                if event_time_s - 3.0 <= (r["t_ms"] - t0) / 1000.0 < event_time_s]
         if pre:
             ris["pre_radar_%"] = round(100 * sum(r["radar"] for r in pre) / len(pre), 1)
-            ris["pre_pir_%"] = round(100 * sum(r["pir"] for r in pre) / len(pre), 1)
+            if not pir_assente:
+                ris["pre_pir_%"] = round(100 * sum(r["pir"] for r in pre) / len(pre), 1)
 
     # Latenza di rilascio (Test 2.2: soggetto che esce a tempo noto)
     if release_time_s is not None:
-        for col, nome in (("radar", "radar"), ("pir", "pir")):
+        for col in (("radar",) if pir_assente else ("radar", "pir")):
+            nome = col
             val, riacc, nota = rilascio_s(righe, release_time_s, col)
             ris[f"rilascio_{nome}_s"] = round(val, 1) if val is not None else nota
             ris[f"riaccensioni_{nome}"] = riacc

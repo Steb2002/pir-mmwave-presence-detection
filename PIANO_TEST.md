@@ -565,7 +565,7 @@ python acquire.py --port COM3 --duration 120 --output data/due_persone_T01.csv -
 
 ---
 
-## FASE 3 — Penetrazione ostacoli (obiettivo 3) — ✅ FATTA 30/08/2026
+## FASE 3 — Penetrazione ostacoli (obiettivo 3) — ✅ FATTA 30/08/2026, ➕ Test 3.6 aperto
 
 > **ESITO**: il radar attraversa **tutti** i dielettrici provati (plastica -7,5 %,
 > cartone -17,2 %, vetroresina 1 mm -19,6 %, vetro 5 mm -40,9 %, legno 10 mm -41,6 %)
@@ -604,6 +604,65 @@ python acquire.py --port COM3 --duration 180 --output data/ostacolo_nessuno_T01.
 - **Analisi**: `python ..\analisi\analizza_test.py data\ostacolo_*.csv`
   → confrontare `senergy_media` e `radar_rate_%` per materiale rispetto alla baseline
   → grafico Excel: degradazione % dell'energia per materiale
+
+---
+
+### Test 3.6 — 🆕 **Portata residua per materiale** (richiesto dal professore, 05/09/2026)
+
+> *"Altro aspetto è capire rispetto al materiale se e quanto viene attenuato. Ad esempio
+> se prima arrivava a 5 mt, con una porta di mezzo quanto si attenua il segnale?"*
+
+**Perché è un test nuovo e non una rilettura dei dati esistenti.** La Fase 3 ha misurato
+l'attenuazione **a distanza fissa**, in punti percentuali di `menergy`. Ma `menergy` è un
+indice normalizzato 0-100 con elaborazione interna: le percentuali sono in unità dello
+strumento e **non** si convertono in dB né si confrontano con i coefficienti di
+trasmissione teorici. La domanda del professore invece ha una risposta esprimibile in
+**metri**, che non richiede alcuna ipotesi su cosa sia `menergy`:
+
+> *senza ostacolo il sensore vede una persona fino a X m; con il materiale interposto
+> fino a Y m.*
+
+È il numero più utile per il progetto (dice se il sensore incassato nell'arredo copre
+ancora il volume sotto il banco) ed è quello più difendibile in discussione.
+
+**Setup.** Identico alla Fase 3 — pannello a ~20 cm davanti al sensore, soggetto **in
+movimento sul posto** — ma invece di una distanza sola si percorrono **1, 2, 3, 4, 5 m**.
+Tacche a terra già presenti dal Test 1.2. 3 trial per coppia (materiale × distanza),
+80 s per trial (20 di transitorio + 60 utili).
+
+**Metrica**: la distanza massima a cui `radar_rate_%` ≥ 95 % *e* `menergy_media` resta
+sopra il rumore di fondo del gate corrispondente. In più la curva `menergy` vs distanza
+per ciascun materiale, sovrapposta a quella senza ostacolo (che abbiamo già dal Test 1.2:
+99,0 / 85,1 / 54,4 / 35,1 / 27,6 da 1 a 5 m).
+
+**Materiali, in ordine di priorità** — non serve rifarli tutti e sei:
+1. 🚪 **Porta interna chiusa** — è l'esempio letterale del professore ed è il caso più
+   realistico per un'aula. 🔑 **Ha anche un vantaggio metodologico**: la porta copre
+   l'intero campo del sensore, quindi cade l'avvertenza della Fase 3 per cui *"le
+   attenuazioni sono limiti inferiori perché i pannelli coprivano solo ±42-70°"*. Qui
+   non c'è aggiramento possibile → il numero è pulito
+2. **Legno 10 mm** e **vetro 5 mm** — i due dielettrici più attenuanti già misurati
+   (−41,6 % e −40,9 %): sono quelli in cui la portata dovrebbe accorciarsi in modo
+   visibile
+3. **Cartongesso 12,5 mm** — la lacuna dichiarata della Fase 3, e il professore l'ha
+   chiesto di nuovo. ⚠️ Uno sfrido da 60×60 cm costa pochi euro in ferramenta: vale la
+   pena procurarlo prima di questa sessione invece di dichiarare di nuovo il buco
+4. **Metallo** — non serve la curva: blocca già a 1 m (portata residua 0 m). Un solo
+   trial di conferma
+
+**Costo**: ~25 min per materiale (5 distanze × 3 trial) + allestimento. Con porta, legno,
+vetro e cartongesso ≈ **2 h**.
+
+⚠️ **Le tre avvertenze della Fase 3 restano tutte valide**: pannello rigido, controllo
+col metallo per secondo, **baseline mediata su inizio e fine sessione** (è la misura più
+rumorosa della serie). E prima di leggere `menergy_media` guardare sempre
+`mdist_media_cm`: se sta a ~30 cm con dispersione 0, il radar sta inseguendo il pannello
+e l'energia non significa nulla.
+
+📌 **Attenuazione in dB**: se serve il numero in decibel e non in metri, l'unico modulo
+che può darlo è il **LD2420**, le cui energie per-gate sono `uint16` grezzi e non un
+indice normalizzato — vedi `PIANO_TEST_LD2420.md` §0-ter, con l'ipotesi da dichiarare e
+il limite di dinamica del nostro esemplare.
 
 ---
 

@@ -95,7 +95,10 @@ COLONNE = ["file", "scenario", "trial", "gt", "gt_state", "_skip_s", "n_campioni
            "durata_s", "radar_rate_%", "pir_rate_%", "radar_acc_%", "pir_acc_%",
            "fn_radar_%", "fn_pir_%", "fp_radar_eventi_h", "fp_pir_eventi_h",
            "mdist_media_cm", "mdist_dev_cm", "sdist_media_cm", "sdist_dev_cm",
-           "menergy_media", "senergy_media", "dist_nominale_cm", "errore_cm"]
+           "menergy_media", "senergy_media", "dist_nominale_cm", "errore_cm",
+           # "NON COLLEGATO" nei trial in cui il PIR non era cablato (logger LD2420):
+           # in quelle righe tutte le colonne del PIR restano VUOTE di proposito.
+           "pir_stato"]
 
 
 def foglio_tutti(wb):
@@ -109,7 +112,9 @@ def foglio_tutti(wb):
            "Una riga per trial. '_skip_s' e' il transitorio scartato: 20 s ordinari, "
            "40 s sotto il banco, 120 s selettivita', 60 s stanza vuota. "
            "I file con evento (ingresso_*, uscita_*) hanno tassi privi di senso qui: "
-           "la ground truth cambia a meta' file. Vedi il foglio 06_latenze.")
+           "la ground truth cambia a meta' file. Vedi il foglio 06_latenze. "
+           "Se 'pir_stato' dice NON COLLEGATO le colonne del PIR sono vuote perche' il "
+           "sensore non era cablato: NON sono zeri misurati.")
     ws.freeze_panes = "A2"
     return len(righe) - 1
 

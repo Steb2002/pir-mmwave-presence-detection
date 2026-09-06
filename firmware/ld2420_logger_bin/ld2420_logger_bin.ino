@@ -49,6 +49,16 @@
 // Il valore letto dopo la scrittura finisce nel commento '#' in testa al CSV.
 #define GATE_MAX_DA_IMPOSTARE 0
 
+// 🚨 PIR CABLATO SU GPIO21? Metterlo a 0 quando il PIR non e' collegato: la colonna
+// `pir_presence` esce a **-1** invece che a 0, e gli script di analisi la trattano come
+// dato mancante (metriche del PIR omesse) invece che come una misura. Con lo 0 il pin
+// in pull-down darebbe "fn_pir_% = 100,0" con una persona davanti, e quel numero finto
+// entrerebbe da solo nel foglio `tutti_i_trial` di esporta_excel.py, che scandisce
+// TUTTI i CSV della cartella. Nei test del solo LD2420 il PIR non serve: il suo dato a
+// 1 m con persona immobile e' gia' in `fermo_1m_H` (pir_rate 1,52 %) ed e' indipendente
+// da quale radar sia montato.
+#define PIR_COLLEGATO 0
+
 #define RADAR_RX_PIN 16
 #define RADAR_TX_PIN 17
 #define RADAR_BAUD   115200
@@ -177,7 +187,10 @@ void setup() {
   delay(500);
 
   // Righe di servizio come commenti '#': acquire.py le ignora.
-  Serial.println("# ld2420_logger_bin BUILD 5 - energy mode via 0x0012, presenza dal frame, dist_raw_cm, gate max opzionale, senza OT2");
+  Serial.println("# ld2420_logger_bin BUILD 6 - energy mode via 0x0012, presenza dal frame, dist_raw_cm, gate max opzionale, senza OT2");
+  Serial.print("# PIR: ");
+  Serial.println(PIR_COLLEGATO ? "cablato su GPIO21, colonna valida"
+                               : "NON collegato, pir_presence = -1 (colonna non valida)");
   bool ok = attivaEnergyMode();
   Serial.print("# energy mode: ");
   Serial.println(ok ? "attivata" : "!! il modulo NON ha accettato (0x0012) - restera' in ASCII");
@@ -237,7 +250,9 @@ void loop() {
   Serial.print(0);    Serial.print(',');      // stationary_distance_cm: non esiste
   Serial.print(0);    Serial.print(',');      // moving_energy (scala 0-100): non esiste
   Serial.print(0);    Serial.print(',');      // stationary_energy: non esiste
-  Serial.print(digitalRead(PIR_PIN));         // pir_presence
+  // -1 quando il PIR non e' cablato: e' il marcatore di "dato assente" che impedisce
+  // agli script di scambiare il pull-down per una misura. Vedi PIR_COLLEGATO in testa.
+  Serial.print(PIR_COLLEGATO ? digitalRead(PIR_PIN) : -1);   // pir_presence
   for (int g = 0; g < 16; g++) { Serial.print(','); Serial.print(frameFresco ? energia[g] : 0); }
   Serial.print(','); Serial.print(frameFresco ? 1 : 0);
   // Distanza grezza dal frame ANCHE con presenza 0: serve alla diagnosi, perche' dice

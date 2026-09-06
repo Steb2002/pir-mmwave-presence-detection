@@ -39,6 +39,124 @@ da mettere in tesi, non un buco:
 
 ---
 
+## 0-bis. 🔴 CAMPAGNA RIDOTTA ENTRO 2 m (decisione 05/09/2026)
+
+**Contesto.** L'esemplare in nostro possesso vede una persona **solo fino a ~2 m**
+(diagnosi completa in CLAUDE.md e nel registro, sessioni 03-04/09/2026). Il professore,
+informato per mail, ha risposto di **riportare in tesi esattamente i test fatti e i
+risultati ottenuti**, problemi e limitazioni compresi. Non chiede di sostituire il modulo
+prima di scrivere.
+
+**Decisione conseguente**: invece di sospendere la Fase 4, si esegue la campagna
+**dentro la zona in cui il modulo funziona**, cioè da 0,5 a 2 m. Non è un ripiego: è il
+perimetro sperimentale onesto di questo esemplare, e va dichiarato come tale in tesi
+esattamente come i 5 m della stanza sono il perimetro del LD2410B.
+
+### Regole della campagna ridotta
+1. **Modalità binaria (energy)** obbligatoria — `firmware/ld2420_logger_bin/`. L'ASCII è
+   inutilizzabile (2528 `ON` e 0 `OFF` in 4 min, stanza vuota inclusa) e OT2 a
+   configurazione di fabbrica non rilascia mai
+2. **Gate massimo 6** e **soglie tarate col tool** (`ld2420_config_tarato_max_6.xml`).
+   Con gate 8 il muro a ~5 m tiene la presenza attiva e ogni misura di rilascio salta.
+   ⚠️ È una **deroga dichiarata** alla parità di configurazione del §1.3: il LD2410B è
+   stato caratterizzato a soglie di fabbrica, il LD2420 no perché **a soglie di fabbrica
+   non rilascia**. La deroga è essa stessa un risultato da riportare
+3. **Ogni numero va attribuito all'esemplare, non al modello.** Formula da usare in tesi:
+   *"sull'esemplare in prova, entro la sua portata utile di ~2 m"*
+4. **Verificare `BUILD n` e `frames_ok`** all'avvio di ogni sessione: tre giri di prove
+   sono già stati persi su un binario vecchio e su un cavo OT1 sganciato
+5. Se arriva un **secondo esemplare**, questa stessa campagna si ripete tal quale in
+   metà tempo e diventa un confronto esemplare-vs-esemplare: la variabilità fra unità di
+   uno stesso modello è un risultato di tesi, non tempo perso
+
+### Cosa entra e cosa esce
+
+| test LD2410B | distanza originale | nella campagna ridotta | perché |
+|---|---|---|---|
+| 1.1 stanza vuota | — | ✔ **invariato** | il tempo non c'entra con la portata; con gate 6 il modulo rilascia |
+| 1.2 distanza nota | 1-5 m | ⚠️ **0,5 / 1 / 1,5 / 2 m** | 4 punti invece di 5; basta per la retta *dentro* la zona utile |
+| 1.3 immobile | 2,3 m | ⚠️ **1 m** (+ 1,5 m come estensione) | 2,3 m è fuori portata. 1 m e non 1,5: è il gate con più margine **e** l'unica distanza con un dataset LD2410B gemello (`fermo_1m_H`) — vedi protocollo esecutivo |
+| 1.4 sotto il banco | ~0,6 m | ✔ **invariato** | è lo scenario UPRISE ed è già dentro i 2 m |
+| 1.5 attraversamento | 2-5 m | ❌ escluso | è un test del **PIR**, già chiuso, e il radar lì fa solo da testimone |
+| 2.1 latenza ingresso | porta ~4-5 m | ⚠️ **doppia versione** (vedi nota) | il confronto col LD2410B non sarebbe appaiato |
+| 2.2 rilascio | 1 m | ✔ **invariato**, doppio (ritardo 5 e 30) | chiude anche l'unità del parametro di ritardo |
+| 2.3 dose-risposta | 1 m | ✔ **invariato** — 🎯 il più prezioso | tre sensori sulla stessa scala di movimento |
+| 2.4 selettività | 1 m asse + 3 m + 90° | ⚠️ **solo 1 m asse e 1 m a 90°** | lo scenario a 3 m darebbe 0 % per portata, non per selettività: non discrimina |
+| 2.5 due persone | 2 m + 4 m | ⚠️ **1 m + 2 m** | riscalato; serve la seconda persona |
+| 2.6 gate minimo | — | ✔ **1 m escluso vs 2 m visto** | test nuovo, possibile solo su questo modulo |
+| misura angolare | arco r = 1 m | ✔ **invariata** — 🎯 molto informativa | il LD2410B copre ±90°; qui il fascio sembra assai più stretto |
+| Fase 3 ostacoli | 3 m radar / 1 m PIR | ⚠️ **1 m** | vedi §0-ter: qui il LD2420 può fare qualcosa che il LD2410B **non** può |
+| Fase 5 respiro | 2 m | ⚠️ **tentativo a 1 m, tetto 2 h** | energie uint16 a 10 Hz, non saturano; ma il margine sul rumore è ~4× |
+| Fase 6 vitalità | deriva da 2.3 | ✔ ricalcolabile dagli stessi CSV | nessuna acquisizione in più |
+| Fase 8 portata massima | 8 m | ❌ **già fatta, l'esito è ~2 m** | è il risultato, non un test mancante |
+
+⚠️ **Test 2.1, avvertenza da non dimenticare**: sul LD2410B la latenza d'ingresso è
+misurata mentre il soggetto rientra dalla porta, e il radar lo aggancia *in
+avvicinamento*, a diversi metri. Qui il LD2420 non può agganciarlo prima dei 2 m, quindi
+una latenza più alta sarebbe **un effetto della portata, non della reattività**. Due
+letture possibili, e vanno tenute separate:
+- **latenza fuori scatola** (stesso protocollo del LD2410B, evento = rientro dalla porta):
+  confrontabile *come comportamento di sistema*, non come reattività del rivelatore
+- **latenza appaiata** (evento = attraversamento di una tacca a 1,5 m, dentro la portata
+  di entrambi): è quella da usare per dire "quale dei due reagisce prima"
+
+Acquisire **entrambe** costa 20 minuti in più ed evita una conclusione sbagliata.
+
+### Ordine di esecuzione consigliato
+
+| # | blocco | ore | nota |
+|---|---|---|---|
+| 1 | 1.3 a **1 m** (immobile) + estensione 1,5 m | 1,0 | 🔴 punto di decisione: se non vede la persona ferma, il resto è accademico |
+| 2 | 2.3 dose-risposta a 1 m | 1,0 | il grafico a tre sensori |
+| 3 | 1.2 a 0,5/1/1,5/2 m | 1,25 | accuratezza dentro la zona utile |
+| 4 | 1.4 sotto il banco | 0,75 | scenario UPRISE |
+| 5 | misura angolare a 1 m | 1,0 | confronto col ±90° del LD2410B |
+| 6 | 2.2 rilascio (×2) + 2.6 gate minimo | 1,25 | chiude l'unità del ritardo |
+| 7 | 2.4 selettività (2 scenari) + 2.1 (2 varianti) | 1,25 | |
+| 8 | 1.1 stanza vuota | notturna | non presidiata |
+| 9 | 2.5 due persone | 0,75 | serve 2ª persona |
+| 10 | Fase 3-2420 ostacoli a 1 m | 1,5 | vedi §0-ter |
+| 11 | Fase 5 respiro a 1 m (opzionale) | 0-2 | tetto fisso, criterio di abbandono |
+| | **totale** | **~9,5 h** | + 1 notturna |
+
+---
+
+## 0-ter. L'unica cosa che il LD2420 misura MEGLIO del LD2410B: l'attenuazione in dB
+
+Richiesta del professore (mail del 05/09/2026): *"capire rispetto al materiale se e
+quanto viene attenuato"*. Sul LD2410B questa domanda **non ha risposta pulita**:
+`menergy` è un indice normalizzato 0-100 con elaborazione interna, e le nostre
+percentuali (−7,5 % plastica … −41,6 % legno) sono in unità dello strumento, non
+convertibili in dB (avvertenza già in CLAUDE.md).
+
+Sul LD2420 la situazione è diversa: le energie per-gate sono **uint16 grezzi** e il tool
+ufficiale le mostra come **dB = 10·log₁₀(grezzo)** — corrispondenza che abbiamo validato
+su tutti e 32 i parametri di soglia. Quindi il grezzo si comporta come una grandezza
+**proporzionale alla potenza ricevuta**, e il rapporto fra due misure È esprimibile in dB:
+
+```
+attenuazione_dB = 10 · log₁₀( E_senza_ostacolo / E_con_ostacolo )
+```
+
+⚠️ **Ipotesi dichiarata, non specifica ufficiale**: Hi-Link non documenta la natura del
+campo energia. Il 10·log₁₀ del tool e i moltiplicatori di rumore del manuale (trigger 5×,
+hold 3,5×, applicati in lineare) sono indizi concordi, non una definizione. In tesi va
+scritto come assunzione, con questo ragionamento a supporto.
+
+⚠️ **Limite di dinamica del nostro esemplare**: a 1 m il gate 2 passa da ~20 (rumore) a
+~90 (persona), cioè appena **~6,5 dB** di margine utile. Materiali che attenuano più di
+~6 dB porteranno il segnale sotto il rumore e daranno solo *"attenuazione > 6,5 dB"*.
+Quindi il metodo quantifica bene gli attenuatori deboli (plastica, cartone, vetroresina)
+e satura sui forti (vetro, legno, metallo). **Dirlo prima di acquisire**, non dopo.
+
+**Protocollo**: identico alla Fase 3 (pannello a ~20 cm dal sensore, soggetto in
+movimento sul posto), ma soggetto a **1 m** e metrica = energia del **gate 2** grezza,
+mediata sui campioni utili; baseline mediata su inizio **e** fine sessione.
+Criterio di abbandono: se la baseline oscilla di più di 3 dB fra inizio e fine, la misura
+non regge e va chiusa.
+
+---
+
 ## 1. Decisioni di metodo, da prendere prima di acquisire
 
 ### 1.1 🔴 Mai i due radar accesi insieme
@@ -172,6 +290,143 @@ sperimentale nel cap. 4 — non va riaperto qui.
   persona immobile è inutile per UPRISE, e i test successivi diventano accademici. È il
   punto di decisione naturale del piano
 - 📌 Attenzione a **non** riportare `stationary_distance_cm`: sarà 0 per costruzione
+
+### 🔴 Test 1.3-2420 — PROTOCOLLO ESECUTIVO (scritto 05/09/2026, da eseguire)
+
+> **La domanda**: il LD2420 mantiene la presenza su una persona **immobile**? È il punto
+> di decisione della campagna ridotta: se la risposta è no, il modulo è inutile per
+> UPRISE e i test successivi diventano accademici.
+
+#### ⚠️ Perché si esegue a **1 m** e non a 1,5 m come scritto nel §0-bis
+
+Due ragioni, entrambe emerse incrociando le soglie tarate con le energie misurate:
+
+1. **A 1,5 m il bersaglio cade nel gate 3, dove l'esemplare è già marginale sul
+   *movimento*.** Convertendo le soglie di `ld2420_config_tarato_max_6.xml` in grezzi
+   (`grezzo = 10^(dB/10)`):
+
+   | gate | copre | trigger | hold | energia misurata (persona che cammina sul posto) |
+   |---|---|---|---|---|
+   | 2 | 70-140 cm | **44,3** | 31,0 | **90** a 100 cm (fondo ~20) |
+   | 3 | 140-210 cm | **55,3** | 38,7 | **32** a 200 cm (fondo ~20) — *sotto persino l'hold* |
+
+   A 2 m nemmeno una persona **che cammina** raggiunge la soglia di mantenimento. A 1,5 m
+   si sta nello stesso gate 3. Partire da lì significa rischiare un "no" ambiguo, che non
+   distingue *"non vede le persone ferme"* da *"1,5 m è già fuori portata per questa
+   unità"*. A 1 m il margine è ~2× sul trigger e ~2,9× sull'hold: è la condizione
+   migliore che l'esemplare può offrire.
+2. **A 1 m esiste già il dataset gemello del LD2410B**: `fermo_1m_H` — 5 trial, persona
+   **in piedi immobile a 1 m**, 202 s utili ciascuno, `radar_rate_% = 100,00 ± 0,00`,
+   `pir_rate_% = 1,52 ± 1,03`. A 1,5 m non c'è nulla con cui confrontarsi. Acquisire a
+   1 m completa una **riga a tre sensori a geometria identica**, che è il formato in cui
+   la tesi presenta tutto il resto.
+
+Quindi: **1 m come blocco decisivo, 1,5 m come estensione** subito dopo, solo se il
+blocco a 1 m dà esito positivo.
+
+#### ⚠️ Che cosa si sta misurando davvero (da scrivere così in tesi)
+
+Sul LD2410B "vedere la persona ferma" significa che il **canale stazionario**, che ha
+soglie proprie, riporta un bersaglio. Sul LD2420 il canale è **uno solo** con
+un'**isteresi**: `Trigger` porta da libero a occupato, `Maintain` (hold) *mantiene* la
+presenza sui micro-movimenti. Su una persona che entra, si posiziona e poi si immobilizza,
+la grandezza misurata è quindi il **mantenimento della presenza**, non l'acquisizione da
+zero. È esattamente lo scenario UPRISE (la vittima è entrata sotto l'arredo e poi non si
+muove più) ed è l'uso per cui il manuale definisce la soglia *Maintain* — ma non è la
+stessa identica grandezza del LD2410B, e i due numeri vanno confrontati dichiarandolo.
+
+#### 🚨 Il confondente da neutralizzare: il ritardo di scomparsa
+
+`ObjectDisappearDelayTime = 30` significa che, quando l'energia scende sotto l'hold, la
+presenza resta alta ancora **30 s**. Una presenza che dura meno di 30 s dopo che il
+soggetto si è fermato **non è mantenimento**: è la coda. È lo stesso errore che nella
+prima campagna produsse il falso "24,83 %" sul LD2410B.
+
+➡️ **Convenzione di scarto per questo test: 60 s**, non 20 (20 per raggiungere la
+posizione + 30 di ritardo + margine). Con `--duration 262 --transitorio 60` restano
+**202 s utili**, cioè esattamente la finestra di `fermo_1m_H`.
+
+#### Preparazione (una volta, ~20 min)
+
+1. 🔴 **Scollegare l'alimentazione del LD2410B.** Due radar a 24 GHz sulla stessa scena
+   si disturbano — e qui si misura un segnale a 2-3× il fondo, quindi non è un dettaglio
+2. **Caricare `HLK-LD2420/Backup config/ld2420_config_tarato_max_6.xml`** con il tool PC
+   via CH340E. Serve la coppia completa *gate max 6 + soglie tarate*: la configurazione
+   `_max_8` ha il gate 2 con trigger 18,21 dB (66 grezzi) invece di 16,46 (44), cioè un
+   margine molto più stretto proprio nel gate che decide questo test.
+   *Ripiego se il tool non si collega*: mettere `#define GATE_MAX_DA_IMPOSTARE 6` nello
+   sketch (scrive in RAM a ogni avvio) e **dichiarare** che le soglie erano quelle in
+   flash, annotando quali
+3. Cablare il LD2420: `3V3→3V3`, `GND→GND`, `OT1→D16`, `RX→D17`. OT2 non serve
+4. **Il PIR NON serve**: lasciarlo scollegato e mettere `#define PIR_COLLEGATO 0` nello
+   sketch (è già il default dal BUILD 6). Il dato del PIR a 1 m con persona immobile è
+   già in `fermo_1m_H` (`pir_rate_% = 1,52 ± 1,03`) ed è indipendente da quale radar sia
+   montato, perché il PIR non emette nulla che il radar possa disturbare.
+   🚨 **Il flag non è una formalità**: con `PIR_COLLEGATO 0` la colonna esce a **-1** e
+   `analizza_test.py` omette tutte le metriche del PIR, marcando la riga
+   `pir_stato = NON COLLEGATO`. Se invece uscisse a 0 (pin in pull-down) il file
+   direbbe `fn_pir_% = 100,0` con una persona davanti, e quel numero **entrerebbe da
+   solo** nel foglio `tutti_i_trial` di `esporta_excel.py`, che scandisce tutti i CSV
+   della cartella con una glob. Se il PIR lo si vuole cablare lo stesso, va su **D21**
+   (non D34) e il flag va messo a 1
+5. Caricare `firmware/ld2420_logger_bin/` e verificare a monitor seriale:
+   `BUILD 5` · `energy mode: attivata` · `gate max: letto 6`. **Se una delle tre manca,
+   fermarsi**: tre giri di prove sono già stati persi così
+6. **Aspettare 90 s** dall'accensione del 3V3 prima della prima acquisizione (il modulo
+   resta muto ~55 s)
+
+#### Sequenza di acquisizione (~35 min)
+
+```powershell
+cd HLK-LD2410x
+# 1. CONTROLLO NEGATIVO — stanza vuota, si esce e si chiude la porta
+.venv\Scripts\python.exe serie.py --scenario vuoto2420_1m --trials 1 --duration 150 --transitorio 30 --gt-presence 0 --gt-state empty
+
+# 2. CONTROLLO POSITIVO — cammino sul posto a 1 m
+.venv\Scripts\python.exe serie.py --scenario mov2420_1m --trials 1 --duration 80 --gt-state moving
+
+# 3. IL TEST — in piedi, IMMOBILE a 1 m, 5 trial da 262 s
+.venv\Scripts\python.exe serie.py --scenario fermo2420_1m --trials 5 --duration 262 --transitorio 60 --gt-state static
+
+# 4. CONTROLLO POSITIVO DI CHIUSURA — identico al 2, prova che nulla è derivato
+.venv\Scripts\python.exe serie.py --scenario mov2420_1m_fine --trials 1 --duration 80 --gt-state moving
+```
+
+⚠️ **Fermarsi dopo il primo trial del punto 3 e guardare il CSV** prima di lanciare gli
+altri quattro: ogni trial resetta l'ESP32 e quindi riapre una sessione di comandi verso il
+modulo (0x0012). Su file lunghi singoli ha sempre funzionato, ma una serie di 5 reset è uno
+schema nuovo. Controllare `frames_ok = 1` e che le energie non siano tutte uguali al fondo.
+
+#### Analisi
+
+```powershell
+python ..\analisi\analizza_test.py data\fermo2420_1m_*.csv --salta-inizio 60
+python ..\analisi\portata2420.py data\fermo2420_1m_T01.csv --finestre 0-60:transitorio 60-262:fermo_100 --gate-max 6
+```
+⚠️ Di `analizza_test.py` qui hanno senso **solo** `radar_rate_%`, `fn_radar_%` e le
+colonne del PIR. `senergy_*`, `sdist_*` e `menergy_*` sono 0 per costruzione: il LD2420
+non ha né il canale stazionario né la scala 0-100. Le energie vere sono le
+`energy2420_gate*`, che solo `portata2420.py` legge.
+
+#### Criteri di lettura dell'esito
+
+| esito | come si riconosce | conclusione |
+|---|---|---|
+| ✅ **mantiene** | `radar_rate_%` ≈ 100 sui 202 s utili, energia del gate 2 stabilmente sopra **31** | il modulo regge la persona ferma a 1 m → si estende a 1,5 e 2 m |
+| ⚠️ **intermittente** | presenza che va e viene, gate 2 che oscilla intorno a 31 | risultato interessante: siamo sul ginocchio dell'isteresi. Riportare la **serie temporale**, non solo la media |
+| ❌ **non mantiene** | presenza che cade entro ~30-40 s dal fermo e **non risale**, gate 2 al fondo (~20) | il LD2420 non è utilizzabile per UPRISE. La campagna ridotta si ferma qui e il resto diventa documentazione del limite |
+
+🚨 **In tutti e tre i casi il controllo negativo e i due positivi sono obbligatori**: senza
+il negativo, un `radar_rate_% = 100` potrebbe essere di nuovo il muro; senza i positivi,
+uno 0 % non distingue "non vede le persone ferme" da "quella sera non funzionava niente".
+
+📌 **Attesa onesta prima di acquisire** (da scrivere ora, non dopo): l'esito ❌ è
+plausibile. Una persona immobile restituisce un'eco molto più debole di una che cammina, e
+a 1 m il margine della persona *in movimento* è solo 2,9× sull'hold. Un esito negativo qui
+**non è un fallimento della campagna**: è la misura che, insieme alla portata di ~2 m,
+descrive l'esemplare.
+
+---
 
 ### Test 1.4-2420 — Persona sotto il banco (~60 cm)
 - **Metrica**: tasso di rilevamento nello scenario reale del progetto
