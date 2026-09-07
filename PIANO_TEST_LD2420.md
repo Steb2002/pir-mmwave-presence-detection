@@ -546,8 +546,12 @@ compare in nessun gate, zero superamenti del trigger. Stesso esito del LD2410B a
 - metrica primaria: energia (la presenza si trascina per isteresi fra un azimut e l'altro)
 - **piu' stretto del LD2410B (≥ ±90°), piu' largo del dichiarato (±60° / ±45°)**
 - per UPRISE: il vicino **in movimento** a 90° non e' visto → selettivita' fra banchi
-  adiacenti dal diagramma d'antenna. E' l'unico punto della campagna in cui il LD2420 fa
-  meglio del LD2410B, e va scritto con lo stesso rilievo dei suoi limiti
+  adiacenti. E' l'unico punto della campagna in cui il LD2420 fa meglio del LD2410B, e va
+  scritto con lo stesso rilievo dei suoi limiti — **ma attribuito all'esemplare**: con un
+  margine di 4-6 dB il confine segue il diagramma d'antenna; il LD2410B a 1 m e' saturo
+  ovunque e vede nei lobi secondari. I manuali dichiarano settori alla portata massima
+  (LD2410B ±60°, LD2420 ±60° §1.1 / ±45° §5.2): nessuno contraddetto, nessuno descrive
+  un confine a 1 m
 
 ---
 

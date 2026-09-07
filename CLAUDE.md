@@ -892,7 +892,11 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       il rovescio della scoperta sul LD2410B: **il vicino in movimento a 90° non e' visto**,
       la selettivita' fra banchi adiacenti viene dal diagramma d'antenna e non dal montaggio.
       Unico punto della campagna in cui il LD2420 fa meglio: va scritto con lo stesso rilievo
-      dei suoi limiti. Metrica primaria l'energia, non la presenza (isteresi fra azimut).
+      dei suoi limiti — **ma attribuito all'esemplare**: il confine a 75-90° e' coerente col
+      margine di 4-6 dB del trasmettitore debole, non (solo) con l'antenna; il LD2410B a 1 m
+      e' saturo a tutti gli azimut e vede anche nei lobi secondari. I manuali (±60° / ±45°)
+      dichiarano settori alla portata massima, non confini a 1 m: nessuno e' contraddetto,
+      nessuno descrive la misura. Metrica primaria l'energia, non la presenza (isteresi).
       A 0° energia minima: `dist_raw` 60-74 cm da seduto (confine gate 1/2), ipotesi
 - ⏱️ **TEST 2.1-2420 COMPLETATO (07/09/2026): latenza d'ingresso dalla porta 7,28 ± 1,40 s
       (n = 5) contro 5,36 ± 0,30 s del LD2410B (n = 10)** sullo stesso percorso. Ci sono
