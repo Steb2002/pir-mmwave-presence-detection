@@ -6,8 +6,8 @@
 	<ParamSetting
 		GateMax="6"
 		ObjectDisappearDelayTime="30"
-		TriggerGate0Threshold="27.20"
-		HoldGate0Threshold="25.65"
+		TriggerGate0Threshold="32.04"
+		HoldGate0Threshold="30.41"
 		TriggerGate1Threshold="22.92"
 		HoldGate1Threshold="21.37"
 		TriggerGate2Threshold="18.63"
