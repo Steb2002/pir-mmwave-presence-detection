@@ -490,6 +490,24 @@ ma i valori sono spesso stantii (133 cm ricorrente): non è un indicatore usabil
 - ⚠️ zero del metro e montaggio da annotare: la tacca da 1 m ha dato 105 / 118 / 105 / 121
   in quattro momenti diversi. Gli errori assoluti valgono solo con lo zero dichiarato
 
+#### 🎯 Test 1.1-2420 e configurazione v2 (07/09/2026)
+
+| configurazione | durata a vuoto | riaccensioni | tasso | presenza a vuoto |
+|---|---|---|---|---|
+| LD2410B, fabbrica (20-21/08) | 6,55 h | **0** | ≤ 0,43/h | 0 % |
+| LD2420 `fondo120s_max_6` (notte) | 7,00 h | **181** | **26,2/h** | 26,0 % |
+| LD2420 `fondo120s_max_6_g0alto` (1 h) | 1,02 h | **5** | **5,4/h** | 5,3 % |
+
+- episodi di 31,8 s mediani = un trigger isolato + 30 s di ritardo; **il gate 0** (accoppiamento,
+  non una distanza) sopra il trigger in 80/181 casi di notte, mai con trigger 1600
+- il residuo (gate 1: 208/221 > 196; gate 2: 74 > 73) **non è eliminabile senza perdere la
+  persona**: 5,4/h è il pavimento dell'esemplare
+- ⚠️ **avvio**: il modulo stima il fondo all'accensione; un corpo a 20 cm in quei secondi
+  lo lascia con tutti i gate ×10-20 finché non si riavvia a stanza libera. Regola: accendi,
+  allontanati, 90 s, check del fondo (60 s). Cinque trial persi così (`ingresso2420_rumore_*`)
+- 📌 **da qui in avanti la configurazione è `g0alto`** (v2). Tutto ciò che è stato acquisito
+  con `fondo120s_max_6` resta valido: il gate 0 non decideva nessuno di quei test
+
 ---
 
 ### Test 1.4-2420 — Persona sotto il banco (~60 cm)

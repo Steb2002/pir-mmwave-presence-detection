@@ -885,6 +885,17 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **montaggio e zero del metro vanno annotati** prima di citare errori assoluti.
       Con queste soglie la portata dell'esemplare e' definita meglio di prima: non "vede
       fino a 2 m" ma "si accende entro 1 m e non si spegne fino a 2"
+- ✅ **FALSI POSITIVI: DA 26,2/h A 5,4/h CON IL GATE 0 SOPRA LA CODA (07/09/2026)** —
+      `vuoto2420_g0alto_1h`: 1 h a stanza vuota, 5 riaccensioni (notte: ~24 nello stesso
+      tempo), presenza a vuoto 5,3 % (era 26 %). Gate 0 a trigger 1600 **mai superato**
+      (max 657): era lui. Il residuo viene dalle code dei **gate 1 e 2** (208/221 > 196;
+      74 > 73) — e quei due gate NON si alzano: sono la persona a 50 cm (p95 241-346) e a
+      1 m (p95 68-85, margine zero). Su questo esemplare rumore e persona si sovrappongono
+      negli stessi gate → **5,4/h e' il pavimento strutturale**, 12× il LD2410B (≤ 0,43/h
+      a soglie di fabbrica, mai toccate). 📌 **`g0alto` = configurazione v2 della campagna
+      ridotta**, da qui in avanti e da dichiarare cosi'. I test gia' fatti restano validi
+      (il gate 0 pesava 2-8 superamenti/trial contro 177-441 del gate 2). Le due notti
+      affiancate + quest'ora sono il paragrafo sui falsi positivi
 - 🔑 **CAUSA DEL PIEDISTALLO: CORPO VICINO AL MODULO DURANTE L'AVVIO (07/09/2026)** — la
       voce qui sotto attribuiva l'anomalia al riavvio a caldo: **smentito**. Prova A: 5 s
       spento, autore allontanato subito → fondo normale. I cinque riavvii di 06-07/09 si
