@@ -508,6 +508,23 @@ ma i valori sono spesso stantii (133 cm ricorrente): non è un indicatore usabil
 - 📌 **da qui in avanti la configurazione è `g0alto`** (v2). Tutto ciò che è stato acquisito
   con `fondo120s_max_6` resta valido: il gate 0 non decideva nessuno di quei test
 
+#### ⏱️ Test 2.1-2420 (07/09/2026): latenza d'ingresso dalla porta **7,28 ± 1,40 s** (n = 5)
+
+| | LD2410B (23/08) | **LD2420** |
+|---|---|---|
+| protocollo | dalla porta, evento a 30 s, 10 trial | dalla porta, evento a 30 s, **pausa 270 s fuori**, 5 validi |
+| latenza | **5,36 ± 0,30 s** | **7,28 ± 1,40 s** |
+| trial validi | 10/10 | 5/5 (+1 scartato: lanciato da dentro) |
+
+- l'acquisizione **coincide col primo superamento del trigger sul gate 2** in 4/5 trial: il
+  trigger e' spiegato dal frame, il mantenimento no
+- +1,9 s e dispersione 4-5×: il LD2410B aggancia in avvicinamento a 4-5 m, il LD2420 entro
+  ~1 m su un margine minimo (trigger 73 vs p95 68-85 della persona che cammina)
+- ⚠️ **tre tentativi falliti prima di questo**, tutti per la stessa ragione: il modulo non
+  torna spento finche' c'e' una persona nella stanza (anche a 4 m, invisibile nelle
+  energie) o finche' la stanza non e' vuota da ≥ 2 min. **La pausa fra trial va passata
+  fuori dalla stanza** — e' parte del protocollo, non tempo morto
+
 ---
 
 ### Test 1.4-2420 — Persona sotto il banco (~60 cm)

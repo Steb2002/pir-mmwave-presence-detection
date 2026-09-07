@@ -885,6 +885,15 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **montaggio e zero del metro vanno annotati** prima di citare errori assoluti.
       Con queste soglie la portata dell'esemplare e' definita meglio di prima: non "vede
       fino a 2 m" ma "si accende entro 1 m e non si spegne fino a 2"
+- ⏱️ **TEST 2.1-2420 COMPLETATO (07/09/2026): latenza d'ingresso dalla porta 7,28 ± 1,40 s
+      (n = 5) contro 5,36 ± 0,30 s del LD2410B (n = 10)** sullo stesso percorso. Ci sono
+      voluti **quattro protocolli**: il modulo non torna spento finche' c'e' una persona nella
+      stanza — a 4 m in asse, di lato al vano, sulla soglia — anche quando nessuna delle 16
+      energie la mostra; serve la stanza vuota per ≥ 2 min, quindi **la pausa fra trial si
+      passa fuori** (270 s bastano). 🔑 L'acquisizione **coincide al campione** col primo
+      superamento del trigger sul gate 2 in 4/5 trial: la parte trigger del modello e'
+      spiegata dal frame, il mantenimento/rilascio no. +1,9 s e dispersione 4-5×: il LD2410B
+      aggancia in avvicinamento a 4-5 m, il LD2420 entro ~1 m su margine minimo
 - ✅ **FALSI POSITIVI: DA 26,2/h A 5,4/h CON IL GATE 0 SOPRA LA CODA (07/09/2026)** —
       `vuoto2420_g0alto_1h`: 1 h a stanza vuota, 5 riaccensioni (notte: ~24 nello stesso
       tempo), presenza a vuoto 5,3 % (era 26 %). Gate 0 a trigger 1600 **mai superato**
