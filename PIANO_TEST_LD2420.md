@@ -525,6 +525,13 @@ ma i valori sono spesso stantii (133 cm ricorrente): non è un indicatore usabil
   energie) o finche' la stanza non e' vuota da ≥ 2 min. **La pausa fra trial va passata
   fuori dalla stanza** — e' parte del protocollo, non tempo morto
 
+#### ↔️ Test 2.4-2420 laterale (07/09/2026): vicino fermo a 1 m a 90° → **0 % a regime**, 3/3
+
+Energie al fondo della stanza vuota (gate 2 ~12-13, gate 1 ~38): la persona di lato non
+compare in nessun gate, zero superamenti del trigger. Stesso esito del LD2410B a regime
+(0 %). Non discrimina: la differenza fra i moduli e' sulla persona **in movimento** a 90°
+(LD2410B 100 %), da misurare con la prova angolare.
+
 ---
 
 ### Test 1.4-2420 — Persona sotto il banco (~60 cm)
