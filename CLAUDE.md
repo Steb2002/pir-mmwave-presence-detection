@@ -898,6 +898,21 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       `check2420_fondo` prima di acquisire — g0 ~100 e g2 ~13, altrimenti ≥ 15 min spento.
       Vale anche per il rilascio: e' un altro comportamento del modulo che il frame non
       spiega e che il LD2410B non ha mai mostrato in 6,55 h
+- 🎯 **TEST 1.1-2420 NOTTURNA (07/09/2026): 26,2 FALSI POSITIVI/ORA** — 7,00 h a stanza
+      vuota, porta chiusa, fondo stabile tutta la notte: **181 riaccensioni**, presenza al
+      **26 %** del tempo con nessuno nella stanza. LD2410B nella stessa stanza: **0 in
+      6,55 h** (≤ 0,43/h). E' il numero piu' pesante del confronto, insieme al mancato
+      rilascio. Firma: episodi di **31,8 s mediani** (min 31,6) = un trigger isolato + 30 s
+      di ritardo. Attribuzione: gate 0 sopra il trigger nei 2 s precedenti in 80/181, gate 1
+      in 10, invisibile a 5 Hz in 91; gate 0 ha fondo 112 e massimo notturno **1145**: la
+      soglia a 5× la media (525) non copre la coda. Gate 2+ mai sopra il trigger in 7 h.
+      → `ld2420_config_fondo120s_max_6_g0alto.xml`: **solo il gate 0** (accoppiamento, non
+      una distanza) a trigger 1600 / hold 1100. Gate 1 (persona a 50 cm) **non toccato**.
+      Verifica: 1 h di giorno a stanza vuota, attesi ~0 eventi. Se funziona e' la
+      configurazione v2 della campagna, dichiarata come tale: i test su persona non ne
+      risentono (gate 0 contribuiva 2-8 superamenti per trial contro 177-441 del gate 2).
+      ⚠️ Il gate minimo NON e' la strada: con gate min 1 le riaccensioni non calavano e la
+      distanza si spostava di 30 cm → verosimilmente agisce sulla misura, non sulla decisione
 - 🚪 **Seconda richiesta del professore, stessa mail: quantificare l'attenuazione**
       *("se prima arrivava a 5 mt, con una porta di mezzo quanto si attenua il segnale?")*.
       Non è una rilettura dei dati della Fase 3: quelli sono in punti percentuali di
