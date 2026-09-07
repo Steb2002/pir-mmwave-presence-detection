@@ -885,7 +885,19 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **montaggio e zero del metro vanno annotati** prima di citare errori assoluti.
       Con queste soglie la portata dell'esemplare e' definita meglio di prima: non "vede
       fino a 2 m" ma "si accende entro 1 m e non si spegne fino a 2"
-- 🚨 **STATO ANOMALO DEL LD2420 DOPO RIAVVIO A CALDO (06-07/09/2026)** — dopo ~10 h acceso,
+- 🔑 **CAUSA DEL PIEDISTALLO: CORPO VICINO AL MODULO DURANTE L'AVVIO (07/09/2026)** — la
+      voce qui sotto attribuiva l'anomalia al riavvio a caldo: **smentito**. Prova A: 5 s
+      spento, autore allontanato subito → fondo normale. I cinque riavvii di 06-07/09 si
+      separano per una sola variabile: mani sui jumper nei primi ~60 s (3 casi) → anomalo;
+      allontanato (2 casi, dopo 15 min E dopo 5 s) → normale. Il modulo **stima il fondo
+      all'accensione** e un corpo a 20 cm ci finisce dentro. Coerente con l'auto-
+      calibrazione all'avvio che ESPHome attribuisce al fw ≥ 1.5.4 (comunita', non
+      manuale). 📌 **Regola**: dopo ogni accensione allontanarsi subito, nessuno entro
+      ~2 m per 90 s, poi 60 s di check del fondo. **Per UPRISE**: un sensore acceso con
+      l'occupante gia' sotto il banco parte col fondo sbagliato — il LD2410B non l'ha mai
+      fatto in decine di riavvii
+- 🚨 **STATO ANOMALO DEL LD2420 DOPO RIAVVIO A CALDO (06-07/09/2026)** *(ipotesi termica
+      SUPERATA dalla voce precedente; restano validi i fatti misurati)* — dopo ~10 h acceso,
       un ciclo di alimentazione breve ha lasciato il modulo con **tutti i 16 gate a ×10-20**
       (g0 ~510 invece di ~105, g2 ~210 invece di ~13), piedistallo costante al 2-3 % fra
       file diversi, presenza 100 % e `dist_raw` a riposo, **nessuna risposta alla persona**
