@@ -532,6 +532,23 @@ compare in nessun gate, zero superamenti del trigger. Stesso esito del LD2410B a
 (0 %). Non discrimina: la differenza fra i moduli e' sulla persona **in movimento** a 90°
 (LD2410B 100 %), da misurare con la prova angolare.
 
+#### 📐 Misura angolare LD2420 (08/09/2026): fascio utile fino a 75°, al fondo a 90°
+
+| azimut | gate 2 LD2420 (fondo 12-13) | trigger superato | LD2410B presenza | LD2410B energia |
+|---|---|---|---|---|
+| 0° | 22,8 ± 1,5 | 0,7-3 % | 100 % | 96,5 |
+| 45° | 31,5 ± 4,8 | 3-9 % | 100 % | 95,3 |
+| 60° | 34,4 ± 3,4 | 5-10 % | 100 % | 95,7 |
+| 75° | 29,4 ± 3,7 | 3-9 % | 100 % | 94,1 |
+| **90°** | **15,8 ± 1,4** | **0 %** | **100 %** | 94,3 |
+| 120° | non eseguito | — | 6,6 % | 59,6 |
+
+- metrica primaria: energia (la presenza si trascina per isteresi fra un azimut e l'altro)
+- **piu' stretto del LD2410B (≥ ±90°), piu' largo del dichiarato (±60° / ±45°)**
+- per UPRISE: il vicino **in movimento** a 90° non e' visto → selettivita' fra banchi
+  adiacenti dal diagramma d'antenna. E' l'unico punto della campagna in cui il LD2420 fa
+  meglio del LD2410B, e va scritto con lo stesso rilievo dei suoi limiti
+
 ---
 
 ### Test 1.4-2420 — Persona sotto il banco (~60 cm)

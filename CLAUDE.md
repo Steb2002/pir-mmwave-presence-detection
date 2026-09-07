@@ -885,6 +885,15 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **montaggio e zero del metro vanno annotati** prima di citare errori assoluti.
       Con queste soglie la portata dell'esemplare e' definita meglio di prima: non "vede
       fino a 2 m" ma "si accende entro 1 m e non si spegne fino a 2"
+- 📐 **MISURA ANGOLARE LD2420 (08/09/2026): fascio utile fino a 75°, al fondo a 90°** —
+      gate 2 (fondo 12-13): 0° 22,8 · 45° 31,5 · 60° 34,4 · 75° 29,4 · **90° 15,8**, trigger
+      mai superato a 90°. LD2410B stessa prova: 100 % con energia 94-97 fino a 90°. → **piu'
+      stretto del LD2410B (≥ ±90°), piu' largo del dichiarato (±60° / ±45°)**. Per UPRISE e'
+      il rovescio della scoperta sul LD2410B: **il vicino in movimento a 90° non e' visto**,
+      la selettivita' fra banchi adiacenti viene dal diagramma d'antenna e non dal montaggio.
+      Unico punto della campagna in cui il LD2420 fa meglio: va scritto con lo stesso rilievo
+      dei suoi limiti. Metrica primaria l'energia, non la presenza (isteresi fra azimut).
+      A 0° energia minima: `dist_raw` 60-74 cm da seduto (confine gate 1/2), ipotesi
 - ⏱️ **TEST 2.1-2420 COMPLETATO (07/09/2026): latenza d'ingresso dalla porta 7,28 ± 1,40 s
       (n = 5) contro 5,36 ± 0,30 s del LD2410B (n = 10)** sullo stesso percorso. Ci sono
       voluti **quattro protocolli**: il modulo non torna spento finche' c'e' una persona nella
