@@ -55,7 +55,13 @@
 // trigger 525) che tengono alta la presenza a stanza vuota. Con 1 il modulo dovrebbe
 // ignorarlo nella decisione: parametro 0x0000, manuale Tab. 4-2, range 0-15. Come il gate
 // massimo vive in RAM: riscritto a ogni reset dell'ESP32, quindi a ogni trial.
-#define GATE_MIN_DA_IMPOSTARE 0
+#define GATE_MIN_DA_IMPOSTARE 3
+
+// Ritardo di scomparsa (parametro 0x0004, s) da scrivere a ogni avvio (0 = non toccare).
+// Test 2.2-2420 con ritardo 5 s invece dei 30 in flash: chiude anche l'unita' del
+// parametro, su cui manuale (0-65535) e Protocol Document (0x00-0x0F) si contraddicono.
+// Come gli altri: RAM, si annulla col ciclo di alimentazione del modulo.
+#define RITARDO_DA_IMPOSTARE 0
 
 // 🚨 PIR CABLATO SU GPIO21? Metterlo a 0 quando il PIR non e' collegato: la colonna
 // `pir_presence` esce a **-1** invece che a 0, e gli script di analisi la trattano come
@@ -133,6 +139,8 @@ static uint32_t gateMaxLetto = 0;
 static bool     gateMaxOk = false;
 static uint32_t gateMinLetto = 0;
 static bool     gateMinOk = false;
+static uint32_t ritardoLetto = 0;
+static bool     ritardoOk = false;
 
 // Una sola sessione di comandi: apre, (opzionale) scrive il gate massimo, rilegge il
 // gate massimo, commuta in energy mode, chiude. Ritorna true se l'energy mode e' passato.
@@ -143,6 +151,8 @@ bool attivaEnergyMode() {
   gateMaxOk = leggiParam(0x0001, gateMaxLetto);
   if (GATE_MIN_DA_IMPOSTARE > 0) scriviParam(0x0000, (uint32_t)GATE_MIN_DA_IMPOSTARE);
   gateMinOk = leggiParam(0x0000, gateMinLetto);
+  if (RITARDO_DA_IMPOSTARE > 0) scriviParam(0x0004, (uint32_t)RITARDO_DA_IMPOSTARE);
+  ritardoOk = leggiParam(0x0004, ritardoLetto);
   // 0x0012: parametro 0x0000 (system mode), valore 0x00000004 (energy)
   const uint8_t modo[] = {0x00, 0x00, 0x04, 0x00, 0x00, 0x00};
   bool ok = cmd2420(0x0012, modo, 6);
@@ -199,7 +209,7 @@ void setup() {
   delay(500);
 
   // Righe di servizio come commenti '#': acquire.py le ignora.
-  Serial.println("# ld2420_logger_bin BUILD 7 - gate min opzionale, energy mode via 0x0012, presenza dal frame, dist_raw_cm, gate max opzionale, senza OT2");
+  Serial.println("# ld2420_logger_bin BUILD 8 - gate min e ritardo opzionali, energy mode via 0x0012, presenza dal frame, dist_raw_cm, gate max opzionale, senza OT2");
   Serial.print("# PIR: ");
   Serial.println(PIR_COLLEGATO ? "cablato su GPIO21, colonna valida"
                                : "NON collegato, pir_presence = -1 (colonna non valida)");
@@ -216,6 +226,11 @@ void setup() {
   else           { Serial.print("!! lettura fallita"); }
   Serial.print(" (GATE_MIN_DA_IMPOSTARE = "); Serial.print(GATE_MIN_DA_IMPOSTARE);
   Serial.println(GATE_MIN_DA_IMPOSTARE > 0 ? ", scritto in RAM a questo avvio)" : ", flash non toccata)");
+  Serial.print("# ritardo scomparsa: ");
+  if (ritardoOk) { Serial.print("letto "); Serial.print(ritardoLetto); }
+  else           { Serial.print("!! lettura fallita"); }
+  Serial.print(" (RITARDO_DA_IMPOSTARE = "); Serial.print(RITARDO_DA_IMPOSTARE);
+  Serial.println(RITARDO_DA_IMPOSTARE > 0 ? ", scritto in RAM a questo avvio)" : ", flash non toccata)");
   delay(300);
 
   Serial.print("timestamp_ms,radar_presence,moving_target,stationary_target,"

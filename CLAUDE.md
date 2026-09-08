@@ -892,8 +892,8 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       si aggancia su B — la persona in moto, §8 — in 2/3 (211-214). **Ferme**: 268 cm
       costante, artefatto. Sul LD2410B i due canali davano B nel 73,8 / 19,6 / 0,4 %: qui
       non esiste un canale per persona e il conteggio non si recupera dal frame. Stesso
-      ordine qualitativo, nessun numero. ⚠️ gate 2 piu' basso con due persone (20-23 vs
-      41 con A sola): verificare chi faceva A prima di leggerlo come effetto
+      ordine qualitativo, nessun numero. Il gate 2 piu' basso con due persone (20-23 vs 41)
+      e' la seconda persona che faceva A, non un effetto
 - 📐 **MISURA ANGOLARE LD2420 (08/09/2026): fascio utile fino a 75°, al fondo a 90°** —
       gate 2 (fondo 12-13): 0° 22,8 · 45° 31,5 · 60° 34,4 · 75° 29,4 · **90° 15,8**, trigger
       mai superato a 90°. LD2410B stessa prova: 100 % con energia 94-97 fino a 90°. → **piu'
