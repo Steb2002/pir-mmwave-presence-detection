@@ -885,6 +885,15 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **montaggio e zero del metro vanno annotati** prima di citare errori assoluti.
       Con queste soglie la portata dell'esemplare e' definita meglio di prima: non "vede
       fino a 2 m" ma "si accende entro 1 m e non si spegne fino a 2"
+- 👥 **TEST 2.5-2420 DUE PERSONE (08/09/2026): un bit, nessun conteggio.** A ferma a 1 m,
+      B a 2 m. Presenza 100 % in tutti gli scenari. **In fila B e' invisibile** (gate 3 =
+      spill di A da sola, distanza senza senso), come il 0,4 % del LD2410B. **Sfalsate**:
+      energie non separabili (B a 2 m e' al bordo del fondo gia' da sola), ma `dist_raw`
+      si aggancia su B — la persona in moto, §8 — in 2/3 (211-214). **Ferme**: 268 cm
+      costante, artefatto. Sul LD2410B i due canali davano B nel 73,8 / 19,6 / 0,4 %: qui
+      non esiste un canale per persona e il conteggio non si recupera dal frame. Stesso
+      ordine qualitativo, nessun numero. ⚠️ gate 2 piu' basso con due persone (20-23 vs
+      41 con A sola): verificare chi faceva A prima di leggerlo come effetto
 - 📐 **MISURA ANGOLARE LD2420 (08/09/2026): fascio utile fino a 75°, al fondo a 90°** —
       gate 2 (fondo 12-13): 0° 22,8 · 45° 31,5 · 60° 34,4 · 75° 29,4 · **90° 15,8**, trigger
       mai superato a 90°. LD2410B stessa prova: 100 % con energia 94-97 fino a 90°. → **piu'

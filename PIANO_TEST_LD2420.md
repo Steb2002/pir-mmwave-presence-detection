@@ -553,6 +553,21 @@ compare in nessun gate, zero superamenti del trigger. Stesso esito del LD2410B a
   (LD2410B ±60°, LD2420 ±60° §1.1 / ±45° §5.2): nessuno contraddetto, nessuno descrive
   un confine a 1 m
 
+#### 👥 Test 2.5-2420 due persone (08/09/2026): un bit di presenza, nessun conteggio
+
+| scenario (A ferma 1 m, B 2 m) | gate 2 (A) | gate 3 (B) | `dist_raw` | LD2410B: B riportata |
+|---|---|---|---|---|
+| sfalsate di lato, B cammina | 22,7 ± 2,1 | 20,5 ± 0,7 | **211-214** (B) in 2/3 | 73,8 % |
+| in fila, B dietro A | 42,4 ± 4,0 | **16,7 ± 2,3** (= A sola) | 20 / 20 / 123 | 0,4 % |
+| entrambe ferme, sfalsate | 20,1 ± 0,8 | 21,5 ± 4,5 | 268 costante | 19,6 % |
+| controllo: A sola | 41,0 ± 8,3 | 15,9 ± 2,2 | riposo | — |
+| controllo: B sola a 2 m | 15,4 ± 1,9 | 17,0 ± 2,6 | stantia | — |
+
+- presenza 100 % in tutti gli scenari: e' un bit, il conteggio non esiste per costruzione
+- in fila B e' invisibile (come sul LD2410B); sfalsate la separazione nelle energie non e'
+  dimostrabile (B a 2 m e' gia' al bordo del fondo da sola), ma la distanza si aggancia su
+  B — la persona in moto, §8 — in 2/3. Ordine qualitativo identico al LD2410B, senza numeri
+
 ---
 
 ### Test 1.4-2420 — Persona sotto il banco (~60 cm)
