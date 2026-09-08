@@ -885,6 +885,14 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **montaggio e zero del metro vanno annotati** prima di citare errori assoluti.
       Con queste soglie la portata dell'esemplare e' definita meglio di prima: non "vede
       fino a 2 m" ma "si accende entro 1 m e non si spegne fino a 2"
+- 🔧 **TEST 2.6-2420 GATE MINIMO (08/09/2026): non tocca la decisione di presenza, blocca
+      la distanza.** Gate min 3 (0-140 cm esclusi), persona che cammina a 1 m nel gate 2
+      **escluso**: presenza 100 % per 240 s × 3, g2 39-44 con hold superato 26-33 % — il
+      modulo la mantiene come se il gate fosse ammesso. `dist_raw` = **202-204 a 1 m e
+      200-207 a 2 m**: confinata alla finestra e piantata sul bordo, identica a due
+      distanze diverse (gate min 1 dava 136 a 105 cm). Coerente con le riaccensioni non
+      ridotte del 07/09. Nessuna delle due proprieta' e' nel manuale (Tab. 4-2: solo il
+      range 0-15). Per UPRISE: inutile contro i riflettori vicini, dannoso per la distanza
 - 👥 **TEST 2.5-2420 DUE PERSONE (08/09/2026): un bit, nessun conteggio.** A ferma a 1 m,
       B a 2 m. Presenza 100 % in tutti gli scenari. **In fila B e' invisibile** (gate 3 =
       spill di A da sola, distanza senza senso), come il 0,4 % del LD2410B. **Sfalsate**:

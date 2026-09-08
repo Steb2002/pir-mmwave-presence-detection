@@ -568,6 +568,21 @@ compare in nessun gate, zero superamenti del trigger. Stesso esito del LD2410B a
   dimostrabile (B a 2 m e' gia' al bordo del fondo da sola), ma la distanza si aggancia su
   B — la persona in moto, §8 — in 2/3. Ordine qualitativo identico al LD2410B, senza numeri
 
+#### 🔧 Test 2.6-2420 gate minimo (08/09/2026): non tocca la presenza, blocca la distanza
+
+| gate min 3 (gate 0-2 esclusi) | persona a 1 m — gate 2 **escluso** | persona a 2 m — gate 3 ammesso |
+|---|---|---|
+| presenza | **100 %**, 240 s × 3, zero fronti | 100 % |
+| gate della persona | g2 39-44, hold 26-33 % | g3 18-20, hold 14-17 % |
+| `dist_raw` | **202-204** costante | **200-207** costante |
+
+- la decisione di presenza **ignora il gate minimo**: mantiene la persona nel gate escluso
+  come in quello ammesso (coerente con le riaccensioni non ridotte a gate min 1)
+- la distanza e' **confinata alla finestra ammessa e si pianta sul bordo**: stesso valore a
+  1 e a 2 m; con gate min 1 dava 136 a 105 cm. Sotto gate minimo `dist_raw` non e' una misura
+- il manuale (Tab. 4-2) da' solo il range 0-15: nessuna delle due proprieta' e' documentata.
+  Per UPRISE il parametro non serve a escludere riflettori vicini e rompe la distanza
+
 ---
 
 ### Test 1.4-2420 — Persona sotto il banco (~60 cm)
