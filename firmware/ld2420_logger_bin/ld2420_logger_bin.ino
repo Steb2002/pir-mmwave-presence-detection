@@ -61,7 +61,7 @@
 // Test 2.2-2420 con ritardo 5 s invece dei 30 in flash: chiude anche l'unita' del
 // parametro, su cui manuale (0-65535) e Protocol Document (0x00-0x0F) si contraddicono.
 // Come gli altri: RAM, si annulla col ciclo di alimentazione del modulo.
-#define RITARDO_DA_IMPOSTARE 5
+#define RITARDO_DA_IMPOSTARE 0
 
 // 🚨 PIR CABLATO SU GPIO21? Metterlo a 0 quando il PIR non e' collegato: la colonna
 // `pir_presence` esce a **-1** invece che a 0, e gli script di analisi la trattano come

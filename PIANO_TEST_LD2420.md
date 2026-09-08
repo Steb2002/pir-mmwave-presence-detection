@@ -583,6 +583,23 @@ compare in nessun gate, zero superamenti del trigger. Stesso esito del LD2410B a
 - il manuale (Tab. 4-2) da' solo il range 0-15: nessuna delle due proprieta' e' documentata.
   Per UPRISE il parametro non serve a escludere riflettori vicini e rompe la distanza
 
+#### ⏱️ Test 2.2-2420 con ritardo 5 s (08/09/2026): rilascio **7,7 ± 0,5 s** (era 87-120 s a 30 s)
+
+| | ritardo | rilascio dopo l'uscita | riaccensioni |
+|---|---|---|---|
+| LD2420 `fondo120s` (06/09) | 30 s | 87-120 s, MAI in 5/5 a 120 s | 2-3 per finestra |
+| LD2420 `g0alto` 1 h (07/09) | 30 s | 119 s | 5,4/h |
+| **LD2420 `g0alto`** | **5 s** | **7,2 / 8,0 / 8,0 s** | 2 episodi da ~5 s in 330 s |
+| LD2410B (23/08) | 5 s | 18,36 ± 0,54 s | 0 |
+
+- **meccanismo chiuso**: rilascio = intervallo ≥ ritardo senza superamenti dell'hold. Le
+  code dei gate 1-2 superano l'hold ogni 10-25 s → con 30 s non arriva quasi mai, con 5 s
+  subito. Il rilascio lento era il **parametro di fabbrica**, non l'esemplare
+- il confronto col LD2410B e' ora appaiato sul parametro; la differenza (7,7 vs 18,4) e'
+  dominata dal tempo di uscita dal campo (1-2 m vs 5-6 m di portata). Coda propria ≈ il
+  parametro su entrambi (~5-6 s vs ~9 s)
+- i falsi positivi residui durano `trigger + 5 s` invece di 30
+
 ---
 
 ### Test 1.4-2420 — Persona sotto il banco (~60 cm)

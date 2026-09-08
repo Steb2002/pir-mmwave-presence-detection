@@ -885,6 +885,17 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **montaggio e zero del metro vanno annotati** prima di citare errori assoluti.
       Con queste soglie la portata dell'esemplare e' definita meglio di prima: non "vede
       fino a 2 m" ma "si accende entro 1 m e non si spegne fino a 2"
+- ⏱️ **TEST 2.2-2420 CON RITARDO 5 s (08/09/2026): rilascio 7,7 ± 0,5 s, contro 87-120 s
+      con il ritardo di fabbrica a 30 s.** 🔑 **Meccanismo del rilascio chiuso**: il modulo
+      rilascia quando passa un intervallo ≥ ritardo senza superamenti dell'hold; le code
+      dei gate 1-2 lo superano ogni 10-25 s, quindi con 30 s l'intervallo non arriva quasi
+      mai e con 5 s arriva subito. Il modello "hold + ritardo" era corretto — quello che il
+      frame a 5 Hz non mostrava era la frequenza dei superamenti a 10 Hz. Il rilascio lento
+      **era il parametro di fabbrica**, non isteresi dell'esemplare. Confronto col LD2410B
+      ora appaiato (5 s / 5 s): 7,7 vs 18,4 s, dominato dal tempo di uscita dal campo (1-2 m
+      vs 5-6 m di portata); coda propria ≈ il parametro su entrambi. **Non scrivere "il
+      LD2420 rilascia piu' in fretta".** Falsi positivi residui: `trigger + 5 s`, non 30.
+      Il `check2420_fondo_rit5` e' stato saltato (energie normali nei trial: annotato)
 - 🔧 **TEST 2.6-2420 GATE MINIMO (08/09/2026): non tocca la decisione di presenza, blocca
       la distanza.** Gate min 3 (0-140 cm esclusi), persona che cammina a 1 m nel gate 2
       **escluso**: presenza 100 % per 240 s × 3, g2 39-44 con hold superato 26-33 % — il
