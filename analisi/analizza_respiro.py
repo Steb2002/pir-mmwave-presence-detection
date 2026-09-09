@@ -39,12 +39,22 @@ except ImportError:
 BANDA_RESPIRO = (0.1, 0.5)  # Hz
 MGATE = [f"menergy_gate{i}" for i in range(9)]
 SGATE = [f"senergy_gate{i}" for i in range(9)]
+# LD2420 in modalita' binaria (ld2420_logger_bin): 16 energie uint16, canale unico.
+# Non hanno la scala 0-100, quindi il criterio di saturazione non si applica; ai fini
+# della stima contano come canali "moving" (l'artefatto stazionario a 6-7 atti/min e'
+# proprio del canale stazionario del LD2410B, che qui non esiste).
+EGATE = [f"energy2420_gate{i}" for i in range(16)]
 INTESTAZIONE = ([
     "timestamp_ms", "radar_presence", "moving_target", "stationary_target",
     "moving_distance_cm", "stationary_distance_cm", "moving_energy",
     "stationary_energy", "pir_presence",
 ] + MGATE + SGATE + ["light_level", "out_level"])
-CANALI = ["moving_energy", "stationary_energy"] + MGATE + SGATE
+CANALI = ["moving_energy", "stationary_energy"] + MGATE + SGATE + EGATE
+
+
+def e_moving(nome):
+    """Canale che segue il movimento: moving del LD2410B o qualunque gate del LD2420."""
+    return nome.startswith("menergy") or nome == "moving_energy" or nome in EGATE
 
 
 def apri(path, salta=0.0):
@@ -87,10 +97,11 @@ def serie(righe, colonna):
     return np.array(tempi), np.array(valori)
 
 
-def analizza(t, x):
-    """FFT in banda respiratoria. Ritorna un dict con fs, picco, snr, saturazione."""
+def analizza(t, x, fondoscala=100):
+    """FFT in banda respiratoria. Ritorna un dict con fs, picco, snr, saturazione.
+    fondoscala=None per i canali uint16 del LD2420 (nessuna saturazione a 100)."""
     fs = 1.0 / np.median(np.diff(t))
-    sat = 100.0 * np.mean(x >= 100)
+    sat = 100.0 * np.mean(x >= fondoscala) if fondoscala is not None else 0.0
     piatto = float(np.std(x))
 
     y = x - np.mean(x)
@@ -123,7 +134,7 @@ def gruppi_concordi(esiti, toll):
 
 
 def solo_moving(g):
-    return all(n.startswith("menergy") or n == "moving_energy" for _, n, _ in g)
+    return all(e_moving(n) for _, n, _ in g)
 
 
 def f_ok(g, atti_min):
@@ -135,7 +146,7 @@ def f_ok(g, atti_min):
 
 def n_moving(g):
     """Quanti canali MOVING ci sono nel gruppo (indipendentemente dagli altri)."""
-    return sum(1 for _, n, _ in g if n.startswith("menergy") or n == "moving_energy")
+    return sum(1 for _, n, _ in g if e_moving(n))
 
 
 def scansiona(path, snr_min, toll, salta=0.0):
@@ -148,7 +159,7 @@ def scansiona(path, snr_min, toll, salta=0.0):
         t, x = serie(righe, c)
         if len(x) < 32:
             continue
-        r = analizza(t, x)
+        r = analizza(t, x, None if c in EGATE else 100)
         if r is None or r["sat"] >= 20 or r["std"] < 1.5 or r["snr"] <= snr_min:
             continue
         esiti.append((r["snr"], c, r))
@@ -285,7 +296,7 @@ def main():
             t, x = serie(righe, c)
             if len(x) < 32:
                 continue
-            r = analizza(t, x)
+            r = analizza(t, x, None if c in EGATE else 100)
             if r is None:
                 continue
             if r["sat"] >= 20:
@@ -327,9 +338,10 @@ def main():
         for g in gruppi[:3]:
             stime = np.array([e[2]["f_picco"] for e in g])
             nomi = sorted(e[1] for e in g)
-            n_mov = sum(1 for x in nomi if x.startswith("menergy") or x == "moving_energy")
+            n_mov = sum(1 for x in nomi if e_moving(x))
             n_sta = len(nomi) - n_mov
-            fam = f"{n_mov} moving + {n_sta} stazionari"
+            fam = (f"{n_mov} gate LD2420" if all(x in EGATE for x in nomi)
+                   else f"{n_mov} moving + {n_sta} stazionari")
             avviso = ""
             if n_mov == 0:
                 avviso = "  <-- SOLO canali stazionari: sospetto artefatto"
