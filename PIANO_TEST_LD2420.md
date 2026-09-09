@@ -76,7 +76,7 @@ esattamente come i 5 m della stanza sono il perimetro del LD2410B.
 | 1.1 stanza vuota | — | ✔ **invariato** | il tempo non c'entra con la portata; con gate 6 il modulo rilascia |
 | 1.2 distanza nota | 1-5 m | ⚠️ **0,5 / 1 / 1,5 / 2 m** | 4 punti invece di 5; basta per la retta *dentro* la zona utile |
 | 1.3 immobile | 2,3 m | ⚠️ **1 m** (+ 1,5 m come estensione) | 2,3 m è fuori portata. 1 m e non 1,5: è il gate con più margine **e** l'unica distanza con un dataset LD2410B gemello (`fermo_1m_H`) — vedi protocollo esecutivo |
-| 1.4 sotto il banco | ~0,6 m | ✔ **invariato** | è lo scenario UPRISE ed è già dentro i 2 m |
+| 1.4 sotto il banco | ~0,6 m | ✔ **fatto 09/09**: immobile 98,4 %, micro-movimenti 100 % | un rilascio di 24 s in 1 trial su 5 da immobile |
 | 1.5 attraversamento | 2-5 m | ❌ escluso | è un test del **PIR**, già chiuso, e il radar lì fa solo da testimone |
 | 2.1 latenza ingresso | porta ~4-5 m | ⚠️ **doppia versione** (vedi nota) | il confronto col LD2410B non sarebbe appaiato |
 | 2.2 rilascio | 1 m | ✔ **invariato**, doppio (ritardo 5 e 30) | chiude anche l'unità del parametro di ritardo |
@@ -109,7 +109,7 @@ Acquisire **entrambe** costa 20 minuti in più ed evita una conclusione sbagliat
 | 1 | 1.3 a **1 m** (immobile) + estensione 1,5 m | 1,0 | 🔴 punto di decisione: se non vede la persona ferma, il resto è accademico |
 | 2 | 2.3 dose-risposta a 1 m | 1,0 | il grafico a tre sensori |
 | 3 | 1.2 a 0,5/1/1,5/2 m | 1,25 | accuratezza dentro la zona utile |
-| 4 | 1.4 sotto il banco | 0,75 | scenario UPRISE |
+| 4 | 1.4 sotto il banco | ✔ 1,3 h | scenario UPRISE |
 | 5 | misura angolare a 1 m | 1,0 | confronto col ±90° del LD2410B |
 | 6 | 2.2 rilascio (×2) + 2.6 gate minimo | 1,25 | chiude l'unità del ritardo |
 | 7 | 2.4 selettività (2 scenari) + 2.1 (2 varianti) | 1,25 | |
@@ -656,6 +656,38 @@ compare in nessun gate, zero superamenti del trigger. Stesso esito del LD2410B a
   zona cieca. A 60 cm siamo nel primo gate (0-70 cm). Il gate 0 del LD2410B, forzato, si
   era rotto — qui il gate 0 è di serie e va provato
 
+#### ✅ ESITO (09/09/2026) — `banco2420_immobile_T01-05`, `banco2420_movimenti_T01-05`
+
+Sensore sotto il piano come il 22/08, acceso da spento con allontanamento; fondo nella
+nuova geometria identico a quello a 85 cm (g0 110 / g1 39 / g2 12); negativo a vuoto 0 %
+su 120 s; positivo 100 % con gate 1 a 344 (+9,6 dB). 5 × 392 s con **90 s di scarto**
+(ritardo 30 s) = 302 s utili, stessa finestra dei gemelli `sotto_banco_*_H`.
+
+| condizione | PIR | LD2410B | **LD2420** | note LD2420 |
+|---|---|---|---|---|
+| immobile | 1,32 % | 100 % | **98,4 ± 3,6 %** | 4/5 al 100 %; T05 92 %: un rilascio di 24 s (164-189 s) |
+| micro-movimenti | 96,5 % | 100 % | **100,0 ± 0,0 %** | zero fronti |
+
+- 🔑 **Da immobile la presenza la regge il gate 2, non il gate 1 dove sta la persona**:
+  gate 1 media 46 contro fondo 38 (hold superato 1-4 %), gate 2 22-41 contro 11 (hold
+  6-32 %). Gap massimo senza superamenti su alcun gate: 7 / 22 / 14 / 30 s nei trial
+  mantenuti, **65 s in T05** → rilascio. Stesso fenomeno visto sul LD2410B il 22/08
+  (presenza portata dai gate 2-3 a 60 cm), verosimilmente cammini multipli sotto il piano
+- **Il rilascio di T05 è il primo falso negativo su persona presente dell'intera campagna
+  LD2420** (LD2410B: 0 in 20 trial sotto il banco). Margine da immobile a 50 cm sottile
+  come a 1 m: +0,8 dB sul gate 1, +3-6 dB sul gate 2. Con micro-movimenti gate 1 141 ± 13,
+  hold 30-44 %, gap ≤ 19 s
+- **Distanza**: da immobile **un solo valore stantio per trial** (35/49/35/39/51), §8 del
+  manuale confermato anche a 50 cm; con micro-movimenti mediana 46-56 con 38-49 valori
+  distinti (LD2410B: 68,6 / 65,8 cm)
+- **Zona cieca**: il manuale dichiara rilevamento da 0,2 m. A 50 cm il modulo rileva,
+  ma il gate che dovrebbe contenere la persona quasi non la vede da ferma (46 vs 38) e
+  la vede benissimo in movimento (141-344): la risposta dipende dal movimento, non dalla
+  distanza minima
+- ⚠️ Positivo di chiusura `mov2420_banco_fine` **non acquisito** (nessun file scritto);
+  vale come chiusura `banco2420_movimenti_T05`, ultimo trial della sessione, 100 % con
+  gate 1 a 132. Dichiarato
+
 **Costo Fase 1**: ~3 h presidiate + 1 notturna non presidiata.
 
 ---
@@ -827,15 +859,15 @@ per il cap. 4 e per le conclusioni.
 
 | grandezza | PIR HC-SR501 | LD2410B | LD2420 |
 |---|---|---|---|
-| persona immobile, 2,3 m | 1,52 % | 100 % | da misurare (1.3) |
-| persona immobile, sotto banco | 1,32 % | 100 % | da misurare (1.4) |
-| errore di distanza | — | ≤ 4,9 cm dalla retta | da misurare (1.2) |
-| latenza ingresso vs PIR | rif. | −0,60 s | da misurare (2.1) |
-| coda di rilascio | 3,46 s fissi | ~18,4 s | da misurare (2.2) |
-| falsi positivi | ≤ 0,43 ev/h | ≤ 0,43 ev/h | da misurare (1.1) |
-| due persone separate | ✗ | parziale, per canale | da misurare (2.5) |
-| esclusione campo vicino | ✗ | ✗ | ✔ da misurare (2.6) |
-| ostacoli | — | da misurare | da misurare |
+| persona immobile, 1 m (2,3 m fuori portata dell'esemplare) | 1,52 % | 100 % | **100 %** (5/5) |
+| persona immobile, sotto banco | 1,32 % | 100 % | **98,4 ± 3,6 %** (un rilascio di 24 s in 1/5) |
+| errore di distanza | — | ≤ 4,9 cm dalla retta | +9 cm a 0,5 m, +21 cm a 1 m, **stantia oltre** |
+| latenza ingresso | 5,96 s | 5,36 s | **7,28 ± 1,40 s** |
+| coda di rilascio | 3,46 s fissi | ~18,4 s (timeout 5 s) | **87-120 s** a 30 s di fabbrica, **7,7 s** a 5 s |
+| falsi positivi | ≤ 0,43 ev/h | ≤ 0,43 ev/h | **26,2 ev/h** a soglie tarate, **5,4 ev/h** con gate 0 alzato |
+| due persone separate | ✗ | parziale, per canale (74 / 20 / 0,4 %) | **✗** un bit, nessun conteggio |
+| esclusione campo vicino (gate min) | ✗ | ✗ | **non agisce sulla presenza**, blocca la distanza |
+| ostacoli | bloccato da tutti | −7,5 … −41,6 %, metallo blocca | **0,4 … ≥ 4,1 dB**, cartongesso 0,7, stessa graduatoria |
 
 ---
 

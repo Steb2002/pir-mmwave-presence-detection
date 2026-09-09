@@ -885,6 +885,23 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **montaggio e zero del metro vanno annotati** prima di citare errori assoluti.
       Con queste soglie la portata dell'esemplare e' definita meglio di prima: non "vede
       fino a 2 m" ma "si accende entro 1 m e non si spegne fino a 2"
+- 🎯 **TEST 1.4-2420 SOTTO IL BANCO (09/09/2026): immobile 98,4 ± 3,6 %, micro-movimenti
+      100 %. Riga UPRISE a tre sensori completata: immobile PIR 1,32 · LD2410B 100 ·
+      LD2420 98,4; con micro-movimenti 96,5 · 100 · 100.** Sensore sotto il piano come il
+      22/08, 5 × 302 s utili (scarto 90). Da immobile 4/5 al 100 % e **T05 al 92 %: un
+      rilascio di 24 s (164-189 s) con la persona sotto** — primo falso negativo su persona
+      presente della campagna LD2420 (LD2410B: 0 in 20 trial). 🔑 **La presenza da immobile
+      la regge il gate 2 (70-140 cm), non il gate 1 dove sta la persona a 50 cm**: gate 1
+      media 46 contro fondo 38 (hold 1-4 %), gate 2 22-41 contro 11 (hold 6-32 %); gap
+      massimo senza superamenti su alcun gate 7-30 s nei trial mantenuti, 65 s in T05.
+      Stesso fenomeno del LD2410B (presenza dai gate 2-3 a 60 cm): cammini multipli sotto
+      il piano. Con micro-movimenti gate 1 141 ± 13 (positivo con gesti: 344, +9,6 dB).
+      **Distanza**: da immobile un solo valore stantio per trial (35-51), §8 confermato a
+      50 cm; in movimento mediana 46-56 con 38-49 valori distinti (LD2410B 66-69). Zona
+      cieca dichiarata 0,2 m: a 50 cm rileva, ma la risposta dipende dal movimento, non
+      dalla distanza. Fondo sotto il piano identico a quello a 85 cm; negativo a vuoto 0 %.
+      ⚠️ Positivo di chiusura non acquisito (nessun file): vale `banco2420_movimenti_T05`,
+      dichiarato. **Con questo il LD2420 ha finito tutto tranne il corridoio (Fase 8)**
 - 🫁 **FASE 5-2420 RESPIRO A 1 m (09/09/2026): frequenza recuperabile ma non affidabile,
       1 trial su 3 col criterio dichiarato → fermata al primo blocco.** Seduto a 1 m,
       metronomo 15 atti/min, 3 trial + 2 di vuoto (`respiro2420_1m_15_*`,
