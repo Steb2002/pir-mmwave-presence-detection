@@ -885,6 +885,20 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **montaggio e zero del metro vanno annotati** prima di citare errori assoluti.
       Con queste soglie la portata dell'esemplare e' definita meglio di prima: non "vede
       fino a 2 m" ma "si accende entro 1 m e non si spegne fino a 2"
+- 🫁 **FASE 5-2420 RESPIRO A 1 m (09/09/2026): frequenza recuperabile ma non affidabile,
+      1 trial su 3 col criterio dichiarato → fermata al primo blocco.** Seduto a 1 m,
+      metronomo 15 atti/min, 3 trial + 2 di vuoto (`respiro2420_1m_15_*`,
+      `respiro2420_vuoto_*`), `analizza_respiro.py --scan --salta-inizio 40 --min-canali 2`
+      (canali `energy2420_gate*` aggiunti allo scan; LD2410B invariato trial per trial).
+      T01 solo gate 2: 14,8 a SNR 5,8, un canale → non concorde; **T02 14,6 ✔** (gate 2+3);
+      T03 ottava 29,6 sul gate 3 e gruppo spurio 23,7 su gate 0+4. **Vuoto pulito 2/2** col
+      criterio a 2 gate, ma un picco singolo a 14,8 (SNR 3,1) sul gate 1: il criterio a
+      canale singolo non basta. A gate fissato a priori (gate 2): 14,8 · 14,8 · debole =
+      2/3. **Perche' peggio del LD2410B (13/15)**: la persona occupa 2 gate soli contro
+      7-14 canali concordi, SNR max 6,1 contro 12,8; saturazione 0 % come previsto, ma il
+      vantaggio a 16 bit e' annullato dal segnale debole dell'esemplare. **L'ottava 2×f
+      compare anche qui** (2/3): conferma indipendente del meccanismo fisico del 31/08.
+      Respiro e vitalita' restano sul LD2410B; risultato attribuito all'esemplare
 - 🧱 **FASE 3-2420 OSTACOLI A 1 m (09/09/2026): attenuazioni in dB, cartongesso 0,7 dB,
       stessa graduatoria del LD2410B.** 27 file `ost2420_*`, pannello a 20 cm, soggetto a
       1 m in cammino sul posto, metrica = media del gate 2 grezzo (fondo 13). Baseline su

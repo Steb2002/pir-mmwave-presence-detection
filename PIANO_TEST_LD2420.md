@@ -86,7 +86,7 @@ esattamente come i 5 m della stanza sono il perimetro del LD2410B.
 | 2.6 gate minimo | — | ✔ **1 m escluso vs 2 m visto** | test nuovo, possibile solo su questo modulo |
 | misura angolare | arco r = 1 m | ✔ **invariata** — 🎯 molto informativa | il LD2410B copre ±90°; qui il fascio sembra assai più stretto |
 | Fase 3 ostacoli | 3 m radar / 1 m PIR | ✔ **1 m** — 🎯 fatta 09/09 | vedi §0-ter: attenuazioni in dB, cartongesso 0,7 dB, stessa graduatoria del LD2410B |
-| Fase 5 respiro | 2 m | ⚠️ **tentativo a 1 m, tetto 2 h** | energie uint16 a 10 Hz, non saturano; ma il margine sul rumore è ~4× |
+| Fase 5 respiro | 2 m | ✔ **tentativo a 1 m fatto 09/09**: 1/3 col criterio a 2 gate, fermata al primo blocco | vedi §FASE 5-2420: non satura, ma la persona sta in 2 gate soli e l'SNR max è 6× |
 | Fase 6 vitalità | deriva da 2.3 | ✔ ricalcolabile dagli stessi CSV | nessuna acquisizione in più |
 | Fase 8 portata massima | 8 m | ❌ **già fatta, l'esito è ~2 m** | è il risultato, non un test mancante |
 
@@ -116,7 +116,7 @@ Acquisire **entrambe** costa 20 minuti in più ed evita una conclusione sbagliat
 | 8 | 1.1 stanza vuota | notturna | non presidiata |
 | 9 | 2.5 due persone | 0,75 | serve 2ª persona |
 | 10 | Fase 3-2420 ostacoli a 1 m | ✔ fatta | vedi §0-ter |
-| 11 | Fase 5 respiro a 1 m (opzionale) | 0-2 | tetto fisso, criterio di abbandono |
+| 11 | Fase 5 respiro a 1 m (opzionale) | ✔ 20 min | criterio di abbandono applicato al primo blocco |
 | | **totale** | **~9,5 h** | + 1 notturna |
 
 ---
@@ -762,6 +762,40 @@ mai come specifica citabile.
 **Costo**: 3 h a tetto fisso, o zero se si decide di lasciarlo fuori.
 
 ---
+
+## FASE 5-2420 — Respiro a metronomo a 1 m — ✅ ESEGUITA 09/09/2026, fermata al primo blocco
+
+Protocollo identico al 31/08 sul LD2410B tranne la distanza: seduto a **1 m** rivolto al
+sensore (85 cm, altezza del torace), immobile, metronomo al doppio del ritmo, 202 s con
+40 di scarto (162 utili), `analizza_respiro.py --scan --salta-inizio 40 --min-canali 2`
+(i 16 canali `energy2420_gate*` sono nello scan dal 09/09; regressione sul LD2410B
+verificata trial per trial). **Criterio dichiarato prima di acquisire**: trial concorde se
+≥ 2 gate con SNR > 3 danno la stessa frequenza entro il 10 %; si passa a 10 e 20 atti/min
+solo con ≥ 2 trial su 3 concordi.
+
+| file | esito col criterio a 2 gate | gate 2 da solo (canale a priori) |
+|---|---|---|
+| `respiro2420_1m_15_T01` | nessun gruppo (un solo canale utilizzabile) | **14,8/min**, SNR 5,8 |
+| `respiro2420_1m_15_T02` | **14,6/min** ✔ (gate 2 + gate 3; ottava 28,9 scartata) | **14,8/min**, SNR 4,3 |
+| `respiro2420_1m_15_T03` | gruppo spurio 23,7 (gate 0 + 4); ottava 29,6 sul gate 3 | 22,2, SNR 2,8: debole |
+| `respiro2420_vuoto_T01-02` | **nessun gruppo** ✔ | picchi singoli a SNR 3-4, uno a 14,8 sul gate 1 |
+
+- **1/3 col criterio dichiarato → fermata**, niente 10 e 20. Con il canale scelto a priori
+  (gate della persona a 1 m) sono 2/3 con la frequenza esatta: la stima *c'è*, ma non
+  regge un criterio di concordanza, perché la persona occupa **2 gate soli** contro i
+  7-14 canali concordi del LD2410B
+- **L'ottava (2 × 14,8) compare anche qui**, in 2 trial su 3: conferma indipendente, su
+  un modulo diverso, del meccanismo fisico descritto per il LD2410B (energia sensibile
+  all'entità dello spostamento, non al verso)
+- **Il controllo negativo mostra perché il criterio a 2 gate è necessario**: a stanza
+  vuota il gate 1 produce un picco a 14,8/min con SNR 3,1 — la frequenza imposta — che
+  un criterio a canale singolo avrebbe accettato
+- Saturazione 0 % ovunque: il vantaggio del canale a 16 bit è reale, ma su questo
+  esemplare è annullato dal segnale debole (varianza del gate 2: 6-7 a vuoto, 17-22 con
+  la persona; SNR max 6,1 contro 12,8 del LD2410B)
+- 📌 **Da scrivere**: frequenza respiratoria *recuperabile ma non affidabile* a 1 m su
+  questo LD2420, attribuito all'esemplare. Respiro e indice di vitalità restano sul
+  LD2410B, come già deciso. 20 minuti spesi, entro il tetto
 
 ## 5. Ordine di esecuzione e stima complessiva
 
