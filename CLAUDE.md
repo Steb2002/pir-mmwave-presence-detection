@@ -885,6 +885,28 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **montaggio e zero del metro vanno annotati** prima di citare errori assoluti.
       Con queste soglie la portata dell'esemplare e' definita meglio di prima: non "vede
       fino a 2 m" ma "si accende entro 1 m e non si spegne fino a 2"
+- 🧱 **FASE 3-2420 OSTACOLI A 1 m (09/09/2026): attenuazioni in dB, cartongesso 0,7 dB,
+      stessa graduatoria del LD2410B.** 27 file `ost2420_*`, pannello a 20 cm, soggetto a
+      1 m in cammino sul posto, metrica = media del gate 2 grezzo (fondo 13). Baseline su
+      6 trial **39,5 ± 2,7**, deriva inizio/fine 0,49 dB (< 3: valida); metallo a 11,0 =
+      fondo, nessun residuo. Grezza `10·log10(E0/E)`: plastica **0,4** (1,3 senza il T01
+      anomalo) · **cartongesso 10 mm 0,7** · cartone 1,0 · vetroresina 1,0 · vetro 5 mm
+      **2,4** · legno 10 mm **4,1** (al fondo) · metallo **5,5** (= limite di dinamica).
+      Netta col fondo sottratto: 0,6 / 1,1 / 1,6 / 1,6 / 4,4 / > 9 / > 9. 🔑 **Graduatoria
+      identica a quella del 30/08 sul LD2410B** (plastica < cartone ≈ vetroresina < vetro
+      < legno < metallo): due moduli, due distanze, due unita', stesso ordine. 🔑 **Il
+      cartongesso — lacuna del 30/08 e seconda richiesta del professore — attenua come
+      plastica e cartone**, ben sotto vetro e legno: la parete d'aula non e' un ostacolo.
+      ⚠️ Legno e metallo sono limiti inferiori (dinamica dell'esemplare 4,8 dB). ⚠️ La
+      presenza (100 % con tutto, metallo compreso) qui non e' una metrica: ritardo 30 s +
+      code. Ma gli **hold del gate 2** lo sono: baseline 25-33 %, cartongesso 17-24 %,
+      vetro 7-10 %, **legno 0-1 %** → attraverso 10 mm di legno questo esemplare **non
+      acquisirebbe** la persona a 1 m (LD2410B a 3 m: 100 %). Per UPRISE l'incasso in
+      legno, ammesso dal LD2410B, non lo e' per questo LD2420. Curiosita': col metallo il
+      gate 4 sale da 8 a 22 e i gate 0-1 non si muovono — un riflettore fermo a 20 cm non
+      compare nel proprio gate (canale di variazione); `dist_raw` col legno = 8/20/20 cm,
+      il pannello. Coperture angolari diverse (cartongesso 80×120 verticale, ±63°):
+      attenuazioni = limiti inferiori, confronto pulito cartone vs legno (±54°): 1,0 vs ≥ 4,1
 - ⏱️ **TEST 2.2-2420 CON RITARDO 5 s (08/09/2026): rilascio 7,7 ± 0,5 s, contro 87-120 s
       con il ritardo di fabbrica a 30 s.** 🔑 **Meccanismo del rilascio chiuso**: il modulo
       rilascia quando passa un intervallo ≥ ritardo senza superamenti dell'hold; le code

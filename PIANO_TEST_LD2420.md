@@ -85,7 +85,7 @@ esattamente come i 5 m della stanza sono il perimetro del LD2410B.
 | 2.5 due persone | 2 m + 4 m | ⚠️ **1 m + 2 m** | riscalato; serve la seconda persona |
 | 2.6 gate minimo | — | ✔ **1 m escluso vs 2 m visto** | test nuovo, possibile solo su questo modulo |
 | misura angolare | arco r = 1 m | ✔ **invariata** — 🎯 molto informativa | il LD2410B copre ±90°; qui il fascio sembra assai più stretto |
-| Fase 3 ostacoli | 3 m radar / 1 m PIR | ⚠️ **1 m** | vedi §0-ter: qui il LD2420 può fare qualcosa che il LD2410B **non** può |
+| Fase 3 ostacoli | 3 m radar / 1 m PIR | ✔ **1 m** — 🎯 fatta 09/09 | vedi §0-ter: attenuazioni in dB, cartongesso 0,7 dB, stessa graduatoria del LD2410B |
 | Fase 5 respiro | 2 m | ⚠️ **tentativo a 1 m, tetto 2 h** | energie uint16 a 10 Hz, non saturano; ma il margine sul rumore è ~4× |
 | Fase 6 vitalità | deriva da 2.3 | ✔ ricalcolabile dagli stessi CSV | nessuna acquisizione in più |
 | Fase 8 portata massima | 8 m | ❌ **già fatta, l'esito è ~2 m** | è il risultato, non un test mancante |
@@ -115,7 +115,7 @@ Acquisire **entrambe** costa 20 minuti in più ed evita una conclusione sbagliat
 | 7 | 2.4 selettività (2 scenari) + 2.1 (2 varianti) | 1,25 | |
 | 8 | 1.1 stanza vuota | notturna | non presidiata |
 | 9 | 2.5 due persone | 0,75 | serve 2ª persona |
-| 10 | Fase 3-2420 ostacoli a 1 m | 1,5 | vedi §0-ter |
+| 10 | Fase 3-2420 ostacoli a 1 m | ✔ fatta | vedi §0-ter |
 | 11 | Fase 5 respiro a 1 m (opzionale) | 0-2 | tetto fisso, criterio di abbandono |
 | | **totale** | **~9,5 h** | + 1 notturna |
 
@@ -154,6 +154,50 @@ movimento sul posto), ma soggetto a **1 m** e metrica = energia del **gate 2** g
 mediata sui campioni utili; baseline mediata su inizio **e** fine sessione.
 Criterio di abbandono: se la baseline oscilla di più di 3 dB fra inizio e fine, la misura
 non regge e va chiusa.
+
+### ✅ ESITO (09/09/2026) — 27 file `ost2420_*`, 3 trial × 60 s utili per materiale
+
+Baseline mediata su 6 trial (inizio 41,8, fine 37,3): **39,5 ± 2,7**, deriva **0,49 dB**
+→ sessione valida. Fondo del gate 2 a vuoto: 13. Controllo col metallo: gate 2 a **11,0**,
+cioè al fondo, nessun residuo → l'aggiramento è sotto soglia e il pavimento della misura è
+il fondo stesso. Dinamica disponibile 39,5/13 = **4,8 dB**.
+
+| materiale | spessore | gate 2 media | att. grezza `10·log₁₀(E₀/E)` | att. netta (fondo sottratto) | hold superato | LD2410B (30/08, %) |
+|---|---|---|---|---|---|---|
+| nessuno | — | 39,5 ± 2,7 | — | — | 25-33 % | — |
+| plastica (tanica) | 2×5 mm + aria | 36,3 ± 11,3 ⚠️ | **0,4 dB** (1,3 senza T01) | 0,6 | 15-38 % | −7,5 |
+| **cartongesso** | **10 mm** | 33,7 ± 2,7 | **0,7 dB** | 1,1 | 17-24 % | *non provato* |
+| cartone (scatola) | 2×5 mm + aria | 31,3 ± 1,0 | **1,0 dB** | 1,6 | 17-22 % | −17,2 |
+| vetroresina | 1 mm | 31,5 ± 1,9 | **1,0 dB** | 1,6 | 15-23 % | −19,6 |
+| vetro | 5 mm | 22,6 ± 1,3 | **2,4 dB** | 4,4 | 7-10 % | −40,9 |
+| legno | 10 mm | 15,4 ± 1,9 | **4,1 dB** (al fondo) | > 9 | **0-1 %** | −41,6 |
+| metallo | 1 mm | 11,0 ± 2,1 | **5,5 dB** = limite | > 9 | 0 % | blocca |
+
+- 🔑 **La graduatoria è identica a quella del LD2410B** (plastica < cartone ≈ vetroresina
+  < vetro < legno < metallo), misurata con due moduli, due distanze e due unità diverse:
+  è la conferma più forte che le percentuali del 30/08 ordinavano davvero i materiali
+- 🔑 **Il cartongesso attenua come plastica e cartone**, non come vetro e legno: la
+  parete tipica di un'aula non è un ostacolo per il radar. È la risposta alla seconda
+  domanda del professore, nell'unità che chiedeva
+- ⚠️ **Legno e metallo sono al fondo**: 4,1 e 5,5 dB grezzi sono **limiti inferiori**
+  (la dinamica dell'esemplare si esaurisce lì); l'attenuazione netta dice solo "> 9 dB".
+  Con un esemplare sano (accoppiamento ~12000 al gate 0 contro 110) la scala misurabile
+  sarebbe di ~20 dB più ampia
+- ⚠️ **La presenza non è una metrica qui**: 100 % con ogni materiale, metallo compreso,
+  per il ritardo di 30 s e le code dei gate 1-2 (Test 2.2). Ma gli **hold del gate 2**
+  dicono cosa farebbe il modulo a regime: attraverso **legno da 10 mm** trigger e hold
+  non vengono mai superati a 1 m → questo esemplare **non acquisirebbe** la persona,
+  dove il LD2410B a 3 m restava al 100 %. Per UPRISE: l'incasso nell'arredo in legno,
+  ammesso dal LD2410B, non lo è per questo LD2420
+- Col metallo il **gate 4 sale da 8 a 22** (riflessione multipla?) mentre i gate 0-1
+  restano a vuoto: un riflettore fermo a 20 cm non compare nel proprio gate, coerente
+  con un canale che misura variazione e non ampiezza. `dist_raw` stantia ovunque; col
+  legno riporta 8/20/20 cm, cioè il pannello
+- Coperture angolari diverse come il 30/08 (cartongesso 80×120 cm in verticale, ±63°
+  orizzontali a 20 cm): tutte le attenuazioni restano **limiti inferiori**. Il confronto
+  più pulito è cartone vs legno (stessa larghezza, ±54°): 1,0 contro ≥ 4,1 dB
+- Formula dell'attenuazione **netta**: `10·log₁₀((E₀−13)/(E−13))`, assume fondo additivo
+  non attenuato dal pannello (il metallo lo conferma: 11 ≈ 13). Riportare entrambe
 
 ---
 
