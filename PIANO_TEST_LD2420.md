@@ -684,9 +684,8 @@ su 120 s; positivo 100 % con gate 1 a 344 (+9,6 dB). 5 × 392 s con **90 s di sc
   ma il gate che dovrebbe contenere la persona quasi non la vede da ferma (46 vs 38) e
   la vede benissimo in movimento (141-344): la risposta dipende dal movimento, non dalla
   distanza minima
-- ⚠️ Positivo di chiusura `mov2420_banco_fine` **non acquisito** (nessun file scritto);
-  vale come chiusura `banco2420_movimenti_T05`, ultimo trial della sessione, 100 % con
-  gate 1 a 132. Dichiarato
+- Positivo di chiusura `mov2420_banco_fine_T01`: 100 %, gate 1 254 (hold 63 %) contro
+  344 (70 %) dell'apertura — nulla è derivato nella sessione
 
 **Costo Fase 1**: ~3 h presidiate + 1 notturna non presidiata.
 

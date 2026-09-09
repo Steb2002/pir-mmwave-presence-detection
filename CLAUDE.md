@@ -900,8 +900,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       50 cm; in movimento mediana 46-56 con 38-49 valori distinti (LD2410B 66-69). Zona
       cieca dichiarata 0,2 m: a 50 cm rileva, ma la risposta dipende dal movimento, non
       dalla distanza. Fondo sotto il piano identico a quello a 85 cm; negativo a vuoto 0 %.
-      ⚠️ Positivo di chiusura non acquisito (nessun file): vale `banco2420_movimenti_T05`,
-      dichiarato. **Con questo il LD2420 ha finito tutto tranne il corridoio (Fase 8)**
+      Positivo di chiusura 100 %, gate 1 254 contro 344 dell'apertura. **Con questo il LD2420 ha finito tutto tranne il corridoio (Fase 8)**
 - 🫁 **FASE 5-2420 RESPIRO A 1 m (09/09/2026): frequenza recuperabile ma non affidabile,
       1 trial su 3 col criterio dichiarato → fermata al primo blocco.** Seduto a 1 m,
       metronomo 15 atti/min, 3 trial + 2 di vuoto (`respiro2420_1m_15_*`,
