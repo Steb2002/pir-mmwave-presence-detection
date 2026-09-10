@@ -837,12 +837,46 @@ che **attraversa** il campo — vedi Test 1.5 e `analisi/ANALISI_PIR.md` §2.1
   1.2, quindi non va accorpato a questa serie ne' fatto a sensibilita' massima
 
 ### 8.3 — LD2420 fino a 8 m
-🚨 **BLOCCATO** finche' non e' tarata l'unita' del campo `Range` (Test 0.5-bis di
-`PIANO_TEST_LD2420.md`): i valori osservati sono 7-37 muovendosi in stanza, incompatibili
-con i centimetri di ESPHome. Senza taratura una prova a 8 m produce numeri non
-interpretabili.
+*(Il blocco sull'unità del `Range` è SUPERATO: centimetri, verificato il 02/09; il logger
+binario dà anche le 16 energie.)* L'esemplare vede fino a ~2 m (accertato 04/09): la prova
+in corridoio serve a **misurarlo formalmente nella stessa geometria degli altri due**, non
+a cercare gli 8 m. Distanze 1-2-3-4 m con 3 trial, 6 e 8 m con 1 trial di documentazione.
 - ⚠️ **Mai LD2410B e LD2420 accesi insieme**: entrambi a 24 GHz, interferiscono. Un radar
   alla volta, gli stessi scenari ripetuti (il PIR e' passivo e puo' restare collegato)
+
+### 8.5 — 🔴 PROTOCOLLO ESECUTIVO (scritto 10/09/2026)
+
+Due parti, prima il LD2410B col PIR, poi il LD2420. Tacche a terra dal sensore: 2, 4, 5,
+6, 7, 8 m e oltre finché il corridoio lo consente; annotare la lunghezza massima, la
+larghezza del corridoio, l'altezza del sensore e cosa c'è in fondo.
+
+**Parte A — LD2410B + PIR** (`ld2410b_logger`, PIR su D34, jumper H, trimmer a metà)
+1. Baseline di rumore, 20 min a corridoio vuoto (bloccante: i gate 6-8 qui hanno pareti
+   e fondo veri) — `corridoio_vuoto`, 1 × 1200 s
+2. LD2410B: cammino sul posto a **5 m** (3 trial, aggancio con la stanza), **6 m** (5 trial,
+   il tetto documentato 8 × 75 cm), **7 m** (3 trial, atteso 0 %: oltre il gate 8) —
+   `movimento_{5,6,7}m_corridoio`
+3. PIR attraversamento a **sensibilità di campagna**, 6 e 8 m (3 trial ciascuno) —
+   `attrav_{6,8}m_corridoio`: il Test 1.5 arrivava a 5 m al 98,7 %, il limite non è
+   ancora stato trovato
+4. **Trimmer di sensibilità al massimo** (annotare), stesse distanze più 10 m se c'è —
+   `attrav_smax_{6,8,10}m`. Movimento trasversale, larghezza ~1 m, avanti e indietro
+   continuo come nel Test 1.5
+5. 🚨 **Trimmer di nuovo a metà corsa** e riga nel registro
+
+**Parte B — LD2420** (staccare il VIN del LD2410B, cablare 3V3/GND/OT1→D16/RX→D17,
+caricare `ld2420_logger_bin` BUILD 8, PIR non letto)
+6. Accendere e **allontanarsi subito**, nessuno entro 2 m per 90 s; `check2420_fondo_corr`
+   60 s a vuoto (g0 ~100, g2 ~13, altrimenti fermarsi)
+7. Negativo `vuoto2420_corr` 240 s con 120 di scarto
+8. Cammino sul posto a **1, 2, 3, 4 m** (3 trial) e **6, 8 m** (1 trial) — `corr2420_{d}m`.
+   Attesi: 100 % a 1-2 m, fondo da 3 m in su
+9. Positivo di chiusura a 1 m (`corr2420_1m_fine`, 1 trial)
+
+Analisi: `analizza_test.py --salta-inizio 20` per presenza e PIR; per il LD2410B a 6-7 m
+guardare `mdist` (segue la persona o il fondo del corridoio?) ed energia del gate 8 contro
+la baseline; per il LD2420 le 16 energie con `portata2420.py`. Tempo: ~1 h 45.
+⚠️ Serie **separate** da quelle in stanza: geometria diversa, dichiarata come tale.
 
 ### 8.4 — Cosa NON va rifatto in corridoio
 I risultati portanti della tesi (persona immobile, sotto il banco, curva dose-risposta
