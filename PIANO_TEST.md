@@ -609,6 +609,36 @@ python acquire.py --port COM3 --duration 180 --output data/ostacolo_nessuno_T01.
 
 ### Test 3.6 — 🆕 **Portata residua per materiale** (richiesto dal professore, 05/09/2026)
 
+> ✅ **ESITO (09-10/09/2026, 42 file `ost36_*`)**: **nessun dielettrico provato accorcia la
+> portata entro i 5 m della stanza** — presenza 100 % e distanza corretta in tutti i 39
+> trial con ostacolo (cartongesso 1-5 m, legno e vetro 4-5 m, porta chiusa 3-5 m; negativi
+> puliti in entrambe le geometrie). Quello che si degrada è il **canale moving**:
+>
+> | frazione di campioni con `moving_target` = 1 | 1 m | 2 m | 3 m | 4 m | 5 m |
+> |---|---|---|---|---|---|
+> | senza ostacolo (Test 1.2) | 100 % | 98 % | 91 % | 87 % | 78 % |
+> | cartongesso 10 mm | 99 % | 89 % | 77 % | 63 % | 45 % |
+> | legno 10 mm | — | — | (Fase 3) | 52 % | 19 % |
+> | vetro 5 mm | — | — | (Fase 3) | 41 % | 26 % |
+> | **porta interna chiusa** | — | — | **96 %** | **20 %** | **3 %** |
+>
+> Energia moving del cartongesso 97 / 68 / 36 / 25 / 22 contro 99 / 85 / 54 / 35 / 28
+> senza (a 3 m **−26 %** rispetto alla baseline della stessa sera, 48,6); PIR 0 % a 1 m.
+> La **porta** a 3 m è trasparente (49,6 = baseline) ma a 4-5 m spegne il canale moving
+> più del legno pieno: la presenza resta al 100 % grazie al canale **stazionario**, saturo
+> e con la distanza giusta (433-441 a 4 m, 525-543 a 5 m; corridoio vuoto → 0 %).
+> **Frase per il professore**: *senza ostacolo il LD2410B vede fino a 5 m (limite della
+> stanza); con cartongesso, legno, vetro o una porta chiusa vede ancora fino a 5 m; il
+> segnale in movimento si riduce, e con la porta a 5 m sopravvive solo il canale
+> stazionario.* Plastica, cartone, vetroresina non ripetuti (−7…−20 % a 3 m: dedotti sopra
+> soglia a 5 m, da dichiarare); metallo 0 m già misurato. ⚠️ Baseline di sessione ~10 %
+> sotto quella di agosto (48,6 vs 53,5-54,4): riferire i materiali alla baseline della
+> stessa sera. Scarti: `ost36_nessuno_3m_nonvalido` (stanza vuota per istruzione ambigua,
+> tenuto come negativo), `ost36_porta_5m_congelato_T01` (radar muto, 392 frame identici).
+> ❓ In attesa: tipo di porta, temperatura, e il **PIR a 3 m al 13-100 %** senza ostacolo
+> (0 % in tutte le sessioni precedenti) — vedi registro.
+
+
 > *"Altro aspetto è capire rispetto al materiale se e quanto viene attenuato. Ad esempio
 > se prima arrivava a 5 mt, con una porta di mezzo quanto si attenua il segnale?"*
 

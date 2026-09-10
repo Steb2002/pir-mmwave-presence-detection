@@ -885,6 +885,33 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **montaggio e zero del metro vanno annotati** prima di citare errori assoluti.
       Con queste soglie la portata dell'esemplare e' definita meglio di prima: non "vede
       fino a 2 m" ma "si accende entro 1 m e non si spegne fino a 2"
+- 🚪 **TEST 3.6 LD2410B COMPLETATO (09-10/09/2026): nessun dielettrico accorcia la portata
+      entro i 5 m della stanza, nemmeno la porta chiusa.** 42 file `ost36_*`: cartongesso
+      10 mm a 1-5 m, legno e vetro a 4-5 m, **porta interna chiusa** a 3-5 m (sensore dentro
+      a 20-30 cm dal battente), baseline a 3 m in apertura e chiusura (49,7 / 47,5 → 48,6,
+      ~10 % sotto agosto), negativi puliti in stanza e in corridoio. **Presenza 100 % e
+      distanza corretta in tutti i 39 trial con ostacolo.** Cio' che degrada e' il canale
+      **moving** (frazione di campioni attivi a 5 m: senza 78 % · cartongesso 45 % · vetro
+      26 % · legno 19 % · **porta 3 %**); la presenza la tiene il canale stazionario, saturo,
+      con distanza giusta. Cartongesso: energia 97/68/36/25/22 contro 99/85/54/35/28, a 3 m
+      **−26 %** (fra cartone e vetro, coerente con 0,7 dB sul LD2420), **PIR 0 % a 1 m**.
+      Porta: **trasparente a 3 m** (49,6 = baseline, moving 96 %) ma moving 20 % a 4 m e 3 %
+      a 5 m, piu' del legno pieno (52 / 19 %): tamburata, attenua poco da vicino e molto
+      da lontano — non spiegato, da dichiarare. **Frase per il professore**: senza ostacolo
+      5 m, con cartongesso/legno/vetro/porta ancora 5 m, con la porta a 5 m sopravvive solo
+      il canale stazionario. Plastica/cartone/vetroresina dedotti (−7…−20 %), metallo 0 m.
+      Scarti: baseline a stanza vuota per istruzione ambigua (tenuta come negativo) e un
+      trial a 5 m con **radar muto, 392 frame identici** (cavo mosso; rinominato
+      `_congelato`; controllare sempre i frame ripetuti dopo uno spostamento del sensore).
+      🚨 **APERTO: il PIR a 3 m senza ostacolo ha dato 13-100 %** (baseline bis 13/67/54,
+      fine 90/100/100, e **90 % attraverso la porta chiusa**), contro **0 % in 14 trial** di
+      agosto nella stessa posizione e con la stessa ampiezza di movimento (dev 21-27 vs
+      24-36 cm). Con i pannelli davanti torna 0 %. Ipotesi: temperatura piu' bassa (agosto
+      27-28 °C), abbigliamento, movimento piu' ampio a fine serata (12 → 100 %). Il 90 %
+      dietro una porta e' impossibile per l'IR a 10 µm se davanti c'e' solo legno: fessura,
+      vetro, o PIR non dietro la porta. **Non scrivere nulla sul PIR a 3 m finche' non e'
+      chiarito**; la coppia baseline → cartongesso (44-97 % → 0 %) della stessa sera resta
+      valida
 - 🎯 **TEST 1.4-2420 SOTTO IL BANCO (09/09/2026): immobile 98,4 ± 3,6 %, micro-movimenti
       100 %. Riga UPRISE a tre sensori completata: immobile PIR 1,32 · LD2410B 100 ·
       LD2420 98,4; con micro-movimenti 96,5 · 100 · 100.** Sensore sotto il piano come il
