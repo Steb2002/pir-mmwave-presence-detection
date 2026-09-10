@@ -37,7 +37,7 @@ body {
   background: var(--riquadro);
   flex-wrap: wrap;
 }
-.testata h1 { font-size: 1.15rem; margin: 0; font-weight: 600; flex: 1; }
+.testata h1 { font-size: 1.15rem; margin: 0; font-weight: 600; flex: 1; white-space: nowrap; }
 .testata h1 small { color: var(--testo-muto); font-weight: 400; font-size: 0.85rem; }
 .dist-testata { font-size: 1.3rem; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 5ch; text-align: right; }
 
@@ -75,6 +75,8 @@ body {
 @media (max-width: 700px) {
   .griglia { grid-template-columns: 1fr; }
   .larga { grid-column: auto; }
+  .testata h1 { flex: 1 1 100%; order: -1; }      /* titolo su una riga sua, sotto stato e distanza */
+  .stato { flex: 1; min-width: 0; }
 }
 
 .riquadro {
@@ -122,10 +124,6 @@ body {
 .riempi.mov   { background: var(--mov); }
 .riempi.still { background: var(--still); }
 
-.gate-grezzi { font-size: 0.85rem; display: grid; gap: 0.3rem; }
-.gate-grezzi .etichetta { color: var(--testo-muto); display: inline-block; min-width: 6rem; }
-.gate-grezzi code { font-family: ui-monospace, Consolas, monospace; letter-spacing: 0.05em; }
-
 /* ---- pie' ---- */
 .pie {
   padding: 0.6rem 1.25rem;
@@ -133,3 +131,50 @@ body {
   color: var(--testo-muto);
   font-size: 0.8rem;
 }
+
+/* ---- area B: gauge (step 3, valori dallo step 5) ---- */
+.gauge-riga { display: flex; gap: 1rem; align-items: center; }
+.gauge { width: 120px; height: 120px; flex: none; transform: rotate(-90deg); }
+.gauge-fondo { fill: none; stroke: var(--bordo); stroke-width: 10; }
+.gauge-arco {
+  fill: none; stroke: var(--off); stroke-width: 10; stroke-linecap: round;
+  stroke-dasharray: 0 327;                 /* 2*pi*52 = 326.7 */
+  transition: stroke-dasharray 0.3s, stroke 0.3s;
+}
+.gauge-num { fill: var(--testo); font-size: 28px; font-weight: 600; transform: rotate(90deg); transform-origin: 60px 60px; font-family: ui-monospace, Consolas, monospace; }
+.gauge-classe { font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem; }
+.gauge-classe.bassa    { color: var(--alert); }
+.gauge-classe.moderata { color: var(--warn); }
+.gauge-classe.alta     { color: #ffd60a; }
+.piccolo { font-size: 0.85rem; line-height: 1.35; margin: 0; }
+
+/* ---- area C: grafici ---- */
+.grafici { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 1100px) { .grafici { grid-template-columns: 1fr; } }
+.grafico h3 { margin: 0 0 0.4rem; font-size: 0.9rem; font-weight: 500; color: var(--testo-muto); }
+.canvas-box { position: relative; height: 230px; }
+.canvas-box canvas { position: absolute; inset: 0; }
+
+/* ---- area D: sessione ---- */
+.rec { font-size: 0.8rem; color: var(--alert); margin-left: 0.6rem; animation: lampeggia 1s steps(2) infinite; font-family: ui-monospace, Consolas, monospace; }
+@keyframes lampeggia { 50% { opacity: 0.35; } }
+.form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem 0.75rem; margin-bottom: 0.6rem; }
+.form label { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.8rem; color: var(--testo-muto); }
+.form input, .form select {
+  background: var(--fondo); color: var(--testo); border: 1px solid var(--bordo); border-radius: 6px;
+  padding: 0.35rem 0.5rem; font: inherit; font-size: 0.9rem; min-width: 0;
+}
+.form input:invalid { border-color: var(--alert); }
+.form input:disabled, .form select:disabled { opacity: 0.6; }
+.bottoni { grid-column: 1 / -1; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.bottoni button {
+  background: var(--bordo); color: var(--testo); border: 1px solid transparent; border-radius: 6px;
+  padding: 0.45rem 0.9rem; font: inherit; font-size: 0.9rem; cursor: pointer;
+}
+.bottoni button:hover:not(:disabled) { border-color: var(--accento); }
+.bottoni button:disabled { opacity: 0.45; cursor: default; }
+#b-avvia { background: var(--accento); color: #000; font-weight: 600; }
+#b-stop:not(:disabled) { background: var(--alert); color: #fff; }
+.stats { margin-top: 0.5rem; }
+@media (max-width: 700px) { .form { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.avviso-portale { margin-top: 0.4rem; border-left: 3px solid var(--warn); padding-left: 0.6rem; }

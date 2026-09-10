@@ -1765,7 +1765,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       l'originale); partizione **Huge APP** (lo schema di default da' 1,2 MB, troppo poco);
       `ws.cleanupClients()` nel loop; vitalita' v3 a 3 classi con fondo per gate; CSV a
       29 colonne con `light_level`/`out_level`
-- [~] **`firmware/ld2410b_web/` avviato (06/09/2026) — step 1-2 di 5 fatti** (BUILD 2):
+- [~] **`firmware/ld2410b_web/` avviato (06/09/2026) — step 1-4 di 5 fatti** (BUILD 5, 10/09/2026):
       Access Point + DNS catch-all + pagina statica + `/info`; lettura radar e PIR, CSV
       sulla seriale con le stesse 29 colonne del logger (quindi `acquire.py` gira in
       parallelo alla web UI) e spinta WebSocket a 5 Hz. La pagina sta in `web/`
@@ -1775,9 +1775,29 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       compila su un'altra macchina. Rigenerarlo dopo ogni modifica in `web/` con
       `python tools/embed_web.py`
 - [x] ESP32 pubblica i dati (Access Point proprio, WebSocket)
-- [ ] Sito web visualizzazione tempo reale
-- [ ] Salvataggio dati + statistiche
-- [ ] Export CSV → analisi in Excel
+- [x] **Step 3 (10/09/2026, BUILD 3)**: Chart.js 4.4.7 in flash (70 KB gzip), C1 energia
+      60 s, C2 barre per gate con le **soglie lette dal modulo** (`requestParameters()`,
+      esposte in `/info`) tratteggiate sopra, C3 timeline radar vs PIR; gauge B pronta
+      (valori dallo step 5); **storico di 60 s a bordo** (300 campioni, ~12 KB) inviato in
+      6 messaggi compatti a ogni client che si collega → grafico pieno anche dopo un refresh
+- [x] **Step 4 (10/09/2026, BUILD 4-5)**: riquadro D con form (scenario, trial, gruppo,
+      presenza/stato reali, durata opzionale con stop automatico), REC, statistiche
+      incrementali a 1 Hz, **export CSV con le 29+6 colonne di acquire.py** e nome
+      `<scenario>_<trial>.csv`. ✅ **Accettazione superata**: 1346 campioni comuni fra CSV
+      web e seriale acquisiti in parallelo, 29 colonne identiche, `analizza_test.py` legge
+      entrambi (registro 10/09). ⚠️ Lezioni: (1) **mai `Serial.print` dai callback di
+      rete** — una riga CSV e' stata corrotta dal log «WS client connesso» del task async;
+      ora gli eventi passano da una coda FreeRTOS stampata nel loop; (2) la finestra del
+      **portale captive** (si apre da sola collegandosi all'AP) e' una webview che **non
+      scarica file**: per registrare aprire `http://192.168.4.1/` nel browser (avviso in
+      pagina); (3) `acquire.py` **resetta l'ESP32** aprendo la porta → la rete cade 2 s:
+      lanciarlo PRIMA di avviare la sessione web; (4) un CSV riaperto e salvato da Excel
+      diventa un xlsx con estensione .csv: non riaprire i download con Excel prima di
+      copiarli in `data/`
+- [x] Sito web visualizzazione tempo reale
+- [x] Salvataggio dati + statistiche
+- [x] Export CSV → analisi in Excel (stesso formato di acquire.py: la pipeline e' una sola)
+- [ ] **Step 5**: `vitality.h` a bordo (v3, fondo per gate, 3 classi) + gauge collegata
 
 ### Indice di vitalità (obiettivo 6)
 - [x] **Pilota respiro riuscito (18/08/2026)** — `HLK-LD2410x/data/20260818_respiro_40cm_prova.csv`:

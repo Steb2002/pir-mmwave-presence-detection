@@ -52,8 +52,8 @@ def leggi_csv(path):
                     "gt": int(r.get("ground_truth_presence", -1)),
                     "gt_state": r.get("ground_truth_state", "?"),
                 })
-            except (KeyError, ValueError):
-                continue  # riga malformata o troncata
+            except (KeyError, ValueError, TypeError):
+                continue  # riga malformata o troncata (TypeError: colonne mancanti -> None)
     return righe
 
 

@@ -7,11 +7,13 @@
  * I file della pagina stanno in web_assets.h, generato da tools/embed_web.py: ogni
  * file e' un array gzip in flash e viene servito con Content-Encoding: gzip.
  *
- * WebSocket /ws (step 2): a ogni campione (5 Hz) il JSON con lo stato del radar viene
- * spedito a tutti i client collegati (`wsBroadcast`). Schema del messaggio in
- * ANALISI_WEB_UI.md §2. Il 5° client viene rifiutato. `ws.cleanupClients()` gira
- * ogni secondo in webLoop(): senza, i client chiusi male (refresh, tab chiuse)
- * restano contati e si esaurisce il limite.
+ * WebSocket /ws:
+ *   - a ogni campione (5 Hz) il JSON con lo stato del radar va a tutti i client
+ *     (`wsBroadcast`; schema in ANALISI_WEB_UI.md §2)
+ *   - alla connessione il client riceve lo storico degli ultimi 60 s in messaggi
+ *     `{"hist":[[...],...],"fine":0|1}` con righe compatte (step 3), cosi' il grafico
+ *     parte pieno. Ordine dei campi in HIST_CAMPI, ripetuto in app.js
+ *   - il 5° client viene rifiutato; `ws.cleanupClients()` gira ogni secondo
  */
 #pragma once
 
@@ -28,6 +30,10 @@ static AsyncWebSocket  ws("/ws");
 static DNSServer       dns;
 static const char*     BUILD_TESTO = "?";   // impostato dallo sketch, finisce in /info
 static uint32_t        wsMessaggiInviati = 0;
+
+// Ordine dei campi di una riga compatta dello storico (deve coincidere con app.js)
+static const char HIST_CAMPI[] =
+  "t,presence,moving,still,mdist,sdist,menergy,senergy,pir,light,out,gates_m[9],gates_s[9]";
 
 static void serviAsset(AsyncWebServerRequest* req, const WebAsset& a) {
   AsyncWebServerResponse* r = req->beginResponse(200, a.mime, a.data, a.len);
@@ -48,14 +54,76 @@ static void serviInfo(AsyncWebServerRequest* req) {
   doc["client_ws"]    = ws.count();
   doc["ws_inviati"]   = wsMessaggiInviati;
   doc["radar_ok"]     = radarPronto ? 1 : 0;
+  doc["storico_n"]    = storicoConteggio;
   doc["assets_hash"]  = WEB_ASSETS_HASH;
   doc["assets_n"]     = WEB_ASSETS_N;
   doc["ip"]           = WiFi.softAPIP().toString();
+  // Parametri del modulo, letti via UART all'avvio (soglie di fabbrica del nostro
+  // esemplare: mov 50 50 40 30 20 15 15 15 15, still - - 40 40 30 30 20 20 20)
+  doc["parametri_letti"] = radarParametriLetti ? 1 : 0;
+  if (radarPronto && radarParametriLetti) {
+    doc["gate_max"]  = sensor.getRange();
+    doc["timeout_s"] = sensor.getNoOneWindow();
+    JsonArray sm = doc["soglie_mov"].to<JsonArray>();
+    JsonArray ss = doc["soglie_still"].to<JsonArray>();
+    const MyLD2410::ValuesArray& tm = sensor.getMovingThresholds();
+    const MyLD2410::ValuesArray& ts = sensor.getStationaryThresholds();
+    for (int i = 0; i < 9; i++) {
+      sm.add(i <= tm.N ? tm.values[i] : 0);
+      ss.add(i <= ts.N ? ts.values[i] : 0);
+    }
+  }
   String out;
   serializeJson(doc, out);
   AsyncWebServerResponse* r = req->beginResponse(200, "application/json", out);
   r->addHeader("Cache-Control", "no-cache");
   req->send(r);
+}
+
+// Riga compatta dello storico: solo interi, serializzata a mano (niente ArduinoJson:
+// 300 righe x 31 valori sarebbero ~40 KB di documento per un messaggio solo)
+static void appendiRigaCompatta(String& s, const RadarSample& c) {
+  char b[96];
+  snprintf(b, sizeof(b), "[%lu,%d,%d,%d,%u,%u,%u,%u,%d,%u,%d,[",
+           (unsigned long)c.t, c.presence, c.moving, c.still,
+           c.mdist, c.sdist, c.menergy, c.senergy, c.pir, c.light, c.outLevel);
+  s += b;
+  for (int i = 0; i < 9; i++) { if (i) s += ','; s += c.gatesM[i]; }
+  s += "],[";
+  for (int i = 0; i < 9; i++) { if (i) s += ','; s += c.gatesS[i]; }
+  s += "]]";
+}
+
+// Spedisce lo storico a UN client, a blocchi di 50 righe (~3 KB l'uno): sei messaggi,
+// sotto il limite della coda WS e senza grosse allocazioni.
+static void wsInviaStorico(AsyncWebSocketClient* client) {
+  const size_t BLOCCO = 50;
+  size_t n = storicoConteggio;
+  if (n == 0) { client->text("{\"hist\":[],\"fine\":1}"); return; }
+  for (size_t da = 0; da < n; da += BLOCCO) {
+    size_t a = min(da + BLOCCO, n);
+    String s;
+    s.reserve(3600);
+    s += "{\"hist\":[";
+    for (size_t i = da; i < a; i++) { if (i > da) s += ','; appendiRigaCompatta(s, storicoAt(i)); }
+    s += "],\"fine\":";
+    s += (a == n) ? '1' : '0';
+    s += '}';
+    client->text(s);
+  }
+}
+
+// ⚠️ Gli eventi WS arrivano sul task di rete, NON nel loop(): stampare qui sulla seriale
+// si intreccia con la riga CSV che il loop sta scrivendo (successo il 10/09/2026: riga
+// corrotta a meta'). I messaggi vanno in una coda FreeRTOS e li stampa webLoop().
+static QueueHandle_t codaLog = nullptr;
+struct RigaLog { char testo[72]; };
+
+static void logDaTask(const char* prefisso, uint32_t id, const IPAddress& ip) {
+  if (!codaLog) return;
+  RigaLog r;
+  snprintf(r.testo, sizeof(r.testo), "# WS client %s: %lu da %s", prefisso, (unsigned long)id, ip.toString().c_str());
+  xQueueSend(codaLog, &r, 0);                  // se piena, il messaggio si perde: e' solo log
 }
 
 static void wsEvento(AsyncWebSocket* srv, AsyncWebSocketClient* client, AwsEventType tipo,
@@ -65,13 +133,13 @@ static void wsEvento(AsyncWebSocket* srv, AsyncWebSocketClient* client, AwsEvent
     if (ws.count() > AP_MAX_CLIENT) {          // il nuovo e' gia' contato
       client->text("{\"errore\":\"troppi client\"}");
       client->close();
-      Serial.print("# WS client rifiutato (troppi): ");
+      logDaTask("rifiutato (troppi)", client->id(), client->remoteIP());
     } else {
-      Serial.print("# WS client connesso: ");
+      logDaTask("connesso", client->id(), client->remoteIP());
+      wsInviaStorico(client);
     }
-    Serial.print(client->id()); Serial.print(" da "); Serial.println(client->remoteIP());
   } else if (tipo == WS_EVT_DISCONNECT) {
-    Serial.print("# WS client disconnesso: "); Serial.println(client->id());
+    logDaTask("disconnesso", client->id(), IPAddress());
   }
   // La v1 non riceve comandi dal browser: WS_EVT_DATA ignorato di proposito.
 }
@@ -107,6 +175,7 @@ static void wsBroadcast(const RadarSample& s) {
 
 // Avvia AP + DNS + HTTP + WS. Da chiamare una volta in setup().
 static void webAvvia() {
+  codaLog = xQueueCreate(8, sizeof(RigaLog));
   WiFi.mode(WIFI_AP);
   WiFi.softAP(AP_SSID, AP_PASSWORD, AP_CANALE, 0 /* visibile */, AP_MAX_CLIENT);
   delay(100);                                    // lascia salire l'interfaccia prima del DNS
@@ -143,6 +212,9 @@ static void webAvvia() {
 // pulizia dei client WS va fatta periodicamente.
 static inline void webLoop() {
   dns.processNextRequest();
+  // log degli eventi WS, stampato qui fra una riga CSV e l'altra (mai dal task di rete)
+  RigaLog r;
+  while (codaLog && xQueueReceive(codaLog, &r, 0) == pdTRUE) Serial.println(r.testo);
   static unsigned long ultimaPulizia = 0;
   if (millis() - ultimaPulizia >= 1000) {
     ultimaPulizia = millis();

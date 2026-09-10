@@ -8,6 +8,10 @@
  * Il CSV su seriale e' identico a quello del logger, 29 colonne: acquire.py e
  * analizza_test.py funzionano senza modifiche. E' il canale di test "ufficiale" che
  * gira accanto alla web UI (PROGETTO_SITO_DETTAGLIO.md §2.2).
+ *
+ * Storico a bordo (step 3): buffer circolare degli ultimi STORICO_N campioni (60 s a
+ * 5 Hz, ~12 KB). Serve solo a un client che si collega: riceve subito l'ultimo minuto
+ * invece di un grafico vuoto. Lo storico lungo (per il CSV) resta nel browser.
  */
 #pragma once
 
@@ -30,6 +34,7 @@ struct RadarSample {
 
 static MyLD2410 sensor(Serial2);
 static bool     radarPronto = false;
+static bool     radarParametriLetti = false;   // soglie/gate/timeout letti dal modulo
 static unsigned long radarUltimoTentativo = 0;
 
 // Prova ad avviare il radar. Ritorna true se risponde. Idempotente: si puo' richiamare.
@@ -43,6 +48,10 @@ static bool radarAvvia() {
     radarPronto = false;
     return false;
   }
+  // Soglie per gate, gate massimo e timeout: servono alla pagina per disegnare le
+  // soglie sopra le barre (C2). Lette dal modulo, non scritte a mano: se un giorno si
+  // usa l'auto-calibrazione, il grafico resta giusto.
+  radarParametriLetti = sensor.requestParameters();
   sensor.enhancedMode(true);
   radarPronto = true;
   return true;
@@ -86,6 +95,26 @@ static void radarLeggi(RadarSample& s) {
     s.light    = sensor.getLightLevel();
     s.outLevel = sensor.getOutLevel() != 0;
   }
+}
+
+// ---- storico circolare (step 3) ----
+#define STORICO_N 300                          // 60 s a 5 Hz
+static RadarSample storico[STORICO_N];
+static size_t storicoInizio = 0, storicoConteggio = 0;
+
+static void storicoAggiungi(const RadarSample& s) {
+  if (storicoConteggio < STORICO_N) {
+    storico[(storicoInizio + storicoConteggio) % STORICO_N] = s;
+    storicoConteggio++;
+  } else {
+    storico[storicoInizio] = s;
+    storicoInizio = (storicoInizio + 1) % STORICO_N;
+  }
+}
+// i = 0 e' il piu' vecchio. Letto anche dal task di rete alla connessione di un client:
+// un campione puo' risultare incoerente se scritto nello stesso istante, accettabile.
+static inline const RadarSample& storicoAt(size_t i) {
+  return storico[(storicoInizio + i) % STORICO_N];
 }
 
 // ---- CSV su seriale, 29 colonne come firmware/ld2410b_logger ----

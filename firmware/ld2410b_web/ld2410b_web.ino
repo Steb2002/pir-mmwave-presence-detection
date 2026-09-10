@@ -28,12 +28,18 @@
  * Storico:
  *   BUILD 1 (06/09/2026) step 1: Access Point + pagina statica + /info
  *   BUILD 2 (06/09/2026) step 2: radar + PIR, CSV su seriale, WebSocket a 5 Hz, area A
+ *   BUILD 3 (10/09/2026) step 3: storico 60 s a bordo inviato alla connessione, soglie in /info,
+ *                        grafici C1/C2/C3 e gauge B nella pagina (Chart.js locale)
+ *   BUILD 4 (10/09/2026) step 4: solo pagina — sessione con metadati, statistiche, export CSV
+ *                        con le 29+6 colonne di acquire.py. Firmware invariato salvo il marcatore
+ *   BUILD 5 (10/09/2026) log degli eventi WS spostato dal task di rete al loop (una riga CSV
+ *                        veniva corrotta dalla stampa concorrente); avviso portale captive nella pagina
  */
 #include "config.h"
 #include "radar_task.h"
 #include "web_server.h"
 
-#define BUILD "ld2410b_web BUILD 2 - step 2: radar + PIR + WebSocket 5 Hz"
+#define BUILD "ld2410b_web BUILD 5 - step 4 + log WS dal loop"
 
 static RadarSample campione;
 static unsigned long ultimoCampione = 0;
@@ -55,7 +61,8 @@ void setup() {
   Serial.print(" file, hash "); Serial.println(WEB_ASSETS_HASH);
 
   if (radarAvvia()) {
-    Serial.println("# radar LD2410B rilevato, engineering mode attivo");
+    Serial.print("# radar LD2410B rilevato, engineering mode attivo, parametri ");
+    Serial.println(radarParametriLetti ? "letti" : "NON letti");
   } else {
     Serial.println("# ATTENZIONE: radar non rilevato - controllare verde->D25, giallo->D26, VIN 5V, GND. Ritento ogni 5 s");
   }
@@ -75,6 +82,7 @@ void loop() {
   ultimoCampione = ora;
 
   radarLeggi(campione);
+  storicoAggiungi(campione); // ultimi 60 s, per chi si collega dopo
   csvRiga(campione);        // canale seriale SEMPRE attivo (test/debug/acquire.py)
   wsBroadcast(campione);    // -> tutti i browser collegati
 }

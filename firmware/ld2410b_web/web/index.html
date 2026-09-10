@@ -39,26 +39,78 @@
     </dl>
   </section>
 
-  <!-- B. VITALITÀ (step 5) -->
-  <section class="riquadro attesa">
+  <!-- B. VITALITÀ -->
+  <section class="riquadro" id="area-b">
     <h2>B · Indice di vitalità</h2>
-    <p class="muto">Step 5: gauge 0–100 con tre classi, calcolato a bordo.</p>
-  </section>
-
-  <!-- C. GRAFICI (step 3) -->
-  <section class="riquadro attesa larga">
-    <h2>C · Grafici</h2>
-    <p class="muto">Step 3: energia nel tempo, energia per gate con soglie, timeline radar vs PIR.</p>
-    <div class="gate-grezzi">
-      <div><span class="etichetta">gate mov.</span> <code id="gm">—</code></div>
-      <div><span class="etichetta">gate ferm.</span> <code id="gs">—</code></div>
+    <div class="gauge-riga">
+      <svg class="gauge" viewBox="0 0 120 120" aria-label="indice di vitalità">
+        <circle class="gauge-fondo" cx="60" cy="60" r="52"/>
+        <circle id="gauge-arco" class="gauge-arco" cx="60" cy="60" r="52"/>
+        <text id="gauge-num" class="gauge-num" x="60" y="66" text-anchor="middle">—</text>
+      </svg>
+      <div class="gauge-testo">
+        <div id="gauge-classe" class="gauge-classe muto">in attesa</div>
+        <p class="muto piccolo">Indice 0–100 dell'energia radar del gate attivo, calcolato
+          a bordo (step 5). Tre classi: <b>bassa</b> = presenza con movimento minimo,
+          la più urgente per i soccorritori; <b>moderata</b>; <b>alta</b>.</p>
+      </div>
     </div>
   </section>
 
-  <!-- D. SESSIONE (step 4) -->
-  <section class="riquadro attesa">
-    <h2>D · Sessione ed export</h2>
-    <p class="muto">Step 4: metadati, statistiche, CSV con le colonne di acquire.py.</p>
+  <!-- C. GRAFICI -->
+  <section class="riquadro larga" id="area-c">
+    <h2>C · Grafici <small class="muto">ultimi 60 s</small></h2>
+    <div class="grafici">
+      <div class="grafico">
+        <h3>C1 · energia del bersaglio</h3>
+        <div class="canvas-box"><canvas id="c1"></canvas></div>
+      </div>
+      <div class="grafico">
+        <h3>C2 · energia per gate <span id="c2-sotto" class="muto piccolo"></span></h3>
+        <div class="canvas-box"><canvas id="c2"></canvas></div>
+      </div>
+      <div class="grafico">
+        <h3>C3 · presenza radar vs PIR</h3>
+        <div class="canvas-box"><canvas id="c3"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- D. SESSIONE ED EXPORT -->
+  <section class="riquadro" id="area-d">
+    <h2>D · Sessione ed export <span id="rec" class="rec" hidden>● REC <span id="rec-durata">0:00</span></span></h2>
+    <form id="form-sessione" class="form" autocomplete="off">
+      <label>scenario <input id="f-scenario" type="text" placeholder="es. fermo_1m_H" required pattern="[A-Za-z0-9_\-]+" title="lettere, numeri, _ e -"></label>
+      <label>trial <input id="f-trial" type="text" value="T01" required pattern="[A-Za-z0-9_\-]+"></label>
+      <label>gruppo <input id="f-gruppo" type="text" value="G1" required pattern="[A-Za-z0-9_\-]+"></label>
+      <label>presenza reale
+        <select id="f-gt"><option value="1">1 · c'è qualcuno</option><option value="0">0 · stanza vuota</option></select>
+      </label>
+      <label>stato reale
+        <input id="f-gts" type="text" value="unknown" list="stati" required pattern="[A-Za-z0-9_\-]+">
+        <datalist id="stati"><option value="unknown"><option value="still"><option value="moving"><option value="micro"><option value="absent"></datalist>
+      </label>
+      <label>durata (s) <input id="f-durata" type="number" min="5" max="36000" placeholder="manuale" title="vuoto = stop manuale"></label>
+      <div class="bottoni">
+        <button type="submit" id="b-avvia">Avvia sessione</button>
+        <button type="button" id="b-stop" disabled>Stop</button>
+        <button type="button" id="b-csv" disabled>Scarica CSV</button>
+        <button type="button" id="b-reset" disabled>Azzera</button>
+      </div>
+    </form>
+    <div id="sessione-msg" class="muto piccolo"></div>
+    <p class="muto piccolo avviso-portale">Nella finestra di accesso alla rete che si apre da sola (portale) il download non funziona: per registrare e scaricare apri <b>http://192.168.4.1/</b> in un browser normale.</p>
+    <dl class="dati compatta stats">
+      <dt>durata</dt>            <dd id="s-durata">—</dd>
+      <dt>campioni</dt>          <dd id="s-n">—</dd>
+      <dt>radar presente</dt>    <dd id="s-radar">—</dd>
+      <dt>PIR attivo</dt>        <dd id="s-pir">—</dd>
+      <dt>eventi radar / PIR</dt><dd id="s-eventi">—</dd>
+      <dt>ultima rilevazione</dt><dd id="s-ultima">—</dd>
+      <dt>distanza min/med/max</dt><dd id="s-dist">—</dd>
+      <dt>energia mov. media</dt><dd id="s-menergy">—</dd>
+      <dt>vitalità min/max</dt>  <dd id="s-vit">—</dd>
+    </dl>
   </section>
 
   <!-- DIAGNOSTICA -->
@@ -70,6 +122,7 @@
       <dt>acceso da</dt>      <dd id="uptime">—</dd>
       <dt>client</dt>         <dd id="client">—</dd>
       <dt>heap libero</dt>    <dd id="heap">—</dd>
+      <dt>radar</dt>          <dd id="radar-param">—</dd>
       <dt>pagina (hash)</dt>  <dd id="hash">—</dd>
     </dl>
   </section>
@@ -80,6 +133,7 @@
   Tesi triennale UNICAM · progetto UPRISE · <span id="ora">—</span>
 </footer>
 
+<script src="/chart.umd.min.js"></script>
 <script src="/app.js"></script>
 </body>
 </html>
