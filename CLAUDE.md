@@ -903,15 +903,20 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       Scarti: baseline a stanza vuota per istruzione ambigua (tenuta come negativo) e un
       trial a 5 m con **radar muto, 392 frame identici** (cavo mosso; rinominato
       `_congelato`; controllare sempre i frame ripetuti dopo uno spostamento del sensore).
-      🚨 **APERTO: il PIR a 3 m senza ostacolo ha dato 13-100 %** (baseline bis 13/67/54,
-      fine 90/100/100, e **90 % attraverso la porta chiusa**), contro **0 % in 14 trial** di
-      agosto nella stessa posizione e con la stessa ampiezza di movimento (dev 21-27 vs
-      24-36 cm). Con i pannelli davanti torna 0 %. Ipotesi: temperatura piu' bassa (agosto
-      27-28 °C), abbigliamento, movimento piu' ampio a fine serata (12 → 100 %). Il 90 %
-      dietro una porta e' impossibile per l'IR a 10 µm se davanti c'e' solo legno: fessura,
-      vetro, o PIR non dietro la porta. **Non scrivere nulla sul PIR a 3 m finche' non e'
-      chiarito**; la coppia baseline → cartongesso (44-97 % → 0 %) della stessa sera resta
-      valida
+      Porta **tamburata senza vetro**; a 5 m il muro di fondo (negativo 0 %).
+      🔑 **PIR a 3 m: 13-100 % senza ostacolo contro 0 % in 14 trial di agosto — SPIEGATO:
+      stasera il soggetto oscillava lateralmente di ~50 cm** invece di camminare sul posto
+      (dichiarato a fine sessione). E' il meccanismo del 30/08 (busto laterale → 100 %,
+      braccia → 2-4 % a energia radar costante) **confermato a 3 m**: il transito attraverso
+      le zone di Fresnel decide il PIR, non la distanza ne' la quantita' di movimento. La
+      tendenza 12 → 100 % nella serata segue l'ampiezza (dev 24 → 36 cm). Per il radar il
+      cambio di movimento vale solo −10 % di baseline (riferimento della stessa sera).
+      ⚠️ **Il 78-100 % del PIR attraverso la porta chiusa NON e' spiegato** (PIR dentro
+      accanto al radar, porta senza vetro: canale plausibile la fessura sotto il battente
+      con le gambe che oscillano, non verificato) → **non usarlo**, ne' come "vede" ne' come
+      "bloccato". Valida la coppia della stessa sera: 44-97 % senza → **0 % con cartongesso**
+      (e 0 % con legno/vetro a 4-5 m). 📌 **Regola di protocollo**: annotare sempre il TIPO
+      di movimento, non solo la distanza; "baseline" va scritta con chi c'e' nella scena
 - 🎯 **TEST 1.4-2420 SOTTO IL BANCO (09/09/2026): immobile 98,4 ± 3,6 %, micro-movimenti
       100 %. Riga UPRISE a tre sensori completata: immobile PIR 1,32 · LD2410B 100 ·
       LD2420 98,4; con micro-movimenti 96,5 · 100 · 100.** Sensore sotto il piano come il

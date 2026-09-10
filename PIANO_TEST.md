@@ -635,8 +635,13 @@ python acquire.py --port COM3 --duration 180 --output data/ostacolo_nessuno_T01.
 > sotto quella di agosto (48,6 vs 53,5-54,4): riferire i materiali alla baseline della
 > stessa sera. Scarti: `ost36_nessuno_3m_nonvalido` (stanza vuota per istruzione ambigua,
 > tenuto come negativo), `ost36_porta_5m_congelato_T01` (radar muto, 392 frame identici).
-> ❓ In attesa: tipo di porta, temperatura, e il **PIR a 3 m al 13-100 %** senza ostacolo
-> (0 % in tutte le sessioni precedenti) — vedi registro.
+> Porta **tamburata senza vetro**, chiusa; a 5 m il muro di fondo (negativo a 0 %). Il
+> soggetto stasera **oscillava lateralmente di ~50 cm** invece di camminare sul posto: per il
+> radar cambia poco (baseline −10 %, riferimento della stessa sera), per il **PIR cambia
+> tutto** — a 3 m senza ostacolo 13-100 % contro 0 % in 14 trial di agosto, stesso meccanismo
+> del 30/08 (transito attraverso le zone di Fresnel) confermato a 3 m. Con cartongesso 0 %.
+> ⚠️ Il 78-100 % del PIR **attraverso la porta chiusa** non è spiegato (fessura sotto o luce
+> del battente, non verificato): non usarlo in nessuna direzione.
 
 
 > *"Altro aspetto è capire rispetto al materiale se e quanto viene attenuato. Ad esempio
