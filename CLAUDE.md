@@ -1810,6 +1810,13 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       cavallo della soglia 95 tarata a 1 m (dipendenza dalla geometria, §4.6).
       ⚠️ Nei primi ~60 s dopo l'avvio della sessione bordo e offline divergono (le EWMA
       del firmware partono dall'accensione): confrontare sempre la coda.
+      ✔ Ripetuto a **1 m** (`*_web_1m_T01`, 11/09): porting al 100 % in tutti e tre. Indici
+      47,7 / 99,4 / 99,1: immobile a cavallo di 45, «micro» classificato alta — ma il gate 1
+      grezzo (97,9, moving 99 %) dice che quel «micro» era un movimento pieno, non i
+      micro-movimenti di agosto (66-68, moving 72 %). L'indice legge lo stimolo che riceve;
+      la condizione «micro» e' dell'operatore e non si riproduce fra sessioni. Le sessioni
+      web sono una **demo del funzionamento a bordo**, la validazione delle soglie resta
+      quella del 31/08 su T04-T05
       🚨 **Il comando della taratura del 31/08 NON era stato registrato**: rifacendolo con
       i parametri della tabella §4.6, `sotto_banco_immobile_H` da' 45,4 (gate=distanza) o
       64,1 (gate=energia), **non 25,7** — quel numero va ricontrollato prima di finire in
