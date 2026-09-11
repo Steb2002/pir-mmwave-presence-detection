@@ -145,7 +145,7 @@ body {
 .gauge-classe { font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem; }
 .gauge-classe.bassa    { color: var(--alert); }
 .gauge-classe.moderata { color: var(--warn); }
-.gauge-classe.alta     { color: #ffd60a; }
+.gauge-classe.alta     { color: var(--ok); }      /* semaforo: rosso / giallo / verde */
 .piccolo { font-size: 0.85rem; line-height: 1.35; margin: 0; }
 
 /* ---- area C: grafici ---- */

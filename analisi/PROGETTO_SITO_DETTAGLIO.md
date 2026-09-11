@@ -124,10 +124,11 @@ Fase 6, validazione, casi limite). Qui interessa solo il contratto verso il sito
   misurarli all'avvio con 60 s di stanza vuota (auto-taratura all'installazione)
 - output per il JSON: `vitality` (int 0-100) e `vitality_class`, **tre valori**:
   `vitalita_bassa` (0-45), `vitalita_moderata` (46-95), `vitalita_alta` (96-100)
-- mappatura classe → colore nella UI, con la **priorità di soccorso inversa**
-  all'indice (specifica §4): `vitalita_bassa`=**rosso** (presenza confermata, movimento
-  minimo: la più urgente), `vitalita_moderata`=arancio, `vitalita_alta`=giallo;
-  con `presence == 0` la gauge è grigia e riporta «nessuna presenza»
+- mappatura classe → colore nella UI **a semaforo** (scelta dell'autore, 11/09/2026),
+  coerente con la **priorità di soccorso inversa** all'indice (specifica §4):
+  `vitalita_bassa`=**rosso** (presenza confermata, movimento minimo: la più urgente),
+  `vitalita_moderata`=**giallo**, `vitalita_alta`=**verde** (persona che si muove, può
+  aspettare); con `presence == 0` la gauge è grigia e riporta «nessuna presenza»
 - se `presence == 0` → vitality = 0 e classe vuota (gate di presenza, definito nella
   specifica: l'assenza non è una classe di vitalità)
 

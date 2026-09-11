@@ -24,6 +24,7 @@
 #include "config.h"
 #include "web_assets.h"
 #include "radar_task.h"
+#include "vitality.h"
 
 static AsyncWebServer  server(80);
 static AsyncWebSocket  ws("/ws");
@@ -73,6 +74,14 @@ static void serviInfo(AsyncWebServerRequest* req) {
       ss.add(i <= ts.N ? ts.values[i] : 0);
     }
   }
+  // Indice di vitalita' (step 5): costanti in uso, per il confronto con vitalita_proto.py
+  JsonObject v = doc["vitalita"].to<JsonObject>();
+  v["alpha_m"] = VIT_ALPHA_M; v["alpha_v"] = VIT_ALPHA_V; v["k"] = VIT_K;
+  v["soglie"].to<JsonArray>().add(VIT_SOGLIA_1); v["soglie"].add(VIT_SOGLIA_2);
+  v["gate_criterio"] = VIT_GATE_DA_DISTANZA ? "distanza" : "energia";
+  JsonArray fo = v["fondo"].to<JsonArray>();
+  for (int i = 0; i < 9; i++) fo.add(VIT_FONDO[i]);
+  v["gate_attivo"] = vit.gate; v["mov_ewma"] = vit.movEwma; v["var_ewma"] = vit.varEwma;
   String out;
   serializeJson(doc, out);
   AsyncWebServerResponse* r = req->beginResponse(200, "application/json", out);

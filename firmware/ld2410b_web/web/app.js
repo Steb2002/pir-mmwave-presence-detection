@@ -184,7 +184,8 @@ function renderGauge(m) {
   const v = Math.max(0, Math.min(100, m.vitality));
   arco.style.strokeDasharray = `${v / 100 * GAUGE_C} ${GAUGE_C}`;
   const breve = m.vitality_class.replace("vitalita_", "");      // bassa | moderata | alta
-  arco.style.stroke = breve === "bassa" ? COL.alert : breve === "moderata" ? COL.warn : "#ffd60a";
+  // semaforo: bassa = rosso (la piu' urgente per il soccorso), moderata = giallo, alta = verde
+  arco.style.stroke = breve === "bassa" ? COL.alert : breve === "moderata" ? COL.warn : COL.ok;
   num.textContent = v;
   cls.className = "gauge-classe " + breve;
   cls.textContent = "vitalità " + breve + (breve === "bassa" ? " · priorità alta" : "");
@@ -209,6 +210,7 @@ const c1 = new Chart($("c1"), {
   data: { datasets: [
     { label: "moving",     data: [], borderColor: COL.mov,   borderWidth: 1.5, pointRadius: 0, tension: 0 },
     { label: "stationary", data: [], borderColor: COL.still, borderWidth: 1.5, pointRadius: 0, tension: 0 },
+    { label: "vitalità (a bordo)", data: [], borderColor: COL.warn, borderWidth: 2, borderDash: [6, 3], pointRadius: 0, tension: 0 },
   ]},
   options: {
     responsive: true, maintainAspectRatio: false, parsing: false, normalized: true,
@@ -259,6 +261,7 @@ function renderCharts() {
 
   c1.data.datasets[0].data = ring.map((m) => ({ x: rel(m), y: m.menergy }));
   c1.data.datasets[1].data = ring.map((m) => ({ x: rel(m), y: m.senergy }));
+  c1.data.datasets[2].data = ring.map((m) => ({ x: rel(m), y: m.vitality_class ? m.vitality : null }));  // null = nessuna presenza
   c1.update("none");
 
   const ultimo = ring[ring.length - 1];
@@ -317,6 +320,9 @@ const CSV_COLONNE_FW = ["timestamp_ms", "radar_presence", "moving_target", "stat
   ...Array.from({ length: 9 }, (_, i) => `senergy_gate${i}`),
   "light_level", "out_level"];
 const CSV_COLONNE_META = ["pc_time_s", "group_id", "trial_id", "scenario", "ground_truth_presence", "ground_truth_state"];
+// Due colonne IN CODA, oltre le 35 di acquire.py: l'indice calcolato a bordo. Gli script
+// leggono per nome e le ignorano; servono a confrontare bordo e vitalita_proto.py (step 5).
+const CSV_COLONNE_EXTRA = ["vitality_onboard", "vitality_class_onboard"];
 const STAT_IDS = ["s-durata", "s-n", "s-radar", "s-pir", "s-eventi", "s-ultima", "s-dist", "s-menergy", "s-vit"];
 
 const sessione = {
@@ -432,7 +438,7 @@ function sessioneReset() {
 function scaricaCSV() {
   if (!sessione.rows.length) return;
   const meta = sessione.meta;
-  const righe = [CSV_COLONNE_FW.concat(CSV_COLONNE_META).join(",")];
+  const righe = [CSV_COLONNE_FW.concat(CSV_COLONNE_META, CSV_COLONNE_EXTRA).join(",")];
   for (const r of sessione.rows) {
     // pc_time_s come acquire.py: orologio del PC alla prima riga + tempo trascorso sull'ESP32
     const pcTime = (sessione.t0Pc / 1000 + (r.t - sessione.tPrimo) / 1000).toFixed(6);
@@ -440,6 +446,7 @@ function scaricaCSV() {
       r.t, r.presence, r.moving, r.still, r.mdist, r.sdist, r.menergy, r.senergy, r.pir,
       ...r.gates_m, ...r.gates_s, r.light, r.out,
       pcTime, meta.gruppo, meta.trial, meta.scenario, meta.gt, meta.gts,
+      r.vitality, r.vitality_class,
     ].join(","));
   }
   const blob = new Blob([righe.join("\n") + "\n"], { type: "text/csv;charset=utf-8" });
@@ -448,7 +455,7 @@ function scaricaCSV() {
   a.download = `${meta.scenario}_${meta.trial}.csv`;     // stessa convenzione della campagna
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-  $("sessione-msg").textContent = `Scaricato ${a.download}: ${sessione.rows.length} righe, ${CSV_COLONNE_FW.length + CSV_COLONNE_META.length} colonne.`;
+  $("sessione-msg").textContent = `Scaricato ${a.download}: ${sessione.rows.length} righe, ${CSV_COLONNE_FW.length + CSV_COLONNE_META.length + CSV_COLONNE_EXTRA.length} colonne (35 di acquire.py + 2 di vitalita').`;
 }
 
 $("form-sessione").addEventListener("submit", sessioneAvvia);

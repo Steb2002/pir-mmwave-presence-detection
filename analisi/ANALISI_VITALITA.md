@@ -292,6 +292,26 @@ riferimento di movimento.
 ⚠️ Perimetro: **due trial per scenario** nell'insieme di validazione e **un solo
 soggetto**.
 
+## 4.7 Porting a bordo e verifica (10-11/09/2026)
+
+`firmware/ld2410b_web/vitality.h` implementa la v3 con le costanti del §4.6, **gate
+attivo dalla distanza riportata** (ripiego sull'energia senza bersaglio) e il fondo per
+gate misurato su `stanza_vuota_notte_T01` con la stessa regola di `--fondo-da`
+(17,58 · 13,20 · 4,35 · 2,88 · 5,29 · 3,06 · 3,87 · 3,33 · 4,41). L'indice e la classe
+calcolati a bordo escono nel CSV della web UI (`vitality_onboard`,
+`vitality_class_onboard`) e `analisi/verifica_vitalita_bordo.py` li confronta con il
+prototipo: a regime coincidono entro ±1 nel 98,7-100 % dei campioni (tre sessioni da
+90 s, registro 11/09). Nei primi ~60 s divergono perché le EWMA del firmware partono
+dall'accensione e non dal primo campione del file.
+
+⚠️ **Discrepanza aperta sulla tabella del §4.6.** Il comando esatto della taratura del
+31/08 non era stato annotato. Rieseguendo `vitalita_proto.py` con i parametri della
+tabella e il fondo notturno, gli scenari a 1 m si riproducono (fermo 28,4 contro 28,6;
+movimento 99,4 contro 99,2) ma `sotto_banco_immobile_H` dà **45,4** con `--gate distanza`
+e **64,1** con `--gate energia`, non 25,7. Prima di citare in tesi il 25,7 e il 97,5 %
+va ritrovata la configurazione che li produce, o vanno sostituiti con quelli riprodotti.
+Regola da qui in avanti: **ogni numero della specifica porta con sé la riga di comando**.
+
 ## 5. Sviluppo e taratura — Python prima, C++ poi
 
 Regola: **l'algoritmo si sviluppa su PC, sui CSV, dove si può iterare in secondi.**

@@ -25,6 +25,26 @@
 #define PIR_PIN        34               // HC-SR501 OUT, solo-input senza pull-up: va bene
 #define PERIODO_CAMPIONE_MS 200         // 5 Hz, come il logger e i CSV della tesi
 
+// ---------------------------------------------------------------- Indice di vitalita' (step 5)
+// Algoritmo v3 di analisi/ANALISI_VITALITA.md (§3.1 + §4.5), parametri tarati il
+// 31/08/2026 (§4.6) su vitalita_proto.py. Le stesse costanti del prototipo: se cambiano
+// qui devono cambiare anche la' (e viceversa), altrimenti bordo e offline divergono.
+#define VIT_ALPHA_M     0.05f           // EWMA del livello di movimento (~4 s a 5 Hz)
+#define VIT_ALPHA_V     0.01f           // EWMA della variabilita' (~20 s)
+#define VIT_K           0.5f            // peso della componente di variabilita'
+#define VIT_SOGLIA_1    45.0f           // < 45  -> vitalita_bassa (la piu' urgente per il soccorso)
+#define VIT_SOGLIA_2    95.0f           // < 95  -> vitalita_moderata, altrimenti vitalita_alta
+// Gate attivo: 1 = dalla distanza riportata dal radar (gate = dist / 75 cm; se non c'e'
+// bersaglio si ripiega sull'energia), 0 = argmax dell'energia moving per gate.
+// Con 'distanza' il prototipo riproduce meglio la tabella tarata (fermo 1 m 28,4 vs 28,6;
+// movimento 99,4 vs 99,2); con 'energia' sotto il banco l'immobile sale a 64.
+#define VIT_GATE_DA_DISTANZA 1
+// Rumore di fondo per gate (canale moving), media sui campioni con radar_presence = 0 di
+// stanza_vuota_notte_T01.csv (6,5 h, 118108 campioni): la stessa regola di
+// vitalita_proto.py --fondo-da. Senza questa sottrazione stanza vuota e persona immobile
+// danno lo stesso indice (§5.3). Specifico di QUESTA stanza e di QUESTO montaggio.
+#define VIT_FONDO_GATE  { 17.58f, 13.20f, 4.35f, 2.88f, 5.29f, 3.06f, 3.87f, 3.33f, 4.41f }
+
 // ---------------------------------------------------------------- Seriale verso il PC
 #define SERIALE_BAUD   115200           // come il logger: acquire.py continua a funzionare
 // Regola: ogni riga che NON e' CSV inizia con "# " (acquire.py la scarta)

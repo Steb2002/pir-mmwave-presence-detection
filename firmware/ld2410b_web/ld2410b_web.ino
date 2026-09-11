@@ -10,6 +10,7 @@
  * File:
  *   config.h        SSID/password dell'AP, pin, costanti
  *   radar_task.h    lettura LD2410B (MyLD2410, engineering mode) + PIR, CSV su seriale
+ *   vitality.h      indice di vitalita' v3 (EWMA sull'energia netta del gate attivo, 3 classi)
  *   web_server.h    AP + DNS catch-all + HTTP statico + /info + WebSocket /ws
  *   web_assets.h    GENERATO da tools/embed_web.py: i file di web/ compressi in gzip
  *   web/            sorgenti della pagina (index.html, style.css, app.js)
@@ -34,12 +35,15 @@
  *                        con le 29+6 colonne di acquire.py. Firmware invariato salvo il marcatore
  *   BUILD 5 (10/09/2026) log degli eventi WS spostato dal task di rete al loop (una riga CSV
  *                        veniva corrotta dalla stampa concorrente); avviso portale captive nella pagina
+ *   BUILD 6 (10/09/2026) step 5: vitality.h a bordo (v3, fondo per gate, 3 classi), gauge collegata,
+ *                        vitalita' in C1 e nel CSV web (colonne extra vitality_onboard*)
  */
 #include "config.h"
 #include "radar_task.h"
+#include "vitality.h"
 #include "web_server.h"
 
-#define BUILD "ld2410b_web BUILD 5 - step 4 + log WS dal loop"
+#define BUILD "ld2410b_web BUILD 6 - step 5: indice di vitalita' a bordo"
 
 static RadarSample campione;
 static unsigned long ultimoCampione = 0;
@@ -82,6 +86,7 @@ void loop() {
   ultimoCampione = ora;
 
   radarLeggi(campione);
+  vitalityUpdate(campione);  // indice di vitalita' a bordo (step 5), prima di storico/CSV/WS
   storicoAggiungi(campione); // ultimi 60 s, per chi si collega dopo
   csvRiga(campione);        // canale seriale SEMPRE attivo (test/debug/acquire.py)
   wsBroadcast(campione);    // -> tutti i browser collegati

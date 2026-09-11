@@ -1765,7 +1765,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       l'originale); partizione **Huge APP** (lo schema di default da' 1,2 MB, troppo poco);
       `ws.cleanupClients()` nel loop; vitalita' v3 a 3 classi con fondo per gate; CSV a
       29 colonne con `light_level`/`out_level`
-- [~] **`firmware/ld2410b_web/` avviato (06/09/2026) — step 1-4 di 5 fatti** (BUILD 5, 10/09/2026):
+- [x] **`firmware/ld2410b_web/` (06-11/09/2026) — tutti e 5 gli step fatti** (BUILD 6):
       Access Point + DNS catch-all + pagina statica + `/info`; lettura radar e PIR, CSV
       sulla seriale con le stesse 29 colonne del logger (quindi `acquire.py` gira in
       parallelo alla web UI) e spinta WebSocket a 5 Hz. La pagina sta in `web/`
@@ -1797,7 +1797,24 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - [x] Sito web visualizzazione tempo reale
 - [x] Salvataggio dati + statistiche
 - [x] Export CSV → analisi in Excel (stesso formato di acquire.py: la pipeline e' una sola)
-- [ ] **Step 5**: `vitality.h` a bordo (v3, fondo per gate, 3 classi) + gauge collegata
+- [x] **Step 5 (10-11/09/2026, BUILD 6)**: `vitality.h` a bordo — porting della v3 di
+      `vitalita_proto.py` (energia netta del gate attivo, doppia EWMA, k, gate di
+      presenza, 3 classi), costanti in `config.h` (alpha 0,05 / 0,01, k 0,5, soglie 45/95,
+      **gate dalla distanza riportata**, fondo per gate da `stanza_vuota_notte_T01`).
+      Gauge a **semaforo** (bassa rosso = la piu' urgente, moderata giallo, alta verde),
+      vitalita' tratteggiata in C1, **due colonne in coda al CSV web**
+      (`vitality_onboard`, `vitality_class_onboard`) oltre alle 35 di acquire.py.
+      ✅ **Verifica superata** (`analisi/verifica_vitalita_bordo.py`, registro 11/09):
+      a regime bordo = offline entro ±1 nel 98,7-100 % dei campioni; classi attese su
+      immobile (19,9 → bassa) e micro (68,7 → moderata); movimento a ~1,9 m da' 94,0, a
+      cavallo della soglia 95 tarata a 1 m (dipendenza dalla geometria, §4.6).
+      ⚠️ Nei primi ~60 s dopo l'avvio della sessione bordo e offline divergono (le EWMA
+      del firmware partono dall'accensione): confrontare sempre la coda.
+      🚨 **Il comando della taratura del 31/08 NON era stato registrato**: rifacendolo con
+      i parametri della tabella §4.6, `sotto_banco_immobile_H` da' 45,4 (gate=distanza) o
+      64,1 (gate=energia), **non 25,7** — quel numero va ricontrollato prima di finire in
+      tesi. **Regola**: registrare sempre la riga di comando che produce un numero
+- [x] **OBIETTIVO 5 CHIUSO**: i cinque step della web UI sono fatti e verificati
 
 ### Indice di vitalità (obiettivo 6)
 - [x] **Pilota respiro riuscito (18/08/2026)** — `HLK-LD2410x/data/20260818_respiro_40cm_prova.csv`:
@@ -1878,7 +1895,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       gestibile — ogni sensore sta fisso sotto il proprio arredo e si tara una volta —
       ma sarebbe un problema su un dispositivo portatile. Via naturale: **auto-taratura
       all'installazione** (fondo a stanza vuota + un riferimento di movimento)
-- [ ] Porting su ESP32 (`vitality.h`)
+- [x] Porting su ESP32 (`vitality.h`, BUILD 6 di `ld2410b_web`, 10-11/09/2026 — vedi obiettivo 5, step 5)
 
 ### Processo
 - [x] Scaletta della tesi (`SCALETTA_TESI.md` — da trasporre in Overleaf)
