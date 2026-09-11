@@ -253,6 +253,22 @@ Parametri scelti sui trial **T01-T03** dei tre scenari a 1 m, prestazione misura
 | α_v (variabilità) | **0,01** |
 | k (peso della componente 2) | **0,5** |
 | soglie fra le 3 classi | **45** e **95** |
+| gate attivo | **fisso 2** (`--gate 2`) — vedi la nota qui sotto |
+| fondo per gate | `--fondo-da stanza_vuota_T01.csv` (30 min diurni) |
+
+Riga di comando che produce **esattamente** le tabelle di questa sezione (ritrovata
+l'11/09/2026 per ricerca esaustiva sulle combinazioni di parametri, dopo che il
+comando originale non era stato annotato; da qui in avanti ogni numero della
+specifica porta con sé il comando):
+
+```
+python analisi/vitalita_proto.py HLK-LD2410x/data/{fermo_1m_H,micromovimenti_1m_H,movimento_1m_H,sotto_banco_immobile_H,sotto_banco_movimenti_H}_T0*.csv \
+    --alpha-mov 0.05 --alpha-var 0.01 --k 0.5 --soglie 45,95 --gate 2 \
+    --fondo-da HLK-LD2410x/data/stanza_vuota_T01.csv
+```
+
+Con il fondo notturno (`stanza_vuota_notte_T01`, quello usato dal firmware) i valori
+cambiano di 0,1 punti: la scelta del file di fondo è irrilevante.
 
 | insieme | recall media per classe |
 |---|---|
@@ -272,9 +288,33 @@ Dettaglio per scenario, parametri tarati, tutti i trial:
 | movimenti sotto il banco | 98,8 | moderata | 4,8 % |
 
 📌 **Il 51,2 % è dominato da un solo scenario.** Quattro su cinque sono corretti, e fra
-questi c'è quello che conta per il progetto: la persona **immobile sotto il banco** —
-il caso della vittima incosciente — riconosciuta nel **97,5 %** dei campioni in una
-geometria su cui nulla è stato tarato.
+questi la persona **immobile sotto il banco**, riconosciuta nel **97,5 %** dei campioni.
+
+⚠️ **Questo 97,5 % va letto con la tabella qui sotto, non da solo (rilettura
+dell'11/09/2026).** Il gate è fissato a 2 (150-225 cm) perché a 1 m, la geometria di
+taratura, la persona sta a cavallo dei gate 1 e 2 e il gate 2 ha il fondo più pulito
+(4 contro 12 del gate 1): lì la scelta è buona. Sotto il banco, però, la persona è a
+60 cm, cioè nel gate 1, e il gate 2 ne raccoglie solo un'eco indiretta:
+
+| scenario (energia moving media grezza) | gate 0 | gate 1 | gate 2 | gate 3 |
+|---|---|---|---|---|
+| stanza vuota (fondo) | 17,6 | 13,2 | 4,4 | 2,9 |
+| immobile a 1 m | 18,6 | 30,9 | 25,3 | 7,4 |
+| micro-movimenti a 1 m | 23,6 | 66,5 | 60,5 | 14,3 |
+| **immobile sotto il banco (60 cm)** | 33,1 | **54,0** | 21,7 | 9,5 |
+| movimenti sotto il banco | 96,5 | 99,8 | 95,1 | 43,9 |
+
+Il 25,7 dell'immobile sotto il banco nasce dal gate 2, dove la persona **non è**
+(21,7, vicino ai 25,3 dell'immobile a 1 m per coincidenza dell'eco indiretta). Letta nel
+suo gate, la stessa persona immobile vale **54,0**, quanto i micro-movimenti a 1 m: con il
+criterio a distanza l'indice medio è **45,4** (classe bassa nel 49 % dei campioni), con il
+criterio a energia **64,1** (10 %). Quindi il 97,5 % **non dimostra che le soglie tarate a
+1 m si trasferiscano sotto il banco**: dimostra che un gate scelto per la geometria di
+taratura, applicato a un'altra geometria, guarda altrove. Il dato che si trasferisce
+davvero è la **discriminazione immobile / in movimento (96,1 %)**, netta con qualunque
+criterio. La conclusione operativa resta quella del §5.3: **taratura per installazione**
+(fondo e riferimento misurati sotto l'arredo in cui il sensore è montato), praticabile in
+UPRISE perché il montaggio è fisso e noto.
 
 ⚠️ Il caso che fallisce, `sotto_banco_movimenti_H`, è classificato *alta* invece di
 *moderata*. Ma quell'etichetta era stata assegnata **per analogia** con il caso a 1 m e
@@ -304,13 +344,17 @@ prototipo: a regime coincidono entro ±1 nel 98,7-100 % dei campioni (tre sessio
 90 s, registro 11/09). Nei primi ~60 s divergono perché le EWMA del firmware partono
 dall'accensione e non dal primo campione del file.
 
-⚠️ **Discrepanza aperta sulla tabella del §4.6.** Il comando esatto della taratura del
-31/08 non era stato annotato. Rieseguendo `vitalita_proto.py` con i parametri della
-tabella e il fondo notturno, gli scenari a 1 m si riproducono (fermo 28,4 contro 28,6;
-movimento 99,4 contro 99,2) ma `sotto_banco_immobile_H` dà **45,4** con `--gate distanza`
-e **64,1** con `--gate energia`, non 25,7. Prima di citare in tesi il 25,7 e il 97,5 %
-va ritrovata la configurazione che li produce, o vanno sostituiti con quelli riprodotti.
-Regola da qui in avanti: **ogni numero della specifica porta con sé la riga di comando**.
+✔ **Discrepanza sulla tabella del §4.6: risolta l'11/09/2026.** Il comando della
+taratura non era stato annotato; una ricerca su tutte le combinazioni (parametri tarati o
+di default × tre fondi × cinque criteri di gate × scarto sì/no) ha trovato **una sola**
+configurazione che riproduce la tabella al decimale: `--gate 2` con il fondo da
+`stanza_vuota_T01`. Il firmware usa invece il **gate dalla distanza riportata**, che a 1 m
+dà gli stessi numeri (28,4 / 73,9 / 99,4 contro 28,6 / 71,0 / 99,2) e sotto il banco dà
+45,4 invece di 25,7: la differenza è spiegata nel §4.6 (il gate 2 sotto il banco vede
+un'eco indiretta). **Il firmware resta con il criterio a distanza**, che legge il gate in
+cui il radar colloca la persona: è la misura fisicamente sensata per una dashboard a
+distanza libera, e la sua dipendenza dalla geometria va dichiarata, non nascosta con un
+gate fisso. Il gate fisso resta disponibile nel prototipo per i confronti controllati.
 
 ## 5. Sviluppo e taratura — Python prima, C++ poi
 

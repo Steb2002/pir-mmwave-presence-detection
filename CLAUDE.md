@@ -1817,10 +1817,16 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       la condizione «micro» e' dell'operatore e non si riproduce fra sessioni. Le sessioni
       web sono una **demo del funzionamento a bordo**, la validazione delle soglie resta
       quella del 31/08 su T04-T05
-      🚨 **Il comando della taratura del 31/08 NON era stato registrato**: rifacendolo con
-      i parametri della tabella §4.6, `sotto_banco_immobile_H` da' 45,4 (gate=distanza) o
-      64,1 (gate=energia), **non 25,7** — quel numero va ricontrollato prima di finire in
-      tesi. **Regola**: registrare sempre la riga di comando che produce un numero
+      ✔ **Discrepanza sulla tabella §4.6 RISOLTA (11/09)**: la taratura del 31/08 era con
+      `--gate 2` fisso e fondo da `stanza_vuota_T01` (riprodotta al decimale, comando ora
+      in ANALISI_VITALITA §4.6). 🚨 **Ma il 25,7 / 97,5 % "immobile sotto il banco" e' un
+      artefatto del gate fisso**: a 60 cm la persona sta nel gate 1 (energia 54, quanto i
+      micro-movimenti a 1 m) e il gate 2 ne vede solo l'eco indiretta (22). Con il criterio
+      a distanza l'immobile sotto il banco da' 45,4 → **le soglie tarate a 1 m NON si
+      trasferiscono sotto il banco**; si trasferisce solo immobile vs in movimento (96,1 %).
+      In tesi il 97,5 % va presentato con questa lettura (tabella per gate in §4.6), e la
+      via e' la taratura per installazione. Firmware invariato (criterio a distanza).
+      **Regola**: registrare sempre la riga di comando che produce un numero
 - [x] **OBIETTIVO 5 CHIUSO**: i cinque step della web UI sono fatti e verificati
 
 ### Indice di vitalità (obiettivo 6)
@@ -1894,7 +1900,10 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - 📌 **Il 51,2 % sulla geometria diversa e' dominato da UN solo scenario**: 4 su 5 sono
       corretti, e fra questi **la persona immobile sotto il banco al 97,5 %** — cioe'
       proprio il caso della vittima incosciente, in una geometria su cui nulla e' stato
-      tarato. Il caso che fallisce e' `sotto_banco_movimenti_H`, classificato *alta*
+      tarato. ⚠️ **SUPERATO dalla rilettura dell'11/09/2026** (vedi obiettivo 5, step 5, e
+      ANALISI_VITALITA §4.6): quel 97,5 % dipende dal gate fissato a 2, che sotto il banco
+      vede solo un'eco indiretta della persona (22 contro 54 nel gate 1 dove sta davvero).
+      Non e' una prova di trasferibilita' delle soglie. Il caso che fallisce e' `sotto_banco_movimenti_H`, classificato *alta*
       invece di *moderata*: ⚠️ ma quell'etichetta era stata assegnata **per analogia** col
       caso a 1 m e **non poggia su ground truth**. A 60 cm una persona che si aggiusta
       da' un ritorno molto forte, e non e' dimostrato che "moderata" sia giusto
