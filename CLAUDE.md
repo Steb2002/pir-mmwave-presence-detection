@@ -1222,6 +1222,39 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       di tutta la campagna
 - ⚠️ **Conseguenza sulla Fase 8**: sul PIR non abbiamo ancora trovato il limite. La prova
       di portata massima va iniziata da **6 m**, non da 2
+- [x] 🚪 **FASE 8 CORRIDOIO COMPLETATA (11-12/09/2026)** — tre sensori nella stessa geometria,
+      baseline di 20 min pulita (fondo dei gate 6-8 del LD2410B max 7 contro soglia 15: il
+      fondo del corridoio non si vede). Risultati (registro 11-12/09):
+      - **LD2410B**: 100 % a 5 e 6 m, **0 % a 7 m in 3/3** → il tetto documentato di
+        8 gate × 75 cm = **600 cm e' misurato**. ⚠️ A 6 m `mdist` e' **satura a 600**
+        (max esattamente 600 in 5/5, dispersione 2-5 cm = effetto del tetto): il punto a
+        6 m NON entra nella regressione della distanza; la presenza la regge il canale
+        stazionario (93-100 %, `senergy` 62-82), il moving e' attivo 36-39 %
+      - **PIR a meta' corsa** (campagna): oscillazione trasversale di 50 cm vista fino a
+        **7 m** (24-33 %), dove il radar e' a zero; attraversamento normale (~1 m/s)
+        **0-6 % a 6 m** contro 98,7 % a 5 m del Test 1.5 → limite fra 5 e 6 m, e a 6 m
+        **la velocita' del transito decide** (`attrav_6m_veloce`: 30,5 %, 5 impulsi)
+      - **PIR al massimo** (`attrav_smax_*`, serie separata): **100 / 100 / 57 / 15 %** a
+        5 / 6 / 7 / 8 m → limite fra 7 e 8 m, coerente col datasheet (3-7 m); oltre il
+        tetto configurabile del radar il PIR al massimo vede ancora. ⚠️ **Direzione del
+        trimmer verificata sperimentalmente: su questa scheda l'ORARIO aumenta** (una
+        figura in rete diceva il contrario e girando antiorario il PIR vedeva peggio);
+        trimmer da ripristinare a meta' geometrica (la meta' di luglio non era marcata)
+      - **LD2420** (logger BUILD 9, gate max **12** = 840 cm in RAM, soglie `g0alto`):
+        fondo normale, negativo di 240 s **senza riaccensioni** (il corridoio, a differenza
+        del muro a 5 m in stanza, non tiene acceso il modulo); acquisisce a 1 m (gate 2
+        sopra il trigger 12-17 %), mantiene a 2 m (gate 3 sopra l'hold 5-15 %), **da 3 m in
+        su energie = fondo gate per gate, zero superamenti da 4 m**. Primi rilasci con la
+        persona presente a 3-4 m. Il gate max 12 non ha aggiunto nulla: il limite a ~2 m
+        e' dell'esemplare, non della configurazione ne' della stanza — chiude anche il
+        dubbio della prova in corridoio del 05/09. Positivo di chiusura = apertura
+      - 📌 Righe di portata a tre sensori, stessa geometria: **LD2410B 6 m (tetto
+        configurabile) · PIR 5-6 m a meta' corsa, 7-8 m al massimo · LD2420 (esemplare)
+        1 m acquisizione / 2 m mantenimento**. Da dichiarare: movimento trasversale di
+        50 cm nei trial radar (non sul posto puro); sensore a 80 cm, tacche dalla faccia del
+        modulo; corridoio 120 cm × 2,3 m con **due vani porta a 4 m (70 cm) e 5 m (80 cm)**,
+        fondo a 9 m (muro, finestra, termosifone): i punti a 6-8 m sono visti attraverso i
+        due vani. Trimmer PIR ripristinato a meta' geometrica a fine sessione
 - ⚠️ **`errore_cm` dei file `attraversamento_*` NON e' utilizzabile** e resta fuori dalla
       regressione del Test 1.2: a 3 m e' passato da +9,5 a +19,2 cm fra due sessioni a
       pochi minuti di distanza. La spazzata trasversale (larghezza ~1 m) spiega solo

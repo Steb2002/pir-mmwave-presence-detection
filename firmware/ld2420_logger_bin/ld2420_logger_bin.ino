@@ -47,6 +47,12 @@
 // ricablare al CH340E a ogni cambio. ⚠️ La scrittura via UART vive in RAM: il modulo
 // la perde se gli si toglie il 3V3, ma il reset dell'ESP32 per l'upload non lo spegne.
 // Il valore letto dopo la scrittura finisce nel commento '#' in testa al CSV.
+// Fase 8 corridoio (11/09/2026): 12 = 840 cm, il valore di fabbrica che copre gli 8 m
+// dichiarati; in flash resta 6 (420 cm, campagna in stanza). Le soglie dei gate 7-15 nel
+// file g0alto sono quelle del tool (19,7-25 dB, hold >= 65 grezzi contro fondo ~35).
+// I file `corr2420_*`, `vuoto2420_corr`, `check2420_fondo_corr` sono stati acquisiti con
+// BUILD 9 = 12. Dal BUILD 10 torna a 0 (flash: 6) per non rompere le sessioni in stanza,
+// dove il muro a 5 m con gate 7-8 teneva la presenza sempre alta.
 #define GATE_MAX_DA_IMPOSTARE 0
 
 // Gate MINIMO da scrivere a ogni avvio (0 = non toccare). Test 2.6 e prova sul rilascio del
@@ -209,7 +215,7 @@ void setup() {
   delay(500);
 
   // Righe di servizio come commenti '#': acquire.py le ignora.
-  Serial.println("# ld2420_logger_bin BUILD 8 - gate min e ritardo opzionali, energy mode via 0x0012, presenza dal frame, dist_raw_cm, gate max opzionale, senza OT2");
+  Serial.println("# ld2420_logger_bin BUILD 10 - gate max/min e ritardo opzionali (0 = flash), energy mode via 0x0012, presenza dal frame, dist_raw_cm, senza OT2 (BUILD 9 = corridoio con gate max 12)");
   Serial.print("# PIR: ");
   Serial.println(PIR_COLLEGATO ? "cablato su GPIO21, colonna valida"
                                : "NON collegato, pir_presence = -1 (colonna non valida)");
