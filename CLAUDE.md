@@ -499,10 +499,18 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
   ⚠️ Il R² = 0,99965 del capitolo 4 è calcolato sulle **5 medie** per distanza, non sui 25
   trial singoli (che darebbero 0,99949 e un residuo massimo di 6,0 cm invece di 4,9): la
   fig. 4 mostra entrambi e lo dichiara
-- `analisi/esporta_excel.py` — `analisi/dati_tesi.xlsx`, 11 fogli. Il foglio
-  `tutti_i_trial` ha **una riga per trial** con tutte le metriche (è quello da cui fare
-  pivot a mano); gli altri hanno i dati già aggregati per figura, con 6 grafici Excel
-  nativi modificabili. Stesse funzioni e stesse convenzioni di `grafici_tesi.py`
+- `analisi/esporta_excel.py` — `analisi/dati_tesi.xlsx`, 12 fogli. Il foglio
+  `tutti_i_trial` ha **una riga per trial VALIDO** con tutte le metriche (è quello da cui
+  fare pivot a mano); gli altri hanno i dati già aggregati per figura, con 6 grafici Excel
+  nativi modificabili. Stesse funzioni e stesse convenzioni di `grafici_tesi.py`.
+  🔑 **Lista di esclusione `ESCLUSIONI` (13/09/2026)**: la glob su `data/*.csv` portava nel
+  foglio maestro 46 file che non sono trial (controlli del fondo, prove tecniche, sessioni
+  web, file marcati non validi/congelati/rumore, jumper, pannello flessibile). Ora restano
+  fuori e compaiono nel foglio **`file_esclusi`** con il motivo. Verificato: le 441 righe
+  del LD2410B sono identiche a prima; cambiano solo 32 righe LD2420 per le convenzioni di
+  scarto aggiunte a `skip_per` (fermo/banco/micromovimenti2420 90 s, sel2420 120 s,
+  vuoto/notturna2420 e corridoio_vuoto 60 s), che prima usavano 20 s. Un file nuovo che
+  non è un trial va aggiunto alla lista, non lasciato "tanto è nel registro"
 - `analisi/genera_pagina.py` — `RIEPILOGO_INCONTRO.html`, pagina unica di riepilogo per
   l'incontro col professore: stato dei 6 obiettivi, le 13 figure con didascalie che
   spiegano cosa dimostrano, domande da porre. Le immagini sono incorporate come data URI

@@ -38,13 +38,47 @@ SFONDO = PatternFill("solid", fgColor="1B6CA8")
 
 
 def skip_per(scenario):
-    if scenario.startswith("sel_"):
+    """Transitorio da scartare, per nome di scenario. Riproduce le convenzioni del registro:
+    20 s ordinari, 40 s sotto il banco (LD2410B), 120 s selettivita', 60 s a stanza vuota;
+    per la campagna LD2420 (rilascio ~55 s) i trial da fermo usano 90 s (registro 06-09/09)."""
+    s = scenario.lower()
+    if s.startswith("sel_") or s.startswith("sel2420_"):
         return 120.0
-    if scenario.startswith("sotto_banco"):
+    if s.startswith("sotto_banco"):
         return 40.0
-    if scenario.startswith("stanza_vuota"):
+    if s.startswith(("fermo2420", "banco2420", "micromovimenti2420")):
+        return 90.0
+    if s.startswith(("stanza_vuota", "vuoto2420", "notturna2420", "corridoio_vuoto")):
         return 60.0
     return 20.0
+
+
+# File presenti in data/ che NON sono trial validi: senza questa lista finivano nel foglio
+# maestro come misure (13/09/2026). Ogni voce e' (criterio sul nome, motivo). Il primo che
+# combacia vince. I file restano nel repo e compaiono nel foglio "file_esclusi" con il motivo.
+ESCLUSIONI = [
+    (lambda n: "nonvalido" in n,                      "marcato NON VALIDO nel registro"),
+    (lambda n: "congelato" in n,                      "radar muto: frame identici ripetuti (registro 10/09)"),
+    (lambda n: n.startswith("ingresso2420_rumore"),   "modulo LD2420 in stato anomalo (registro 07/09)"),
+    (lambda n: n.startswith("check2420"),             "controllo del fondo prima di acquisire, non un trial"),
+    (lambda n: n.startswith("prova") or n.endswith("_prova") or "_prova_" in n,
+                                                      "prova tecnica (parser, seriale, web UI), non un trial"),
+    (lambda n: n.startswith("20260818_"),             "pilota/verifica del logger del 18/08, senza ground truth"),
+    (lambda n: n[:1].isupper(),                       "sessione web UI (demo dell'indice a bordo): stimolo non controllato"),
+    (lambda n: n.startswith("stanza_vuota_2420"),     "presenza ASCII inutilizzabile (registro 02/09)"),
+    (lambda n: n.startswith("portata2420_altrazona"), "setup non confermato, prova non interpretata (registro 05/09)"),
+    (lambda n: n.startswith("pir_jumper") or n.startswith("pir_verifica"),
+                                                      "verifica del jumper H/L, non un trial"),
+    (lambda n: "cartone_lastra" in n,                 "pannello flessibile: escluso dai risultati (registro 30/08)"),
+]
+
+
+def motivo_esclusione(stem):
+    """None se il file e' un trial valido, altrimenti il motivo dell'esclusione."""
+    for crit, motivo in ESCLUSIONI:
+        if crit(stem):
+            return motivo
+    return None
 
 
 def scrivi(ws, righe, titolo=None, nota=None):
@@ -104,18 +138,30 @@ COLONNE = ["file", "scenario", "trial", "gt", "gt_state", "_skip_s", "n_campioni
 def foglio_tutti(wb):
     ws = wb.create_sheet("tutti_i_trial")
     righe = [COLONNE]
+    esclusi = []
     for f in sorted(DATI.glob("*.csv")):
+        motivo = motivo_esclusione(f.stem)
+        if motivo:
+            esclusi.append([f.name, motivo])
+            continue
         r = analizza_file(str(f), salta_inizio_s=skip_per(f.stem))
         if r:
             righe.append([r.get(c, "") for c in COLONNE])
     scrivi(ws, righe, None,
-           "Una riga per trial. '_skip_s' e' il transitorio scartato: 20 s ordinari, "
-           "40 s sotto il banco, 120 s selettivita', 60 s stanza vuota. "
+           "Una riga per trial VALIDO (i file esclusi, con il motivo, sono nel foglio "
+           "'file_esclusi'). '_skip_s' e' il transitorio scartato: 20 s ordinari, "
+           "40 s sotto il banco, 120 s selettivita', 60 s stanza vuota, 90 s trial da "
+           "fermo del LD2420. "
            "I file con evento (ingresso_*, uscita_*) hanno tassi privi di senso qui: "
            "la ground truth cambia a meta' file. Vedi il foglio 06_latenze. "
            "Se 'pir_stato' dice NON COLLEGATO le colonne del PIR sono vuote perche' il "
            "sensore non era cablato: NON sono zeri misurati.")
     ws.freeze_panes = "A2"
+    ws2 = wb.create_sheet("file_esclusi")
+    scrivi(ws2, [["file", "motivo"]] + esclusi, None,
+           "CSV presenti in data/ che NON sono trial validi e restano fuori dal foglio "
+           "maestro. Il criterio e' nel codice (ESCLUSIONI in esporta_excel.py): un dato "
+           "escluso va motivato alla sorgente, non in una nota a parte.")
     return len(righe) - 1
 
 
