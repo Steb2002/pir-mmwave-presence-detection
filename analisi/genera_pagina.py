@@ -4,12 +4,12 @@ Costruisce la pagina di riepilogo per l'incontro col professore.
 
     python analisi/genera_pagina.py
 
-Legge i PNG prodotti da analisi/grafici_tesi.py, li incorpora nella pagina come
+Legge i PNG prodotti da analisi/grafici_tesi.py e grafici_tesi_2.py, li incorpora nella pagina come
 data URI in formato WebP - nessun file esterno, quindi la pagina si apre offline
 e si puo' mandare per mail cosi' com'e' - e scrive RIEPILOGO_INCONTRO.html nella
 radice del progetto.
 
-Va lanciato DOPO grafici_tesi.py, altrimenti incorpora le figure vecchie.
+Va lanciato DOPO i due script delle figure, altrimenti incorpora le figure vecchie.
 Di norma non si lancia a mano: ci pensa analisi/rigenera_tutto.py.
 """
 import base64
@@ -288,18 +288,20 @@ LEDGER = [
     (2, "Analisi dei dati prodotti", "done", "completo",
      "mmWave: 18 canali di energia per-gate + 2 distanze a 5 Hz. PIR: 1 bit, monostabile "
      "da 3,45 s. Misurati anche i limiti del dato (saturazione, gate stazionari 0-1)."),
-    (3, "Comparazione con testing numerico", "done", "fasi 0-2 complete",
-     "115 trial, 223 291 campioni, 12,4 h di acquisizione. Accuratezza, distanza, latenze, "
-     "falsi positivi, due persone, selettività spaziale."),
+    (3, "Comparazione con testing numerico", "done", "fasi 0-8 complete",
+     "441 trial validi, 576 222 campioni, 31,9 h di acquisizione su tre sensori. Accuratezza, "
+     "latenze, falsi positivi, due persone, selettività, ostacoli fino a 5 m, respiro a "
+     "metronomo, portata in corridoio; il LD2420 caratterizzato entro i 2 m dell'esemplare."),
     (4, "Consumo energetico (informativo)", "done", "completo",
      "80 mA contro 0,05 mA: tre ordini di grandezza. È l'argomento che regge "
      "l'architettura ibrida PIR + mmWave."),
-    (5, "Web UI ed export CSV", "wip", "in sviluppo",
-     "Due architetture progettate in dettaglio (ESP32 self-hosted / server esterno con MQTT). "
-     "Serve una decisione prima di implementare."),
-    (6, "Indice di vitalità", "wip", "in sviluppo",
-     "Specifica v2 scritta e prototipo Python pronto. La base misurata esiste già: "
-     "due indicatori continui e monotoni col movimento."),
+    (5, "Web UI ed export CSV", "done", "completo",
+     "Sito self-hosted sull'ESP32 (Access Point proprio, WebSocket a 5 Hz, JavaScript puro, "
+     "tutto offline) con grafici, sessione di registrazione ed export CSV nello stesso formato "
+     "di acquire.py. Accettazione: CSV del browser = CSV della seriale."),
+    (6, "Indice di vitalità", "done", "completo",
+     "v3 tarata su T01-T03 e validata su T04-T05 (recall 88 %); portata a bordo dell'ESP32 e "
+     "verificata: bordo = offline entro ±1 nel 100 % dei campioni a regime."),
 ]
 
 
@@ -320,28 +322,28 @@ HTML = f"""<title>Sensori di presenza per UPRISE</title>
 <header class="top">
   <p class="eyebrow">Tesi triennale · Progetto UPRISE · Stato di avanzamento</p>
   <h1>PIR e mmWave a confronto per il rilevamento di persone sotto gli arredi</h1>
-  <p class="dek">Il sensore piroelettrico fa bene un lavoro che non è questo. Dodici ore di
-  acquisizioni dicono perché, e quanto.</p>
+  <p class="dek">Il sensore piroelettrico fa bene un lavoro che non è questo. Trentadue ore di
+  acquisizioni su tre sensori dicono perché, e quanto.</p>
   <p class="meta">
     <span><b>Relatore</b> Massimo Callisto</span>
-    <span><b>Hardware</b> ESP32 · HLK-LD2410B · HC-SR501</span>
-    <span><b>Aggiornato</b> 26 agosto 2026</span>
+    <span><b>Hardware</b> ESP32 · HLK-LD2410B · HLK-LD2420 · HC-SR501</span>
+    <span><b>Aggiornato</b> 13 settembre 2026</span>
   </p>
 </header>
 
 <div class="stats">
-  <div class="stat r"><span class="stat-n">115</span><span class="stat-l">trial acquisiti in 12,4 h</span></div>
-  <div class="stat r"><span class="stat-n">223 291</span><span class="stat-l">campioni a 5 Hz, jitter zero</span></div>
+  <div class="stat r"><span class="stat-n">441</span><span class="stat-l">trial validi in 31,9 h, tre sensori</span></div>
+  <div class="stat r"><span class="stat-n">576 222</span><span class="stat-l">campioni a 5 e 10 Hz, jitter zero</span></div>
   <div class="stat r"><span class="stat-n">0,00 %</span><span class="stat-l">falsi negativi del radar, in ogni scenario</span></div>
   <div class="stat p"><span class="stat-n">98,7 %</span><span class="stat-l">falsi negativi del PIR sulla persona immobile</span></div>
 </div>
 
 <section id="stato">
   <h2>Dove siamo</h2>
-  <p class="lead prose">I primi quattro obiettivi concordati sono raggiunti e documentati con
-  dati misurati. Il quinto e il sesto sono progettati e specificati, con la parte
-  sperimentale già in mano. In parallelo è iniziata la caratterizzazione del secondo
-  radar, l'HLK-LD2420.</p>
+  <p class="lead prose">I sei obiettivi concordati sono raggiunti e documentati con dati
+  misurati. La campagna sperimentale è chiusa: fasi 0-8 sui tre sensori, compresi il secondo
+  radar HLK-LD2420, gli ostacoli fino a 5 m e la portata massima in corridoio. Resta la
+  scrittura.</p>
   <div class="tw">
   <table class="ledger">
     <thead><tr><th></th><th>Obiettivo</th><th>Stato</th><th>Evidenza</th></tr></thead>
@@ -509,44 +511,126 @@ HTML = f"""<title>Sensori di presenza per UPRISE</title>
   </div>
 </section>
 
+<section id="settembre">
+  <h2><span class="obj">Obiettivi 3 · 5 · 6</span> La campagna di settembre</h2>
+  <p class="prose">Le due richieste del professore dell'incontro del 29 agosto — quantificare
+  l'attenuazione degli ostacoli e misurare la portata massima dei tre sensori — più la
+  caratterizzazione del secondo radar e il porting dell'indice di vitalità sull'ESP32.
+  L'esemplare di LD2420 in dotazione vede una persona solo fino a ~2 m (trasmettitore
+  ~20-25 dB sotto progetto): ogni suo numero è attribuito all'esemplare, non al modello, come
+  indicato dal professore.</p>
+
+  {fig("fig14_portata_ostacoli",
+       "Test 3.6, LD2410B: nessun dielettrico accorcia la portata entro i 5 m della stanza, nemmeno "
+       "la porta interna chiusa. A: energia moving con cartongesso a 1-5 m e legno, vetro e porta a "
+       "3-5 m — presenza 100 % e distanza corretta in tutti i 39 trial con ostacolo. B: ciò che "
+       "degrada è il canale moving (a 5 m: senza 78 %, cartongesso 44 %, vetro 26 %, legno 19 %, "
+       "porta 3 %); la presenza la tiene il canale stazionario. La porta tamburata è trasparente a "
+       "3 m e quasi opaca a 5: non spiegato, dichiarato.", 14)}
+
+  {fig("fig15_attenuazione_materiali",
+       "Attenuazione per materiale sui due radar, pannello a 20 cm dal sensore. A: LD2410B a 3 m, "
+       "riduzione dell'energia moving rispetto alla baseline mediata su 6 trial — l'energia è un "
+       "indice 0-100, non una potenza, quindi vale la graduatoria e non la conversione in dB. B: "
+       "LD2420 a 1 m, energie a 16 bit grezze, attenuazione in dB: il cartongesso (0,7 dB) attenua "
+       "come plastica e cartone, ben sotto vetro e legno; legno e metallo sono limiti inferiori "
+       "perché la dinamica dell'esemplare è di 5 dB. Stessa graduatoria su due moduli, due distanze "
+       "e due unità di misura.", 15)}
+
+  {fig("fig16_energia_distanza_radar",
+       "Fase 8 in corridoio (120 cm di larghezza, muro a 9 m). A: il LD2410B segue la curva della "
+       "stanza fino a 6 m, dove la distanza riportata è satura a 600 cm, e a 7 m non riporta "
+       "nulla: il limite è il tetto configurato di 8 gate × 75 cm, non la sensibilità. B: "
+       "l'esemplare LD2420 con gate massimo 12 (840 cm) sta sopra il fondo del corridoio vuoto "
+       "solo a 1-2 m (4,2× e 1,7×, trigger superato nel 14 % e 4 % dei campioni) e da 3 m in su "
+       "le sue energie sono indistinguibili dal corridoio vuoto.", 16)}
+
+  {fig("fig17_portata_tre_sensori",
+       "Portata dei tre sensori sulla stessa scala, stanza (agosto) e corridoio (settembre). "
+       "LD2410B: 100 % fino a 6 m, 0 % a 7 (tetto configurato). PIR a metà corsa: attraversamento "
+       "a ~1 m/s rilevato al 99-100 % fino a 5 m e al 2 % a 6 m; con la sensibilità al massimo "
+       "100 % a 5-6 m, 57 % a 7 m e 15 % a 8 m. Decide la velocità di transito, non solo la "
+       "distanza: un attraversamento veloce a 6 m dà il 30 % anche a metà corsa. LD2420 "
+       "(esemplare): si accende entro 1 m (triangoli pieni, campioni sopra il trigger) e mantiene la "
+       "presenza fino a 2 m (triangoli vuoti).", 17)}
+
+  {fig("fig18_falsi_positivi",
+       "Falsi positivi a stanza vuota di notte, scala logaritmica. LD2410B a soglie di fabbrica: "
+       "zero eventi in 6,6 h, quindi si riporta il limite superiore 3/T ≈ 0,5 eventi/h (regola del "
+       "tre). LD2420 con le soglie tarate dal tool: 26 riaccensioni/h per 7 h, presenza al 26 % del "
+       "tempo con nessuno nella stanza. Portando il solo gate 0 sopra la coda del rumore si scende a "
+       "6/h: un pavimento strutturale, perché nei gate 1-2 rumore e persona si sovrappongono. "
+       "Conteggi dello script con scarto di 60 s; il registro conta 181 e 5 eventi (26,2 e 5,4/h) "
+       "con la sua finestra.", 18)}
+
+  {fig("fig19_uprise_tre_sensori",
+       "Lo scenario UPRISE a tre sensori: persona immobile e con micro-movimenti, a 1 m in piedi e "
+       "sotto il banco. I due radar sono al 100 % in tutte le condizioni (il LD2420 al 98,4 % da "
+       "immobile sotto il banco, per un rilascio di 24 s in un trial su cinque); il PIR passa da "
+       "1-2 % da fermo a 52-97 % con i micro-movimenti. Il LD2420 è stato provato a settembre nella "
+       "stessa geometria, con soglie tarate e scarto del transitorio di 90 s.", 19)}
+
+  {fig("fig20_angolare",
+       "Copertura angolare a 1 m, busto laterale da seduto. A: il LD2410B rileva al 100 % fino a "
+       "90° e crolla a 120°, ben oltre i ±60° dichiarati; il PIR non è ripetibile fra 45 e 75° "
+       "(barre d'errore dell'ordine dell'effetto). B: l'esemplare LD2420 è al fondo a 90°, fascio "
+       "utile fino a ~75°: più stretto del LD2410B e più largo dei ±45°/±60° del manuale. È l'unico "
+       "punto della campagna in cui il LD2420 fa meglio per UPRISE — il vicino in movimento a 90° "
+       "non è visto — ma il confine è coerente anche con il margine di 4-6 dB del suo trasmettitore, "
+       "quindi va attribuito all'esemplare.", 20)}
+
+  {fig("fig21_vitalita_scenari",
+       "Distribuzione dell'indice di vitalità v3 con la configurazione del firmware (gate dalla "
+       "distanza riportata, fondo notturno). Le tre classi a 1 m si separano (mediane 23, 77, 100). "
+       "Sotto il banco la persona immobile dà 45, a cavallo della soglia bassa/moderata: il 25,7 "
+       "della taratura del 31/08 (sesta scatola) nasceva dal gate fisso 2, che a 60 cm vede solo "
+       "un'eco indiretta della persona. Le soglie tarate a 1 m non si trasferiscono sotto il banco; "
+       "la discriminazione immobile / in movimento (96 %) sì. Per UPRISE la via è la taratura per "
+       "installazione.", 21)}
+
+  {fig("fig22_vitalita_bordo",
+       "Verifica del porting sull'ESP32: indice calcolato a bordo (vitality.h) contro il ricalcolo "
+       "offline (vitalita_proto.py) sullo stesso CSV esportato dalla web UI. Nei primi 60 s le EWMA "
+       "offline devono ancora convergere, quelle del firmware sono già a regime dall'accensione; "
+       "dopo, le due curve coincidono entro ±1 nel 100 % dei campioni. L'indice mostrato nella "
+       "dashboard è lo stesso della validazione.", 22)}
+</section>
+
 <section id="avanti">
   <h2>Cosa resta</h2>
 
-  <h3>Obiettivi 5 e 6 — in sviluppo</h3>
-  <p class="prose">La web UI è progettata in due varianti alternative, entrambe documentate
-  fino al dettaglio implementativo: ESP32 self-hosted (tutto offline, coerente con lo scenario
-  post-sisma) oppure un sito su server esterno con MQTT. Il frontend è condiviso all'85 %, quindi
-  cambiare rotta costa pochi giorni — ma la decisione va presa prima di iniziare.</p>
-  <p class="prose">L'indice di vitalità ha specifica v2 e prototipo Python pronti, e la base
-  sperimentale <b>esiste già</b>: gli stessi trial della curva dose-risposta mostrano che il radar
-  fornisce due indicatori <i>continui</i> e monotoni col movimento — l'energia media
-  (68,6 → 84,4 → 99,3) e la dispersione della distanza (21,3 → 16,4 → 10,4 cm). Restano la
-  taratura dei parametri e la validazione su trial separati.</p>
+  <h3>Scrittura</h3>
+  <p class="prose">La campagna è completa: tutti i test dei due piani sono stati acquisiti, e
+  gli unici non eseguiti sono dichiarati come tali (il Test 0.6 con l'app Bluetooth, facoltativo,
+  e la prova termica del PIR, la cui ipotesi era già smentita il 30/08). I documenti in
+  <code>analisi/</code> sono bozze dei capitoli 2-7; il capitolo 4 è scritto per le fasi 1-2 e va
+  esteso a ostacoli, respiro, angolare, LD2420 e Fase 8 con le figure 14-22.</p>
 
   <h3>Secondo radar — HLK-LD2420</h3>
-  <p class="prose">Documentazione ufficiale acquisita e piano di test dedicato scritto. Il modulo
-  costa meno corrente (50 mA) e arriva più lontano (8 m), ma il manuale dichiara che
-  <b>non riporta la distanza dei corpi fermi</b> — esattamente lo scenario del progetto. Il piano
-  distingue i test da ripetere da quelli non replicabili su questo modulo.</p>
+  <p class="prose">Caratterizzato per intero dentro i 2 m in cui l'esemplare funziona, con la
+  campagna ridotta concordata il 05/09. Il confronto è netto: il LD2410B lavora fuori scatola con
+  soglie di fabbrica (nessun falso positivo in 6,6 h), il LD2420 richiede una taratura per
+  installazione e conserva 6 riaccensioni/h; sulla persona ferma dice <i>se</i> c'è ma non
+  <i>dove</i> (§8 del manuale, misurato). Un secondo esemplare permetterebbe di separare i limiti
+  del modello da quelli del pezzo.</p>
 
-  <h3>Domande da portare all'incontro</h3>
+  <h3>Decisioni aperte</h3>
   <ul class="plain prose">
-    <li>Web UI: ESP32 self-hosted o piattaforma su server? È la decisione che sblocca l'obiettivo 5.</li>
-    <li>Il montaggio sotto il banco prevede la lamiera antisfondamento: il metallo blocca il radar.
-    Dove va fissato il sensore?</li>
-    <li>Scadenza per la consegna, per costruire il cronoprogramma.</li>
-    <li>UPRISE e SAFE: quale nome usare in tesi?</li>
-    <li>Che ruolo dare all'UWB già presente nel DIPME-DEVICE nel confronto?</li>
+    <li>Ordine di scrittura dei capitoli e scadenza per la consegna.</li>
+    <li>Quale firmware lasciare sull'ESP32 per la dimostrazione (web UI con LD2410B, oppure il
+    logger del LD2420).</li>
+    <li>UPRISE e SAFE: quale nome usare in tesi; ruolo dell'UWB già presente nel DIPME-DEVICE.</li>
   </ul>
 </section>
 
 <footer>
   <p style="margin:0 0 6px"><span class="tag">Riproducibilità</span> Tutte le cifre di questa
-  pagina sono ricalcolate dai CSV grezzi da <code>analisi/grafici_tesi.py</code> e
-  <code>analisi/esporta_excel.py</code>, che riusano le stesse funzioni di
-  <code>analizza_test.py</code> del capitolo 4.</p>
+  pagina sono ricalcolate dai CSV grezzi da <code>analisi/grafici_tesi.py</code>,
+  <code>analisi/grafici_tesi_2.py</code> e <code>analisi/esporta_excel.py</code>, che riusano le
+  stesse funzioni di <code>analizza_test.py</code> del capitolo 4.</p>
   <p style="margin:0">Convenzioni di scarto del transitorio: 20 s negli scenari ordinari,
-  40 s sotto il banco, 120 s negli scenari di selettività, 60 s a stanza vuota.</p>
+  40 s sotto il banco, 120 s negli scenari di selettività, 60 s a stanza vuota, 90 s nei trial
+  da fermo del LD2420 (rilascio ~55 s).</p>
 </footer>
 
 </div>

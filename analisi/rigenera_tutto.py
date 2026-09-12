@@ -5,18 +5,19 @@ Rigenera tutti i materiali derivati dai dati sperimentali, in un colpo solo.
     python analisi/rigenera_tutto.py
 
 Esegue in ordine:
-  1. analisi/grafici_tesi.py    -> tesi-unicam/figures/*.pdf + *.png   (13 figure)
-  2. analisi/esporta_excel.py   -> analisi/dati_tesi.xlsx              (11 fogli)
-  3. analisi/genera_pagina.py   -> RIEPILOGO_INCONTRO.html
-  4. stampa headless            -> RIEPILOGO_INCONTRO.pdf              (A4)
+  1. analisi/grafici_tesi.py    -> tesi-unicam/figures/fig01..13       (fasi 1-2, dati, consumi)
+  2. analisi/grafici_tesi_2.py  -> tesi-unicam/figures/fig14..22       (ostacoli, LD2420, Fase 8, vitalita')
+  3. analisi/esporta_excel.py   -> analisi/dati_tesi.xlsx              (12 fogli)
+  4. analisi/genera_pagina.py   -> RIEPILOGO_INCONTRO.html
+  5. stampa headless            -> RIEPILOGO_INCONTRO.pdf              (A4)
 
-L'ordine e' obbligato: la pagina incorpora i PNG del passo 1 e il PDF stampa la
-pagina del passo 3. Lanciando solo un pezzo si rischia di mescolare figure nuove
+L'ordine e' obbligato: la pagina incorpora i PNG dei passi 1-2 e il PDF stampa la
+pagina del passo 4. Lanciando solo un pezzo si rischia di mescolare figure nuove
 con testo vecchio, o viceversa.
 
 Opzioni:
   --salta-figure   riusa i PNG gia' presenti (utile se hai cambiato solo il testo
-                   della pagina: il passo 1 e' il piu' lento, ~10 s)
+                   della pagina: i passi 1-2 sono i piu' lenti, ~20 s)
   --senza-pdf      si ferma all'HTML, senza cercare un browser
 
 Tutte le cifre vengono ricalcolate dai CSV grezzi in HLK-LD2410x/data/ a ogni
@@ -58,7 +59,7 @@ def controlla_dipendenze():
 
 
 def passo(numero, titolo, script):
-    print(f"\n[{numero}/4] {titolo}")
+    print(f"\n[{numero}/5] {titolo}")
     t0 = time.time()
     esito = subprocess.run([sys.executable, str(QUI / script)], cwd=str(RADICE))
     if esito.returncode != 0:
@@ -90,11 +91,11 @@ def trova_browser():
 def stampa_pdf():
     browser = trova_browser()
     if not browser:
-        print("\n[4/4] PDF SALTATO: non ho trovato ne' Chrome ne' Edge.")
+        print("\n[5/5] PDF SALTATO: non ho trovato ne' Chrome ne' Edge.")
         print(f"      Puoi comunque aprire {HTML.name} e stampare in PDF a mano.")
         return False
 
-    print(f"\n[4/4] Stampa in PDF con {Path(browser).stem}")
+    print(f"\n[5/5] Stampa in PDF con {Path(browser).stem}")
     t0 = time.time()
     # Profilo usa-e-getta: evita di litigare con una finestra di Chrome gia' aperta.
     # Sta fuori dal progetto apposta, cosi' se qualcosa va storto non resta una
@@ -152,19 +153,20 @@ def main():
     t0 = time.time()
 
     if args.salta_figure:
-        print("\n[1/4] Figure: saltate su richiesta, si riusano quelle esistenti")
+        print("\n[1-2/5] Figure: saltate su richiesta, si riusano quelle esistenti")
     else:
-        passo(1, "Figure della tesi (PDF vettoriale + PNG 300 dpi)", "grafici_tesi.py")
+        passo(1, "Figure 1-13 della tesi (PDF vettoriale + PNG 300 dpi)", "grafici_tesi.py")
+        passo(2, "Figure 14-22: ostacoli, LD2420, Fase 8, vitalita'", "grafici_tesi_2.py")
 
-    passo(2, "Foglio Excel con tutti i trial", "esporta_excel.py")
-    passo(3, "Pagina di riepilogo HTML", "genera_pagina.py")
+    passo(3, "Foglio Excel con tutti i trial", "esporta_excel.py")
+    passo(4, "Pagina di riepilogo HTML", "genera_pagina.py")
 
     pdf_ok = False if args.senza_pdf else stampa_pdf()
     if args.senza_pdf:
-        print("\n[4/4] PDF saltato su richiesta")
+        print("\n[5/5] PDF saltato su richiesta")
 
     print(f"\nFatto in {time.time() - t0:.0f} s. Prodotti:")
-    print(f"  tesi-unicam/figures/   13 figure (.pdf per LaTeX, .png per slide)")
+    print(f"  tesi-unicam/figures/   22 figure (.pdf per LaTeX, .png per slide)")
     print(f"  analisi/dati_tesi.xlsx foglio con tutti i trial + grafici Excel")
     print(f"  {HTML.name}   pagina di riepilogo")
     if pdf_ok:

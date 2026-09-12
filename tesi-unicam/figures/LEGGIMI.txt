@@ -1,6 +1,39 @@
 Qui vanno le immagini della tesi.
 
-DA INSERIRE SUBITO
+FIGURE GENERATE DAI CSV (non versionate: si rifanno con python analisi/rigenera_tutto.py)
+  Ogni figura esiste in .pdf (vettoriale, per \includegraphics) e .png a 300 dpi
+  (slide, anteprima). I numeri coincidono per costruzione con quelli del capitolo 4
+  perche' gli script importano le funzioni di analisi/analizza_test.py.
+
+  da analisi/grafici_tesi.py (fasi 1-2, dati, consumi):
+  fig01_dose_risposta          cap. 4  PIR vs radar a 1 m: immobile / micro / cammino
+  fig02_timeline_sotto_banco   cap. 4  serie temporale presenza radar vs PIR sotto il banco
+                                       (il risultato centrale della tesi)
+  fig03_uprise_sotto_banco     cap. 4  scenario UPRISE, PIR e LD2410B
+  fig04_distanza_regressione   cap. 4  distanza misurata vs reale, 25 trial, retta
+  fig05_energia_e_portata      cap. 4  decadimento dell'energia e portata del PIR sul posto
+  fig06_latenze                cap. 4  latenza d'ingresso appaiata e rilascio
+  fig07_impulsi_pir            cap. 4  struttura degli impulsi PIR (monostabile 3,45 s, H/L)
+  fig08_due_persone            cap. 4  un bersaglio per canale; in fila chi sta dietro sparisce
+  fig09_selettivita            cap. 4  gate massimo 2: selettivita' e code fino a 101 s
+  fig10_gate_engineering       cap. 3  engineering mode: 9+9 gate nel tempo
+  fig11_saturazione            cap. 3  energia clippata a 100 sul bersaglio vicino
+  fig12_respiro                cap. 4  spettro FFT dell'energia per-gate, picco respiratorio
+  fig13_consumi                cap. 5  consumi da datasheet, tre ordini di grandezza
+
+  da analisi/grafici_tesi_2.py (ostacoli, LD2420, Fase 8, vitalita'):
+  fig14_portata_ostacoli       cap. 4  Test 3.6: portata residua con cartongesso/legno/vetro/porta
+  fig15_attenuazione_materiali cap. 4  attenuazione per materiale: % LD2410B, dB LD2420
+  fig16_energia_distanza_radar cap. 4  energia vs distanza in corridoio, tetto a 600 cm
+  fig17_portata_tre_sensori    cap. 4  portata dei tre sensori sulla stessa scala (1-8 m)
+  fig18_falsi_positivi         cap. 4  falsi positivi/ora a stanza vuota, scala log
+  fig19_uprise_tre_sensori     cap. 4  scenario UPRISE con i tre sensori
+  fig20_angolare               cap. 4  copertura angolare LD2410B, PIR, LD2420
+  fig21_vitalita_scenari       cap. 7  distribuzione dell'indice di vitalita' v3 per scenario
+                                       (era "boxplot_vitalita" nella lista da produrre)
+  fig22_vitalita_bordo         cap. 7  verifica del porting: a bordo = offline
+
+DA INSERIRE A MANO
   logo_unicam.png   logo dell'Universita di Camerino, usato dal frontespizio.
                     Dopo averlo messo qui, decommentare la riga
                     \includegraphics in frontmatter/titlepage.tex.
@@ -8,19 +41,14 @@ DA INSERIRE SUBITO
                     Advanced Studies (Logo_ScuDo.png): non e' stato copiato
                     perche' riguarda il dottorato, non la laurea triennale.
 
-DA PRODURRE (vedi i \todo nei capitoli)
+DA PRODURRE (non derivabili dai CSV)
   schema_sistema        cap. 1  arredo -> DIPME -> coordinator -> gateway ->
                                 drone -> tablet
-  foto_setup            cap. 4  radar e PIR affiancati sul tavolo, con il metro
-  traccia_radar_pir     cap. 4  serie temporale presenza radar vs PIR sul trial
-                                "fermo seduto": e' la figura che mostra il
-                                risultato centrale della tesi
-  regressione_distanza  cap. 4  distanza misurata vs reale, 25 trial, con la
-                                retta di regressione
-  spettro_respiro       cap. 4  spettro FFT di menergy_gate2 con il picco in
-                                banda 0,1-0,5 Hz
-  boxplot_vitalita      cap. 7  distribuzione dell'indice per i 4 scenari
-  dashboard             cap. 6  screenshot della web UI
+  foto_setup            cap. 4  radar e PIR affiancati sul tavolo, con il metro;
+                                una seconda foto del corridoio della Fase 8
+  dashboard             cap. 6  screenshot della web UI (http://192.168.4.1/ da un
+                                browser vero, non dalla finestra del portale captive)
 
-Formato consigliato: PDF vettoriale per i grafici (matplotlib: savefig in .pdf),
-PNG per le fotografie e gli screenshot.
+Formato: PDF vettoriale per i grafici, PNG per fotografie e screenshot.
+Il .gitignore di radice esclude tesi-unicam/figures/fig*: le figure generate non
+entrano nel repo, questo file e le immagini a mano si'.

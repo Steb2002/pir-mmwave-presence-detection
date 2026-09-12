@@ -485,12 +485,12 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
   presenza. Solo libreria standard. Da lanciare a ogni sessione di acquisizione
 - `analisi/analizza_respiro.py` — FFT della serie di energia, picco in banda 0.1-0.5 Hz, stima atti/min, export spettro CSV per Excel. Richiede numpy. Modalità **`--scan`**: prova tutti i 20 canali di energia, scarta saturi e piatti, ordina per SNR e riporta la mediana delle stime concordi — nata dal pilota respiro del 18/08/2026, dove il canale di default (`stationary_energy`) era saturo al 100% mentre il respiro era leggibile benissimo su `menergy_gate2`
 - 🔑 **`analisi/rigenera_tutto.py` — un comando solo per rifare tutti i materiali derivati**
-  (26/08/2026). Esegue in ordine i tre script qui sotto e poi la stampa in PDF; ~13 s.
+  (26/08/2026). Esegue in ordine i quattro script qui sotto e poi la stampa in PDF; ~13 s.
   L'ordine è obbligato (la pagina incorpora i PNG, il PDF stampa la pagina) e lo script si
   ferma al primo errore senza sovrascrivere i passi successivi. Opzioni `--salta-figure`
   (riusa i PNG esistenti, utile se cambia solo il testo) e `--senza-pdf`.
   Trova Chrome o Edge da solo; se non c'è, dice come stampare a mano invece di piantarsi
-- `analisi/grafici_tesi.py` — le **13 figure della tesi** in `tesi-unicam/figures/`, sia
+- `analisi/grafici_tesi.py` — le **figure 1-13 della tesi** in `tesi-unicam/figures/`, sia
   `.pdf` (vettoriale, per `\includegraphics`) sia `.png` 300 dpi (slide/anteprima).
   🔑 **Importa le funzioni di `analizza_test.py`** invece di ricalcolare: i numeri nei
   grafici coincidono per costruzione con quelli del capitolo 4. Applica le convenzioni di
@@ -499,6 +499,16 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
   ⚠️ Il R² = 0,99965 del capitolo 4 è calcolato sulle **5 medie** per distanza, non sui 25
   trial singoli (che darebbero 0,99949 e un residuo massimo di 6,0 cm invece di 4,9): la
   fig. 4 mostra entrambi e lo dichiara
+- `analisi/grafici_tesi_2.py` — le **figure 14-22** (13/09/2026), stesso stile e stesse
+  funzioni importate da `grafici_tesi.py` e `analizza_test.py`: 14 portata con ostacoli
+  (Test 3.6), 15 attenuazione per materiale sui due radar (% per il LD2410B, dB per il
+  LD2420), 16 energia vs distanza in corridoio, 17 portata dei tre sensori, 18 falsi
+  positivi in scala log, 19 scenario UPRISE a tre sensori, 20 copertura angolare, 21
+  distribuzione dell'indice di vitalita' v3, 22 verifica del porting bordo = offline. Legge
+  le soglie del LD2420 dall'XML `ld2420_config_fondo120s_max_6_g0alto.xml` (dB → grezzo).
+  ⚠️ I falsi positivi/ora dello script (≤ 0,46 / 26,1 / 6,0) differiscono di poco dal
+  registro (≤ 0,43 / 26,2 / 5,4) per la finestra di scarto (60 s) e per il tempo totale
+  usato nel 3/T: la didascalia lo dichiara, i due valori non vanno mescolati in una tabella
 - `analisi/esporta_excel.py` — `analisi/dati_tesi.xlsx`, 12 fogli. Il foglio
   `tutti_i_trial` ha **una riga per trial VALIDO** con tutte le metriche (è quello da cui
   fare pivot a mano); gli altri hanno i dati già aggregati per figura, con 6 grafici Excel
@@ -512,7 +522,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
   vuoto/notturna2420 e corridoio_vuoto 60 s), che prima usavano 20 s. Un file nuovo che
   non è un trial va aggiunto alla lista, non lasciato "tanto è nel registro"
 - `analisi/genera_pagina.py` — `RIEPILOGO_INCONTRO.html`, pagina unica di riepilogo per
-  l'incontro col professore: stato dei 6 obiettivi, le 13 figure con didascalie che
+  l'incontro col professore: stato dei 6 obiettivi, le 22 figure con didascalie che
   spiegano cosa dimostrano, domande da porre. Le immagini sono incorporate come data URI
   WebP, quindi **la pagina si apre offline e si manda per mail così com'è**. Ha un foglio
   di stile per la stampa (tema chiaro forzato, figure che non si spezzano fra pagine) →
@@ -2031,6 +2041,14 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       accuratezza della distanza, energia e portata, latenze, impulsi PIR, due persone,
       selettività spaziale, dati per-gate in engineering mode, saturazione, respiro,
       consumi. Da inserire nel cap. 4 con `\includegraphics{figures/figNN_...}`
+- [x] **Figure 14-22 generate (13/09/2026)** — `analisi/grafici_tesi_2.py`, passo 2 di 5 in
+      `rigenera_tutto.py`. Coprono la campagna di settembre: ostacoli fino a 5 m, attenuazione
+      in dB, Fase 8 in corridoio, portata dei tre sensori, falsi positivi, scenario UPRISE a
+      tre sensori, copertura angolare, vitalita' v3 e porting. Pagina di riepilogo aggiornata
+      (441 trial validi, 31,9 h, 576 222 campioni; obiettivi 5 e 6 chiusi; sezione nuova con
+      le nove figure). `tesi-unicam/figures/LEGGIMI.txt` riscritto: elenca le 22 figure
+      generate e le 4 da produrre a mano (logo, schema del sistema, foto del setup,
+      screenshot della dashboard)
 - [x] **Materiali per l'incontro pronti**: `RIEPILOGO_INCONTRO.pdf` (10 pagine A4, stato
       dei 6 obiettivi + tutte le figure con didascalie + domande da porre) e
       `analisi/dati_tesi.xlsx` (una riga per trial, per le pivot in Excel). Entrambi
