@@ -289,7 +289,7 @@ LEDGER = [
      "mmWave: 18 canali di energia per-gate + 2 distanze a 5 Hz. PIR: 1 bit, monostabile "
      "da 3,45 s. Misurati anche i limiti del dato (saturazione, gate stazionari 0-1)."),
     (3, "Comparazione con testing numerico", "done", "fasi 0-8 complete",
-     "441 trial validi, 576 222 campioni, 31,9 h di acquisizione su tre sensori. Accuratezza, "
+     "444 trial validi, 577 437 campioni, 32,1 h di acquisizione su tre sensori. Accuratezza, "
      "latenze, falsi positivi, due persone, selettività, ostacoli fino a 5 m, respiro a "
      "metronomo, portata in corridoio; il LD2420 caratterizzato entro i 2 m dell'esemplare."),
     (4, "Consumo energetico (informativo)", "done", "completo",
@@ -311,7 +311,7 @@ def riga(n, cosa, cls, stato, ev):
             f'<td class="ev">{ev}</td></tr>')
 
 
-HTML = f"""<title>Sensori di presenza per UPRISE</title>
+HTML = f"""<title>Sensori di presenza per DIPME</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
@@ -320,7 +320,7 @@ HTML = f"""<title>Sensori di presenza per UPRISE</title>
 <div class="wrap">
 
 <header class="top">
-  <p class="eyebrow">Tesi triennale · Progetto UPRISE · Stato di avanzamento</p>
+  <p class="eyebrow">Tesi triennale · Progetto DIPME · Stato di avanzamento</p>
   <h1>PIR e mmWave a confronto per il rilevamento di persone sotto gli arredi</h1>
   <p class="dek">Il sensore piroelettrico fa bene un lavoro che non è questo. Trentadue ore di
   acquisizioni su tre sensori dicono perché, e quanto.</p>
@@ -332,8 +332,8 @@ HTML = f"""<title>Sensori di presenza per UPRISE</title>
 </header>
 
 <div class="stats">
-  <div class="stat r"><span class="stat-n">441</span><span class="stat-l">trial validi in 31,9 h, tre sensori</span></div>
-  <div class="stat r"><span class="stat-n">576 222</span><span class="stat-l">campioni a 5 e 10 Hz, jitter zero</span></div>
+  <div class="stat r"><span class="stat-n">444</span><span class="stat-l">trial validi in 32,1 h, tre sensori</span></div>
+  <div class="stat r"><span class="stat-n">577 437</span><span class="stat-l">campioni a 5 e 10 Hz, jitter zero</span></div>
   <div class="stat r"><span class="stat-n">0,00 %</span><span class="stat-l">falsi negativi del radar, in ogni scenario</span></div>
   <div class="stat p"><span class="stat-n">98,7 %</span><span class="stat-l">falsi negativi del PIR sulla persona immobile</span></div>
 </div>
@@ -366,7 +366,7 @@ HTML = f"""<title>Sensori di presenza per UPRISE</title>
       qualunque configurazione.</li>
       <li>Il radar mmWave rileva entrambe le condizioni al 100 % in tutti i test svolti.</li>
     </ol>
-    <p style="margin:14px 0 0; font-size:14.5px; color:var(--muted)">Per UPRISE, dove la
+    <p style="margin:14px 0 0; font-size:14.5px; color:var(--muted)">Per DIPME, dove la
     persona intrappolata può essere incosciente o esausta e quindi immobile, il PIR non è
     adeguato e il mmWave è necessario.</p>
   </div>
@@ -387,8 +387,8 @@ HTML = f"""<title>Sensori di presenza per UPRISE</title>
   più netto. A quella distanza il PIR è un rilevatore di movimento quasi perfetto, e resta
   completamente cieco alla persona ferma.</p>
 
-  {fig("fig03_uprise_sotto_banco",
-       "Scenario UPRISE, 5 trial per condizione, entrambe le serie in modalità H: il confronto è "
+  {fig("fig03_dipme_sotto_banco",
+       "Scenario DIPME, 5 trial per condizione, entrambe le serie in modalità H: il confronto è "
        "perfettamente appaiato, senza asterischi da mettere in tesi.", 3)}
 
   {fig("fig02_timeline_sotto_banco",
@@ -436,7 +436,7 @@ HTML = f"""<title>Sensori di presenza per UPRISE</title>
        "attribuibile con questi dati — servirebbe un riferimento indipendente, tipo un metro laser.",
        4)}
 
-  {fig("fig05_energia_e_portata",
+  {fig("fig05_energia_distanza",
        "A sinistra il decadimento dell'energia con la distanza; a destra la portata utile del PIR "
        "con movimento sul posto. Non è un degrado graduale: fra 1 e 2 metri il PIR passa da "
        "«funziona bene» a «non vede niente».", 5)}
@@ -506,7 +506,7 @@ HTML = f"""<title>Sensori di presenza per UPRISE</title>
     <p style="margin:0" class="prose">Il PIR non è un concorrente del radar ma il guardiano a
     basso costo che decide quando accenderlo. In tempo di pace tutto dorme; al trigger di
     «modalità terremoto» si sveglia l'ESP32 e si accende il mmWave per il rilevamento fine.
-    Questo lega l'obiettivo 4 al contesto UPRISE e giustifica la <b>coesistenza</b> dei due
+    Questo lega l'obiettivo 4 al contesto DIPME e giustifica la <b>coesistenza</b> dei due
     sensori nel DIPME-DEVICE, invece della sostituzione secca.</p>
   </div>
 </section>
@@ -563,8 +563,8 @@ HTML = f"""<title>Sensori di presenza per UPRISE</title>
        "Conteggi dello script con scarto di 60 s; il registro conta 181 e 5 eventi (26,2 e 5,4/h) "
        "con la sua finestra.", 18)}
 
-  {fig("fig19_uprise_tre_sensori",
-       "Lo scenario UPRISE a tre sensori: persona immobile e con micro-movimenti, a 1 m in piedi e "
+  {fig("fig19_dipme_tre_sensori",
+       "Lo scenario DIPME a tre sensori: persona immobile e con micro-movimenti, a 1 m in piedi e "
        "sotto il banco. I due radar sono al 100 % in tutte le condizioni (il LD2420 al 98,4 % da "
        "immobile sotto il banco, per un rilascio di 24 s in un trial su cinque); il PIR passa da "
        "1-2 % da fermo a 52-97 % con i micro-movimenti. Il LD2420 è stato provato a settembre nella "
@@ -575,7 +575,7 @@ HTML = f"""<title>Sensori di presenza per UPRISE</title>
        "90° e crolla a 120°, ben oltre i ±60° dichiarati; il PIR non è ripetibile fra 45 e 75° "
        "(barre d'errore dell'ordine dell'effetto). B: l'esemplare LD2420 è al fondo a 90°, fascio "
        "utile fino a ~75°: più stretto del LD2410B e più largo dei ±45°/±60° del manuale. È l'unico "
-       "punto della campagna in cui il LD2420 fa meglio per UPRISE — il vicino in movimento a 90° "
+       "punto della campagna in cui il LD2420 fa meglio per DIPME — il vicino in movimento a 90° "
        "non è visto — ma il confine è coerente anche con il margine di 4-6 dB del suo trasmettitore, "
        "quindi va attribuito all'esemplare.", 20)}
 
@@ -585,7 +585,7 @@ HTML = f"""<title>Sensori di presenza per UPRISE</title>
        "Sotto il banco la persona immobile dà 45, a cavallo della soglia bassa/moderata: il 25,7 "
        "della taratura del 31/08 (sesta scatola) nasceva dal gate fisso 2, che a 60 cm vede solo "
        "un'eco indiretta della persona. Le soglie tarate a 1 m non si trasferiscono sotto il banco; "
-       "la discriminazione immobile / in movimento (96 %) sì. Per UPRISE la via è la taratura per "
+       "la discriminazione immobile / in movimento (96 %) sì. Per DIPME la via è la taratura per "
        "installazione.", 21)}
 
   {fig("fig22_vitalita_bordo",
@@ -619,7 +619,7 @@ HTML = f"""<title>Sensori di presenza per UPRISE</title>
     <li>Ordine di scrittura dei capitoli e scadenza per la consegna.</li>
     <li>Quale firmware lasciare sull'ESP32 per la dimostrazione (web UI con LD2410B, oppure il
     logger del LD2420).</li>
-    <li>UPRISE e SAFE: quale nome usare in tesi; ruolo dell'UWB già presente nel DIPME-DEVICE.</li>
+    <li>Ruolo dell'UWB: previsto nelle slide del DIPME-DEVICE, assente nel dispiegamento documentato dal paper.</li>
   </ul>
 </section>
 

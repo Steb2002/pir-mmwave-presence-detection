@@ -129,7 +129,7 @@ occorre θ fra ~3° e ~9°, compatibile con una cupola da 110° divisa in una ve
    già a 2 m, pur rilevando un attraversamento alla stessa distanza"**
 2. È la versione misurata di *«non "il PIR è scarso", ma "il PIR fa bene un lavoro che non
    è questo"»*, e rende la frase un dato invece di un'interpretazione
-3. **Rilevanza UPRISE**: una persona intrappolata si muove *sul posto*, non attraversa la
+3. **Rilevanza DIPME**: una persona intrappolata si muove *sul posto*, non attraversa la
    stanza. Lo scenario del progetto cade esattamente nella condizione in cui la portata
    utile del PIR collassa — e la portata da datasheet, presa alla lettera, la
    sovrastimerebbe di metri
@@ -252,7 +252,7 @@ l'uscita dopo essersene accorto. Tre conseguenze pratiche:
    percentuale di tempo alto: gli eventi/ora non dipendono né dal jumper né dal trimmer,
    la percentuale dipende da entrambi. Per confrontare serie acquisite in configurazioni
    diverse, usare i fronti
-3. **Ribaltamento utile per UPRISE**: H + ritenuta al massimo farebbe *sembrare* il PIR
+3. **Ribaltamento utile per DIPME**: H + ritenuta al massimo farebbe *sembrare* il PIR
    ottimo — l'uscita resterebbe alta per minuti dopo l'ultimo movimento. Ma sarebbe
    **persistenza, non rilevamento**: il sensore racconterebbe il passato. Per un sistema
    salvavita che deve dire "questa persona è ancora lì *adesso*", un latch lungo è peggio
@@ -291,7 +291,7 @@ citofoni video, termostati. Le ragioni sono i suoi tre numeri imbattibili:
 **~50 µA, ~1-3 €, zero elaborazione richiesta** — più l'assenza totale di emissioni
 (passivo) che semplifica certificazioni e privacy.
 
-Nel progetto UPRISE: il **DIPME-DEVICE monta un PIR** proprio per questi motivi
+Nel progetto DIPME: il **DIPME-DEVICE monta un PIR** proprio per questi motivi
 (veglia a batteria per anni). Il limite emerge esattamente nello scenario d'emergenza:
 la persona rifugiata sotto il banco è tipicamente **ferma** — il caso cieco del PIR.
 Da qui la domanda di tesi: il mmWave può coprire questo buco, e a che costo (energia,

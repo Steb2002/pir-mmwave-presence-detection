@@ -80,25 +80,63 @@ Cercare `\todo` nei sorgenti. In sintesi:
   `\input{frontmatter/proposte-titolo}`;
 - **frontespizio**: logo UNICAM, dicitura ufficiale del corso, eventuale
   matricola;
-- **figure**: nessuna è ancora inserita, elenco in `figures/LEGGIMI.txt`;
+- **figure da fare a mano** (le 22 generate sono in `figures/`, rigenerabili con
+  `python analisi/rigenera_tutto.py`): schema del sistema nel cap. 1, foto del
+  setup, screenshot della dashboard nel cap. 6 — elenco in `figures/LEGGIMI.txt`;
 - **`bib/tesi.bib`**: completare la voce `callisto2023dt` (autori, pagine, DOI);
-- **capitolo 4**: le sezioni marcate *acquisizione in corso* (latenze, sotto il
-  banco, ostacoli, respiro a metronomo, LD2420) e le righe 2–4 della tabella
-  sull'accuratezza della distanza;
 - prima della stampa: `\renewcommand{\todo}[1]{}` in `main.tex` per spegnere le
   note rosse.
 
-## Punti da verificare alla prima compilazione
+I capitoli sono completi (settembre 2026): il 4 copre le fasi 0-8 e il secondo
+radar, il 6 la web UI realizzata e verificata, il 7 l'indice di vitalità tarato,
+validato e portato a bordo.
 
-Non ho potuto compilare in locale (nessuna installazione LaTeX su questa
-macchina), quindi questi tre sono i candidati più probabili a dare noie:
+## Compilazione in locale (fatta il 13/09/2026)
 
-1. **`enumitem` con `paralist`** — la classe carica paralist, che ridefinisce
-   gli elenchi. Il documento ha 46 elenchi con opzioni (`leftmargin`, `itemsep`,
-   `label`). Se ci sono conflitti, la via più rapida è togliere le opzioni dai
-   singoli elenchi e impostarle una volta con `\setlist`.
-2. **`verbatim` dentro `figure*`** — lo schema della dashboard nel capitolo 6.
-   Se protesta, si sposta fuori dal float in un blocco `fullwidth`.
-3. **glossario** — `glossaries-extra` con `automake` richiede lo shell escape,
-   che su Overleaf è attivo. Se l'elenco delle abbreviazioni resta vuoto, basta
-   una seconda compilazione.
+Il documento compila **senza errori** con MiKTeX 25.12 (installato in modalità
+utente con `winget install MiKTeX.MiKTeX --scope user`, pacchetti mancanti
+scaricati da soli alla prima passata). Catena, dalla cartella `tesi-unicam/`,
+con `B` una cartella di build fuori dal repo:
+
+```
+pdflatex -interaction=nonstopmode -shell-escape -output-directory=B main.tex
+biber --input-directory=. B/main
+makeindex -s B/main.ist -t B/main.glg-abr -o B/main.gls-abr B/main.glo-abr
+pdflatex ... (altre due passate)
+```
+
+Esito: 135 pagine, zero riferimenti o citazioni non risolti, zero avvisi LaTeX,
+glossario e bibliografia popolati. Il PDF sta in `main.pdf` (non versionato: si
+rifà). I tre punti temuti (enumitem con paralist, verbatim nel float, glossario)
+non hanno dato problemi; quelli veri erano di impaginazione, e sono già corretti:
+
+- la classe non imposta `\emergencystretch`: le righe con nomi in `\texttt`
+  uscivano nel margine (33 sconfinamenti); ora è 3 em in `main.tex`;
+- una figura a tutta larghezza seguita subito da una tabella sovrappone le due
+  didascalie nel margine (la didascalia di `figure*` sta sotto, quella di `table`
+  accanto): nel capitolo 4 le tabelle precedono ora le figure;
+- una `tabularx` non spezzabile più alta della pagina (appendice B) tagliava le
+  righe finali: divisa in due;
+- lo schema della dashboard è un `lstlisting` (Listato 6.2), non più un
+  `verbatim` dentro `figure*`;
+- gli URL della bibliografia si spezzano grazie ai `biburl*penalty`.
+
+Restano tre sconfinamenti sotto i 7 pt (uno è la nota `\todo` dello screenshot).
+
+### Nota del 20/09/2026: label dei float e cartella di build
+
+- I `\label` dentro `figure`/`table` puntavano alla **sezione** e non alla figura
+  (`\cref{fig:x}` stampava "sezione 4.1"): con il kernel attuale il `\label` dentro il
+  float non viene catturato da tufte-book e viene scritto prima che la didascalia
+  differita incrementi il contatore. Corretto con una patch nel preambolo di
+  `main.tex` (`\xpatchcmd{\@tufte@float}`) che ripristina la cattura. Il `\label` va
+  messo **dopo** `\caption`, uno solo per float (tufte ne conserva uno) e mai dentro
+  l'argomento di `\caption`.
+- Le didascalie dei float a tutta larghezza finiscono nel margine del lato in cui il
+  float e' stato *letto*, non di quello in cui e' stampato: per i float differiti alla
+  pagina dopo si forza il lato con `\forcerectofloat` (pagina impari) o
+  `\forceversofloat` (pagina pari) subito dopo `\begin{figure*}`. Il capitolo 4 li ha
+  gia'; se la paginazione cambia vanno ricontrollati nel PDF.
+- Compilare sempre con `-output-directory=B`: i file ausiliari lasciati nella cartella
+  di lavoro (`main.aux`, `main.toc`, ...) vengono letti al posto di quelli in `B/` e
+  producono riferimenti non risolti fantasma. `B/` e' nel `.gitignore`.

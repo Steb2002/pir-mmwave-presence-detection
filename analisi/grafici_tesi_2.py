@@ -14,7 +14,7 @@ dall'XML in flash (`ld2420_config_fondo120s_max_6_g0alto.xml`), non ricopiate a 
   fig16  Fase 8        energia radar vs distanza: LD2410B fino al tetto, LD2420 fino al fondo
   fig17  Fase 8        portata dei tre sensori nella stessa geometria (corridoio)
   fig18  Test 1.1      falsi positivi a stanza vuota: LD2410B vs LD2420 (due configurazioni)
-  fig19  UPRISE        riga a tre sensori: immobile / micro-movimenti a 1 m e sotto il banco
+  fig19  DIPME         riga a tre sensori: immobile / micro-movimenti a 1 m e sotto il banco
   fig20  angolare      copertura in azimut dei due radar
   fig21  vitalita'     distribuzione dell'indice per scenario (configurazione del firmware)
   fig22  vitalita'     indice a bordo vs ricalcolo offline (verifica dello step 5)
@@ -107,8 +107,8 @@ def fig_portata_ostacoli():
             m, s = media_dev([r["menergy_media"] for r in stats_scenario(pat.format(d), skip=20.0)])
             xs.append(d); ms.append(m); ds.append(s)
         ax1.errorbar(xs, ms, yerr=ds, fmt=fmt, color=colore, capsize=3, lw=1.6, ms=6, label=etic)
-    curva("o-", C_RADAR, "senza ostacolo (stanza, 20/08)", "movimento_{}m_T*.csv")
-    curva("s--", "#7a5c00", "cartongesso 10 mm (Test 3.6)", "ost36_cartongesso_{}m_T*.csv")
+    curva("o-", C_RADAR, "senza ostacolo", "movimento_{}m_T*.csv")
+    curva("s--", "#7a5c00", "cartongesso 10 mm", "ost36_cartongesso_{}m_T*.csv")
     for etic, pat, mk, col in [("legno 10 mm", "ost36_legno_{}m_T*.csv", "^", "#8c5a2b"),
                                ("vetro 5 mm", "ost36_vetro_{}m_T*.csv", "D", "#3a9d8f"),
                                ("porta chiusa", "ost36_porta_{}m*_T*.csv", "v", "#5c4d7d")]:
@@ -184,7 +184,7 @@ def fig_attenuazione_materiali():
     dinamica = 10 * np.log10(base20 / fondo20)
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10.5, 4.0))
-    nomi10 = [m[0] for m in mat10[:5]] + ["cartongesso\n(3.6, 3 m)", "metallo"]
+    nomi10 = [m[0] for m in mat10[:5]] + ["cartongesso\n(portata residua)", "metallo"]
     vals10 = att10[:5] + [att36, 100.0]
     cols = [C_RADAR] * 5 + ["#7a5c00", C_GRIGIO]
     b = ax1.bar(range(len(nomi10)), vals10, color=cols, edgecolor="white")
@@ -193,7 +193,7 @@ def fig_attenuazione_materiali():
         ax1.text(i, v + 2, "blocca" if i == len(vals10) - 1 else f"−{v:.0f} %", ha="center", fontsize=8.5)
     ax1.set_xticks(range(len(nomi10))); ax1.set_xticklabels(nomi10, fontsize=8.5, rotation=20, ha="right")
     ax1.set_ylabel("riduzione dell'energia moving [%]"); ax1.set_ylim(0, 112)
-    ax1.set_title(f"A · LD2410B a 3 m, pannello a 20 cm (30/08)\nbaseline {base10:.1f} su 6 trial · "
+    ax1.set_title(f"A · LD2410B a 3 m, pannello a 20 cm\nbaseline {base10:.1f} su 6 trial · "
                   "energia 0-100, non una potenza", fontsize=10)
     b2 = ax2.bar(range(len(mat20)), db20, color=[C_GRIGIO if l else C_2420 for l in limite], edgecolor="white")
     for i, (v, l) in enumerate(zip(db20, limite)):
@@ -205,7 +205,7 @@ def fig_attenuazione_materiali():
              ha="left", fontsize=8, color=C_GRIGIO)
     ax2.set_xticks(range(len(mat20))); ax2.set_xticklabels([m[0] for m in mat20], fontsize=8.5, rotation=20, ha="right")
     ax2.set_ylabel("attenuazione 10·log10(E0/E) [dB]"); ax2.set_ylim(0, dinamica + 1.2)
-    ax2.set_title(f"B · LD2420 (esemplare) a 1 m, gate 2 grezzo (09/09)\nbaseline {base20:.1f} su 6 trial · "
+    ax2.set_title(f"B · LD2420 (esemplare) a 1 m, gate 2 grezzo\nbaseline {base20:.1f} su 6 trial · "
                   "stessa graduatoria del LD2410B", fontsize=10)
     salva(fig, "fig15_attenuazione_materiali")
     return att10, att36, db20
@@ -295,7 +295,7 @@ def fig_portata_tre_sensori(snr2420):
     p12 = [media_dev([r["radar_rate_%"] for r in stats_scenario(f"corr2420_{d}m_T*.csv", skip=20.0)])[0] for d in (1, 2)]
     ax.plot([1, 2], p12, "^", mfc="white", mec=C_2420, mew=1.8, ms=8, label="LD2420, presenza mantenuta (1-2 m)")
     ax.set_xlabel("distanza [m]"); ax.set_ylabel("rilevamento [%]"); ax.set_ylim(-3, 108); ax.set_xticks(range(1, 9))
-    ax.set_title("Portata dei tre sensori · stanza 1-5 m (agosto) e corridoio 5-8 m (11-12/09)\n"
+    ax.set_title("Portata dei tre sensori · stanza 1-5 m e corridoio 5-8 m\n"
                  "LD2410B: tetto a 600 cm · PIR: limite fra 5 e 6 m a meta' corsa, fra 7 e 8 m al massimo · LD2420: ~2 m")
     ax.legend(fontsize=8, loc="center left", bbox_to_anchor=(0.02, 0.55))
     salva(fig, "fig17_portata_tre_sensori")
@@ -327,8 +327,8 @@ def fig_falsi_positivi():
     return r10, r20a, r20b
 
 
-# =========================================================== fig19 — UPRISE a tre sensori
-def fig_uprise_tre_sensori():
+# =========================================================== fig19 — DIPME a tre sensori
+def fig_dipme_tre_sensori():
     cond = [("immobile\n1 m in piedi", "fermo_1m_H_T*.csv", 20.0, "fermo2420_1m_T*.csv", 90.0),
             ("micro-movimenti\n1 m in piedi", "micromovimenti_1m_H_T*.csv", 20.0, "micromovimenti2420_1m_T*.csv", 90.0),
             ("immobile\nsotto il banco", "sotto_banco_immobile_H_T*.csv", 40.0, "banco2420_immobile_T*.csv", 90.0),
@@ -345,10 +345,59 @@ def fig_uprise_tre_sensori():
             ax.text(x[i] + (k - 1) * w, m + d + 2.5, f"{m:.1f}", ha="center", fontsize=8, color=col, fontweight="bold")
     ax.set_xticks(x); ax.set_xticklabels([c[0] for c in cond])
     ax.set_ylabel("tempo con presenza rilevata [%]"); ax.set_ylim(0, 122)
-    ax.set_title("Lo scenario UPRISE a tre sensori · 5 trial per condizione\n"
-                 "PIR e LD2410B in stanza (agosto); LD2420 stessa geometria (settembre, soglie tarate, scarto 90 s)")
+    ax.set_title("Lo scenario DIPME a tre sensori · 5 trial per condizione\n"
+                 "stessa geometria per i tre sensori · LD2420 con soglie tarate e scarto iniziale di 90 s")
     ax.legend(loc="upper left", fontsize=8.5, ncol=3)
-    salva(fig, "fig19_uprise_tre_sensori")
+    salva(fig, "fig19_dipme_tre_sensori")
+
+
+# =========================================================== fig28 — il tipo di movimento decide il PIR
+def fig_tipo_movimento():
+    """PIR sul posto vs attraversamento trasversale a 1-5 m; il radar e' al 100 % in entrambi.
+
+    Sul posto: a 1 e 2 m le serie ripetute in H; a 3-5 m le serie originali (in L), che
+    contengono zero eventi PIR e quindi non dipendono dal ponticello. Attraversamento:
+    le serie del 29/08 (H) a 2-5 m e del 25/09 a 1 m, 3 trial per distanza.
+    """
+    dists = [1, 2, 3, 4, 5]
+    posto = {1: "movimento_1m_H_T*.csv", 2: "movimento_2m_H_T*.csv", 3: "movimento_3m_T*.csv",
+             4: "movimento_4m_T*.csv", 5: "movimento_5m_T*.csv"}
+    attr = {d: f"attraversamento_{d}m_T*.csv" for d in (1, 2, 3, 4, 5)}
+    pm, pdv, am, adv, rm = [], [], [], [], []
+    for d in dists:
+        rs = stats_scenario(posto[d], skip=20.0)
+        m, s = media_dev([r["pir_rate_%"] for r in rs]); pm.append(m); pdv.append(s)
+        rr = [r["radar_rate_%"] for r in rs]
+        if d in attr:
+            ra = stats_scenario(attr[d], skip=20.0)
+            m, s = media_dev([r["pir_rate_%"] for r in ra]); am.append(m); adv.append(s)
+            rr += [r["radar_rate_%"] for r in ra]
+        else:
+            am.append(float("nan")); adv.append(0.0)
+        rm.append(media_dev(rr)[0])
+    fig, ax = plt.subplots(figsize=(8.4, 4.2))
+    x = np.arange(len(dists)); w = 0.36
+    ax.bar(x - w / 2, pm, w, yerr=pdv, capsize=3, color=C_PIR, alpha=0.5, edgecolor="white",
+           label="PIR, cammino sul posto")
+    ax.bar(x + w / 2, am, w, yerr=adv, capsize=3, color=C_PIR, edgecolor="white",
+           label="PIR, attraversamento trasversale")
+    for i in range(len(dists)):
+        ax.text(x[i] - w / 2, pm[i] + pdv[i] + 2, f"{pm[i]:.1f}", ha="center", fontsize=8.5, color=C_PIR)
+        if np.isnan(am[i]):
+            ax.text(x[i] + w / 2, 3, "n.d.", ha="center", fontsize=8.5, color=C_GRIGIO)
+        else:
+            ax.text(x[i] + w / 2, am[i] + adv[i] + 2, f"{am[i]:.1f}", ha="center", fontsize=8.5,
+                    color=C_PIR, fontweight="bold")
+    ax.plot(x, rm, "o-", color=C_RADAR, lw=1.8, ms=6, label="LD2410B, con entrambi i movimenti")
+    ax.set_xticks(x); ax.set_xticklabels([f"{d} m" for d in dists])
+    ax.set_ylabel("tempo con presenza rilevata [%]"); ax.set_ylim(0, 140)
+    ax.set_yticks(range(0, 101, 20))
+    # Il ponticello non va nel titolo: il sul posto a 3-5 m e' in L (zero eventi, vedi docstring)
+    ax.set_title("Il PIR con due tipi di movimento a parità di distanza e sensibilità\n"
+                 "cammino sul posto: 5 trial per distanza · attraversamento: 3 trial per distanza")
+    ax.legend(loc="upper center", ncol=2, fontsize=8.5, frameon=False)
+    salva(fig, "fig28_tipo_movimento")
+    return pm, am
 
 
 # =========================================================== fig20 — copertura angolare
@@ -363,9 +412,9 @@ def fig_angolare():
     ax1.errorbar(az10, mr, yerr=dr, fmt="o-", color=C_RADAR, capsize=3, lw=1.8, ms=6, label="LD2410B, presenza")
     ax1.errorbar(az10, mp, yerr=dp, fmt="s-", color=C_PIR, capsize=3, lw=1.6, ms=6, label="PIR")
     ax1.axvspan(-5, 60, color=C_RADAR, alpha=0.07); ax1.text(2, 5, "±60° dichiarati", fontsize=8, color=C_RADAR)
-    ax1.set_xlabel("azimut [°]"); ax1.set_ylabel("rilevamento [%]"); ax1.set_ylim(-3, 108); ax1.set_xticks(az10)
-    ax1.set_title("A · LD2410B e PIR, r = 1 m, busto laterale da seduto (30/08)\n3 trial per azimut, gate max 2")
-    ax1.legend(fontsize=8.5, loc="center left")
+    ax1.set_xlabel("azimut [°]"); ax1.set_ylabel("rilevamento [%]"); ax1.set_ylim(-3, 118); ax1.set_yticks(range(0, 101, 20)); ax1.set_xticks(az10)
+    ax1.set_title("A · LD2410B e PIR, r = 1 m, busto laterale da seduto\n3 trial per azimut, gate max 2")
+    ax1.legend(fontsize=8.5, loc="lower left", bbox_to_anchor=(0.0, 0.1))
     az20 = [0, 45, 60, 75, 90]
     me, de = [], []
     for a in az20:
@@ -373,12 +422,12 @@ def fig_angolare():
     fondo = energie_2420("vuoto2420_sera_T01.csv", salta=120.0)[2]
     trig, hold = soglie_2420()
     ax2.errorbar(az20, me, yerr=de, fmt="^-", color=C_2420, capsize=3, lw=1.8, ms=7, label="LD2420, energia gate 2")
-    ax2.axhline(fondo, color=C_GRIGIO, ls="--", lw=1); ax2.text(90, fondo + 0.6, f"fondo a vuoto {fondo:.0f}", ha="right", fontsize=8, color=C_GRIGIO)
+    ax2.axhline(fondo, color=C_GRIGIO, ls="--", lw=1); ax2.text(2, fondo - 0.8, f"fondo a vuoto {fondo:.0f}", ha="left", va="top", fontsize=8, color=C_GRIGIO)
     ax2.axhline(hold[2], color=C_2420, ls=":", lw=1); ax2.text(90, hold[2] + 0.6, f"hold del gate 2 = {hold[2]:.0f} (media sotto, p95 sopra)", ha="right", fontsize=8, color=C_2420)
     ax2.set_ylim(0, max(hold[2], max(me) + max(de)) + 8)
     ax2.axvspan(-5, 45, color=C_2420, alpha=0.07); ax2.text(2, fondo + 3, "±45° dichiarati (§5.2)", fontsize=8, color=C_2420)
     ax2.set_xlabel("azimut [°]"); ax2.set_ylabel("energia grezza gate 2 (70-140 cm)"); ax2.set_xticks(az20)
-    ax2.set_title("B · LD2420 (esemplare), stessa prova (08/09)\nal fondo a 90°: fascio utile fino a ~75°")
+    ax2.set_title("B · LD2420 (esemplare), stessa prova\nal fondo a 90°: fascio utile fino a ~75°")
     ax2.legend(fontsize=8.5, loc="upper right")
     salva(fig, "fig20_angolare")
 
@@ -422,7 +471,7 @@ def fig_vitalita_scenari():
     for i, d in enumerate(dati, start=1):
         ax.text(i, 2, f"med {statistics.median(d):.0f}", ha="center", fontsize=7.5, color="#333")
     ax.set_title("Indice di vitalita' v3 con la configurazione del firmware (gate dalla distanza, fondo notturno)\n"
-                 "α_m 0,05 · α_v 0,01 · k 0,5 · soglie 45/95 · transitorio scartato · la sesta scatola usa il gate fisso 2 della taratura del 31/08")
+                 "α_m 0,05 · α_v 0,01 · k 0,5 · soglie 45/95 · transitorio scartato · la sesta scatola usa il gate fisso 2 della taratura")
     salva(fig, "fig21_vitalita_scenari")
     return [(s[0].replace("\n", " "), statistics.median(d)) for s, d in zip(sc, dati)]
 
@@ -440,11 +489,11 @@ def fig_vitalita_bordo():
     ax.axvspan(0, 60, color=C_GRIGIO, alpha=0.12); ax.text(2, 96, "primi 60 s: EWMA del firmware\ngia' a regime, quelle offline no", fontsize=8, color=C_GRIGIO, va="top")
     ax.plot(t, b, color=C_2420, lw=2.0, label="a bordo (ESP32, vitality.h)")
     ax.plot(t, o, color=C_RADAR, lw=1.1, ls="--", label="offline (vitalita_proto.py)")
-    ax.axhline(45, color="#b3261e", ls=":", lw=1); ax.text(t[-1], 46.5, "soglia bassa/moderata 45", ha="right", fontsize=8, color="#b3261e")
+    ax.axhline(45, color="#b3261e", ls=":", lw=1, label="soglia bassa/moderata (45)")
     ax.set_xlabel("tempo dall'avvio della sessione web [s]"); ax.set_ylabel("indice di vitalita'"); ax.set_ylim(0, 100)
     coda = t >= 60
     entro = 100 * np.mean(np.abs(b[coda] - o[coda]) <= 1.0)
-    ax.set_title(f"Verifica del porting: persona immobile a 1 m, sessione web di 90 s (11/09)\n"
+    ax.set_title(f"Verifica del porting: persona immobile a 1 m, sessione web di 90 s\n"
                  f"a regime bordo = offline entro ±1 nel {entro:.0f} % dei campioni")
     ax.legend(fontsize=8.5, loc="lower right")
     salva(fig, "fig22_vitalita_bordo")
@@ -458,11 +507,14 @@ def main():
     snr = fig_energia_distanza_radar()
     fig_portata_tre_sensori(snr)
     fp = fig_falsi_positivi()
-    fig_uprise_tre_sensori()
+    fig_dipme_tre_sensori()
     fig_angolare()
+    pm, am = fig_tipo_movimento()
     med = fig_vitalita_scenari()
     entro = fig_vitalita_bordo()
     print("\n--- valori chiave ricalcolati dai CSV ---")
+    print("  PIR sul posto 1-5 m [%]: " + ", ".join(f"{v:.1f}" for v in pm)
+          + " | attraversamento 1-5 m [%]: " + ", ".join(f"{v:.1f}" for v in am))
     print("  attenuazione LD2410B [%]: " + ", ".join(f"{v:.1f}" for v in att10[:5]) + f" | cartongesso 3.6: {att36:.1f}")
     print("  attenuazione LD2420 [dB]: " + ", ".join(f"{v:.1f}" for v in db20))
     print("  LD2420 corridoio (d, E/fondo, %>trigger): " + "; ".join(f"{d} m {s:.2f} {o:.0f}%" for d, s, o in snr))

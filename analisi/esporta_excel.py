@@ -201,7 +201,7 @@ def foglio_sotto_banco(wb):
         mr, _ = media_dev([t["radar_rate_%"] for t in ts])
         mp, dp = media_dev([t["pir_rate_%"] for t in ts])
         righe.append([nome, mr, mp, dp, len(ts)])
-    r0, r1 = scrivi(ws, righe, "Fig. 3 - Scenario UPRISE: persona sotto il banco (~60 cm)",
+    r0, r1 = scrivi(ws, righe, "Fig. 3 - Scenario DIPME: persona sotto il banco (~60 cm)",
                     "5 trial per condizione, jumper H, scartati i primi 40 s.")
     ch = BarChart()
     ch.type = "col"

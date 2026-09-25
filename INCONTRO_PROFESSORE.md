@@ -7,7 +7,7 @@
 2. **SCALETTA_TESI.md** — la struttura della tesi con la mappa obiettivi→capitoli:
    dimostra che i 6 punti concordati sono TUTTI coperti e niente di più
 3. **analisi/ANALISI_CONSUMI.md** — obiettivo 4 già in bozza: dati datasheet
-   verificati + argomentazione architettura ibrida PIR+mmWave per UPRISE
+   verificati + argomentazione architettura ibrida PIR+mmWave per DIPME
 4. Accenno rapido al resto già pronto: studio del suo repo (con firmware adattato:
    5 Hz + engineering mode), script di analisi già testati, progetto completo della
    web UI, specifica dell'indice di vitalità
@@ -25,7 +25,7 @@
 3. **Scadenza e sessione di laurea prevista?** (serve per il cronoprogramma)
 
 ### Importanti (non bloccanti)
-4. Nome del progetto nella tesi: **UPRISE o SAFE?** (le slide/paper dicono SAFE)
+4. Nome del progetto nella tesi: **DIPME o SAFE?** (le slide/paper dicono SAFE) → deciso DIPME (22/09/2026)
 5. Il DIPME-DEVICE ha già l'UWB per la presenza: come inquadrare il mmWave rispetto
    all'UWB nella tesi? C'è un motivo di progetto per cui l'UWB non basta?
 6. Requisiti formali della tesi: numero pagine indicativo, template Overleaf

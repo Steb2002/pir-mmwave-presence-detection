@@ -22,16 +22,16 @@
 
 | Architettura | Pro | Contro |
 |---|---|---|
-| **A. Sito servito dall'ESP32** (web server + WebSocket a bordo) | Zero infrastruttura, funziona offline, coerente col contesto UPRISE (emergenza = niente internet), demo autonoma | RAM/flash limitate, max 2-3 client simultanei |
+| **A. Sito servito dall'ESP32** (web server + WebSocket a bordo) | Zero infrastruttura, funziona offline, coerente col contesto DIPME (emergenza = niente internet), demo autonoma | RAM/flash limitate, max 2-3 client simultanei |
 | B. ESP32 → MQTT → server Python/Node + DB | Scalabile, storico illimitato | Serve un broker + un server sempre accesi; troppa infrastruttura per una tesi di sensing |
-| C. Cloud (ThingSpeak, Blynk…) | Pronto all'uso | Non offline, campionamento limitato (~15 s), dati fuori controllo, non difendibile in sede di tesi UPRISE |
+| C. Cloud (ThingSpeak, Blynk…) | Pronto all'uso | Non offline, campionamento limitato (~15 s), dati fuori controllo, non difendibile in sede di tesi DIPME |
 
 ### Scelta: **A — tutto sull'ESP32**
 
 ✅ **CONFERMATA DAL PROFESSORE (incontro del 29/08/2026).** Non è più un default
 nostro da validare: è la decisione presa. La motivazione data dal professore
 coincide con la nostra prima: il sito self-hosted **è un'ottima casistica di
-scenario senza connessione**, cioè esattamente lo scenario UPRISE.
+scenario senza connessione**, cioè esattamente lo scenario DIPME.
 
 📌 **Conseguenze operative della conferma**:
 - `analisi/ANALISI_SITO_SERVER.md` (piano B, architettura MQTT + FastAPI) esce dal
@@ -46,7 +46,7 @@ scenario senza connessione**, cioè esattamente lo scenario UPRISE.
   `analizza_respiro.py`
 
 Motivazioni:
-1. **Coerenza col progetto UPRISE**: in emergenza sismica non c'è internet; un nodo
+1. **Coerenza col progetto DIPME**: in emergenza sismica non c'è internet; un nodo
    autonomo che serve la propria dashboard è la miniatura concettuale della
    "piattaforma di monitoraggio" del progetto (modalità tempo di pace/emergenza)
 2. Il volume dati è piccolo: ~20 valori × 5 Hz ≈ 2 KB/s — ben dentro i limiti dell'ESP32
@@ -55,9 +55,9 @@ Motivazioni:
 
 ### Modalità WiFi: **solo Access Point** (rev. 05/09/2026)
 
-L'ESP32 **crea la propria rete** (`UPRISE-Sensor`, WPA2, IP fisso `192.168.4.1`) e
+L'ESP32 **crea la propria rete** (`DIPME-Sensor`, WPA2, IP fisso `192.168.4.1`) e
 non si collega a nessun WiFi esistente. È una scelta di coerenza col progetto, decisa
-dall'autore il 05/09/2026: nello scenario UPRISE la rete di casa **non esiste**, e un
+dall'autore il 05/09/2026: nello scenario DIPME la rete di casa **non esiste**, e un
 firmware che la cerca prima di ripiegare sull'AP racconterebbe una storia diversa da
 quella della tesi. Conseguenze:
 - nessuna credenziale nel firmware → niente `config.h` da tenere fuori dal repo
@@ -66,7 +66,7 @@ quella della tesi. Conseguenze:
   e perde internet nel frattempo. ⚠️ Alcuni telefoni, non vedendo internet, tornano
   da soli ai dati mobili o mostrano «rete senza internet»: si gestisce con un **DNS
   catch-all** a bordo (libreria `DNSServer`, già nel core) che risponde `192.168.4.1`
-  a qualunque nome → si può scrivere `uprise.local` o qualsiasi indirizzo e si arriva
+  a qualunque nome → si può scrivere `dipme.local` o qualsiasi indirizzo e si arriva
   alla dashboard, e il sistema operativo riconosce il portale
 - la modalità Station (collegarsi a una rete esistente) resta nell'elenco delle
   estensioni (§8), non nel percorso realizzativo
@@ -103,7 +103,7 @@ Statistiche di sessione (calcolate nel browser, non sull'ESP32):
 - tempo di sessione, % campioni con presenza (radar e PIR separati)
 - numero eventi di attivazione (fronti 0→1) radar e PIR → stima falsi positivi live
 - distanza min/media/max, energia media
-- ultima rilevazione (secondi fa) — il dato "salvavita" nello scenario UPRISE
+- ultima rilevazione (secondi fa) — il dato "salvavita" nello scenario DIPME
 - vitalità: valore corrente, media mobile, minimo/massimo di sessione
 
 ---
@@ -265,7 +265,7 @@ Ogni step è funzionante e dimostrabile da solo:
 
 1. **Step 1 — Access Point + pagina statica** (mezza giornata)
    ESP32 in AP con DNS catch-all, pagina «hello» servita da PROGMEM gzip. Verifica:
-   collegando il telefono alla rete `UPRISE-Sensor`, la pagina si apre sia su
+   collegando il telefono alla rete `DIPME-Sensor`, la pagina si apre sia su
    `192.168.4.1` sia su un nome qualsiasi (rev. 05/09)
 2. **Step 2 — WebSocket live** (mezza giornata)
    JSON a 5 Hz, area A (stato testuale). Verifica: valori cambiano muovendosi davanti al sensore
@@ -317,10 +317,10 @@ dati ma per il **codice**. Con lo schema di partizione di default l'applicazione
 ### Quando servirebbe un server esterno (nessuno dei casi riguarda la tesi)
 
 1. Storico persistente di giorni senza browser collegato (flash ESP32: ~1 h di CSV)
-2. Aggregazione multi-sensore — nel progetto UPRISE reale la fa il gateway LoRa, non il nodo
+2. Aggregazione multi-sensore — nel progetto DIPME reale la fa il gateway LoRa, non il nodo
 3. Accesso remoto da internet — fuori scope, e in emergenza l'infrastruttura è assente
 
-Argomento per la tesi: nel dominio UPRISE il nodo DEVE essere autonomo (in emergenza
+Argomento per la tesi: nel dominio DIPME il nodo DEVE essere autonomo (in emergenza
 non c'è infrastruttura) — il server esterno sarebbe concettualmente sbagliato, non
 solo superfluo.
 
@@ -330,7 +330,7 @@ solo superfluo.
 
 - Supporto secondo sensore (LD2420) con selettore nella UI
 - Modalità "emergenza" simulata: sfondo rosso, solo dato salvavita ("persona viva
-  sotto il banco: SÌ/NO + vitalità") → mockup del tablet soccorritore UPRISE
+  sotto il banco: SÌ/NO + vitalità") → mockup del tablet soccorritore DIPME
 - Grafico spettro FFT live del respiro (porting di analizza_respiro.py in JS)
 - Salvataggio sessioni in LittleFS per funzionare senza browser collegato
 - Modalità **Station** (l'ESP32 si collega a una rete esistente, con fallback all'AP):
@@ -382,7 +382,7 @@ resta il datasheet).
 Web Serial apre una terza via: **browser → USB → ESP32** (la pagina legge le righe CSV
 già prodotte dal firmware, senza WiFi né WebSocket). Pro: nessuno stack di rete da
 scrivere, si riusa il logger così com'è. Contro: il cavo USB deve restare attaccato,
-niente demo wireless "nodo autonomo", e si perde l'analogia con la piattaforma UPRISE.
+niente demo wireless "nodo autonomo", e si perde l'analogia con la piattaforma DIPME.
 **La scelta resta A** (sito servito dall'ESP32), ma l'opzione D è un ottimo **piano di
 riserva a basso costo** se il WiFi a bordo desse problemi: il frontend è lo stesso,
 cambia solo la sorgente dei dati (una funzione `connect()` al posto del WebSocket).

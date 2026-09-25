@@ -18,10 +18,10 @@ posizionamento comparativo che giustifica le scelte del resto della tesi.
 PIR è l'acronimo di \emph{Passive InfraRed}: il sensore non emette nulla, si limita
 a osservare la radiazione infrarossa che lo raggiunge. Il cuore del componente è un
 cristallo \textbf{piroelettrico}, che genera una piccola carica elettrica quando la
-radiazione incidente \emph{cambia}. Il corpo umano, con una temperatura superficiale
-di circa 34\,\celsius, emette con picco intorno a 9,4~\textmu m; il sensore è
+radiazione incidente \emph{cambia}. Il corpo umano, con una temperatura normale
+di circa 36\,\celsius\ (309~K), emette con picco intorno a 9,4~\textmu m; il sensore è
 filtrato con una finestra ottica di 5--14~\textmu m proprio per privilegiare quella
-banda~\cite{adafruitPIR}.
+banda~\cite{niceraPyro}.
 
 Il punto essenziale per questa tesi è che il cristallo risponde alla
 \textbf{derivata} del flusso infrarosso, non al suo valore assoluto.
@@ -139,7 +139,8 @@ circa \textbf{50~\textmu A} di corrente di riposo, \textbf{1--3~\euro} di costo 
 totale di emissioni --- essendo un sensore passivo --- che semplifica
 certificazioni e conformità in materia di privacy.
 
-Nel progetto UPRISE il DIPME-DEVICE monta un PIR esattamente per questi motivi: un
+Nel progetto DIPME il nodo DIPME monta un PIR --- un Panasonic EKMB139 nel
+dimostratore scolastico~\cite{callisto2026dipme} --- esattamente per questi motivi: un
 nodo deve poter vegliare per anni a batteria. Il limite emerge solo nello scenario
 di emergenza, ed è il punto di partenza di questa tesi.
 
@@ -239,7 +240,10 @@ usate~\cite{esphomeLD2410,esphomeLD2420,espboards}, e la letteratura tecnica sul
 applicazioni di conteggio dell'occupazione negli edifici
 intelligenti~\cite{mmwaveOccupancy} documenta gli ordini di grandezza attesi. Sono
 fonti utili per il
-comportamento pratico dei moduli oltre a quanto scritto nei manuali.
+comportamento pratico dei moduli oltre a quanto scritto nei manuali. Una relazione
+di progetto svolta a Camerino con gli stessi due moduli di questa tesi e un
+PIR~\cite{dellaquila2026} offre un riscontro indipendente, discusso in
+\cref{sec:ld2420-riscontro}.
 
 \section{Altre tecnologie di rilevamento di presenza}
 \label{sec:altre-tecnologie}

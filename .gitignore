@@ -18,6 +18,18 @@ tesi-unicam/figures/fig*.png
 analisi/dati_tesi.xlsx
 RIEPILOGO_INCONTRO.html
 RIEPILOGO_INCONTRO.pdf
+# PDF della tesi compilato in locale (MiKTeX) e catalogo delle figure: si rifanno
+tesi-unicam/main.pdf
+analisi/CATALOGO_FIGURE.pdf
 
 # Log del tool PC Hi-Link LD2420: rigenerati a ogni avvio, come quelli del LD2410 Tool
 HLK-LD2420/HLK-LD2420_TOOL -English/Log/
+
+# cartella di build LaTeX locale (pdflatex -output-directory=B)
+tesi-unicam/B/
+tesi-unicam/$B/
+tesi-unicam/capitolo4_bozza.pdf
+tesi-unicam/capitolo5_bozza.pdf
+tesi-unicam/capitolo6_bozza.pdf
+tesi-unicam/capitolo7_bozza.pdf
+tesi-unicam/capitolo8_bozza.pdf

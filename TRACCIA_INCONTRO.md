@@ -102,7 +102,7 @@ Qui mostro le figure, nell'ordine del PDF. Una riga per ciascuna.
 1. **fig01 — Dose-risposta PIR vs radar.** A 1 m, jumper H, cambia **solo** la quantità
    di movimento: PIR 1,5 % (immobile) → 51,6 % (micro) → 85,2 % (cammino), radar 100 %
    sempre. *È l'esperimento centrale: una sola variabile.*
-2. **fig03 — Lo stesso confronto nello scenario UPRISE**, sotto il banco a 60 cm:
+2. **fig03 — Lo stesso confronto nello scenario DIPME**, sotto il banco a 60 cm:
    96,5 % con micro-movimenti contro **1,3 % da immobile**; radar 100 % in entrambe.
 3. **fig02 — Timeline di un singolo trial da 5 minuti**: il radar tiene la presenza
    senza un buco, il PIR non emette un solo impulso in tutta l'acquisizione.
@@ -132,7 +132,7 @@ Qui mostro le figure, nell'ordine del PDF. Una riga per ciascuna.
 ~1 m è un ottimo rilevatore di *movimento*; (2) è praticamente cieco alla persona
 *immobile*, a qualunque distanza e in qualunque configurazione; (3) il radar rileva
 entrambe le condizioni al 100 % in tutti i test svolti. Non "il PIR è scarso", ma **"il
-PIR fa bene un lavoro che non è questo"** — e in UPRISE la persona intrappolata può
+PIR fa bene un lavoro che non è questo"** — e in DIPME la persona intrappolata può
 essere incosciente o esausta, quindi immobile.
 
 **Cosa manca ancora nella fase 3**: penetrazione degli ostacoli (cartongesso, legno,
@@ -166,7 +166,7 @@ slide del progetto.
 
 **Opzione A — sito ospitato sull'ESP32** (`ESPAsyncWebServer` + WebSocket + LittleFS)
 - ✅ funziona **completamente offline**, senza rete né server: l'ESP32 fa da access
-  point e ci si collega col telefono. È lo scenario UPRISE (terremoto, blackout,
+  point e ci si collega col telefono. È lo scenario DIPME (terremoto, blackout,
   infrastruttura giù)
 - ✅ zero dipendenze da mantenere, tutto in un firmware; dimostrabile in aula
   staccando il WiFi
@@ -222,10 +222,10 @@ o serve una normalizzazione. **È la domanda che gli faccio.**
    ufficiale UNICAM): posso mostrarglielo
 3. **I dati sono al sicuro**: repo GitHub, 116 CSV su 116 verificati nel remoto
 4. **Domande aperte da porre**: la **scadenza** (senza non posso fare il
-   cronoprogramma); UPRISE o SAFE, come lo chiamo in tesi; il montaggio del sensore
+   cronoprogramma); DIPME o SAFE, come lo chiamo in tesi; il montaggio del sensore
    sotto la lamiera forata del banco (il metallo è opaco al radar — è un problema
    reale); che ruolo dà all'**UWB**, visto che il DIPME-DEVICE ce l'ha già
 5. **Due limiti che dichiaro io per primo**, prima che me li chieda: il range provato è
-   **1-5 m** e non 6 (limite della stanza, non del sensore — e per UPRISE la distanza
+   **1-5 m** e non 6 (limite della stanza, non del sensore — e per DIPME la distanza
    d'interesse è sotto il metro); e la **coda di presenza** del radar è di ~9 s misurati
    contro i 5 s configurati, fino a ~100 s per un bersaglio laterale

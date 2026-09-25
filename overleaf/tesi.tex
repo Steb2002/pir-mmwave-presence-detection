@@ -1,0 +1,85 @@
+\documentclass{unicam_thesis}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage[italian]{babel}
+\usepackage{placeins}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{textcomp}
+\usepackage{xurl}
+\addto\captionsitalian{\renewcommand{\lstlistingname}{Listato}}
+
+% Posizionamento dei float: figure e tabelle restano nel testo invece di finire da sole
+% su una pagina quasi vuota
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.7}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+
+% Nomi dei tre sensori, usati nei capitoli 4-8
+\newcommand{\ldb}{HLK-LD2410B}
+\newcommand{\ldc}{HLK-LD2420}
+\newcommand{\pir}{HC-SR501}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TESI DATI FRONTESPIZIO
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Analisi sperimentale di sensori radar mmWave e PIR per il rilevamento di persone in scenari post-sisma}
+
+\university{Universit\`a degli Studi di Camerino}%
+\school{Scienze e Tecnologie}%
+\course{Laurea in Informatica (Classe L-31)}%
+
+
+\author{\shortstack[l]{{\mdseries\small Laureando}\\ Stefano De Bernardinis}}%
+\advisor{\shortstack[l]{{\mdseries\small Relatore}\\ Prof. Massimo Callisto De Donato}}%
+\academicyear{2025/2026}%
+\studentid{\\ 119777}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FINE DATI FRONTESPIZIO
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\theoremstyle{definition} \newtheorem{esempio}{Esempio}[chapter]
+\theoremstyle{definition}
+\newtheorem{definizione}{Definizione}[chapter] \theoremstyle{plain}
+\newtheorem{teorema}{Teorema}[chapter]
+\graphicspath{{Screenshot/},{Immagini/},{API/},{Source/},{figures/}}
+%\bibliography{biblio.bib}
+\addbibresource{biblio.bib}
+
+\begin{document}
+
+\maketitle
+
+\input{Abstract}
+
+\tableofcontents
+%\lstlistoflistings
+%\listoffigures
+%\listoftables
+\input{introduction}
+\input{chapter1}
+\input{chapter2}
+\input{chapter3}
+\input{chapter4}
+\input{chapter5}
+\input{chapter6}
+\input{conclusion}
+
+
+\appendix
+%\input{schema_elettrico}
+%\input{Appendix1}
+%\input{Appendix2}
+%\nocite{*}
+\printbibliography
+\printindex
+
+\input{Ringraziamenti}
+
+\end{document}

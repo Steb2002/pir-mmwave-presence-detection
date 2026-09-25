@@ -29,7 +29,7 @@ software non regge questa velocità.
 \subsection{Frame di comando (dall'host al modulo)}
 
 \begin{center}\small
-\begin{tabular}{@{}lll@{}}
+\begin{tabular}{@{}llp{0.42\linewidth}@{}}
 \toprule
 \textbf{Campo} & \textbf{Lunghezza} & \textbf{Valore} \\
 \midrule
@@ -49,7 +49,7 @@ dagli eventuali dati di risposta.
 \subsection{Frame di dati (dal modulo all'host)}
 
 \begin{center}\small
-\begin{tabular}{@{}lll@{}}
+\begin{tabular}{@{}llp{0.42\linewidth}@{}}
 \toprule
 \textbf{Campo} & \textbf{Lunghezza} & \textbf{Valore} \\
 \midrule
@@ -142,3 +142,37 @@ Due precisazioni utili, entrambe verificate:
         né lo strumento da PC né l'applicazione mobile offrono una funzione di flash.
         La versione del firmware è quindi da considerare un dato dell'esemplare.
 \end{itemize}
+
+\section{Il frame binario del \ldc\ (modalità non documentata)}
+\label{app:ld2420-frame}
+
+Il produttore documenta per il \ldc\ soltanto i comandi di configurazione
+(\cite{hilinkProtoLD2420}: apertura e chiusura della modalità comandi con
+\texttt{0xFF} e \texttt{0xFE}, versione \texttt{0x00}, riavvio \texttt{0x68},
+lettura e scrittura dei parametri \texttt{0x08} e \texttt{0x07}) e nessun frame di
+uscita dei dati. La modalità usata in questa tesi è ricostruita dal componente
+\texttt{ld2420} di ESPHome~\cite{esphomeLD2420src} e va considerata una scelta
+implementativa di comunità, non una specifica.
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item \textbf{commutazione}: in modalità comandi, \texttt{0x0012} con parametro
+        \texttt{0x0000} e valore \texttt{0x0004} (modalità \emph{energy}) oppure
+        \texttt{0x0064} (modalità \emph{simple}, l'ASCII di fabbrica);
+  \item \textbf{frame di dati}, 45 byte: intestazione \texttt{F4 F3 F2 F1},
+        lunghezza (2 byte), presenza (1 byte, offset 6), distanza in centimetri
+        (\texttt{uint16} little-endian, offset 7), sedici energie per gate
+        (\texttt{uint16} little-endian, offset 9--40), chiusura
+        \texttt{F8 F7 F6 F5}. Le intestazioni sono le stesse del \ldb;
+  \item \textbf{cadenza} 10~Hz; energie intere 0--65535, mostrate dallo strumento del
+        produttore come $10\log_{10}$ del valore grezzo, stessa relazione delle
+        soglie;
+  \item \textbf{parametri} (comando \texttt{0x07}): \texttt{0x0000} gate minimo,
+        \texttt{0x0001} gate massimo, \texttt{0x0004} ritardo di scomparsa in
+        secondi, \texttt{0x10}--\texttt{0x1F} soglie di attivazione per gate,
+        \texttt{0x20}--\texttt{0x2F} soglie di mantenimento. La scrittura via UART
+        vive in RAM e si perde al ciclo di alimentazione del modulo.
+\end{itemize}
+
+Sull'esemplare in dotazione la scrittura di un gate minimo non modifica la decisione
+di presenza e confina la distanza riportata alla finestra ammessa; il gate massimo
+scritto via UART è invece efficace sulla decisione (\cref{sec:ld2420-limiti}).

@@ -166,6 +166,15 @@
   urldate      = {2026-07-15}
 }
 
+@misc{niceraPyro,
+  title        = {Pyroelectric Infrared Sensor --- About Pyro Sensor},
+  author       = {{Nippon Ceramic Co., Ltd.}},
+  year         = {2026},
+  note         = {Pagina tecnica del produttore di elementi piroelettrici: temperatura del corpo umano 36\,\celsius\ (309\,K), picco di emissione a 9,4\,	extmu m, filtro ottico 5--14\,	extmu m, elementi in configurazione \emph{series-opposed}},
+  url          = {https://www.nicera.co.jp/en/products/infrared-sensor/pyro-sensor/about-pyro-sensor},
+  urldate      = {2026-09-18}
+}
+
 @misc{adafruitPIR,
   title        = {{PIR} Passive Infrared Proximity Motion Sensor --- guide},
   author       = {{Adafruit Industries}},
@@ -200,18 +209,70 @@
 }
 
 % ---------------------------------------------------------------------
-%  Progetto UPRISE/SAFE
+%  Progetto DIPME
 % ---------------------------------------------------------------------
 
 @inproceedings{callisto2023dt,
-  author       = {Callisto De Donato, Massimo and others},
+  author       = {Callisto De Donato, Massimo and Corradini, Flavio and Fornari, F.
+                  and Re, Barbara and Romagnoli, M.},
   title        = {Design and Development of a Digital Twin Prototype for the
                   {SAFE} Project},
-  booktitle    = {Enterprise Design, Operations and Computing ({EDOC})},
-  publisher    = {Springer},
-  year         = {2023},
-  note         = {Riferimento del progetto SAFE/UPRISE. \emph{Da completare con
-                  pagine, DOI e elenco esatto degli autori}}
+  booktitle    = {Enterprise Design, Operations, and Computing. {EDOC} 2023 Workshops},
+  editor       = {Sales, T. P. and de Kinderen, S. and Proper, H. A. and Pufahl, L.
+                  and Karastoyanova, D. and van Sinderen, M.},
+  publisher    = {Springer Nature Switzerland},
+  address      = {Cham},
+  year         = {2024},
+  pages        = {107--122},
+  note         = {Riferimento del progetto SAFE/DIPME; dati bibliografici dalla
+                  bibliografia del manoscritto DIPME 2026}
+}
+
+@article{callisto2024safe,
+  author       = {Callisto De Donato, Massimo and Corradini, Flavio and Fornari, F.
+                  and Re, Barbara},
+  title        = {{SAFE}: An {ICT} platform for supporting monitoring, localization
+                  and rescue operations in case of earthquake},
+  journal      = {Internet of Things},
+  volume       = {27},
+  year         = {2024},
+  pages        = {101273}
+}
+
+@unpublished{callisto2026dipme,
+  author       = {Callisto De Donato, Massimo and Corradini, Flavio and Re, Barbara},
+  title        = {A Case Study on a Distributed {IoT} System for Indoor Disaster
+                  Preparedness in Operational Environments},
+  year         = {2026},
+  note         = {Manoscritto di 14 pagine fornito dal relatore il 13/09/2026.
+                  Descrive la piattaforma DIPME, il modello a due regimi e il
+                  dispiegamento in una scuola secondaria delle Marche (42 nodi nei
+                  banchi salva-vita, ottobre 2025 -- marzo 2026), con la
+                  configurazione hardware dei nodi di sensing (Tabella~1)}
+}
+
+@article{pietroni2021furniture,
+  author       = {Pietroni, L. and Mascitti, J. and Galloppo, D.},
+  title        = {Life-saving furniture during an earthquake. Intelligent,
+                  interconnected and interacting},
+  journal      = {AGATH{\'O}N | International Journal of Architecture, Art and Design},
+  volume       = {10},
+  year         = {2021},
+  pages        = {218--229}
+}
+
+@report{dellaquila2026,
+  author       = {Dell'Aquila, Rebecca},
+  title        = {Radar {mmWave}},
+  type         = {Relazione di progetto},
+  institution  = {Universit{\`a} di Camerino, corso \emph{Embedded Systems Lab for
+                  Industry and Education}},
+  year         = {2026},
+  note         = {A.a. 2025--2026, riferimenti M. Prist, P. Antonini e F. Giuggioloni.
+                  Relazione non pubblicata, 53 pagine, fornita dal relatore il
+                  13/09/2026: confronto fra PIR, HLK-LD2410B e HLK-LD2420 con
+                  Raspberry Pi ed ESP32, classificazione degli stati con una rete
+                  ricorrente GRU}
 }
 
 @misc{unicamDT,
@@ -223,7 +284,7 @@
 }
 
 @misc{slideUprise,
-  title        = {Progetto {UPRISE} --- presentazione},
+  title        = {Progetto {DIPME} --- presentazione},
   year         = {2025},
   note         = {Slide del progetto; materiale fornito dal relatore},
   url          = {https://docs.google.com/presentation/d/11Q_Zet3aEtPZo2vcoM7_cvcTCbvLY-FBznCqPK37k3E/edit},
@@ -353,4 +414,41 @@
   year         = {2024},
   url          = {https://mmwave-radar.dev/applications/occupancy-sensing},
   urldate      = {2026-07-12}
+}
+
+@misc{esp32async,
+  title        = {{ESP Async WebServer} e {Async TCP}: fork mantenuto per il core
+                  {ESP32} 3.x},
+  author       = {{ESP32Async}},
+  year         = {2025},
+  url          = {https://github.com/ESP32Async/ESPAsyncWebServer},
+  urldate      = {2026-09-06},
+  note         = {Versioni 3.12.0 e 3.5.0, installate dal gestore di librerie
+                  dell'IDE Arduino}
+}
+
+@misc{chartjs,
+  title        = {{Chart.js}: simple yet flexible {JavaScript} charting},
+  author       = {{Chart.js contributors}},
+  year         = {2024},
+  url          = {https://www.chartjs.org/},
+  urldate      = {2026-09-10},
+  note         = {Versione 4.4.7, distribuzione UMD servita localmente dall'ESP32}
+}
+
+@misc{arduinojson,
+  title        = {{ArduinoJson}},
+  author       = {Blanchon, Beno{\^i}t},
+  year         = {2025},
+  url          = {https://arduinojson.org/},
+  urldate      = {2026-09-06},
+  note         = {Versione 7}
+}
+
+@misc{myld2410,
+  title        = {{MyLD2410}: libreria Arduino per i sensori {HLK-LD2410}},
+  author       = {Iavorski, Iavor},
+  year         = {2025},
+  url          = {https://github.com/iavorvel/MyLD2410},
+  urldate      = {2026-08-18}
 }

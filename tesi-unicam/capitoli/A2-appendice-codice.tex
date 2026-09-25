@@ -3,7 +3,9 @@
 
 Questa appendice documenta l'organizzazione del software prodotto per la tesi e i
 comandi con cui è stato usato. I listati completi non sono riportati integralmente:
-si indicano struttura, scelte implementative rilevanti e modalità d'uso.
+si indicano struttura, scelte implementative rilevanti e modalità d'uso. Tutto il
+software è nel repository della tesi insieme ai file CSV della campagna, che ne sono
+l'unico contenuto non ricostruibile.
 
 \section{Organizzazione del repository}
 
@@ -12,29 +14,72 @@ si indicano struttura, scelte implementative rilevanti e modalità d'uso.
 \toprule
 \textbf{Percorso} & \textbf{Contenuto} \\
 \midrule
+\multicolumn{2}{@{}l}{\emph{Firmware per ESP32 (Arduino)}} \\
 \texttt{firmware/ld2410b\_logger/} & logger CSV a 5~Hz con engineering mode e
-  lettura del PIR --- è il firmware usato per tutta la campagna \\
-\texttt{firmware/test00\_ld2410\_info/} & lettura dei parametri del modulo via
-  UART: firmware, MAC, soglie, gate, timeout \\
+  lettura del PIR: il firmware delle fasi 1--7 sul \ldb \\
+\texttt{firmware/ld2410b\_web/} & la web UI del \cref{cap:webui}: Access Point,
+  server asincrono, WebSocket, indice di vitalità a bordo; stesso CSV del logger
+  sulla seriale, usato per la Fase~8 \\
+\texttt{firmware/ld2420\_logger\_bin/} & logger per il \ldc\ in modalità binaria:
+  presenza, distanza e 16 energie a 16~bit a 10~Hz, con scrittura opzionale di gate
+  massimo, gate minimo e ritardo a ogni avvio \\
+\texttt{firmware/test00\_ld2410\_info/} & lettura dei parametri del \ldb\ via UART:
+  firmware, MAC, soglie, gate, timeout \\
 \texttt{firmware/test01\_ld2410\_base/} & sketch diagnostico con auto-scan del baud
   rate e stampa dei byte grezzi \\
 \texttt{firmware/test03\_pir\_base/} & verifica del PIR e misura della durata degli
   impulsi \\
-\texttt{firmware/test04\_set\_gate/} & configurazione del gate massimo per la prova
-  di selettività spaziale \\
-\texttt{firmware/ld2420\_monitor/} & lettura del LD2420 in modalità ASCII \\
+\texttt{firmware/test04\_set\_gate/} & configurazione del gate massimo del \ldb\ per
+  la prova di selettività spaziale \\
+\texttt{firmware/test06\_ld2420\_set\_gate/} & lettura e scrittura dei parametri del
+  \ldc\ via UART (32 soglie, gate, ritardo) \\
+\texttt{firmware/ld2420\_monitor/}, \texttt{test05\_ld2420\_raw/} & lettura del \ldc\
+  in modalità ASCII e dump dei byte grezzi (superati dal logger binario) \\
+\texttt{tools/embed\_web.py} & comprime la pagina web in gzip e genera l'intestazione
+  C con i byte in flash \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{Acquisizione}} \\
 \texttt{HLK-LD2410x/acquire.py} & acquisizione dalla seriale con metadati
-  sperimentali (versione adattata) \\
+  sperimentali (versione adattata dal repository di riferimento) \\
+\texttt{HLK-LD2410x/data/} & i CSV della campagna e il registro delle sessioni \\
+\texttt{HLK-LD2420/Backup config/} & le configurazioni del \ldc\ salvate dallo
+  strumento del produttore (fabbrica e tarate), in XML \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Percorso} & \textbf{Contenuto} \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{Analisi (Python)}} \\
 \texttt{analisi/verifica\_engineering.py} & controllo di qualità dei file CSV \\
 \texttt{analisi/analizza\_test.py} & metriche di confronto e aggregazione per
   scenario \\
 \texttt{analisi/analizza\_respiro.py} & analisi in frequenza e ricerca del canale
   migliore \\
+\texttt{analisi/portata2420.py} & analisi per finestre temporali delle prove di
+  portata del \ldc \\
+\texttt{analisi/vitalita\_proto.py} & prototipo dell'indice di vitalità (v2 e v3),
+  taratura e matrice di confusione \\
+\texttt{analisi/verifica\_vitalita\_bordo.py} & confronto fra l'indice calcolato a
+  bordo e il ricalcolo offline \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{Materiali derivati}} \\
+\texttt{analisi/rigenera\_tutto.py} & un comando per rifare figure, foglio Excel,
+  pagina di riepilogo e PDF dai CSV \\
+\texttt{analisi/grafici\_tesi.py}, \texttt{grafici\_tesi\_2.py} & le 22 figure di
+  questa tesi, in PDF vettoriale e PNG \\
+\texttt{analisi/esporta\_excel.py} & foglio Excel con una riga per trial valido e i
+  dati aggregati per figura \\
+\texttt{analisi/genera\_pagina.py} & pagina HTML di riepilogo autonoma, con le
+  figure incorporate \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-\section{Il logger}
+\section{Il logger del \ldb}
 
 \subsection{Scelte implementative rilevanti}
 
@@ -49,10 +94,14 @@ si indicano struttura, scelte implementative rilevanti e modalità d'uso.
   \item[Engineering mode all'avvio] Il firmware entra in configurazione, attiva
     l'engineering mode, esce dalla configurazione e verifica che i frame ricevuti
     siano del tipo esteso, segnalando l'esito sulla seriale. Un fallimento silenzioso
-    produrrebbe file senza colonne per-gate scoperti solo in fase di analisi.
+    produrrebbe file senza colonne per gate scoperti solo in fase di analisi.
   \item[Intestazione stampata una sola volta] L'intestazione CSV è stampata in
     \texttt{setup()}. Poiché il reset all'apertura della porta non è garantito, lo
     script di acquisizione la ricostruisce dal numero di colonne (si veda oltre).
+  \item[Marcatore di versione] Ogni sketch stampa all'avvio una riga
+    \texttt{\# BUILD n}, che \texttt{acquire.py} scarta perché inizia con il cancelletto
+    ma che resta nel log: l'esito di una prova non può così essere attribuito a un
+    binario diverso da quello caricato.
 \end{description}
 
 \subsection{Formato di uscita}
@@ -70,7 +119,37 @@ light_level,out_level
 \end{lstlisting}
 
 Le prime nove colonne coincidono con quelle del repository di
-riferimento~\cite{repoCallisto}, per compatibilità.
+riferimento~\cite{repoCallisto}, per compatibilità. Il firmware della web UI produce
+sulla seriale esattamente queste 29 colonne, quindi \texttt{acquire.py} funziona con
+entrambi senza modifiche.
+
+\section{Il logger del \ldc}
+
+Il logger binario legge i frame da 45~byte della modalità \emph{energy}
+(\cref{app:ld2420-frame}) a 10~Hz e li riduce a 5~Hz per coerenza con il resto della
+campagna. Produce le stesse nove colonne di base, seguite dalle sedici energie grezze
+(\texttt{energy2420\_gate0..15}, interi 0--65535: il nome è diverso da quello del
+\ldb\ proprio perché la scala è diversa e nessuno script le confonda), dal conteggio
+dei frame validi e dalla distanza grezza. Le colonne del \ldb\ che il \ldc\ non
+possiede (\texttt{moving\_energy}, \texttt{stationary\_*}) valgono zero.
+
+Due scelte meritano una nota.
+
+\begin{description}[leftmargin=1.4em,style=nextline,itemsep=3pt]
+  \item[Il PIR non collegato vale $-1$, non $0$] Nei test del solo \ldc\ il PIR non è
+    cablato. Un piedino non collegato leggerebbe zero per tutto il file, e gli script
+    ne ricaverebbero un ``$100\,\%$ di falsi negativi'' con una persona davanti: un
+    numero finto che sembra una misura. Il firmware scrive $-1$, lo script di
+    analisi omette tutte le metriche del PIR e marca lo stato come non collegato, e
+    nel foglio Excel le celle restano vuote con la ragione a fianco. Verificato che
+    sui file con PIR cablato nulla cambi.
+  \item[Parametri scritti a ogni avvio, in RAM] Gate massimo, gate minimo e ritardo
+    di scomparsa possono essere scritti via UART a ogni accensione dell'ESP32. La
+    scrittura è accettata e riletta correttamente, ma non è persistente: il modulo la
+    perde al proprio ciclo di alimentazione. Il valore riletto finisce in un
+    commento in testa al CSV, così ogni file dichiara la configurazione con cui è
+    stato acquisito.
+\end{description}
 
 \section{Acquisizione}
 
@@ -85,6 +164,10 @@ pip install pyserial numpy
 mkdir data
 \end{lstlisting}
 
+Gli script dei materiali derivati richiedono inoltre \texttt{matplotlib},
+\texttt{openpyxl} e \texttt{pillow}; \texttt{rigenera\_tutto.py} lo verifica e indica
+il comando di installazione se mancano.
+
 \subsection{Uso}
 
 \begin{lstlisting}[language=bash,caption={Esempio di acquisizione di un trial.},
@@ -97,7 +180,12 @@ python acquire.py --port COM3 --duration 300 ^
 
 Lo script aggiunge a ogni riga le colonne \texttt{pc\_time\_s},
 \texttt{group\_id}, \texttt{trial\_id}, \texttt{scenario},
-\texttt{ground\_truth\_presence}, \texttt{ground\_truth\_state}.
+\texttt{ground\_truth\_presence}, \texttt{ground\_truth\_state}. Le opzioni
+\texttt{-{}-beep-at SEC} (segnale acustico all'istante dell'evento, per le latenze)
+e \texttt{-{}-tappe} (annunci vocali a istanti prefissati, per le prove di portata)
+sono aggiunte per questa tesi: il segnale conta dalla prima riga di dati, cioè dalla
+stessa origine dei tempi usata dall'analisi, mentre un timer esterno introdurrebbe
+un errore sistematico di 2--3~s pari al reset dell'ESP32.
 
 \subsection{La modifica necessaria}
 
@@ -107,12 +195,12 @@ scatta, il file risulta \textbf{vuoto senza alcun messaggio}. La versione adatta
 ricostruisce l'intestazione dal numero di colonne della prima riga di dati:
 
 \begin{center}\small
-\begin{tabular}{@{}rl@{}}
+\begin{tabular}{@{}rp{0.72\linewidth}@{}}
 \toprule
 \textbf{Colonne} & \textbf{Interpretazione} \\
 \midrule
 9 & modalità base \\
-27 & engineering mode \\
+27 & engineering mode del \ldb\ (o logger binario del \ldc, che stampa l'intestazione a ogni avvio) \\
 29 & engineering mode con sensore di luce e stato OUT \\
 \bottomrule
 \end{tabular}
@@ -127,43 +215,81 @@ python analisi/verifica_engineering.py data/fermo_seduto_T01.csv
 \end{lstlisting}
 
 Verifica ed esce con diagnostica su: cadenza effettiva e jitter, presenza delle
-colonne per-gate, percentuale di campioni saturi per canale, coerenza fra gate di
-picco e distanza riportata, rumore di fondo per-gate nei tratti a stanza vuota,
+colonne per gate, percentuale di campioni saturi per canale, coerenza fra gate di
+picco e distanza riportata, rumore di fondo per gate nei tratti a stanza vuota,
 numero e istante delle transizioni di presenza. Va eseguito su ogni file
 \emph{prima} di usarlo per l'analisi.
 
 \subsection{Metriche di confronto}
 
 \begin{lstlisting}[language=bash,basicstyle=\ttfamily\scriptsize]
-python analisi/analizza_test.py data/fermo_seduto_T0*.csv --salta-inizio 30
-python analisi/analizza_test.py data/ingresso_T0*.csv --event-time 10
-python analisi/analizza_test.py data/uscita_T0*.csv --release-time 10
+python analisi/analizza_test.py data/fermo_seduto_T0*.csv --salta-inizio 20
+python analisi/analizza_test.py data/ingresso_T0*.csv --event-time 30
+python analisi/analizza_test.py data/uscita_T0*.csv --release-time 30
 \end{lstlisting}
 
 Le opzioni principali: \texttt{-{}-salta-inizio} scarta i primi secondi (uscita
-dell'operatore e stabilizzazione del PIR), \texttt{-{}-event-time} e
-\texttt{-{}-release-time} attivano il calcolo delle latenze con la convenzione
-dell'evento a istante noto. Con più file dello stesso scenario lo script aggrega e
-riporta media e deviazione standard fra trial. Nel calcolo della latenza di rilascio
-distingue i casi in cui il rilascio non avviene mai e quelli in cui avviene prima
-dell'istante dichiarato, e conta le riaccensioni nella coda.
+dell'operatore e stabilizzazione del PIR; 20~s negli scenari ordinari, 40 sotto il
+banco, 120 nella selettività, 60 a stanza vuota, 90 nei trial da fermo del \ldc),
+\texttt{-{}-event-time} e \texttt{-{}-release-time} attivano il calcolo delle latenze
+con la convenzione dell'evento a istante noto. Con più file dello stesso scenario lo
+script aggrega e riporta media e deviazione standard fra trial. Nel calcolo della
+latenza di rilascio distingue i casi in cui il rilascio non avviene mai e quelli in
+cui avviene prima dell'istante dichiarato, e conta le riaccensioni nella coda. Lo
+script legge indifferentemente i file del \ldb, del \ldc\ e della web UI.
 
 \subsection{Analisi del respiro}
 
 \begin{lstlisting}[language=bash,basicstyle=\ttfamily\scriptsize]
-python analisi/analizza_respiro.py data/fermo_seduto_T01.csv --scan
+python analisi/analizza_respiro.py data/respiro_2m_15_T01.csv --scan ^
+  --salta-inizio 40 --min-canali 3
 \end{lstlisting}
 
-La modalità \texttt{-{}-scan} esamina tutti e venti i canali di energia, scarta
-quelli saturi e quelli piatti secondo criteri dichiarati, ordina i rimanenti per
-rapporto segnale-rumore del picco in banda 0,1--0,5~Hz e riporta la mediana delle
-stime concordi con l'elenco dei canali che le sostengono. Esporta lo spettro in CSV
-per la produzione dei grafici. Richiede NumPy; gli altri script usano la sola
-libreria standard.
+La modalità \texttt{-{}-scan} esamina tutti i canali di energia, scarta quelli saturi
+e quelli piatti secondo criteri dichiarati, ordina i rimanenti per rapporto
+segnale-rumore del picco in banda 0,1--0,5~Hz, raggruppa le stime concordi entro il
+$10\,\%$ e applica le regole di \cref{sec:respiro-metronomo}: almeno $N$ canali in
+movimento nel gruppo, preferenza per la fondamentale fra gruppi in rapporto armonico,
+soglia di plausibilità a 8 atti al minuto. Esporta lo spettro in CSV. Richiede NumPy;
+gli altri script di analisi usano la sola libreria standard.
 
-\section{Configurazione del gate massimo}
+\subsection{Indice di vitalità}
 
-Lo sketch \texttt{firmware/test04\_set\_gate/} imposta il gate massimo via UART per
+\begin{lstlisting}[language=bash,basicstyle=\ttfamily\scriptsize]
+python analisi/vitalita_proto.py data/fermo_1m_H_T0*.csv ^
+  data/micromovimenti_1m_H_T0*.csv data/movimento_1m_H_T0*.csv ^
+  --alpha-mov 0.05 --alpha-var 0.01 --k 0.5 --soglie 45,95 ^
+  --gate distanza --fondo-da data/stanza_vuota_notte_T01.csv
+python analisi/verifica_vitalita_bordo.py data/Immobile_web_1m_T01.csv
+\end{lstlisting}
+
+Il prototipo calcola la serie dell'indice per ogni file, la distribuzione per
+scenario e la matrice di confusione scenario/classe; le opzioni \texttt{-{}-gate}
+(\texttt{energia}, \texttt{distanza} o un gate fisso) e \texttt{-{}-sorgente}
+(\texttt{gate} o \texttt{max}) permettono di riprodurre le versioni precedenti
+dell'algoritmo per confronto. Lo script di verifica rilegge un CSV esportato dalla
+web UI, ricalcola l'indice con le stesse costanti e lo confronta con la colonna
+scritta dal firmware, riportando la frazione di campioni concordi entro $\pm 1$
+sull'intero file e sulla coda a regime.
+
+\section{Materiali derivati riproducibili}
+
+\begin{lstlisting}[language=bash,basicstyle=\ttfamily\scriptsize]
+python analisi/rigenera_tutto.py
+\end{lstlisting}
+
+Esegue in ordine i due script delle figure, l'esportazione Excel, la pagina di
+riepilogo e la stampa in PDF, in circa mezzo minuto, fermandosi al primo errore senza
+sovrascrivere i passi successivi. Le figure importano le funzioni di
+\texttt{analizza\_test.py} anziché ricalcolare: i numeri nei grafici coincidono per
+costruzione con quelli dei capitoli. Figure, foglio Excel, pagina e PDF non sono
+versionati perché si rifanno dai CSV; il foglio Excel ha una riga per trial valido e
+un foglio separato con i file esclusi e la ragione dell'esclusione, così che nessun
+file di prova o di controllo entri nelle statistiche per una svista.
+
+\section{Configurazione dei parametri via UART}
+
+Lo sketch \texttt{firmware/test04\_set\_gate/} imposta il gate massimo del \ldb\ per
 la prova di selettività spaziale. Tre accorgimenti sono degni di nota, perché
 riguardano la scrittura di parametri persistenti su un modulo:
 
@@ -177,3 +303,29 @@ riguardano la scrittura di parametri persistenti su un modulo:
         (le 9+9 soglie di \cref{tab:identita}, gate 8/8 e timeout di 5~s),
         così da poter tornare in ogni momento alla configurazione di riferimento.
 \end{enumerate}
+
+Lo sketch \texttt{firmware/test06\_ld2420\_set\_gate/} fa lo stesso per il \ldc:
+legge le 32 soglie, il gate massimo e il ritardo, e ha permesso di verificare che i
+valori in flash coincidessero con quelli mostrati in decibel dallo strumento del
+produttore, secondo la relazione $\text{grezzo} = 10^{\text{dB}/10}$
+(\cref{sec:ld2420-stato}). Per il \ldc\ la scrittura via UART non è persistente, e
+la configurazione di riferimento resta quella salvata in flash dallo strumento del
+produttore, di cui i file XML nel repository sono la copia.
+
+\section{Come si compila la web UI}
+
+\begin{enumerate}[leftmargin=1.8em,itemsep=2pt]
+  \item installare dal gestore di librerie dell'IDE \texttt{ESP Async WebServer} e
+        \texttt{Async TCP} nel fork ESP32Async, oltre a \texttt{MyLD2410} e
+        \texttt{ArduinoJson}~7;
+  \item in \emph{Strumenti $\to$ Partition Scheme} scegliere ``Huge APP (3MB No
+        OTA)'';
+  \item dopo ogni modifica ai file in \texttt{web/}, eseguire
+        \texttt{python tools/embed\_web.py}, che rigenera \texttt{web\_assets.h};
+  \item compilare e caricare come uno sketch qualsiasi. All'avvio la seriale a
+        115200~baud stampa il marcatore di versione, poi le righe CSV.
+\end{enumerate}
+
+La rete creata è \texttt{DIPME-Sensor}; la dashboard risponde a
+\url{http://192.168.4.1/} e a qualunque nome, grazie al DNS a bordo. Per
+scaricare il CSV va usato un browser vero e non la finestra del portale captive.

@@ -40,6 +40,7 @@
 
 % ---------- Elenchi ----------
 \usepackage{enumitem}
+\usepackage{needspace}   % \Needspace prima dei titoli di paragrafo a fondo pagina
 
 % ---------- Simboli ----------
 \usepackage{gensymb}   % \degree, \celsius
@@ -61,6 +62,20 @@
 
 % ---------- Riferimenti incrociati (dopo hyperref, che e' nella classe) ----------
 \usepackage{cleveref}
+
+% ---------- Impaginazione ----------
+% La classe non imposta \emergencystretch: senza, una riga con un nome di file
+% o di colonna in \texttt (non sillababile) esce nel margine invece di allargare
+% gli spazi. Tre em bastano a eliminare quasi tutti gli sconfinamenti.
+\setlength{\emergencystretch}{3em}
+% Gli URL lunghi della bibliografia possono spezzarsi anche su cifre e lettere.
+\setcounter{biburlnumpenalty}{9000}
+\setcounter{biburlucpenalty}{9000}
+\setcounter{biburllcpenalty}{9000}
+% Listati in italiano (listings e cleveref).
+\renewcommand{\lstlistingname}{Listato}
+\crefname{listing}{listato}{listati}
+\Crefname{listing}{Listato}{Listati}
 
 % =====================================================================
 %  ADATTAMENTI ALLA CLASSE
@@ -97,6 +112,19 @@
 % \renewcommand{\todo}[1]{}
 
 
+% --- Correzione dei \label dentro i float (aggiunta il 20/09/2026) -----------------
+%  tufte-book differisce la didascalia alla fine del float e dovrebbe catturare anche il
+%  \label che la segue; con il kernel attuale il \label dentro il float torna quello di
+%  cleveref e viene scritto PRIMA che la didascalia incrementi il contatore, quindi
+%  \cref{fig:...} stampava "sezione N" al posto di "figura N" (accertato con un
+%  documento minimo). La patch ripristina la cattura all'inizio del contenuto del float.
+\makeatletter
+\xpatchcmd{\@tufte@float}
+  {\begin{minipage}[\floatalignment]{\@tufte@float@contents@width}\hbox{}}
+  {\begin{minipage}[\floatalignment]{\@tufte@float@contents@width}\hbox{}\let\label\@tufte@label}
+  {\typeout{tufte float label patched}}{\typeout{tufte float label patch FAILED}}
+\makeatother
+
 \begin{document}
 
 \frontmatter
@@ -118,10 +146,10 @@
 \input{capitoli/01-introduzione}
 \input{capitoli/02-sensori-stato-arte}
 \input{capitoli/03-moduli-e-dati}
-\input{capitoli/04-confronto-sperimentale}
-\input{capitoli/05-consumo-energetico}
-\input{capitoli/06-web-ui}
-\input{capitoli/07-indice-vitalita}
+\input{capitoli/04-metodologia}
+\input{capitoli/05-confronto-sperimentale}
+\input{capitoli/06-indice-vitalita}
+\input{capitoli/07-consumo-energetico}
 \input{capitoli/08-conclusioni}
 
 \appendix

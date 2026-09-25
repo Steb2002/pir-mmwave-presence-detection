@@ -10,7 +10,7 @@
 
 ---
 
-## 1. Il problema in termini UPRISE
+## 1. Il problema in termini DIPME
 
 Nel contesto del progetto, la differenza tra "presenza" e "vitalità" è la differenza
 tra due domande dei soccorritori:
@@ -120,7 +120,7 @@ gate 1, transitorio scartato):
   scelga, distruggendo la dinamica dell'indice sotto il banco. La v3 usa la **sola**
   energia del gate attivo. *Motivazione originale, conservata:* le due energie a volte
   divergono per i filtri interni del radar; il massimo rende l'indice conservativo verso
-  i falsi "nessun segno", che è l'errore più grave nel dominio UPRISE.
+  i falsi "nessun segno", che è l'errore più grave nel dominio DIPME.
 
 **Correzione del rumore di fondo (obbligatoria).** Prima di entrare nell'indice,
 l'energia del gate va portata al netto del rumore misurato a stanza vuota e riscalata:
@@ -314,7 +314,7 @@ taratura, applicato a un'altra geometria, guarda altrove. Il dato che si trasfer
 davvero è la **discriminazione immobile / in movimento (96,1 %)**, netta con qualunque
 criterio. La conclusione operativa resta quella del §5.3: **taratura per installazione**
 (fondo e riferimento misurati sotto l'arredo in cui il sensore è montato), praticabile in
-UPRISE perché il montaggio è fisso e noto.
+DIPME perché il montaggio è fisso e noto.
 
 ⚠️ Il caso che fallisce, `sotto_banco_movimenti_H`, è classificato *alta* invece di
 *moderata*. Ma quell'etichetta era stata assegnata **per analogia** con il caso a 1 m e
@@ -324,7 +324,7 @@ giusta. Il dato onesto è che l'indice colloca quello scenario in alto, non che 
 
 ⚠️ **Le soglie restano specifiche della geometria di installazione.** Il trasferimento
 funziona per la classe bassa ma non garantisce la collocazione delle classi intermedie.
-Per UPRISE è gestibile — ogni sensore sta fisso sotto il proprio arredo e si tara una
+Per DIPME è gestibile — ogni sensore sta fisso sotto il proprio arredo e si tara una
 volta in quella posizione — ma sarebbe un problema su un dispositivo portatile. La via
 naturale è una **auto-taratura all'installazione**: fondo a stanza vuota più un
 riferimento di movimento.
@@ -389,7 +389,7 @@ jumper H) e con 5 trial ciascuna.
 | `vitalita_micro` | `micromovimenti_1m_H` | 5 | ~200 s |
 | `vitalita_attivo` | `movimento_1m_H` | 5 | ~60 s |
 
-In più, **due scenari nella geometria UPRISE reale** che il piano non prevedeva:
+In più, **due scenari nella geometria DIPME reale** che il piano non prevedeva:
 `sotto_banco_immobile_H` e `sotto_banco_movimenti_H` (5 trial × ~340 s). Servono come
 insieme di validazione **su geometria diversa da quella di taratura**, che è una prova
 molto più severa del semplice hold-out sui trial.
@@ -413,7 +413,7 @@ molto più severa del semplice hold-out sui trial.
      lo stesso soggetto immobile dà `menergy_gate1` = 30,9 a 1 m e **54,0** sotto il
      banco — le soglie tarate a 1 m potrebbero non trasferirsi. Se non si trasferiscono,
      è un risultato da riportare, non un fallimento: significa che l'indice va tarato
-     per geometria di montaggio, cosa che in UPRISE è nota a priori (il sensore è
+     per geometria di montaggio, cosa che in DIPME è nota a priori (il sensore è
      fissato sotto un arredo di dimensioni note)
 5. Porting in `vitality.h` (stesse costanti) + verifica live con la web UI (step 5)
 
@@ -459,7 +459,7 @@ mostra perché la correzione serve.
 parametri, `sotto_banco_immobile_H` dà **65,6**, cioè quasi quanto i micro-movimenti a
 1 m (77,3). Una sola terna di soglie non può quindi classificare correttamente
 entrambe le geometrie. Le strade possibili, da valutare in taratura:
-1. tarare per geometria di montaggio (in UPRISE il sensore è fissato sotto un arredo
+1. tarare per geometria di montaggio (in DIPME il sensore è fissato sotto un arredo
    di dimensioni note, quindi la geometria è nota a priori);
 2. normalizzare rispetto all'energia del bersaglio a riposo di quel sensore, cioè una
    calibrazione una tantum all'installazione;

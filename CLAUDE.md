@@ -1,8 +1,8 @@
 # Tesi Triennale — mmWave Presence Sensing con ESP32
 
-## Contesto — Progetto UPRISE
+## Contesto — Progetto DIPME
 
-La tesi si inserisce nel **progetto europeo UPRISE**, nato dopo il terremoto del 2016 nella zona di Camerino, con l'obiettivo di mitigare il rischio sismico. L'idea generale del progetto:
+La tesi si inserisce nel **progetto DIPME** (chiamato UPRISE fino al 22/09/2026: il nome è stato cambiato su indicazione del relatore e la parola UPRISE non deve più comparire, né in tesi né nel firmware), nato dopo il terremoto del 2016 nella zona di Camerino, con l'obiettivo di mitigare il rischio sismico. L'idea generale del progetto:
 
 - Sensori IoT integrati negli **arredi** (es. banchi scolastici), che si attivano solo in "modalità terremoto" (trigger: accelerometro sul gateway, blackout, ecc.)
 - Durante l'emergenza il sensore rileva se **c'è qualcuno rifugiato sotto l'arredo** e lo comunica all'esterno
@@ -24,6 +24,45 @@ La tesi si inserisce nel **progetto europeo UPRISE**, nato dopo il terremoto del
 - **Dimostratori reali**: Polo Lodovici di Informatica (Ascoli Piceno) e IIS Fermi Sacconi Ceci (Ascoli Piceno, 2 aule + sala professori)
 - **Digital Twin**: piattaforma https://pros.unicam.it/dtplatform/ per modellare, simulare e validare il sistema IoT prima dell'installazione (anche con VR) — Callisto et al., *"Design and Development of a Digital Twin Prototype for the SAFE Project"*, EDOC 2023
 - **Piattaforma di monitoraggio** con due modalità: "tempo di pace" (monitoraggio ordinario) e "tempo di guerra" (emergenza sismica)
+
+### Paper DIPME del professore (ricevuto il 13/09/2026, `paper_dipme.pdf`, 14 pagine)
+
+Callisto De Donato, Corradini, Re, *"A Case Study on a Distributed IoT System for Indoor
+Disaster Preparedness in Operational Environments"*, manoscritto 2026 — in `bib/tesi.bib`
+come `callisto2026dipme`, citato nei cap. 1, 2, 5, 8. **È la fonte primaria più recente
+sul nodo reale** e corregge le slide del 2025 su un punto:
+- il nodo dispiegato ("Monitoring and Safety IoT device", Tabella 1) è **STM32WLE + LoRa +
+  PIR Panasonic EKMB139 + BME280 + SCD40**, a batteria. **Niente UWB nella configurazione
+  dispiegata**: la presenza è affidata al solo PIR. L'UWB resta nelle slide → in tesi
+  scrivere "previsto nelle slide, non nel dispiegamento documentato"
+- dimostratore: **42 nodi nei banchi salva-vita** di 2 aule (Aula 203 e 204) di una scuola
+  secondaria delle Marche, ottobre 2025 → marzo 2026, 706 358 record; gateway Lenovo
+  ThinkEdge + EdgeX Foundry + Mosquitto, cloud ThingsBoard su AWS
+- regimi *peace/war*: in emergenza **il bit di presenza decide la cadenza LoRa** (1 min con
+  presenza, 15 min senza; normale 10 min; timeout 3 h → emergenza autonoma). Argomento
+  forte per la tesi: un falso negativo del PIR = banco ascoltato 15× meno spesso
+- **future work del paper = questa tesi**: "millimeter-wave radar could enhance the current
+  PIR-based presence detection while considering trade-offs among accuracy, energy
+  consumption, privacy, and system complexity" (§8, rif. [61] Huang et al. 2021)
+- riferimenti completi recuperati dalla sua bibliografia: `callisto2023dt` (EDOC 2023
+  Workshops, Springer 2024, pp. 107-122, autori Callisto De Donato, Corradini, Fornari, Re,
+  Romagnoli), `callisto2024safe` (Internet of Things 27, 2024, 101273 — la piattaforma SAFE),
+  `pietroni2021furniture` (AGATHÓN 10, 2021 — gli arredi salva-vita)
+
+### Altri materiali ricevuti il 13/09/2026
+- **Tesi Scattolini** (`Tesi_Scattolini_firmata.pdf`, 74 pagine, relatore Callisto, a.a.
+  2022/23, L-31): indicata dal professore come **esempio di testo**. 7 capitoli (Introduzione,
+  Background, AWS, Progettazione, Implementazione, Caso d'uso, Conclusioni), abstract, dedica,
+  frontespizio "Laureanda / Relatore / Correlatore / A.A.". Il nostro frontespizio coincide
+  nella struttura; la nostra tesi è più lunga (135 pagine) per la parte sperimentale
+- **Relazione Dell'Aquila** (`REBECCA DELL'AQUILA (1).zip`: report 53 pagine + codici
+  PlatformIO/Raspberry/PyTorch, corso Embedded Systems Lab, a.a. 2025/26): stessi due radar +
+  PIR, approccio diverso (Raspberry + rete GRU, 1 Hz, ~3700 campioni, accuratezza 90,8 %).
+  **Riscontro indipendente** dei nostri risultati sul LD2420 (flag di presenza inaffidabile,
+  gate 0 alto a vuoto ed escluso, soglie da tarare, sovrapposizione vuoto/poco attivo) e sul
+  LD2410B (nessun falso positivo con finestre aperte, tende, esterno, gatto rilevato). In
+  `bib/tesi.bib` come `dellaquila2026`, discussa in cap. 4 `sec:ld2420-riscontro`. Il
+  professore: "usalo solo per eventuali descrizioni che ti tornano utili"
 
 ---
 
@@ -326,7 +365,7 @@ Con la modalità binaria **di comunità**: in più le **16 energie per-gate a 16
 sul bersaglio fermo e il sensore di luce — quelle sono limitazioni del modulo, non
 dell'interfaccia.
 
-🚨 **Limite decisivo per UPRISE** (manuale §8 *Cautions*, citazione): il radar riporta
+🚨 **Limite decisivo per DIPME** (manuale §8 *Cautions*, citazione): il radar riporta
 la distanza dei corpi in movimento entro 8 m e *"does not support proximity ranging for
 stationary bodies at this time"*. Cioè: **sulla persona ferma il LD2420 dice se c'è, ma
 non dove**. È esattamente lo scenario del progetto (persona immobile sotto l'arredo),
@@ -354,7 +393,7 @@ Tabella allineata ai manuali ufficiali dei due moduli (26/08/2026).
 | Baud rate | 256000 fisso | 115200 |
 | Bluetooth | ✓ | ✗ |
 | Soglie | 0-100 interi, movimento + stazionario | 0-65535, Trigger + Maintain (isteresi) |
-| Uso consigliato | Respiro, dettaglio, **scenario UPRISE** | Portata lunga, copertura di ambienti |
+| Uso consigliato | Respiro, dettaglio, **scenario DIPME** | Portata lunga, copertura di ambienti |
 
 ---
 
@@ -503,7 +542,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
   funzioni importate da `grafici_tesi.py` e `analizza_test.py`: 14 portata con ostacoli
   (Test 3.6), 15 attenuazione per materiale sui due radar (% per il LD2410B, dB per il
   LD2420), 16 energia vs distanza in corridoio, 17 portata dei tre sensori, 18 falsi
-  positivi in scala log, 19 scenario UPRISE a tre sensori, 20 copertura angolare, 21
+  positivi in scala log, 19 scenario DIPME a tre sensori, 20 copertura angolare, 21
   distribuzione dell'indice di vitalita' v3, 22 verifica del porting bordo = offline. Legge
   le soglie del LD2420 dall'XML `ld2420_config_fondo120s_max_6_g0alto.xml` (dB → grezzo).
   ⚠️ I falsi positivi/ora dello script (≤ 0,46 / 26,1 / 6,0) differiscono di poco dal
@@ -541,7 +580,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - `analisi/ANALISI_VITALITA.md` — specifica dell'indice di vitalità (obiettivo 6, documento autonomo): algoritmo v1 (doppia EWMA movimento+respiro), classificazione a 4 classi per il triage, percorso di taratura Python-prima sui CSV della Fase 6 con validazione su trial separati, casi limite, collocazione nella tesi
 - `analisi/ANALISI_PIR.md` — analisi teorica del PIR (obiettivo 1-2): principio piroelettrico differenziale, lente di Fresnel, perché è fisicamente cieco alla persona ferma, dati prodotti (1 bit + ritenuta/trigger), sensibilità alla temperatura, sezione 6 DA COMPLETARE col modello reale (Test 0.3)
 - `SCALETTA_TESI.md` — scaletta Overleaf in 8 capitoli con mappa obiettivi→capitoli, materiale già pronto per ciascuno e ordine di scrittura consigliato (cap. 5 e 2 scrivibili subito)
-- `INCONTRO_PROFESSORE.md` — agenda per l'incontro: cosa mostrare (PIANO_TEST, scaletta, consumi) e domande consolidate (validazione protocollo, montaggio sensore/lamiera, scadenza, UPRISE vs SAFE, ruolo UWB)
+- `INCONTRO_PROFESSORE.md` — agenda per l'incontro: cosa mostrare (PIANO_TEST, scaletta, consumi) e domande consolidate (validazione protocollo, montaggio sensore/lamiera, scadenza, DIPME vs SAFE, ruolo UWB)
 - `PIANO_TEST.md` — piano di test completo in ordine di esecuzione (fasi 0-7)
 - `PIANO_TEST_LD2420.md` — piano di test dedicato al secondo radar (26/08/2026), scritto
   dopo l'acquisizione della documentazione ufficiale. Distingue i **10 test radar da
@@ -558,7 +597,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 
 ### Documentazione tecnica
 - Repo professore HLK-LD2410x (firmware ESP32 + script Python CSV): https://github.com/massimocallisto/HLK-LD2410x
-- Slide progetto UPRISE (terremoto): https://docs.google.com/presentation/d/11Q_Zet3aEtPZo2vcoM7_cvcTCbvLY-FBznCqPK37k3E/edit?usp=sharing
+- Slide progetto DIPME (terremoto): https://docs.google.com/presentation/d/11Q_Zet3aEtPZo2vcoM7_cvcTCbvLY-FBznCqPK37k3E/edit?usp=sharing
 - Slide "Sharper - Informatica 26 settembre 2025.pptx" (file locale, 76 slide): contesto completo — arredi salva-vita, DIPME, LoRa, Digital Twin
 - Paper Digital Twin del progetto: Callisto et al., "Design and Development of a Digital Twin Prototype for the SAFE Project", EDOC 2023 (Springer)
 - Piattaforma Digital Twin UNICAM: https://pros.unicam.it/dtplatform/
@@ -648,7 +687,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
   OT2 = presenza); la variante invertita per firmware ≤ 1.5.2 è informazione di comunità
   (ESPHome) — verificare comunque prima di collegare con HLK-CH340E
 - Il LD2420 **non riporta la distanza dei bersagli fermi** (manuale §8): sulla persona
-  immobile dice se c'è, non dove. Limite decisivo per lo scenario UPRISE
+  immobile dice se c'è, non dove. Limite decisivo per lo scenario DIPME
 - Entrambi i sensori usano **TX/RX incrociati** rispetto all'ESP32
 - Il baud rate 256000 richiede UART hardware dell'ESP32 (D25/D26), non softserial
 - Per il respiro serve **engineering mode** sul LD2410B (byte comando `0x62`)
@@ -677,7 +716,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - [x] Librerie installate: MyLD2410, ArduinoJson 7.4.3
 - [x] ESP32 testato e funzionante su COM3
 - [x] Cavi LD2410B identificati e mappati
-- [x] Call col professore: obiettivi definiti in 6 punti, contesto UPRISE, repo di riferimento
+- [x] Call col professore: obiettivi definiti in 6 punti, contesto DIPME, repo di riferimento
 - [x] Studiare il repo del professore (clonato in `HLK-LD2410x/`, codice analizzato — vedi sezione dedicata)
 - [x] Piano di test completo scritto (`PIANO_TEST.md`)
 - [x] Script di analisi pronti (`analisi/analizza_test.py`, `analisi/analizza_respiro.py`)
@@ -754,7 +793,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
          stazionario nei primi due gate. Conseguenza pratica: respiro e indice di vitalità,
          che si basano sulla serie di energia per-gate, per un soggetto a < 1.5 m non
          possono usare il canale stazionario → usare il canale **moving** o i gate ≥ 2.
-         **Rilevante per lo scenario UPRISE** (persona sotto il banco, quindi vicina):
+         **Rilevante per lo scenario DIPME** (persona sotto il banco, quindi vicina):
          da verificare esplicitamente in fase 6
       3. **Coda di presenza**: dopo l'uscita il radar ha tenuto `presence=1` per ~10 s con
          un target fermo fantasma a ~5.2 m ed energia in decadimento. È il comportamento
@@ -851,7 +890,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       dentro la zona in cui l'esemplare funziona (piano dettagliato in
       `PIANO_TEST_LD2420.md` §0-bis). Restano fuori solo i test che *richiedono* più di
       2 m; entrano invariati i due più preziosi — **dose-risposta a 1 m** (tre sensori sulla
-      stessa scala di movimento) e **sotto il banco a 60 cm** (scenario UPRISE). Vincoli:
+      stessa scala di movimento) e **sotto il banco a 60 cm** (scenario DIPME). Vincoli:
       modalità binaria obbligatoria, **gate max 6 + soglie tarate** (deroga dichiarata alla
       parità di configurazione: a soglie di fabbrica il modulo non rilascia), e ogni numero
       attribuito **all'esemplare**, mai al modello. ~9,5 h + 1 notturna
@@ -936,7 +975,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       (e 0 % con legno/vetro a 4-5 m). 📌 **Regola di protocollo**: annotare sempre il TIPO
       di movimento, non solo la distanza; "baseline" va scritta con chi c'e' nella scena
 - 🎯 **TEST 1.4-2420 SOTTO IL BANCO (09/09/2026): immobile 98,4 ± 3,6 %, micro-movimenti
-      100 %. Riga UPRISE a tre sensori completata: immobile PIR 1,32 · LD2410B 100 ·
+      100 %. Riga DIPME a tre sensori completata: immobile PIR 1,32 · LD2410B 100 ·
       LD2420 98,4; con micro-movimenti 96,5 · 100 · 100.** Sensore sotto il piano come il
       22/08, 5 × 302 s utili (scarto 90). Da immobile 4/5 al 100 % e **T05 al 92 %: un
       rilascio di 24 s (164-189 s) con la persona sotto** — primo falso negativo su persona
@@ -981,7 +1020,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       presenza (100 % con tutto, metallo compreso) qui non e' una metrica: ritardo 30 s +
       code. Ma gli **hold del gate 2** lo sono: baseline 25-33 %, cartongesso 17-24 %,
       vetro 7-10 %, **legno 0-1 %** → attraverso 10 mm di legno questo esemplare **non
-      acquisirebbe** la persona a 1 m (LD2410B a 3 m: 100 %). Per UPRISE l'incasso in
+      acquisirebbe** la persona a 1 m (LD2410B a 3 m: 100 %). Per DIPME l'incasso in
       legno, ammesso dal LD2410B, non lo e' per questo LD2420. Curiosita': col metallo il
       gate 4 sale da 8 a 22 e i gate 0-1 non si muovono — un riflettore fermo a 20 cm non
       compare nel proprio gate (canale di variazione); `dist_raw` col legno = 8/20/20 cm,
@@ -1005,7 +1044,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       200-207 a 2 m**: confinata alla finestra e piantata sul bordo, identica a due
       distanze diverse (gate min 1 dava 136 a 105 cm). Coerente con le riaccensioni non
       ridotte del 07/09. Nessuna delle due proprieta' e' nel manuale (Tab. 4-2: solo il
-      range 0-15). Per UPRISE: inutile contro i riflettori vicini, dannoso per la distanza
+      range 0-15). Per DIPME: inutile contro i riflettori vicini, dannoso per la distanza
 - 👥 **TEST 2.5-2420 DUE PERSONE (08/09/2026): un bit, nessun conteggio.** A ferma a 1 m,
       B a 2 m. Presenza 100 % in tutti gli scenari. **In fila B e' invisibile** (gate 3 =
       spill di A da sola, distanza senza senso), come il 0,4 % del LD2410B. **Sfalsate**:
@@ -1018,7 +1057,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - 📐 **MISURA ANGOLARE LD2420 (08/09/2026): fascio utile fino a 75°, al fondo a 90°** —
       gate 2 (fondo 12-13): 0° 22,8 · 45° 31,5 · 60° 34,4 · 75° 29,4 · **90° 15,8**, trigger
       mai superato a 90°. LD2410B stessa prova: 100 % con energia 94-97 fino a 90°. → **piu'
-      stretto del LD2410B (≥ ±90°), piu' largo del dichiarato (±60° / ±45°)**. Per UPRISE e'
+      stretto del LD2410B (≥ ±90°), piu' largo del dichiarato (±60° / ±45°)**. Per DIPME e'
       il rovescio della scoperta sul LD2410B: **il vicino in movimento a 90° non e' visto**,
       la selettivita' fra banchi adiacenti viene dal diagramma d'antenna e non dal montaggio.
       Unico punto della campagna in cui il LD2420 fa meglio: va scritto con lo stesso rilievo
@@ -1056,7 +1095,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       all'accensione** e un corpo a 20 cm ci finisce dentro. Coerente con l'auto-
       calibrazione all'avvio che ESPHome attribuisce al fw ≥ 1.5.4 (comunita', non
       manuale). 📌 **Regola**: dopo ogni accensione allontanarsi subito, nessuno entro
-      ~2 m per 90 s, poi 60 s di check del fondo. **Per UPRISE**: un sensore acceso con
+      ~2 m per 90 s, poi 60 s di check del fondo. **Per DIPME**: un sensore acceso con
       l'occupante gia' sotto il banco parte col fondo sbagliato — il LD2410B non l'ha mai
       fatto in decine di riavvii
 - 🚨 **STATO ANOMALO DEL LD2420 DOPO RIAVVIO A CALDO (06-07/09/2026)** *(ipotesi termica
@@ -1145,7 +1184,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       cammino continuo ha emesso solo **1-4 impulsi** per trial, di durata 3.6-3.8 s.
       Spiegazione: il piroelettrico risponde al *transito* del flusso IR attraverso le zone
       della lente di Fresnel, non al movimento in sé — chi si muove *sul posto* non
-      attraversa le zone. **Rilevantissimo per UPRISE**: una persona intrappolata si muove
+      attraversa le zone. **Rilevantissimo per DIPME**: una persona intrappolata si muove
       sul posto, non attraversa la stanza. È il caso peggiore per un PIR
 - [x] **⚠️ CORREZIONE IMPORTANTE (22/08/2026): l'80.5% di falsi negativi del PIR con
       persona in movimento a 1 m era un artefatto della modalita' L.** Ripetuta la stessa
@@ -1185,7 +1224,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       scende da 99.3 a 68.6 e la dispersione della distanza sale da 10.4 a 21.3 cm. Il
       bersaglio immobile da' un ritorno piu' debole, quindi la stima di distanza e' piu'
       rumorosa — pur restando il rilevamento al 100%
-- [x] 🎯 **La stessa dimostrazione nello scenario UPRISE reale (22/08/2026)**: persona
+- [x] 🎯 **La stessa dimostrazione nello scenario DIPME reale (22/08/2026)**: persona
       sotto il banco a ~60 cm, jumper su **H**, 5 trial per condizione:
       | condizione | rilevamento PIR | fn PIR | fn radar |
       | con micro-movimenti | **96.52 ± 3.60 %** | 3.48 % | 0.00 % |
@@ -1200,7 +1239,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       e entro ~1 m, e' un ottimo rilevatore di **movimento**; (2) e' praticamente cieco
       alla persona **immobile**, a qualunque distanza e in qualunque configurazione;
       (3) il radar mmWave rileva entrambe le condizioni al 100% in tutti i test svolti.
-      Per UPRISE, dove la persona intrappolata puo' essere incosciente o esausta e quindi
+      Per DIPME, dove la persona intrappolata puo' essere incosciente o esausta e quindi
       immobile, il PIR non e' adeguato e il mmWave e' necessario. **Non "il PIR e' scarso",
       ma "il PIR fa bene un lavoro che non e' questo"**
 - ✔ **Residuo di comparabilita' CHIUSO (22/08/2026)**: rifatta anche `sotto_banco_immobile_H`.
@@ -1231,7 +1270,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       passa da 0 % a ~99 % cambiando solo la **direzione** del movimento. E' un
       esperimento a variabile singola piu' pulito di quello immobile-vs-movimento, dove
       cambiava la *quantita'* di movimento. Ed e' esattamente l'argomento che serve a
-      UPRISE: la persona intrappolata si muove **sul posto**, che e' il caso cieco a ogni
+      DIPME: la persona intrappolata si muove **sul posto**, che e' il caso cieco a ogni
       distanza
 - ✔ **Il confondente "il trimmer di sensibilita' era troppo basso" e' CHIUSO** senza aver
       dovuto toccare il trimmer: un sensore che rileva un attraversamento a 5 m nel 98,7 %
@@ -1340,7 +1379,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       più, ma starebbe solo trattenendo l'ultimo evento. Il dato robusto e non contestabile
       è l'altro: nei 93 s di immobilità il PIR **non ha rilevato alcun evento di movimento**
 - [x] **Il cavo blu (OUT) è definitivamente inutile**: `out_level` letto dal frame UART
-      coincide con `radar_presence` in **1699/1699** campioni. Utile anche per UPRISE: un
+      coincide con `radar_presence` in **1699/1699** campioni. Utile anche per DIPME: un
       dispositivo che vuole solo la presenza binaria può usare il solo pin OUT senza UART
 - [x] **Il sensore di luce funziona**: `light_level` 21-29 di giorno e **0-1 di notte**
       (sessione 6.5 h del 20-21/08/2026), nonostante il comando 0x01AE (config ausiliaria)
@@ -1385,7 +1424,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
         sensore. Da dichiarare in tesi come perimetro sperimentale: la retta di
         regressione è costruita su 5 punti e 25 trial, e l'extrapolazione dell'energia
         (~27 a 6 m contro soglia 15) indica che il sensore avrebbe funzionato anche là.
-        Per lo scenario UPRISE il limite è irrilevante: la distanza d'interesse è
+        Per lo scenario DIPME il limite è irrilevante: la distanza d'interesse è
         **sotto il metro** (persona sotto il banco), coperta dal Test 1.4
 - [x] **TEST 1.4 — persona sotto il banco, scenario immobile COMPLETATO (22/08/2026)**.
       5 trial x 302 s, soggetto rannicchiato a ~50 cm, sensore fissato sotto il piano:
@@ -1394,7 +1433,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
         che giustifica la tesi
       - distanza 62.7 ± 4.2 cm, dispersione entro trial 13-14 cm: **~9x peggio** che da
         seduto a 2.3 m (1.5 cm). Sotto l'arredo il radar **rileva benissimo ma localizza
-        male** — irrilevante per UPRISE, dove serve sapere *se* c'è qualcuno
+        male** — irrilevante per DIPME, dove serve sapere *se* c'è qualcuno
       - `senergy_gate0/1` = 0 come atteso, ma la presenza è portata dai **gate 2-3**
         benché il bersaglio sia a ~60 cm: la distribuzione per-gate dello stazionario non
         corrisponde alla distanza riportata. Osservazione aperta, verosimilmente cammini
@@ -1466,7 +1505,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       | **in movimento** | **100 %** |
       Quello che nel Test 2.4 sembrava selettivita' era la **debolezza dell'eco di un
       bersaglio immobile**, non il diagramma di irradiazione. Ridurre il gate non protegge
-      perche' limita la distanza e non l'angolo. Per UPRISE: **un banco vuoto accanto a una
+      perche' limita la distanza e non l'angolo. Per DIPME: **un banco vuoto accanto a una
       persona che si muove risulta occupato** → la separazione fra arredi adiacenti va
       cercata nel **montaggio fisico** (orientamento verso il basso, schermatura del lobo
       laterale), non nei parametri del modulo. Il paragrafo del cap. 4 §selettivita' e'
@@ -1498,7 +1537,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
         sensori hanno campi diversi, quindi i rispettivi istanti di "uscita" non coincidono
         esattamente. Ma concorda con i ~10 s del Test 0.2 e i ~12 s di un trial preliminare
       - 📌 **Il parametro dichiarato non descrive il comportamento osservato**: tre
-        osservazioni indipendenti danno 9-12 s contro i 5 s configurati. Per UPRISE
+        osservazioni indipendenti danno 9-12 s contro i 5 s configurati. Per DIPME
         significa che una stanza appena svuotata risulta occupata per quasi 10 s
 - [x] 🎯 **TEST 2.3 COMPLETATO (23/08/2026) — la curva dose-risposta del PIR.** A 1 m, in
       piedi, jumper H, stesso setup per tutte e tre le condizioni: cambia solo la quantita'
@@ -1587,7 +1626,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **"riporta un bersaglio per canale"**. Separa bene due persone in **stati diversi**;
       con due nello **stesso stato** la separazione degrada ma non si annulla — vedi la
       quantificazione nel blocco successivo, che corregge questa frase. E' un paragrafo migliore per il capitolo sui limiti, e ha una conseguenza
-      pratica per UPRISE: sotto due banchi vicini, una persona ferma e una che si muove
+      pratica per DIPME: sotto due banchi vicini, una persona ferma e una che si muove
       verrebbero contate entrambe; due ferme no
 - ⚠️ Precisazione sul metodo: le due persone erano **sfalsate lateralmente di ~50 cm**
       (14° fuori asse a 2 m, 7° a 4 m: entrambe dentro i ±60° del diagramma di p.11 del
@@ -1609,7 +1648,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
         che il radar ha agganciato saldamente un solo bersaglio vicino
       - ⚠️ **`radar_rate_%` resta 100 % in entrambe le geometrie**: il radar non sbaglia mai
         a dire "c'e' qualcuno". Quello che perde e' il **conteggio**, non la presenza
-      📌 **Conseguenza per UPRISE**: un singolo sensore non puo' censire piu' persone in
+      📌 **Conseguenza per DIPME**: un singolo sensore non puo' censire piu' persone in
       una stanza — chi sta dietro a qualcun altro e' invisibile. Questo **rafforza**
       l'architettura del progetto (un sensore per banco, ciascuno che guarda il proprio
       occupante) invece di indebolirla: e' un limite che l'architettura distribuita gia'
@@ -1693,7 +1732,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
         interamente il **transitorio d'ingresso** (un unico tratto continuo da t=0, mai un
         fronte di salita successivo). Il diagramma di irradiazione fa il lavoro che il gate
         non puo' fare, perche' il gate limita la distanza e non l'angolo
-- ⚠️ **Due limiti da dichiarare, entrambi importanti per UPRISE**:
+- ⚠️ **Due limiti da dichiarare, entrambi importanti per DIPME**:
       1. la selettivita' vale per un vicino **immobile**. Mentre si muove viene rilevato
          eccome: e' proprio il transitorio a produrre quel 24.8%
       2. la coda dopo che il vicino si ferma e' durata **29, 66 e 101 s** nei tre trial —
@@ -1759,7 +1798,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       piu' pulito e' legno vs cartone, entrambi a ±54°
 - ⚠️ **Cartongesso non provato** (non disponibile): e' il materiale piu' rilevante per le
       pareti di un'aula ed e' la lacuna principale della fase, da dichiarare in tesi
-- 📌 **Conseguenza per UPRISE**: il sensore puo' essere **incassato nell'arredo** — dietro
+- 📌 **Conseguenza per DIPME**: il sensore puo' essere **incassato nell'arredo** — dietro
       legno o dentro un guscio di vetroresina — e continuare a funzionare. E' una liberta'
       di progetto che il PIR non concede: per funzionare deve affacciarsi direttamente
       sull'ambiente. Il metallo resta l'unico vincolo assoluto, e nel banco reale la
@@ -1958,7 +1997,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       invece di *moderata*: ⚠️ ma quell'etichetta era stata assegnata **per analogia** col
       caso a 1 m e **non poggia su ground truth**. A 60 cm una persona che si aggiusta
       da' un ritorno molto forte, e non e' dimostrato che "moderata" sia giusto
-- ⚠️ **Le soglie restano specifiche della geometria di installazione.** Per UPRISE e'
+- ⚠️ **Le soglie restano specifiche della geometria di installazione.** Per DIPME e'
       gestibile — ogni sensore sta fisso sotto il proprio arredo e si tara una volta —
       ma sarebbe un problema su un dispositivo portatile. Via naturale: **auto-taratura
       all'installazione** (fondo a stanza vuota + un riferimento di movimento)
@@ -1975,7 +2014,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
          fino agli 8 m di documentazione. Piano in `PIANO_TEST.md`, **Fase 8**
       2. **Il sito si fa self-hosted sull'ESP32** (opzione A di `ANALISI_WEB_UI.md`,
          confermata). Motivazione del professore: e' un'ottima casistica di **scenario
-         senza connessione**, che e' esattamente lo scenario UPRISE. `ANALISI_SITO_SERVER.md`
+         senza connessione**, che e' esattamente lo scenario DIPME. `ANALISI_SITO_SERVER.md`
          (piano B) resta come **alternativa valutata e scartata**, con la motivazione —
          e' materiale buono per la tesi, non lavoro sprecato
       3. **L'indice di vitalita' va calcolato a bordo**, dentro il sito, accanto ai
@@ -2043,7 +2082,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       consumi. Da inserire nel cap. 4 con `\includegraphics{figures/figNN_...}`
 - [x] **Figure 14-22 generate (13/09/2026)** — `analisi/grafici_tesi_2.py`, passo 2 di 5 in
       `rigenera_tutto.py`. Coprono la campagna di settembre: ostacoli fino a 5 m, attenuazione
-      in dB, Fase 8 in corridoio, portata dei tre sensori, falsi positivi, scenario UPRISE a
+      in dB, Fase 8 in corridoio, portata dei tre sensori, falsi positivi, scenario DIPME a
       tre sensori, copertura angolare, vitalita' v3 e porting. Pagina di riepilogo aggiornata
       (441 trial validi, 31,9 h, 576 222 campioni; obiettivi 5 e 6 chiusi; sezione nuova con
       le nove figure). `tesi-unicam/figures/LEGGIMI.txt` riscritto: elenca le 22 figure
@@ -2057,4 +2096,29 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 
 ### Chiusura
 - [x] Consumo energetico da datasheet (obiettivo 4 — bozza in `analisi/ANALISI_CONSUMI.md`; da completare col modello PIR reale dopo Test 0.3)
-- [ ] Analisi dati e scrittura tesi
+- [x] **Capitoli scritti (13/09/2026)** — tutti gli otto capitoli e le due appendici sono
+      completi sui dati della campagna: cap. 4 esteso a ostacoli/3.6, respiro, angolare,
+      Fase 8 (`sec:portata-massima`) e campagna ridotta LD2420 (`sec:ld2420-risultati`,
+      ~750 righe nuove); cap. 6 riscritto sulla web UI realizzata (AP only, PROGMEM gzip,
+      JS puro, 6 BUILD, accettazione CSV web = seriale); cap. 7 riscritto sulla v3 (tre
+      classi, fondo sottratto, gate a distanza, taratura/validazione con la lettura del
+      97,5 % come artefatto del gate fisso, porting e verifica bordo = offline); cap. 8,
+      abstract, cap. 1 §contributi, cap. 3 §LD2420 (`sec:ld2420-stato`) e §piattaforma,
+      A1 (frame binario LD2420), A2 (tutto il software) aggiornati. Le 22 figure sono
+      incluse con `\includegraphics` nei capitoli 3, 4, 5, 7. ⚠️ **Non compilato in
+      locale** (nessun LaTeX su questa macchina): controlli statici passati
+      (`scratchpad/check_tex.py`: etichette, citazioni, ambienti, figure); la prima
+      compilazione va fatta su Overleaf. `\todo` residui: figura di sistema (cap. 1),
+      misura dei consumi (cap. 5), screenshot della dashboard (cap. 6)
+- [x] **Prima compilazione FATTA in locale (13/09/2026)** — MiKTeX 25.12 installato in
+      modalità utente (`winget install MiKTeX.MiKTeX --scope user`, binari in
+      `%LOCALAPPDATA%\Programs\MiKTeX\miktex\bin\x64`, auto-install dei pacchetti
+      attivo). pdflatex + biber + makeindex (glossario) + 2 passate: **135 pagine, zero
+      errori, zero riferimenti irrisolti, zero avvisi**. Corretti i difetti di
+      impaginazione emersi (catena in `tesi-unicam/README.md`): `\emergencystretch` 3 em
+      in `main.tex`, tabelle prima delle figure nelle catene di float del cap. 4
+      (didascalie che si sovrapponevano nel margine), tabella del repository in A2
+      divisa in due, schema della dashboard come `lstlisting`, `biburl*penalty` per gli
+      URL. PDF in `tesi-unicam/main.pdf` e catalogo delle 22 figure in
+      `analisi/CATALOGO_FIGURE.pdf` (entrambi in `.gitignore`: si rifanno)
+- [ ] Caricare su Overleaf e ricompilare lì (stesso compilatore pdfLaTeX + biber)

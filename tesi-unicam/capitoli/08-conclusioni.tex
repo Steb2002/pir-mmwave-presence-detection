@@ -2,170 +2,156 @@
 \label{cap:conclusioni}
 
 \section{Risposta alla domanda di partenza}
+\label{sec:conclusioni-risposta}
 
-La domanda con cui si apre questa tesi era: \emph{il radar mmWave può sostituire o
-affiancare il sensore PIR nel nodo DIPME-DEVICE del progetto UPRISE/SAFE?}
+La domanda con cui si apre questa tesi era se il radar mmWave possa sostituire o
+affiancare il sensore PIR nel nodo del progetto DIPME. La risposta, sulla base di
+441 trial validi e 31,9 ore di acquisizione su tre sensori, è affiancare, non
+sostituire. Si articola in cinque affermazioni sostenute da misure.
 
-La risposta, sulla base dei dati raccolti, è \textbf{affiancare, non sostituire}, e
-si articola in tre affermazioni sostenute da misure.
+\paragraph{1. Sul caso d'uso del progetto il PIR non funziona, per costruzione.} Con
+un soggetto immobile il PIR ha mancato la presenza nel 98,5--99,8\,\% dei campioni in
+tre geometrie. Sono il soggetto seduto a 2,3~m, in piedi a 1~m nella configurazione a
+lui più favorevole e sotto il banco a 60~cm. Il radar ha rilevato la presenza nel
+100\,\% dei campioni in tutte e tre (\cref{sec:persona-ferma,sec:sotto-banco}). La
+dose-risposta attribuisce il divario a una sola variabile, la quantità di movimento.
+La prova sul posto contro attraversamento mostra che la variabile che decide se il
+PIR vede non è mai la distanza ma il tipo di movimento (\cref{sec:dose-risposta}). Il
+PIR non è un cattivo sensore, perché rileva un attraversamento fino a 5~m nel 99\,\%
+del tempo. Una persona intrappolata però si muove sul posto o non si muove affatto,
+ed è il caso in cui il PIR è cieco.
 
-\paragraph{1. Sul caso d'uso che interessa il progetto, il PIR non funziona --- e
-non per difetto ma per costruzione.} Con un soggetto immobile a 2,30~m, su cinque
-trial da cinque minuti, il PIR ha mancato la presenza nel
-$99{,}78 \pm 0{,}49\,\%$ dei campioni, con zero rilevamenti in quattro trial su
-cinque; il radar l'ha rilevata nel $100\,\%$ dei 7554 campioni
-(\cref{sec:persona-ferma}). Il risultato più significativo è però un altro: il PIR
-fallisce anche con il soggetto \emph{in movimento sul posto}, con
-$80{,}5\,\%$ di falsi negativi a 1~m e $100\,\%$ oltre i 2~m
-(\cref{sec:pir-movimento}). Poiché una persona intrappolata si muove sul posto e non
-attraversa la stanza, l'ipotesi implicita ``il PIR non vede chi è fermo ma vede chi
-si muove'' è, nello scenario di interesse, falsa. Questa è la conclusione più
-rilevante per il progetto.
+\paragraph{2. Il radar fornisce grandezze che un bit non può rappresentare.} La
+distanza è lineare con $R^2 = 0{,}99965$ fra 1 e 5~m, con un errore di scala del
+$+3{,}8\,\%$ correggibile con un solo coefficiente (\cref{sec:distanza}). L'energia
+per gate permette di stimare il ritmo respiratorio di un soggetto immobile. La stima è
+verificata contro un ritmo imposto con errore medio di 0,22 atti al minuto e controllo
+negativo pulito (\cref{sec:respiro-metronomo}). Le stesse grandezze sono la base
+dell'indice di vitalità (\cref{cap:vitalita}). Il vantaggio non si paga in
+affidabilità. In 7~ore di stanza vuota il radar a soglie di fabbrica non ha prodotto
+alcun falso positivo (\cref{sec:falsi-positivi}).
 
-\paragraph{2. Il radar non è solo più affidabile: fornisce grandezze diverse.} La
-distanza è misurata con linearità eccellente ($R^2 = 0{,}99965$ su 25 trial fra 1 e
-5~m) e con un errore riducibile sotto i 5~cm applicando un singolo coefficiente
-correttivo (\cref{sec:distanza}). Le venti serie di energia dell'engineering mode
-consentono di estrarre il ritmo respiratorio di un soggetto immobile, con
-concordanza fra canali indipendenti (\cref{sec:respiro}), e sono la base
-dell'indice di vitalità (\cref{cap:vitalita}). Nessuna di queste grandezze è
-rappresentabile con l'uscita a un bit di un PIR. E il vantaggio non si paga in
-affidabilità: su 7~ore di stanza vuota entrambi i sensori hanno prodotto zero falsi
-positivi, con limite superiore al 95\,\% di $\leq 0{,}43$ eventi/h
-(\cref{sec:falsi-positivi}).
+\paragraph{3. Il radar attraversa gli ostacoli e arriva al tetto configurato, il PIR
+è bloccato da tutto.} Cartongesso, legno, vetro, plastica e una porta interna chiusa
+non accorciano la portata del \ldb\ entro i 5~m della stanza. Il PIR è azzerato da
+ognuno di quei materiali (\cref{sec:ostacoli}). In corridoio il radar rileva al
+100\,\% fino a 6~m e a zero a 7, dove il tetto di otto gate da 75~cm è misurato. Il PIR
+arriva a 5--6~m a metà corsa e a 7--8~m al massimo, ma solo su chi attraversa il suo
+campo abbastanza in fretta (\cref{sec:portata-massima}). Il solo materiale che blocca
+il radar è il metallo, e nel banco reale la lamiera sta dietro al modulo.
 
-\paragraph{3. Il consumo esclude la sostituzione secca e indica l'architettura.} Il
-radar assorbe 80~mA contro i meno di 50~\textmu A del PIR: tre ordini di grandezza
+\paragraph{4. Fra i due radar, per questo scenario, il \ldb.} Il \ldc\ rileva la
+persona immobile a 1~m e sotto il banco (100 e 98,4\,\%), quindi nello scenario del
+progetto funziona. Dice però se c'è qualcuno e non dove, non gradua il movimento e non
+lavora fuori dalla scatola. A soglie di fabbrica non rilascia mai la presenza,
+richiede una taratura per installazione e anche dopo conserva 5,4 riaccensioni l'ora,
+contro zero del \ldb\ (\cref{sec:ld2420-risultati}). Ogni numero del \ldc\ è
+attribuito all'esemplare, che ha una portata di circa 2~m contro gli 8 dichiarati.
+
+\paragraph{5. Il consumo esclude la sostituzione secca e indica l'architettura.} Il
+radar assorbe 80~mA contro i meno di 50~\textmu A del PIR, tre ordini di grandezza
 (\cref{cap:consumi}). Un nodo integrato in un arredo deve restare in attesa per anni
-a batteria, e con il radar sempre acceso l'autonomia si misura in ore. La soluzione
-non è scegliere fra i due sensori ma metterli in sequenza temporale, secondo
-l'architettura ibrida di \cref{sec:architettura-ibrida}: il PIR come guardiano a
-microampere in ``tempo di pace'', il radar mmWave come strumento di misura durante la
-finestra di emergenza, con \emph{duty-cycling} per estendere l'autonomia oltre le 72
-ore. Il PIR non è un concorrente del radar: è ciò che decide quando accenderlo.
+a batteria, e con il radar sempre acceso l'autonomia si misura in ore. La soluzione è
+l'architettura ibrida di \cref{sec:architettura-ibrida}. Il PIR fa da guardiano a
+microampere in tempo di pace. Il radar è lo strumento di misura nella finestra di
+emergenza, con un ciclo di lavoro per estendere l'autonomia oltre le 72 ore.
 
-\medskip
-\noindent
-La raccomandazione operativa per il progetto è quindi di \textbf{aggiungere} un
-modulo mmWave al DIPME-DEVICE, mantenendo il PIR nel ruolo di sorgente di risveglio,
-e di attivare il radar sul trigger di modalità terremoto.
+La raccomandazione per il progetto è quindi di aggiungere un modulo mmWave della
+classe del \ldb\ al nodo, mantenendo il PIR come sorgente di risveglio. Il radar va
+attivato sul passaggio in modalità emergenza. Va prevista una taratura del fondo e
+dell'indice di vitalità all'installazione, sotto l'arredo in cui il sensore viene
+montato.
 
-\section{Contributi consolidati}
+\section{Contributi}
+\label{sec:conclusioni-contributi}
 
-Riassumendo quanto prodotto:
+Il lavoro ha prodotto una piattaforma di misura riproducibile su ESP32, che campiona
+radar e PIR in modo sincrono a 5~Hz con accesso ai dati per gate. Il formato CSV è
+condiviso da firmware, acquisizione seriale, interfaccia web e analisi. Ha prodotto la
+caratterizzazione quantitativa del divario fra PIR e mmWave sulla persona ferma, in
+movimento sul posto e in attraversamento, in tre geometrie e con cinque ripetizioni
+per scenario. Ha prodotto la calibrazione della distanza, la misura del tetto di
+portata e della copertura angolare del \ldb, la misura del respiro con verifica a
+ritmo imposto, e l'attenuazione degli ostacoli su entrambi i radar, cartongesso e
+porta compresi. Ha caratterizzato il \ldc\ entro la portata dell'esemplare, con la
+taratura necessaria a farlo funzionare. Ha definito l'indice di vitalità in tre
+versioni, tarato, validato su trial separati e portato a bordo con verifica. Ha
+realizzato l'interfaccia web servita dal nodo, con esportazione CSV equivalente alla
+catena seriale. Ha infine analizzato i consumi e argomentato l'architettura ibrida che
+ne discende.
 
-\begin{itemize}[leftmargin=1.4em,itemsep=3pt]
-  \item una piattaforma di misura riproducibile su ESP32 che campiona radar e PIR in
-        modo sincrono a 5,00~Hz esatti con accesso ai dati per-gate, con un formato
-        CSV unico condiviso da firmware, acquisizione, analisi e interfaccia web;
-  \item la caratterizzazione quantitativa, con cinque ripetizioni per scenario, del
-        divario PIR/mmWave sulla persona ferma e sulla persona in movimento sul
-        posto;
-  \item la calibrazione della misura di distanza del LD2410B e l'individuazione di un
-        errore di scala sistematico correggibile con un coefficiente;
-  \item la dimostrazione di misurabilità del respiro con hardware consumer, con
-        l'individuazione documentata di quali canali siano effettivamente
-        utilizzabili e perché gli altri non lo siano;
-  \item la specifica di un indice di vitalità implementabile su microcontrollore, con
-        un percorso di taratura e validazione su trial separati;
-  \item l'analisi dei consumi e l'argomentazione dell'architettura ibrida.
-\end{itemize}
+Alcuni esiti metodologici valgono per chi ripete il lavoro. Gli strumenti di
+configurazione da PC non vanno presi come fonte dei valori numerici. Quello del \ldb\
+mostra sensibilità sbagliate e quello del \ldc\ sottostima il rumore
+(\cref{sec:identita,sec:ld2420-risultati}). La piedinatura va letta dalla tabella del
+datasheet e non dall'ordine dei fili. Un'inversione della seriale ha fatto credere per
+tre settimane che il modulo fosse guasto (\cref{sec:cablaggio}). La qualità dei dati
+va verificata prima dell'analisi. Saturazione, canali nulli e coda di presenza
+(\cref{sec:insidie}) producono conclusioni sbagliate e non errori evidenti. Il tipo di
+movimento va annotato insieme alla distanza. Il PIR è passato da 0 a 100\,\% a 3~m per
+un cambio di movimento che il radar registrava identico. Un dato mancante va marcato
+alla sorgente, come il valore sentinella scritto dal firmware quando il PIR non è
+cablato. Ogni firmware stampa il proprio marcatore di versione all'avvio, perché tre
+giri di prove sono stati attribuiti al modulo mentre l'ESP32 eseguiva un binario
+vecchio.
 
-\subsection{Risultati metodologici collaterali}
+\section{Perimetro e sviluppi futuri}
+\label{sec:conclusioni-sviluppi}
 
-Tre esiti non previsti meritano una menzione, perché sono il tipo di informazione
-che raramente entra nella documentazione ma che ha valore per chi ripete il lavoro.
+Tutti i test previsti dai due piani sperimentali sono stati acquisiti. Restano fuori,
+dichiaratamente, quattro cose. La prova dell'applicazione Bluetooth del \ldb\ era
+facoltativa. La prova termica del PIR a temperatura più bassa non è stata fatta,
+perché l'ipotesi che i 28\,\textdegree C della stanza ne degradassero il rilevamento è
+stata smentita da un cambio di movimento nella stessa sessione, e la cecità sul
+soggetto fermo è strutturale. Manca un secondo esemplare di \ldc. Mancano un secondo
+soggetto, un'aula reale e una misura strumentale dei consumi (\cref{sec:limiti}).
 
-\begin{enumerate}[leftmargin=1.8em,itemsep=3pt]
-  \item \textbf{Non fidarsi degli strumenti di configurazione da PC per i valori
-        numerici.} Lo strumento ufficiale \texttt{LD2410 Tool} riporta sensibilità
-        pari a 100 su tutti i gate; la lettura via UART restituisce la scala di
-        fabbrica decrescente, coerente con il protocollo e con il comportamento
-        osservato (\cref{sec:identita}). Per i parametri va usata la lettura diretta
-        dal modulo.
-  \item \textbf{Fare riferimento alla tabella di piedinatura del datasheet, non
-        all'ordine apparente dei fili.} Un'inversione dei due fili della seriale ha
-        prodotto tre settimane di lavoro nella convinzione che il modulo fosse
-        guasto (\cref{sec:cablaggio}).
-  \item \textbf{Verificare la qualità dei dati prima di analizzarli.} La saturazione
-        dei canali di energia, i canali stazionari strutturalmente nulli e la coda di
-        presenza (\cref{sec:insidie}) sono tutti fenomeni che, non riconosciuti,
-        producono conclusioni sbagliate anziché errori evidenti: un canale saturo non
-        segnala il proprio stato, restituisce semplicemente numeri privi di
-        informazione. Da qui la scelta di eseguire un controllo di qualità
-        automatico su ogni file prima di usarlo.
-\end{enumerate}
+\paragraph{Verso il dimostratore reale.} Il passo successivo è la ripetizione degli
+scenari chiave nei dimostratori del progetto ad Ascoli Piceno, dove dimensioni,
+materiali, riflessioni e presenza di più persone sono realistici. Le domande aperte
+sono due. Il tasso di falsi positivi in un'aula con arredi metallici, e il
+comportamento con più persone presenti, che è il limite strutturale di entrambi i
+radar (\cref{sec:due-persone}).
 
-\section{Lavoro rimanente}
+\paragraph{Montaggio sulla lamiera forata.} È la questione di progetto più concreta.
+Il piano del banco è rinforzato con lamiera forata e il metallo è l'unico materiale
+che blocca il radar. Tre configurazioni sono da valutare. Il sensore sotto il piano
+rivolto al volume di rifugio è la geometria provata in questa tesi e l'ipotesi
+preferibile. Il sensore sopra il piano richiede di verificare se il passo dei fori
+consente la trasmissione a 24~GHz, perché fori molto più piccoli della lunghezza
+d'onda di 12,5~mm si comportano come uno schermo continuo. Il sensore nel telaio
+laterale è la terza. Il resto dell'arredo non è un vincolo, perché legno e cartongesso
+attenuano poco (\cref{sec:ostacoli}).
 
-Per completezza si elencano le attività pianificate e non ancora completate alla
-data di questa stesura, con la sezione in cui sono collocate:
+\paragraph{Selettività fra banchi adiacenti.} La misura angolare ha mostrato che
+ridurre il gate massimo non isola il proprio banco. Il gate limita la distanza e non
+l'angolo, e il \ldb\ rileva un vicino in movimento a 90\textdegree\
+(\cref{sec:angolare}). La separazione va cercata nel montaggio, con orientamento verso
+il basso e schermatura del lobo laterale. La misura da fare è il tasso di attribuzione
+corretta con due volumi di rifugio adiacenti.
 
-\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
-  \item latenze di rilevamento e di rilascio con la convenzione dell'evento a
-        istante noto (\cref{sec:latenza});
-  \item scenario ``persona sotto il banco'' a distanza inferiore al metro
-        (\cref{sec:sotto-banco});
-  \item penetrazione degli ostacoli: cartongesso, legno, vetro, plastica
-        (\cref{sec:ostacoli});
-  \item prova del respiro con ritmo imposto da metronomo e controllo negativo su
-        stanza vuota (\cref{sec:respiro-metronomo});
-  \item riconfigurazione del LD2420 in modalità binaria per il confronto quantitativo
-        fra i due radar (\cref{sec:ld2420-risultati});
-  \item implementazione della dashboard e test di equivalenza dei due CSV
-        (\cref{sec:webui-piano});
-  \item taratura e validazione dell'indice di vitalità
-        (\cref{sec:vitalita-taratura}).
-\end{itemize}
+\paragraph{Auto-taratura all'installazione.} È la risposta al limite principale
+dell'indice di vitalità, le soglie specifiche della geometria
+(\cref{sec:vitalita-taratura}). Ogni sensore è fisso sotto il proprio arredo. Una
+procedura che registri il fondo a stanza vuota e un riferimento di movimento in quella
+posizione, e ne ricavi le soglie a bordo, renderebbe l'indice trasferibile per
+costruzione. La stessa procedura servirebbe al \ldc, che senza taratura per
+installazione non è utilizzabile.
 
-\section{Sviluppi futuri}
+\paragraph{Integrazione con il nodo e la rete LoRa.} L'indice di vitalità occupa un
+byte. È il tipo di informazione trasmissibile su LoRa, dove il vincolo è la
+dimensione del messaggio. Nel regime di emergenza della piattaforma il bit di presenza
+decide già la cadenza di trasmissione del nodo, un messaggio al minuto con presenza e
+uno ogni quindici minuti senza~\cite{callisto2026dipme}. Un falso negativo sulla
+persona immobile è quindi un banco ascoltato quindici volte meno spesso. Sostituire
+quel bit con la presenza del radar è l'innesto più immediato. L'integrazione con il
+Digital Twin del progetto~\cite{callisto2024safe,callisto2023dt} è il proseguimento
+naturale, e la dashboard servita dal nodo (\cref{cap:webui}) ne è la miniatura
+funzionante.
 
-\paragraph{Verso il dimostratore reale.} La campagna è stata svolta in ambiente
-domestico con un solo soggetto. Il passo successivo naturale è la ripetizione degli
-scenari chiave nei dimostratori del progetto --- il Polo Lodovici di Informatica e
-l'IIS Fermi Sacconi Ceci di Ascoli Piceno --- dove dimensioni dell'ambiente,
-materiali, riflessioni multiple e presenza di più persone sono realistici. Le
-domande aperte sono due: il tasso di falsi positivi in un'aula con arredi metallici,
-e il comportamento con più persone contemporaneamente presenti, che è il limite
-strutturale del LD2410B (\cref{sec:discussione}).
-
-\paragraph{Il montaggio sulla lamiera forata.} È la questione di progetto più
-concreta e va posta ai progettisti dell'arredo. Il piano del banco è rinforzato con
-lamiera forata antisfondamento, e il metallo è il materiale peggiore per un radar a
-24~GHz. Tre configurazioni sono da valutare sperimentalmente: sensore montato
-\emph{sotto} il piano e quindi rivolto verso il volume di rifugio (ipotesi
-preferibile); sensore montato \emph{sopra} il piano, che richiede di verificare se il
-diametro e il passo dei fori consentono la trasmissione a 24~GHz --- una griglia
-metallica con fori molto più piccoli della lunghezza d'onda di 12,5~mm si comporta
-come uno schermo continuo, quindi la geometria della perforazione è determinante;
-sensore integrato nel telaio laterale. Questa verifica è un'estensione di
-\cref{sec:ostacoli} con il materiale reale.
-
-\paragraph{Selettività fra banchi adiacenti.} Nel banco UPRISE i banchi sono
-strutturalmente connessi fra loro, e un radar con portata di 6~m vede diversi banchi.
-Il problema si affronta limitando il gate massimo via UART, funzione già
-implementata e verificata nel corredo software di questa tesi. La misura da fare è
-il tasso di attribuzione corretta con due volumi di rifugio adiacenti, che è
-l'informazione necessaria a una mappa di calore utile ai soccorritori: sapere che
-c'è qualcuno in un'aula è molto meno utile che sapere sotto quale banco.
-
-\paragraph{Integrazione con il nodo DIPME e la rete LoRa.} L'indice di vitalità è
-progettato per essere calcolato a bordo e occupa pochi byte: è esattamente il tipo di
-informazione trasmissibile su LoRa, dove il vincolo è la dimensione del messaggio e
-il duty cycle. Un messaggio che riporti presenza, distanza, classe di vitalità e
-istante dell'ultima rilevazione sta in pochi byte ed è direttamente rappresentabile
-sulla mappa di calore dei soccorritori. L'integrazione con il DIPME-DEVICE e con il
-Digital Twin del progetto~\cite{callisto2023dt} è il proseguimento naturale del
-lavoro.
-
-\paragraph{Analisi in frequenza a bordo.} L'estensione dell'indice di vitalità con
-una FFT calcolata sull'ESP32 su finestra scorrevole di 30~s renderebbe il termine
-respiratorio più robusto agli artefatti rispetto alla media esponenziale attuale, a
-costo di un buffer e di qualche millisecondo di calcolo per finestra: entrambi
-disponibili sull'hardware in uso.
-
-\paragraph{Confronto diretto con l'UWB del DIPME.} Il nodo esistente monta già un
-sensore UWB. Un confronto sperimentale a tre --- PIR, mmWave, UWB --- sullo stesso
-scenario e con la stessa metodologia sarebbe il completamento naturale di questo
-lavoro, e trasformerebbe l'argomentazione di \cref{sec:uwb}, oggi basata su
-datasheet e letteratura, in un risultato misurato.
+\paragraph{Confronto diretto con l'UWB.} La scheda del nodo prevede un sensore
+UWB~\cite{slideUprise}, mentre nella configurazione dispiegata la presenza è affidata
+al solo PIR~\cite{callisto2026dipme}. Un confronto a tre, PIR, mmWave e UWB, con la
+stessa metodologia trasformerebbe l'argomentazione di \cref{sec:uwb}, oggi basata su
+datasheet e letteratura, in un risultato misurato. La piattaforma e il formato dati
+sono pronti ad accoglierlo.

@@ -1,0 +1,464 @@
+\chapter{Metodologia di confronto}
+\label{chap:metodologia}
+
+Questo capitolo descrive come i tre sensori sono stati confrontati.
+
+La Sezione~\ref{sec:metodo-approccio} distingue le due attività su cui poggia il confronto,
+quella sperimentale e quella numerica. La Sezione~\ref{sec:protocollo} fissa il protocollo
+con cui sono stati acquisiti i 444 trial del Capitolo~\ref{chap:confronto}, mentre la
+Sezione~\ref{sec:metriche} definisce le metriche e le convenzioni con cui sono stati letti.
+La Sezione~\ref{sec:protocollo-ld2420} dichiara le deroghe al protocollo adottate per il
+secondo radar, e la Sezione~\ref{sec:webui} presenta l'interfaccia web realizzata a supporto
+della campagna.
+
+\section{Due strade complementari}
+\label{sec:metodo-approccio}
+
+Il confronto poggia su due attività distinte che si alimentano a vicenda.
+\begin{itemize}
+  \item \textbf{Sperimentale:} Consiste nel disporre i sensori e il soggetto in geometrie
+    definite e nel cambiare, da una prova all'altra, una sola variabile per volta, che può
+    essere la distanza, la quantità o il tipo di movimento, l'angolo oppure il materiale
+    interposto. Ogni configurazione viene ripetuta e ogni ripetizione produce un file.
+  \item \textbf{Numerica:} I file formano un dataset omogeneo, raccolto nel formato unico
+    della Sezione~\ref{sec:c3-4-3} e analizzato a posteriori dalla catena descritta nella
+    Sezione~\ref{sec:c3-4-5}. Le metriche, quindi, non vengono lette durante la prova. Sono
+    calcolate in seguito, dagli stessi script e con le stesse convenzioni per tutti i
+    sensori. In questo modo un risultato si può ricalcolare e una figura si può rifare
+    senza ripetere l'acquisizione, e ogni numero del Capitolo~\ref{chap:confronto} risale a
+    un file e a una riga di comando precisi.
+\end{itemize}
+
+Questa divisione ha anche una conseguenza pratica. Durante la prova l'operatore non ha
+bisogno di leggere i numeri. Gli basta sapere che i dati stanno arrivando e che i sensori
+vedono ciò che devono vedere. Questo è il compito dell'interfaccia web presentata nella
+Sezione~\ref{sec:webui}, che mostra i sensori in tempo reale e permette di controllare il
+posizionamento prima di avviare la registrazione. Nel confronto il suo ruolo è quindi di
+supporto e di verifica, come precisato nella Sezione~\ref{sec:webui-ruolo}.
+
+\section{Protocollo sperimentale}
+\label{sec:protocollo}
+\label{sec:protocollo-configurazione}
+
+Il protocollo è stato definito prima delle acquisizioni ed è rimasto invariato per tutta
+la campagna. Il PIR lavora nella configurazione a lui più favorevole, con il ponticello di
+ritrigger in posizione H (Sezioni~\ref{subsec:pir-dati} e~\ref{sec:c3-3-3}), mentre
+l'\ldb\ mantiene sempre le soglie di fabbrica (Sezione~\ref{sec:c3-6}). L'\ldc\ è stato
+provato in un secondo tempo nelle stesse geometrie, con le deroghe dichiarate nella
+Sezione~\ref{sec:protocollo-ld2420}. Ogni scenario è ripetuto più volte, e i valori
+riportati nella forma $\mu \pm \sigma$ sono la media e la deviazione standard su quelle
+ripetizioni.
+
+\subsection{Setup}
+\label{sec:protocollo-setup}
+
+L'\ldb\ e l'\pir\ sono letti dallo stesso firmware, sulla stessa base dei tempi
+(Sezione~\ref{sec:c3-4-2}). I due sensori sono fissati uno accanto all'altro su un
+supporto di cartone appoggiato sul bordo di un tavolo, a circa 85~cm di altezza
+(Figura~\ref{fig:setup-foto}), e puntano verso un'area di prova che ricade nel campo di
+entrambi. Nella stanza non ci sono oggetti in movimento (nessun ventilatore, tende ferme,
+porta chiusa). Le quattro geometrie di prova sono schematizzate in
+Figura~\ref{fig:geometrie}. Lo stesso supporto ha ospitato l'\ldc\ nella campagna ridotta
+(Sezione~\ref{sec:protocollo-ld2420}).
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig31_setup}
+\caption{Il banco di prova. (a) Il PIR \pir\ e l'\ldb\ fissati sul supporto di cartone,
+con l'ESP32 sulla breadboard accanto. (b) Lo stesso supporto con l'\ldc\ della campagna
+ridotta.}
+\label{fig:setup-foto}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig27_geometrie}
+\caption{Le geometrie della campagna, in scala. (a) La stanza, con i sensori sul tavolo e
+le tacche a 1--5~m sull'asse, usata per distanza, dose-risposta, latenze, ostacoli e due
+persone. (b) Lo scenario del progetto, con i sensori fissati sotto il piano e la persona
+rannicchiata a 50--60~cm. (c) L'arco a 1~m per la copertura angolare. (d) Il corridoio
+della prova di portata, con i due vani porta a 4 e 5~m attraverso cui si vedono i punti
+più lontani.}
+\label{fig:geometrie}
+\end{figure}
+
+\subsection{Scenari}
+\label{sec:protocollo-scenari}
+
+La Tabella~\ref{tab:scenari} raggruppa gli scenari per domanda e riporta per ciascuno il
+numero di ripetizioni, lo scarto iniziale della Sezione~\ref{sec:metriche-transitorio} e la
+sezione del Capitolo~\ref{chap:confronto} con i risultati. Di norma uno scenario è ripetuto
+cinque volte, dieci per la latenza d'ingresso e tre quando serve una seconda persona o le
+condizioni da coprire sono molte. Ogni scenario ha un nome, che è anche il nome dei suoi
+file. Il respiro a ritmo imposto usa gli stessi file e le stesse geometrie ed è trattato
+nel Capitolo~\ref{chap:vitalita}.
+
+\begin{table}[!htbp]
+\centering
+\caption{Gli scenari della campagna, con i trial per condizione, lo scarto iniziale
+applicato da tutti gli script (Sezione~\ref{sec:metriche-transitorio}) e la sezione dei
+risultati. La campagna ridotta sull'\ldc\ ripete entro 2~m gli scenari con l'asterisco
+(Sezione~\ref{sec:protocollo-ld2420}), con uno scarto di 90~s nei trial da fermo.}
+\label{tab:scenari}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}Xcc>{\raggedright\arraybackslash}p{0.15\linewidth}@{}}
+\toprule
+\textbf{Scenario} & \textbf{Domanda} & \textbf{Trial} & \textbf{Scarto} & \textbf{Risultati} \\
+\midrule
+Stanza vuota, notte e giorno* & falsi positivi & 7,03~h & 60~s & Sezione~\ref{sec:falsi-positivi} \\
+Persona ferma seduta a 2,3~m & falsi negativi & 5 & 20~s & Sezione~\ref{sec:persona-ferma} \\
+Dose-risposta a 1~m (immobile, micro-movimenti, cammino sul posto)* & quantità di movimento & 5 per condizione & 20~s & Sezione~\ref{sec:dose-risposta} \\
+Cammino sul posto a 1--5~m* & accuratezza della distanza, PIR sul posto & 5 per distanza & 20~s & Sezioni~\ref{sec:distanza} e~\ref{sec:dose-risposta} \\
+Attraversamento a 1--5~m & tipo di movimento & 3 per distanza & 20~s & Sezione~\ref{sec:dose-risposta} \\
+Sotto il banco a 60~cm (immobile, micro-movimenti)* & scenario del progetto & 5 per condizione & 40~s & Sezione~\ref{sec:sotto-banco} \\
+Ingresso e uscita dalla stanza* & latenze & 10 e 5 & evento a 30~s & Sezione~\ref{sec:latenza} \\
+Arco a 1~m, sei azimut* & copertura angolare & 1--3 per azimut & 120~s & Sezione~\ref{sec:angolare} \\
+Selettività con gate massimo 2 & vicino di banco & 3 per scenario & 120~s & Sezione~\ref{sec:angolare} \\
+Due persone, tre geometrie* & separazione dei bersagli & 3 per geometria & 20~s & Sezione~\ref{sec:due-persone} \\
+Pannelli interposti, a 3~m e a 1~m* & attenuazione & 3 per materiale & 20~s & Sezione~\ref{sec:ostacoli} \\
+Corridoio, 5--8~m* & portata massima & 3--5 per distanza & 20~s & Sezione~\ref{sec:portata-massima} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Ground truth}
+\label{sec:protocollo-ripetizioni}
+\label{sec:protocollo-groundtruth}
+
+La presenza e lo stato reali del soggetto sono dichiarati dall'operatore nei metadati di
+ogni acquisizione (Sezione~\ref{sec:c3-4-3}) e valgono per l'intero file. Per le latenze
+questo non basta. Il soggetto entra o esce quindi a un istante annunciato dallo script di
+acquisizione (Sezione~\ref{sec:c3-4-4}), e la latenza si misura a partire da
+quell'istante.
+
+\subsection{Registro}
+\label{sec:registro}
+
+Ogni sessione è annotata in un registro con data, ora, temperatura della stanza,
+soggetto, alimentazione e note. Per ogni scenario, oltre alla distanza, sono annotati
+anche il tipo di movimento e la postura, perché il PIR risponde a questi e non alla
+distanza (Sezione~\ref{subsec:fresnel}). Le sessioni si sono svolte fra 25 e
+29\,\textdegree C, una condizione sfavorevole al rilevamento del PIR
+(Sezione~\ref{subsec:pir-principio}) di cui la discussione tiene conto. Il registro
+completo è nel repository del lavoro~\cite{repoTesi}.
+
+\section{Metriche e convenzioni}
+\label{sec:metriche}
+
+\subsection{Metriche}
+\label{sec:metriche-elenco}
+
+Le metriche sono calcolate su ogni trial dallo script di analisi della
+Sezione~\ref{sec:c3-4-5} e poi aggregate per scenario.
+\begin{itemize}
+  \item \textbf{Falsi negativi (\%):} campioni con presenza reale in cui il sensore riporta
+    assenza. È la metrica dello scenario con la persona ferma, e il suo complemento, cioè
+    la frazione di campioni con presenza riportata, è il tasso di rilevamento.
+  \item \textbf{Falsi positivi (eventi/h):} transizioni da assenza a presenza per ogni ora
+    di stanza vuota. Si contano gli eventi e non i campioni, perché un falso positivo di
+    dieci secondi non è dieci volte più grave di uno di un secondo.
+  \item \textbf{Latenza di rilevamento e di rilascio:} tempo che passa fra l'evento e la
+    prima transizione stabile del sensore, all'ingresso e all'uscita. Per confrontare i
+    sensori si usa la differenza appaiata sullo stesso trial, in cui il tragitto e il
+    tempo di reazione si cancellano.
+  \item \textbf{Accuratezza della distanza:} scostamento fra la distanza riportata dal
+    radar e quella reale, tenendo separata la dispersione fra un trial e l'altro da quella
+    entro il singolo trial.
+  \item \textbf{Energia:} valore normalizzato 0--100 che l'\ldb\ riporta per il bersaglio e
+    per ogni gate (Sezione~\ref{sec:c3-5-1}). Fa da grandezza graduata del movimento e da
+    testimone dello stimolo, perché due prove con la stessa energia hanno riprodotto lo
+    stesso movimento.
+\end{itemize}
+
+\subsection{Zero eventi}
+\label{sec:metriche-zero}
+
+Quando in una finestra di osservazione non si verifica alcun evento, non si scrive zero
+eventi all'ora ma si riporta il limite superiore dato dalla regola del tre, $3/T$ con $T$
+in ore, che approssima il limite al 95\,\% di confidenza per un processo di Poisson senza
+eventi~\cite{hanley1983rule}. Questo numero dipende dal tempo di osservazione, non dal sensore.
+
+\subsection{Transitorio iniziale}
+\label{sec:metriche-transitorio}
+
+I primi secondi di ogni trial vengono scartati, perché contengono il posizionamento del
+soggetto e la coda di presenza del radar (Sezione~\ref{sec:c3-5-3}). La durata dello
+scarto dipende dallo scenario, è riportata nella Tabella~\ref{tab:scenari} ed è la stessa in
+tutti gli script e in tutte le figure. Negli scenari ordinari vale 20~s. È più lunga sotto
+il banco, dove il soggetto deve anche posizionarsi, a stanza vuota, dove l'operatore deve
+prima uscire, e negli scenari di selettività, dove la coda del radar dopo il
+posizionamento arriva a superare i 100~s (Figura~\ref{fig:transitorio} e
+Sezione~\ref{sec:angolare}). Nei trial da fermo dell'\ldc, che rilascia in circa 55~s, lo
+scarto sale a 90~s.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig32_transitorio}
+\caption{Il transitorio iniziale nei tre trial con la persona ferma a 1~m a
+90\textdegree\ (gate massimo 2). La presenza riportata è attiva dall'inizio del trial, si
+spegne una sola volta e non si riaccende, perché è la coda del posizionamento e non un
+rilevamento. Con lo scarto ordinario di 20~s entrerebbe nella statistica, con quello di
+120~s resta fuori.}
+\label{fig:transitorio}
+\end{figure}
+
+\subsection{Validità dei file}
+\label{sec:metriche-validita}
+
+Un file entra nelle statistiche solo se è un trial. I controlli del fondo, le prove
+tecniche e i file marcati come non validi nel registro restano fuori da ogni tabella
+grazie alla lista di esclusione della Sezione~\ref{sec:c3-4-5}. Un file non valido non
+viene cancellato, ma resta nel dataset con un nome diverso. Il caso tipico è il radar
+rimasto muto per un cavo mosso, che si riconosce da centinaia di frame identici.
+
+\section{Protocollo per l'\ldc{}}
+\label{sec:protocollo-ld2420}
+
+L'esemplare di \ldc\ in dotazione ha una portata di circa 2~m (Sezione~\ref{sec:c3-2-6}),
+e la campagna sul secondo radar si è svolta per intero entro quel limite. Sono stati
+ripetuti tutti i test dell'\ldb\ che non richiedono distanze maggiori, per un totale di 161
+trial validi, e sono rimaste fuori solo le prove che le richiedono. Entrano invariate le due
+più importanti per il progetto, la dose-risposta a 1~m e la persona sotto il banco.
+
+Vanno dichiarate quattro deroghe alla parità di configurazione. I dati sono letti in
+energy mode (Sezione~\ref{sec:c3-2-5}), l'unica modalità che esponga le energie per gate.
+Le soglie sono tarate sul fondo misurato e il gate massimo è fissato a 6, per le ragioni
+della Sezione~\ref{sec:c3-6}. Inoltre, il gate~0 è portato sopra la coda del rumore, nella
+configurazione v2 (Sezione~\ref{sec:ld2420-risultati}). Infine, il PIR non è cablato nei
+test del solo \ldc, e i suoi valori sono marcati come assenti (Sezione~\ref{sec:c3-4-3}).
+Poiché l'esemplare in dotazione è con ogni probabilità difettoso
+(Sezione~\ref{sec:c3-2-6}), i risultati ottenuti descrivono quel singolo modulo e non vanno
+generalizzati al modello \ldc.
+
+Due accorgimenti operativi completano il protocollo. Dopo ogni accensione nessuno resta
+entro 2~m dal modulo per 90~s, perché il fondo viene stimato all'avvio e un corpo vicino lo
+falserebbe. Prima di ogni sessione, poi, un minuto di stanza vuota serve a verificare che
+il fondo per gate sia quello atteso.
+
+\section{L'interfaccia web di supporto}
+\label{sec:webui}
+\label{chap:webui}
+
+L'ESP32 pubblica i dati e una pagina web li mostra in tempo reale, li salva insieme alle
+statistiche di sessione e li esporta in CSV. Il risultato è una dashboard servita
+direttamente dal nodo, senza alcuna rete esterna, che produce lo stesso formato dati della
+catena seriale. Questa sezione ne riassume requisiti, progetto, realizzazione e verifica,
+e chiarisce il ruolo che ha avuto nella campagna.
+
+\subsection{Requisiti e architettura}
+\label{sec:webui-requisiti}
+
+Dall'obbiettivo discendono cinque requisiti funzionali.
+\begin{itemize}
+  \item \textbf{R1:} l'ESP32 deve rendere disponibili i dati in rete.
+  \item \textbf{R2:} la visualizzazione deve seguire il sensore alla cadenza
+    dell'acquisizione, cioè 5~Hz.
+  \item \textbf{R3:} l'applicazione deve calcolare le statistiche di sessione.
+  \item \textbf{R4:} l'applicazione deve esportare i dati in CSV.
+  \item \textbf{R5:} l'applicazione deve mostrare l'indice di vitalità calcolato a bordo
+    (Capitolo~\ref{chap:vitalita}).
+\end{itemize}
+A questi si aggiungono due vincoli, che nascono dal contesto.
+\begin{itemize}
+  \item \textbf{N1:} tutto deve funzionare senza appoggiarsi ad alcuna rete esistente,
+    perché in emergenza sismica non c'è connettività, né verso Internet né verso una rete
+    locale (Sezione~\ref{sec:dipme}).
+  \item \textbf{N2:} il CSV esportato dal browser deve avere lo stesso formato di quello
+    prodotto dalla catena seriale, così che in tutta la tesi esista un solo formato dati.
+\end{itemize}
+La Tabella~\ref{tab:webui-opzioni} riassume le tre architetture considerate.
+
+\begin{table}[!htbp]
+\centering
+\caption{Opzioni architetturali valutate per la web UI. È stata scelta la A.}
+\label{tab:webui-opzioni}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.34\linewidth}XX@{}}
+\toprule
+\textbf{Architettura} & \textbf{Vantaggi} & \textbf{Svantaggi} \\
+\midrule
+\textbf{A. Sito servito dall'ESP32} (web server e WebSocket a bordo) &
+  nessuna infrastruttura, funziona offline, coerente con lo scenario di emergenza &
+  RAM e flash limitate, pochi client simultanei \\
+B. ESP32, broker MQTT, server con database &
+  scalabile, storico illimitato, più vicino a una piattaforma reale &
+  richiede broker e server sempre accesi, infrastruttura eccessiva \\
+C. Piattaforma cloud (ThingSpeak, Blynk) &
+  pronta all'uso &
+  non funziona offline, cadenza limitata a circa 15~s, dati fuori controllo \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+È stata scelta l'opzione~A, perché un nodo che serve la propria dashboard senza alcuna
+rete esterna è un caso concreto di scenario senza connessione, cioè proprio lo scenario
+del progetto. L'opzione~C viola il vincolo N1, mentre la~B lo rispetta solo con un server
+locale che in emergenza non ci sarebbe. Il volume dei dati è piccolo, una trentina di
+valori a 5~Hz per circa 2~kB/s, e a bordo non serve persistenza, perché lo storico di
+sessione si accumula nel browser ed è il browser a produrre il CSV. L'ESP32 crea quindi una
+propria rete WiFi in modalità Access Point e non tenta mai di collegarsi ad altre.
+L'opzione~B resta documentata come alternativa valutata e scartata.
+
+\subsection{Progetto e realizzazione}
+\label{sec:webui-progetto}
+\label{sec:webui-piano}
+\label{sec:webui-lezioni}
+\label{sec:webui-riferimenti}
+
+\paragraph{Firmware} Il firmware del nodo è scritto in C++ con il framework Arduino, come
+il logger della Sezione~\ref{sec:c3-4-2}, di cui riprende per intero la lettura dei sensori
+aggiungendo la parte di rete. Il server web e il canale WebSocket sono forniti dalla
+libreria ESP Async WebServer, nella versione mantenuta dal progetto
+ESP32Async~\cite{esp32async}, perché quella originale non compila più con le versioni
+attuali del supporto ESP32 per Arduino. La libreria è asincrona, cioè gestisce le
+richieste dei browser in un task separato, eseguito in parallelo al ciclo principale del
+programma. In questo modo la lettura del radar prosegue regolarmente a 5~Hz anche mentre
+un browser si collega o scarica la pagina. La pagina è incorporata nel firmware come dati
+compressi salvati in flash, per circa 80~kB. Per farli stare serve lo schema di partizione
+che riserva 3~MB all'applicazione, ed è l'unica impostazione da cambiare rispetto al
+logger. Un piccolo server DNS a bordo, infine, risponde con l'indirizzo del nodo a
+qualunque nome venga richiesto, così la dashboard si apre da sola appena ci si collega alla
+rete del nodo, senza bisogno di conoscerne l'indirizzo IP.
+
+\paragraph{Pagina} La pagina, cioè la parte che gira nel browser, è composta da tre file
+(HTML, CSS e JavaScript) per circa 800 righe, con il codice scritto in JavaScript puro,
+senza librerie di sviluppo come Angular o React e senza strumenti di compilazione, quindi
+i file scritti sono esattamente quelli eseguiti dal browser. Il tempo reale è affidato al
+canale WebSocket, disponibile in ogni browser senza librerie, e l'unica dipendenza è la
+libreria di grafici Chart.js~\cite{chartjs}, servita dall'ESP32 insieme alla pagina. Come
+riferimento di interfaccia è stato esaminato un configuratore web open source per
+l'\ldb~\cite{ld2410configurator}, da cui è ripresa la rappresentazione a barre delle
+energie per gate con la soglia sovrapposta. La pagina è divisa in quattro aree
+(Figure~\ref{fig:dashboard} e~\ref{fig:dashboard-sessione}). La prima
+mostra lo stato istantaneo dei due sensori. La seconda contiene la gauge dell'indice di
+vitalità, con i colori del semaforo in ordine inverso all'indice, cioè rosso per la classe
+bassa, che per il soccorso è la più urgente (Sezione~\ref{sec:vitalita-classi}). La terza
+raccoglie i tre grafici degli ultimi 60~s, con l'energia, le barre per gate con le soglie
+lette dal modulo all'avvio e la timeline della presenza di radar e PIR sulla stessa base
+dei tempi. La quarta gestisce la sessione di registrazione, con gli stessi metadati
+sperimentali della catena seriale. Le soglie, deliberatamente, non si possono modificare
+dalla pagina, perché devono restare fisse per tutta la campagna
+(Sezione~\ref{sec:protocollo-configurazione}).
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig33_dashboard}
+\caption{La dashboard servita dal nodo, con la testata con lo stato di presenza, lo stato
+live dei due sensori (A), l'indice di vitalità calcolato a bordo (B) e i tre grafici degli
+ultimi 60~s (C). I dati sono quelli di una sessione registrata dall'ESP32 con una persona
+immobile a 1~m, riprodotti a 5~Hz nella stessa pagina. Il radar resta attivo per tutto il
+tempo, mentre il PIR non rileva nulla.}
+\label{fig:dashboard}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig34_dashboard_sessione}
+\caption{La parte inferiore della dashboard in una sessione dal vivo di 60~s, con una
+persona davanti al sensore. A sinistra il riquadro D con i metadati della sessione e le
+statistiche calcolate nel browser, a destra la diagnostica dell'ESP32 con la build,
+l'indirizzo, la memoria libera, i parametri letti dal radar e l'impronta della pagina.}
+\label{fig:dashboard-sessione}
+\end{figure}
+
+\paragraph{Protocollo dati} Il nodo trasmette i dati ai browser collegati attraverso il
+canale WebSocket, con un messaggio per ogni campione, cioè cinque volte al secondo. Ogni
+messaggio è un oggetto JSON che contiene tutte le grandezze del CSV del logger più le due
+calcolate a bordo (Tabella~\ref{tab:webui-messaggio}). Il nodo conserva inoltre uno storico
+di 60~s e lo invia a ogni client che si collega, così il grafico è già pieno anche dopo un
+aggiornamento della pagina. Le statistiche sono calcolate nel browser una volta al secondo.
+Il CSV esportato riporta, nello stesso ordine, le colonne del logger e i metadati dello
+script di acquisizione, più due colonne in coda con l'indice e la classe calcolati dal
+firmware (Sezione~\ref{sec:c3-4-3}). Sono proprio questi i dati usati per verificare il
+porting (Sezione~\ref{sec:vitalita-bordo}).
+
+\begin{table}[!htbp]
+\centering
+\caption{Campi del messaggio WebSocket inviato a ogni client collegato, uno per campione
+(5~Hz), con un valore di esempio.}
+\label{tab:webui-messaggio}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.24\linewidth}>{\raggedright\arraybackslash}p{0.33\linewidth}X@{}}
+\toprule
+\textbf{Campo} & \textbf{Esempio} & \textbf{Significato} \\
+\midrule
+\texttt{t} & \texttt{123456} & istante del campione, in millisecondi dall'accensione del nodo \\
+\texttt{radar\_ok} & \texttt{1} & 1 se nel periodo è arrivato un frame valido dal radar \\
+\texttt{presence}, \texttt{moving}, \texttt{still} & \texttt{1, 1, 0} & presenza complessiva, bersaglio in movimento, bersaglio fermo \\
+\texttt{mdist}, \texttt{sdist} & \texttt{145, 0} & distanza del bersaglio in movimento e di quello fermo, in cm \\
+\texttt{menergy}, \texttt{senergy} & \texttt{72, 0} & energia del bersaglio in movimento e di quello fermo, 0--100 \\
+\texttt{pir} & \texttt{1} & uscita del PIR, letta nello stesso campione \\
+\texttt{gates\_m} & \texttt{[0,5,60,10,0,0,0,0,0]} & energia per gate 0--8, canale di movimento \\
+\texttt{gates\_s} & \texttt{[0,0,45,8,0,0,0,0,0]} & energia per gate 0--8, canale stazionario \\
+\texttt{light}, \texttt{out} & \texttt{24, 1} & livello del fotosensore e stato del pin OUT \\
+\texttt{vitality} & \texttt{54} & indice di vitalità calcolato a bordo, 0--100 \\
+\texttt{vitality\_class} & \texttt{vitalita\_moderata} & classe dell'indice di vitalità \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Realizzazione} Lo sviluppo è stato organizzato in cinque passi, ciascuno con un
+criterio di accettazione da verificare prima di passare al successivo.
+\begin{enumerate}
+  \item \textbf{Rete e pagina statica:} il passo era superato quando la pagina si apriva da
+    telefono e da portatile.
+  \item \textbf{Lettura dei sensori e WebSocket:} i valori in pagina dovevano seguire il
+    sensore senza accumulare latenza.
+  \item \textbf{Grafici e storico:} spostando il soggetto di 0,75~m, le barre per gate
+    dovevano indicare il gate corretto.
+  \item \textbf{Sessione ed esportazione:} il CSV del browser è stato verificato come
+    descritto nella Sezione~\ref{sec:webui-verifica}.
+  \item \textbf{Indice di vitalità a bordo:} a regime l'indice doveva coincidere entro
+    $\pm 1$ con quello calcolato in Python (Sezione~\ref{sec:vitalita-bordo}).
+\end{enumerate}
+Un problema incontrato lungo la strada merita di essere segnalato a chi ripete il lavoro.
+I callback del server asincrono girano su un task diverso dal ciclo principale, e una
+stampa di log alla connessione di un client ha corrotto una riga CSV mentre veniva
+scritta. Per questo gli eventi di rete passano ora da una coda e vengono stampati dal
+ciclo principale fra una riga e l'altra.
+
+\subsection{Verifica di equivalenza}
+\label{sec:webui-verifica}
+
+Il vincolo N2 lega l'interfaccia al resto della tesi, e la sua verifica è stata impostata
+come un test di equivalenza. La stessa sessione è stata registrata contemporaneamente in
+due modi (Figura~\ref{fig:percorsi-dati}), dal browser con la funzione di esportazione e
+dalla seriale con lo script di acquisizione lanciato in parallelo sulla porta del nodo. I
+due file sono stati poi confrontati campione per campione, allineandoli sul tempo
+dell'ESP32. Sui 1346 campioni comuni, cioè sull'intera sovrapposizione temporale, tutte le
+colonne coincidono in ogni valore, comprese le energie per gate e le distanze, e lo script
+di analisi legge entrambi i file producendo le stesse metriche. Non si tratta quindi di due
+formati compatibili, ma dello stesso dato raggiunto per due vie.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig30_percorsi_dati}
+\caption{I due percorsi dei dati del firmware della web UI. Sopra il percorso seriale, in
+cui lo script di acquisizione aggiunge i metadati sperimentali. Sotto la web UI, servita
+dal nodo in modalità Access Point senza alcuna rete esterna, che esporta dal browser lo
+stesso CSV con in coda le due colonne dell'indice calcolato a bordo. I due file coincidono
+campione per campione e sono letti dallo stesso script di analisi.}
+\label{fig:percorsi-dati}
+\end{figure}
+
+\subsection{Ruolo nella campagna}
+\label{sec:webui-ruolo}
+
+Nella campagna l'interfaccia ha svolto tre funzioni.
+\begin{itemize}
+  \item \textbf{Controllo in tempo reale:} durante il posizionamento dei sensori e del
+    soggetto permette di verificare, prima di registrare, che ogni sensore veda ciò che
+    deve vedere. Il caso più evidente è il corridoio, dove la timeline della presenza di
+    radar e PIR mostra dal vivo il risultato del confronto.
+  \item \textbf{Acquisizione della prova di portata:} la prova in corridoio
+    (Sezione~\ref{sec:portata-massima}) è stata acquisita con il firmware della web UI, e
+    grazie alla verifica di equivalenza quei dati sono entrati nella catena di analisi
+    senza alcuna modifica.
+  \item \textbf{Indice di vitalità a bordo:} l'interfaccia ospita il calcolo dell'indice
+    sul nodo, confrontato con il riferimento offline nella
+    Sezione~\ref{sec:vitalita-bordo}.
+\end{itemize}
+Il calcolo delle metriche di confronto resta invece affidato alla catena di analisi sui
+file, secondo la divisione descritta nella Sezione~\ref{sec:metodo-approccio}, perché solo
+così ogni numero del Capitolo~\ref{chap:confronto} si può ricalcolare a partire dagli
+stessi dati.

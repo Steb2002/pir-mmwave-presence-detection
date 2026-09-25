@@ -109,7 +109,7 @@ Acquisire **entrambe** costa 20 minuti in più ed evita una conclusione sbagliat
 | 1 | 1.3 a **1 m** (immobile) + estensione 1,5 m | 1,0 | 🔴 punto di decisione: se non vede la persona ferma, il resto è accademico |
 | 2 | 2.3 dose-risposta a 1 m | 1,0 | il grafico a tre sensori |
 | 3 | 1.2 a 0,5/1/1,5/2 m | 1,25 | accuratezza dentro la zona utile |
-| 4 | 1.4 sotto il banco | ✔ 1,3 h | scenario UPRISE |
+| 4 | 1.4 sotto il banco | ✔ 1,3 h | scenario DIPME |
 | 5 | misura angolare a 1 m | 1,0 | confronto col ±90° del LD2410B |
 | 6 | 2.2 rilascio (×2) + 2.6 gate minimo | 1,25 | chiude l'unità del ritardo |
 | 7 | 2.4 selettività (2 scenari) + 2.1 (2 varianti) | 1,25 | |
@@ -187,7 +187,7 @@ il fondo stesso. Dinamica disponibile 39,5/13 = **4,8 dB**.
   per il ritardo di 30 s e le code dei gate 1-2 (Test 2.2). Ma gli **hold del gate 2**
   dicono cosa farebbe il modulo a regime: attraverso **legno da 10 mm** trigger e hold
   non vengono mai superati a 1 m → questo esemplare **non acquisirebbe** la persona,
-  dove il LD2410B a 3 m restava al 100 %. Per UPRISE: l'incasso nell'arredo in legno,
+  dove il LD2410B a 3 m restava al 100 %. Per DIPME: l'incasso nell'arredo in legno,
   ammesso dal LD2410B, non lo è per questo LD2420
 - Col metallo il **gate 4 sale da 8 a 22** (riflessione multipla?) mentre i gate 0-1
   restano a vuoto: un riflettore fermo a 20 cm non compare nel proprio gate, coerente
@@ -288,7 +288,7 @@ sperimentale nel cap. 4 — non va riaperto qui.
 - **Esito atteso**: `radar_presence` a 1 quando ti muovi davanti al sensore
 
 ### Test 0.7-2420 — Il pin OT2 serve davvero?
-- **Serve per**: obiettivo 4 e architettura UPRISE. Sul LD2410B abbiamo dimostrato che il
+- **Serve per**: obiettivo 4 e architettura DIPME. Sul LD2410B abbiamo dimostrato che il
   pin OUT coincide con la presenza in 1699/1699 campioni, cioè un nodo a basso consumo può
   fare a meno dell'UART
 - Collegare OT2 a un GPIO libero, loggarlo come colonna extra per una sessione di 10 min
@@ -331,7 +331,7 @@ sperimentale nel cap. 4 — non va riaperto qui.
 - 5 trial × 302 s, stessa postura e stessa distanza del Test 1.3 originale
 - **Confronto atteso**: LD2410B `fn_radar = 0,00 ± 0,00 %`
 - ⚠️ **Se il LD2420 fallisce qui, la campagna può fermarsi**: un sensore che non vede la
-  persona immobile è inutile per UPRISE, e i test successivi diventano accademici. È il
+  persona immobile è inutile per DIPME, e i test successivi diventano accademici. È il
   punto di decisione naturale del piano
 - 📌 Attenzione a **non** riportare `stationary_distance_cm`: sarà 0 per costruzione
 
@@ -339,7 +339,7 @@ sperimentale nel cap. 4 — non va riaperto qui.
 
 > **La domanda**: il LD2420 mantiene la presenza su una persona **immobile**? È il punto
 > di decisione della campagna ridotta: se la risposta è no, il modulo è inutile per
-> UPRISE e i test successivi diventano accademici.
+> DIPME e i test successivi diventano accademici.
 
 #### ⚠️ Perché si esegue a **1 m** e non a 1,5 m come scritto nel §0-bis
 
@@ -375,7 +375,7 @@ soglie proprie, riporta un bersaglio. Sul LD2420 il canale è **uno solo** con
 un'**isteresi**: `Trigger` porta da libero a occupato, `Maintain` (hold) *mantiene* la
 presenza sui micro-movimenti. Su una persona che entra, si posiziona e poi si immobilizza,
 la grandezza misurata è quindi il **mantenimento della presenza**, non l'acquisizione da
-zero. È esattamente lo scenario UPRISE (la vittima è entrata sotto l'arredo e poi non si
+zero. È esattamente lo scenario DIPME (la vittima è entrata sotto l'arredo e poi non si
 muove più) ed è l'uso per cui il manuale definisce la soglia *Maintain* — ma non è la
 stessa identica grandezza del LD2410B, e i due numeri vanno confrontati dichiarandolo.
 
@@ -458,7 +458,7 @@ non ha né il canale stazionario né la scala 0-100. Le energie vere sono le
 |---|---|---|
 | ✅ **mantiene** | `radar_rate_%` ≈ 100 sui 202 s utili, energia del gate 2 stabilmente sopra **31** | il modulo regge la persona ferma a 1 m → si estende a 1,5 e 2 m |
 | ⚠️ **intermittente** | presenza che va e viene, gate 2 che oscilla intorno a 31 | risultato interessante: siamo sul ginocchio dell'isteresi. Riportare la **serie temporale**, non solo la media |
-| ❌ **non mantiene** | presenza che cade entro ~30-40 s dal fermo e **non risale**, gate 2 al fondo (~20) | il LD2420 non è utilizzabile per UPRISE. La campagna ridotta si ferma qui e il resto diventa documentazione del limite |
+| ❌ **non mantiene** | presenza che cade entro ~30-40 s dal fermo e **non risale**, gate 2 al fondo (~20) | il LD2420 non è utilizzabile per DIPME. La campagna ridotta si ferma qui e il resto diventa documentazione del limite |
 
 🚨 **In tutti e tre i casi il controllo negativo e i due positivi sono obbligatori**: senza
 il negativo, un `radar_rate_% = 100` potrebbe essere di nuovo il muro; senza i positivi,
@@ -589,7 +589,7 @@ compare in nessun gate, zero superamenti del trigger. Stesso esito del LD2410B a
 
 - metrica primaria: energia (la presenza si trascina per isteresi fra un azimut e l'altro)
 - **piu' stretto del LD2410B (≥ ±90°), piu' largo del dichiarato (±60° / ±45°)**
-- per UPRISE: il vicino **in movimento** a 90° non e' visto → selettivita' fra banchi
+- per DIPME: il vicino **in movimento** a 90° non e' visto → selettivita' fra banchi
   adiacenti. E' l'unico punto della campagna in cui il LD2420 fa meglio del LD2410B, e va
   scritto con lo stesso rilievo dei suoi limiti — **ma attribuito all'esemplare**: con un
   margine di 4-6 dB il confine segue il diagramma d'antenna; il LD2410B a 1 m e' saturo
@@ -625,7 +625,7 @@ compare in nessun gate, zero superamenti del trigger. Stesso esito del LD2410B a
 - la distanza e' **confinata alla finestra ammessa e si pianta sul bordo**: stesso valore a
   1 e a 2 m; con gate min 1 dava 136 a 105 cm. Sotto gate minimo `dist_raw` non e' una misura
 - il manuale (Tab. 4-2) da' solo il range 0-15: nessuna delle due proprieta' e' documentata.
-  Per UPRISE il parametro non serve a escludere riflettori vicini e rompe la distanza
+  Per DIPME il parametro non serve a escludere riflettori vicini e rompe la distanza
 
 #### ⏱️ Test 2.2-2420 con ritardo 5 s (08/09/2026): rilascio **7,7 ± 0,5 s** (era 87-120 s a 30 s)
 
@@ -745,7 +745,7 @@ su 120 s; positivo 100 % con gate 1 a 344 (+9,6 dB). 5 × 392 s con **90 s di sc
   il campo vicino**. Il LD2410B non lo prevede
 - Impostare gate minimo 2 e verificare che una persona a 1 m **non** venga rilevata mentre
   una a 3 m sì
-- 📌 **Perché è rilevante per UPRISE**: un sensore sotto un banco potrebbe ignorare la
+- 📌 **Perché è rilevante per DIPME**: un sensore sotto un banco potrebbe ignorare la
   gamba del proprio occupante e sorvegliare una fascia più lontana. È un argomento
   architetturale a favore del LD2420 che vale la pena avere in tesi accanto ai suoi limiti
 - 2 scenari × 3 trial
@@ -835,7 +835,7 @@ solo con ≥ 2 trial su 3 concordi.
 | 1 | Fase 0 (0.5, 0.5-bis, 0.6, 0.7) | 2,5 | 0.5-bis è **bloccante** |
 | 2 | Test 1.3-2420 | 0,75 | 🔴 **anticipato**: è il punto di decisione |
 | 3 | Test 1.2-2420 | 1,5 | il confronto ±0,35 m vs cm |
-| 4 | Test 1.4-2420 | 0,75 | scenario UPRISE |
+| 4 | Test 1.4-2420 | 0,75 | scenario DIPME |
 | 5 | Test 1.1-2420 | notturna | non presidiata |
 | 6 | Fase 2 (2.1-2.4, 2.6) | 3,25 | |
 | 7 | Test 2.5-2420 | 0,75 | serve 2ª persona |

@@ -51,7 +51,7 @@ mentre il radar mmWave costa 3 ordini di grandezza di più ed è pensato per ali
 | Nodo PIR sempre attivo (ESP32 modem-sleep) | ~25 mA | ~4 giorni |
 | Nodo dormiente (deep-sleep + PIR watchdog) | ~0.06 mA | **~4-5 anni** (limite: autoscarica batteria) |
 
-## Implicazione per il progetto UPRISE — architettura ibrida consigliata
+## Implicazione per il progetto DIPME — architettura ibrida consigliata
 
 Il sistema negli arredi sta in "tempo di pace" per anni e deve funzionare a batteria durante
 il blackout post-sisma. I numeri sopra suggeriscono l'architettura ibrida:
@@ -63,7 +63,7 @@ il blackout post-sisma. I numeri sopra suggeriscono l'architettura ibrida:
    delle operazioni di ricerca e soccorso (le prime 72 ore sarebbero coperte con batteria maggiorata
    o duty-cycling del radar, es. 1 min ON / 4 min OFF → ~5× autonomia)
 
-Questa argomentazione collega l'obiettivo 4 al contesto UPRISE e giustifica la coesistenza
+Questa argomentazione collega l'obiettivo 4 al contesto DIPME e giustifica la coesistenza
 PIR + mmWave invece della sostituzione secca: il PIR non è un concorrente ma il
 "guardiano a basso costo" che decide quando accendere il radar.
 

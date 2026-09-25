@@ -1,7 +1,7 @@
 # Scaletta della tesi (Overleaf) — ancorata ai 6 obiettivi
 
 Regola anti-deriva: **ogni attività del progetto deve finire in un capitolo di questa
-scaletta**. Se non ci finisce, è fuori scope (l'ecosistema UPRISE — LoRa, droni,
+scaletta**. Se non ci finisce, è fuori scope (l'ecosistema DIPME — LoRa, droni,
 Digital Twin — vive solo nel §1.1, mezzo paragrafo ciascuno).
 
 Struttura consigliata dei file Overleaf:
@@ -16,7 +16,7 @@ bib/tesi.bib  (le fonti sono già raccolte in CLAUDE.md → convertire in BibTeX
 ---
 
 ## Cap. 1 — Introduzione *(nessun obiettivo: inquadramento)*
-- 1.1 Contesto: progetto UPRISE/SAFE in breve — arredi salva-vita, nodo DIPME,
+- 1.1 Contesto: progetto DIPME/SAFE in breve — arredi salva-vita, nodo DIPME,
   emergenza sismica (≤2 pagine TOTALI di contesto: il resto è rimando alle fonti)
 - 1.2 Il problema specifico: rilevare una persona **ferma** rifugiata sotto un arredo
   — il caso cieco del PIR montato oggi sul DIPME-DEVICE
@@ -58,7 +58,7 @@ bib/tesi.bib  (le fonti sono già raccolte in CLAUDE.md → convertire in BibTeX
 
 ## Cap. 5 — Consumo energetico *(obiettivo 4 — capitolo breve)*
 - 5.1 Consumi da datasheet, confronto nodi completi
-- 5.2 Stime di autonomia e architettura ibrida PIR+mmWave per UPRISE
+- 5.2 Stime di autonomia e architettura ibrida PIR+mmWave per DIPME
 - **Materiale già pronto**: analisi/ANALISI_CONSUMI.md (≈ capitolo già scritto;
   manca solo il modello PIR reale)
 

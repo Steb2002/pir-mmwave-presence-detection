@@ -44,7 +44,7 @@ piattaforma di monitoraggio SAFE**, non del nodo.
 | Storico consultabile a posteriori | no (solo sessione corrente) | sì (query per data/sessione) |
 | Multi-sensore | estensione difficile | nativo (ogni nodo pubblica su un topic) |
 | Funziona senza infrastruttura | **sì** (AP mode) | no: servono broker + server accesi |
-| Cosa dimostra rispetto a UPRISE | il nodo autonomo in emergenza | la piattaforma di monitoraggio in tempo di pace |
+| Cosa dimostra rispetto a DIPME | il nodo autonomo in emergenza | la piattaforma di monitoraggio in tempo di pace |
 | Complessità (componenti da far parlare) | 2 (ESP32, browser) | 4 (ESP32, broker, server, browser) |
 
 Il punto architetturale profondo: in A lo storico vive nel browser *perché non c'è
@@ -52,7 +52,7 @@ nessun altro posto dove metterlo*; in B esiste finalmente un posto giusto (il DB
 di conseguenza sessioni, statistiche e CSV **migrano dal client al server**. Il
 frontend si alleggerisce, il sistema si complica.
 
-### 1.3 Argomento chiave: le due opzioni mappano due parti diverse del progetto UPRISE
+### 1.3 Argomento chiave: le due opzioni mappano due parti diverse del progetto DIPME
 
 Non è "una giusta e una sbagliata": mappano **due componenti reali** del sistema SAFE.
 
@@ -132,10 +132,10 @@ concreto per backup e consegna della tesi.
 |---|---|---|
 | **Laptop Windows (sviluppo)** ✅ | tutta la fase di sviluppo e i test | Mosquitto ha l'installer Windows; Python già presente |
 | Raspberry Pi (demo) | se si vuole la demo "da piattaforma" | stesso ruolo hardware del DIPME DRIVER — ottimo argomento; systemd per l'avvio automatico |
-| VPS/cloud | mai, per questa tesi | contraddice lo scenario UPRISE (emergenza = niente internet), aggiunge auth/HTTPS obbligatori, costi |
+| VPS/cloud | mai, per questa tesi | contraddice lo scenario DIPME (emergenza = niente internet), aggiunge auth/HTTPS obbligatori, costi |
 
 Nota concettuale da scrivere in tesi: anche nell'opzione B il server resta **sulla
-rete locale** — la "piattaforma" UPRISE è on-premise (gateway in loco), non un cloud.
+rete locale** — la "piattaforma" DIPME è on-premise (gateway in loco), non un cloud.
 
 ---
 
@@ -144,8 +144,8 @@ rete locale** — la "piattaforma" UPRISE è on-premise (gateway in loco), non u
 ### 3.1 Topic
 
 ```
-uprise/<node_id>/data     ← telemetria JSON a 5 Hz (QoS 0, no retain)
-uprise/<node_id>/status   ← "online"/"offline" (retain + LWT, vedi §4)
+dipme/<node_id>/data     ← telemetria JSON a 5 Hz (QoS 0, no retain)
+dipme/<node_id>/status   ← "online"/"offline" (retain + LWT, vedi §4)
 ```
 
 `<node_id>` = `ld2410b-01` (hardcoded in config.h; un futuro LD2420 sarà `ld2420-01`
@@ -215,8 +215,8 @@ uint32_t lastTick = 0, lastMqttRetry = 0;
 void setup() {
   Serial.begin(115200);
   radarBegin();                              // Serial2 verso LD2410B + eng. mode
-  snprintf(topicData,   sizeof(topicData),   "uprise/%s/data",   NODE_ID);
-  snprintf(topicStatus, sizeof(topicStatus), "uprise/%s/status", NODE_ID);
+  snprintf(topicData,   sizeof(topicData),   "dipme/%s/data",   NODE_ID);
+  snprintf(topicStatus, sizeof(topicStatus), "dipme/%s/status", NODE_ID);
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASS);          // solo STA: senza rete B non esiste
@@ -273,7 +273,7 @@ Punti di attenzione:
   (il classico `while (!mqtt.connected()) { ... delay(1000); }` degli esempi
   PubSubClient fermerebbe la lettura radar — vietato)
 - **LWT (Last Will and Testament)**: il broker pubblica `offline` su
-  `uprise/<node>/status` se il nodo sparisce senza disconnessione pulita → la
+  `dipme/<node>/status` se il nodo sparisce senza disconnessione pulita → la
   dashboard mostra il banner "nodo offline" senza watchdog custom
 - Se il WiFi/MQTT è giù, i campioni **non si accumulano**: si perde il live ma il
   CSV seriale continua — stessa filosofia dell'opzione A (il canale dei test
@@ -308,7 +308,7 @@ rete è locale/dedicata (stessa argomentazione no-auth dell'opzione A, §11).
 ### 5.3 Test di fumo (prima ancora di scrivere il backend)
 
 ```
-mosquitto_sub -h localhost -t "uprise/#" -v
+mosquitto_sub -h localhost -t "dipme/#" -v
 ```
 
 Se lo sketch §4.2 funziona, qui scorrono 5 JSON al secondo. Questo test isola il
@@ -413,8 +413,8 @@ def start_ingest(loop, queue, host="localhost"):
     def on_connect(client, userdata, flags, reason_code, properties):
         # ⚠ subscribe QUI, non dopo connect(): così le sottoscrizioni si
         # ristabiliscono da sole se il broker riavvia (auto-reconnect di paho)
-        client.subscribe("uprise/+/data")
-        client.subscribe("uprise/+/status")
+        client.subscribe("dipme/+/data")
+        client.subscribe("dipme/+/status")
 
     def on_message(client, userdata, msg):
         node_id = msg.topic.split("/")[1]
@@ -585,7 +585,7 @@ e dell'insert. Conseguenze:
   reflash del firmware
 - il payload MQTT perde i campi `vitality`/`vitality_class` (li aggiunge il server
   al volo, il frontend non nota la differenza)
-- contro: il nodo da solo non sa più dire "vivo/non vivo" — nel racconto UPRISE
+- contro: il nodo da solo non sa più dire "vivo/non vivo" — nel racconto DIPME
   l'intelligenza si sposta dal DIPME-DEVICE alla piattaforma. Difendibile (nel
   sistema reale il gateway ha più risorse del nodo), ma indebolisce l'argomento
   "nodo autonomo"
@@ -659,7 +659,7 @@ di §6.2.
 | Criterio | A — ESP32 self-hosted | B — server esterno |
 |---|---|---|
 | Fedeltà alla frase dell'obiettivo 5 | "sito web" ridotto al minimo | "l'ESP32 **pubblica**" preso alla lettera (MQTT) |
-| Cosa dimostra di UPRISE | nodo autonomo in emergenza | piattaforma di monitoraggio in tempo di pace |
+| Cosa dimostra di DIPME | nodo autonomo in emergenza | piattaforma di monitoraggio in tempo di pace |
 | Demo senza infrastruttura | ✅ (AP mode, ovunque) | ❌ serve laptop/Raspberry acceso e configurato |
 | Storico persistente e consultabile | ❌ | ✅ (DB + vista storico) |
 | Sessioni robuste (refresh/crash) | ❌ (accettato) | ✅ |
@@ -689,7 +689,7 @@ la domanda "che sito vuole?" farebbe mai.
 3. Se all'incontro esce B: il delta è broker + backend (§5-6), **~2-3 giorni** grazie
    al frontend condiviso e al contratto dati unico
 4. Se avanza tempo: fare **entrambe** e presentarle come le due modalità della
-   piattaforma UPRISE (tempo di pace = B, emergenza = A) — da estensione §8 di
+   piattaforma DIPME (tempo di pace = B, emergenza = A) — da estensione §8 di
    ANALISI_WEB_UI.md a punto di forza della tesi
 
 ---
@@ -700,7 +700,7 @@ Ogni step funzionante e dimostrabile da solo, con criterio di accettazione:
 
 | Step | Contenuto | Accettazione (verificabile) |
 |---|---|---|
-| 1 | Mosquitto installato + sketch `ld2410b_mqtt` | `mosquitto_sub -t "uprise/#"` mostra 5 JSON/s; staccando il nodo appare `offline` (LWT) entro ~30 s |
+| 1 | Mosquitto installato + sketch `ld2410b_mqtt` | `mosquitto_sub -t "dipme/#"` mostra 5 JSON/s; staccando il nodo appare `offline` (LWT) entro ~30 s |
 | 2 | Backend: ingest MQTT + SQLite | dopo 10 min, `SELECT COUNT(*)` ≈ 3.000 righe (±1%); nessuna crescita anomala della coda in `/api/info` |
 | 3 | WS live + frontend riusato da A | dashboard aggiornata < 0,5 s dal movimento; 2 browser simultanei coerenti |
 | 4 | Sessioni REST + export CSV | **CSV di 5 min esportato dal server analizzato con `analizza_test.py` = stessi numeri (±1 campione) del CSV seriale in parallelo** |
@@ -723,7 +723,7 @@ una riga di frontend** — è il vantaggio dell'architettura a componenti.
   dimostrare di saper costruire
 - **Configurazione del radar dal sito**: invariata da A — si usa l'app Bluetooth
 - **Selettore multi-nodo nel frontend**: il backend ingerisce già più nodi
-  (topic `uprise/+/data`, colonna `node_id`) ma la dashboard v1 mostra un nodo
+  (topic `dipme/+/data`, colonna `node_id`) ma la dashboard v1 mostra un nodo
   solo; il dropdown di selezione è un'estensione (speculare al "supporto LD2420"
   di ANALISI_WEB_UI.md §8)
 - **Ridondanza/cluster broker**: fuori scala per una tesi triennale

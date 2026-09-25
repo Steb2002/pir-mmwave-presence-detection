@@ -194,7 +194,8 @@ Versione firmware & 2.44.25070917 \\
 Versione protocollo & 1 \\
 MAC Bluetooth & 5E:E4:93:22:B9:3F \\
 Baud confermato & 256000, 8N1 \\
-Risoluzione gate & 75~cm; portata massima 675~cm (gate 0--8) \\
+Risoluzione gate & 75~cm; gate 0--8; portata configurabile 600~cm
+  (8 gate $\times$ 0,75~m, manuale V1.04 \S5.2, confermata in \cref{sec:portata-massima}) \\
 Timeout di presenza (\emph{no-one duration}) & 5~s \\
 Soglie di movimento (gate 0--8) & 50, 50, 40, 30, 20, 15, 15, 15, 15 \\
 Soglie stazionarie (gate 0--8) & 0, 0, 40, 40, 30, 30, 20, 20, 20 \\
@@ -297,8 +298,8 @@ Gate & 9 (0--8) & 16 (0--15) \\
 Risoluzione gate & 0,75~m oppure 0,20~m & 0,70~m fisso \\
 Canali bersaglio & 2, movimento e stazionario separati & 1 \\
 Distanza su bersaglio fermo & sì & no \\
-Energia per-gate & sì, 9+9 valori interi 0--100 & non prevista dall'interfaccia
-  documentata \\
+Energia per-gate & sì, 9+9 valori interi 0--100 & 16 valori interi a 16~bit, solo nella
+  modalità non documentata (adottata, \cref{sec:ld2420-stato}) \\
 Sensore di luce & presente & assente \\
 Baud & 256000 fisso & 115200 \\
 Bluetooth & presente & assente \\
@@ -366,12 +367,65 @@ assunto come specifica in questa tesi; la modalità è segnalata come possibile
 estensione sperimentale, da validare in proprio prima di qualsiasi uso
 (\cref{sec:ld2420-risultati}).
 
-\paragraph{Limite dichiarato.} L'unità di misura del campo \texttt{Range} non è
-documentata in nessuno dei due documenti ufficiali. I valori osservati
-(7--37 muovendosi nella stanza) sono compatibili con decimetri, cioè 0,7--3,7~m;
-la documentazione di comunità citata sopra indica invece i centimetri, valore
-incompatibile con quanto osservato. In assenza di una misura a distanza nota il
-dato non viene usato come misura di distanza in questa tesi.
+\paragraph{L'unità del campo \texttt{Range}.} Non è documentata in nessuno dei due
+documenti ufficiali. I valori 7--37 osservati in luglio muovendosi nella stanza
+facevano pensare a decimetri; la misura a distanza nota di settembre ha chiarito che
+sono \textbf{centimetri} quando c'è un bersaglio (105 a circa 1~m, 130 a 1,3~m) e un
+\emph{valore di riposo} fra 0 e 6 quando non c'è: i 7--37 di luglio erano il riposo.
+Il campo si aggiorna di rado e va letto solo con la presenza alta.
+
+\subsection{Quanto accertato sull'esemplare nella campagna di settembre}
+\label{sec:ld2420-stato}
+
+La campagna del \cref{sec:ld2420-risultati} ha richiesto di chiudere prima cinque
+questioni sul modulo, che si riportano qui perché descrivono l'esemplare e la sua
+interfaccia, non il confronto.
+
+\begin{description}[leftmargin=1.4em,style=nextline,itemsep=3pt]
+  \item[Firmware 1.6.1, l'ultimo] Letto con il comando \texttt{0x00}. Il produttore
+    non pubblica immagini del firmware e nessuno strumento offre l'aggiornamento: la
+    versione è un dato dell'esemplare.
+  \item[Le soglie in flash erano quelle di fabbrica, in decibel] Le 32 soglie lette
+    via UART coincidono tutte con l'XML salvato dallo strumento del produttore, e i
+    valori di fabbrica coincidono con gli esempi del documento di protocollo (60000,
+    30000, 3000, 2000 per i gate 0--3). Lo strumento mostra le soglie come
+    $10\log_{10}$ del valore grezzo: la relazione $\text{grezzo} = 10^{\text{dB}/10}$
+    è validata su ogni parametro, e la stessa relazione vale per le energie.
+  \item[La presenza ASCII è inutilizzabile] Un dump grezzo di quattro minuti contiene
+    2528 righe \texttt{ON} e nessuna \texttt{OFF}, stanza vuota inclusa; anche il pin
+    OT2 resta alto per 120~s a stanza vuota. La causa è il muro a 5~m dentro gli
+    840~cm di campo di fabbrica (\cref{sec:ld2420-taratura}). Per questa ragione la
+    campagna usa la \textbf{modalità binaria} descritta sopra, implementata in un
+    logger dedicato (\cref{app:codice}) e dichiarata come scelta implementativa di
+    comunità: presenza, distanza e sedici energie a 16~bit a 10~Hz, lette via UART
+    esattamente come per il \ldb. Lo strumento PC mostra gli stessi numeri in
+    decibel, il che assolve il nostro parser.
+  \item[La scrittura dei parametri via UART non è persistente] Gate massimo, gate
+    minimo e ritardo scritti via UART sono accettati e riletti correttamente, ma il
+    modulo li perde al proprio ciclo di alimentazione, e il documento di protocollo
+    non prevede un comando di salvataggio. La configurazione di riferimento è quindi
+    quella scritta in flash dallo strumento del produttore, di cui il repository
+    conserva i file XML; i parametri scritti via UART a ogni avvio dell'ESP32 sono
+    dichiarati in testa a ogni CSV.
+  \item[L'esemplare vede fino a circa 2~m, e il perché] Su tacche da 100 a 480~cm,
+    con oscillazione e cammino sul posto, il modulo riporta la persona a 1~m (gate~2)
+    e appena sopra il fondo a 2~m (gate~3); da 3~m in su le energie sono identiche
+    alla stanza vuota, in tre modalità di lettura indipendenti (frame binario, riga
+    ASCII, strumento PC). La diagnosi con le energie per gate: il rumore ai gate
+    lontani vale circa 35 grezzi, esattamente il progetto delle soglie di fabbrica
+    (200 e 100), quindi il ricevitore è a norma; l'\textbf{accoppiamento fra
+    trasmettitore e ricevitore al gate~0 vale 110 contro circa 12\,000 di progetto}
+    (il documento di protocollo tara la soglia del gate~0 a 60\,000, e l'esempio di
+    comunità riporta una media di 8656). Un trasmettitore 20--25~dB sotto progetto dà
+    una portata di $8~\text{m} / 10^{25/40} \approx 1{,}9$~m, che è quanto misurato.
+    Sono state escluse con misure: soglie, gate, firmware, parser, orientamento,
+    geometria, cavo, danno visibile. Non è stata provata l'alimentazione da pile.
+    Con ogni probabilità l'esemplare è difettoso dall'origine; un valore letto in
+    luglio a 4,5~m, che sembrava contraddirlo, era il muro. Il relatore ha indicato di
+    riportare le prove e i risultati così come sono: la campagna sul secondo radar è
+    stata perciò eseguita entro i 2~m dell'esemplare e ogni suo numero è attribuito
+    al pezzo, non al modello.
+\end{description}
 
 \section{Il sensore PIR in dotazione: HC-SR501}
 \label{sec:hcsr501}
@@ -396,7 +450,7 @@ Livello logico di uscita & alto 3,3~V / basso 0~V, grazie al regolatore HT7133 a
   bordo: compatibile con i GPIO dell'ESP32 senza adattamento \\
 Corrente di riposo & $<$50~\textmu A \\
 Portata & 3--7~m, regolabile con il trimmer di sensibilità \\
-Angolo di copertura & cono $<$110\degree\ (più ampio dei $\pm 60\degree$ del radar) \\
+Angolo di copertura & cono $<$110\degree \\
 Tempo di ritenuta & regolabile da circa 3~s a circa 5~min \\
 Block time & 2,5~s dopo ogni rilascio \\
 Trigger & jumper: L = singolo, H = ripetibile \\
@@ -406,13 +460,17 @@ Dimensioni & 32 $\times$ 24~mm \\
 \end{tabularx}
 \end{table*}
 
-\paragraph{Configurazione adottata per la campagna} (fissata il 19 luglio 2026 e
-mantenuta identica per tutte le acquisizioni, con fotografia della posizione dei
-trimmer):
+\paragraph{Configurazione adottata per la campagna} (fissata il 19 luglio 2026, con
+fotografia della posizione dei trimmer; trimmer e collegamento sono rimasti identici
+per tutte le acquisizioni, mentre il ponticello di ritrigger è stato spostato una
+sola volta, il 22 agosto 2026):
 
 \begin{enumerate}[leftmargin=1.8em,itemsep=2pt]
-  \item jumper in posizione \textbf{H} (repeat trigger), altrimenti una persona in
-        movimento continuo apparirebbe intermittente per costruzione;
+  \item jumper in posizione \textbf{H} (repeat trigger) dal 22 agosto 2026, altrimenti
+        una persona in movimento continuo apparirebbe intermittente per costruzione.
+        Le acquisizioni precedenti sono state svolte in posizione L, credendola H: il
+        \cref{sec:jumper} spiega come il difetto è stato individuato dai dati e quali
+        scenari sono stati ripetuti in H;
   \item trimmer del tempo di ritenuta al \textbf{minimo}: la ritenuta misurata è
         risultata di circa 3,4~s;
   \item trimmer di sensibilità a \textbf{metà corsa};
@@ -426,6 +484,7 @@ trimmer):
 
 \section{La piattaforma di acquisizione}
 \label{sec:piattaforma}
+\label{sec:formato-dati}
 
 \subsection{Punto di partenza: il repository di riferimento}
 
@@ -482,6 +541,17 @@ Lo script di acquisizione aggiunge a ogni riga i metadati sperimentali:
 \texttt{pc\_time\_s}, \texttt{group\_id}, \texttt{trial\_id}, \texttt{scenario},
 \texttt{ground\_truth\_presence}, \texttt{ground\_truth\_state}.
 
+\paragraph{Gli altri due firmware producono lo stesso schema.} Il logger del \ldc\
+in modalità binaria scrive le stesse nove colonne di base, seguite dalle sedici
+energie grezze a 16~bit con un nome distinto (\texttt{energy2420\_gateN}) perché la
+scala è diversa; le grandezze che il \ldc\ non possiede valgono zero, e il PIR, non
+cablato in quelle prove, vale $-1$, un valore sentinella che gli script riconoscono
+per omettere ogni metrica del PIR invece di calcolare un falso negativo inesistente.
+Il firmware della web UI (\cref{cap:webui}) scrive sulla seriale le stesse 29
+colonne del logger, quindi \texttt{acquire.py} funziona in parallelo alla dashboard
+e l'ultima fase della campagna è stata acquisita con esso. Un solo formato dati
+attraversa firmware, seriale, browser e analisi.
+
 \paragraph{Una correzione necessaria allo script di acquisizione.} La versione
 originale scrive righe sul file solo dopo aver riconosciuto la riga di intestazione,
 che l'ESP32 stampa una sola volta in \texttt{setup()}. Se il reset all'apertura
@@ -523,6 +593,14 @@ tentativo di misura del respiro il canale scelto per intuito
 perfettamente leggibile su \texttt{menergy\_gate2}. La ricerca automatica del
 canale migliore, con criterio dichiarato, è diventata parte del metodo.
 
+A questi si sono aggiunti, nel corso della campagna, il prototipo dell'indice di
+vitalità e lo script che ne verifica il porting (\cref{cap:vitalita}), e gli script
+che producono i materiali derivati: le 22 figure di questa tesi, il foglio Excel con
+una riga per trial e la pagina di riepilogo, rigenerabili con un solo comando
+(\cref{app:codice}). Tutti importano le funzioni di \texttt{analizza\_test.py}
+anziché ricalcolare, così che ogni numero nei grafici coincida per costruzione con
+quello nel testo.
+
 \section{Che aspetto hanno i dati: validazione e insidie}
 \label{sec:insidie}
 
@@ -546,8 +624,24 @@ validazione (673 campioni su 134~s). I risultati positivi sono:
 La stessa validazione ha però messo in luce tre comportamenti del modulo che
 condizionano tutte le analisi successive e che vanno dichiarati esplicitamente.
 
+
+\begin{figure*}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig10_gate_engineering}
+\caption{Engineering mode del \ldb\ su una sessione con persona che entra, si ferma e si muove. In alto i nove gate del canale in movimento con sovrapposto il gate atteso dalla distanza riportata (concordanza al $98{,}3\,\%$); al centro i nove gate stazionari, con i gate 0 e 1 sempre nulli; in basso la presenza dichiarata dal radar e dal PIR.}
+\label{fig:gate-engineering}
+\end{figure*}
+
 \subsection{Saturazione dei canali di energia}
 \label{sec:saturazione}
+
+\begin{figure*}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig11_saturazione}
+\caption{La saturazione dell'energia: l'indice è un intero 0--100 e sul bersaglio vicino il canale stazionario è a fondoscala nella quasi totalità dei campioni. Un segnale clippato non porta informazione, e nessuna soglia lo risolve.}
+\label{fig:saturazione}
+\end{figure*}
+
 
 Con il bersaglio fermo a distanza ravvicinata, l'energia stazionaria è a fondo
 scala (valore 100) nel \textbf{92\,\%} dei campioni e quella in movimento nel
@@ -580,7 +674,7 @@ bersagli fermi sotto 1,5~m: nei dati si osservano valori di
 due gate. La conseguenza pratica è però rilevante: le analisi che si basano sulle
 serie per-gate --- respiro e indice di vitalità --- per un soggetto a meno di 1,5~m
 devono usare i \textbf{canali in movimento} oppure i gate di indice $\geq 2$.
-E poiché nello scenario UPRISE la persona è sotto un banco, cioè vicina, questo è
+E poiché nello scenario DIPME la persona è sotto un banco, cioè vicina, questo è
 un vincolo di progetto e non un dettaglio (\cref{sec:sotto-banco}).
 
 \subsection{Coda di presenza}
@@ -602,7 +696,7 @@ positivi inesistenti.
 Due verifiche minori ma utili. La colonna \texttt{out\_level}, che riporta lo stato
 del pin OUT letto \emph{dal frame UART}, coincide con \texttt{radar\_presence} in
 1699 campioni su 1699: il collegamento fisico del filo blu è quindi inutile ai
-nostri fini. È però un'informazione utile per il progetto UPRISE, perché indica che
+nostri fini. È però un'informazione utile per il progetto DIPME, perché indica che
 un dispositivo interessato alla sola presenza binaria può usare il pin OUT senza
 implementare la UART.
 

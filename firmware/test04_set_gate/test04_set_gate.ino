@@ -2,7 +2,7 @@
   Test 2.4 — Configurazione del gate massimo del LD2410B (selettivita' spaziale).
 
   SCOPO
-  Il Test 2.4 del PIANO_TEST simula lo scenario UPRISE dei banchi affiancati: il radar
+  Il Test 2.4 del PIANO_TEST simula lo scenario DIPME dei banchi affiancati: il radar
   vede attraverso il legno, quindi il sensore del banco A rischia di rilevare la persona
   sotto il banco B. La mitigazione e' limitare la portata al volume del proprio banco
   riducendo il gate massimo. Questo sketch serve a impostare quel parametro via UART,

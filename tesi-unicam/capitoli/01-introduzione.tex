@@ -1,19 +1,32 @@
 \chapter{Introduzione}
 \label{cap:introduzione}
 
-\section{Contesto: il progetto UPRISE/SAFE}
-\label{sec:contesto}
+Negli ultimi anni i sistemi IoT si sono diffusi anche nell'ambito della protezione
+civile e della gestione delle emergenze, dove la disponibilità di informazioni
+tempestive e affidabili può incidere direttamente sull'efficacia dei soccorsi.
 
 Il terremoto del 2016 che ha colpito l'Italia centrale, e in particolare l'area di
-Camerino, ha reso evidente un problema tanto concreto quanto poco studiato: nelle
-prime ore successive a un evento sismico l'informazione più preziosa per i
-soccorritori non è lo stato dell'edificio, ma \emph{dove si trovano le persone}.
-Da questa esigenza nasce il progetto europeo UPRISE\footnote{Nella documentazione
-scientifica del gruppo di ricerca il progetto è indicato anche con il nome
-\textbf{SAFE}; nel seguito si userà UPRISE/SAFE per riferirsi allo stesso
-ecosistema.}, che ha come obiettivo la mitigazione del rischio sismico attraverso
-l'integrazione di sensoristica IoT negli \emph{arredi} degli ambienti
-scolastici~\cite{slideUprise}.
+Camerino, ha reso evidente questa esigenza: nelle prime ore successive a un evento
+sismico, per i soccorritori è fondamentale sapere dove sono le persone, soprattutto
+quando potrebbero trovarsi in un luogo difficilmente accessibile o non essere in grado
+di muoversi. Da qui la domanda alla base della tesi: con quale
+sensore è possibile rilevare una persona che non si muove?
+
+In questo capitolo vengono presentate le motivazioni e gli obiettivi che hanno guidato
+il lavoro, insieme a una panoramica della struttura della tesi. In particolare, la
+\cref{sec:motivazioni} descrive il contesto progettuale e i motivi che hanno portato a
+questo studio, la \cref{sec:obiettivo} ne definisce l'obiettivo e, infine, la
+\cref{sec:struttura} ne illustra l'organizzazione.
+
+\section{Motivazioni}
+\label{sec:motivazioni}
+
+Il progetto di tesi trova le sue motivazioni nel progetto
+DIPME\footnote{Nella documentazione scientifica del gruppo di ricerca il progetto è
+indicato anche con il nome \textbf{SAFE}; nel seguito si userà DIPME per
+riferirsi allo stesso ecosistema.}, che ha come obiettivo la mitigazione del rischio
+sismico attraverso l'integrazione di sensoristica IoT negli \emph{arredi} degli
+ambienti scolastici~\cite{slideUprise}.
 
 L'idea del progetto si articola su tre livelli.
 
@@ -22,13 +35,17 @@ L'idea del progetto si articola su tre livelli.
     e Design di UNICAM per resistere al crollo e offrire un volume di rifugio: il
     banco ha telaio doppio spaziale, piano rinforzato con lamiera forata
     antisfondamento, elemento di base dissipativo e connessione strutturale fra
-    banchi adiacenti.
-  \item[Nodi di sensing] Nell'arredo è integrata l'elettronica sviluppata dal
-    partner industriale AM Microsystems: il \textbf{DIPME-DEVICE} monta radio LoRa,
-    sensore \emph{PIR}, sensore \emph{UWB}, oltre a CO\textsubscript{2},
-    temperatura, umidità, pressione, accelerometro e Bluetooth. I nodi
-    comunicano con un \textbf{DIPME-COORDINATOR} e da questo verso un gateway IoT
-    su Linux/Raspberry.
+    banchi adiacenti~\cite{pietroni2021furniture}.
+  \item[Nodi di sensing] Nell'arredo è integrata l'elettronica della piattaforma
+    \textbf{DIPME}, sviluppata con il partner industriale AM Microsystems. Il nodo
+    dispiegato nel dimostratore scolastico~\cite{callisto2026dipme} è un'unità a
+    batteria su microcontrollore STM32WLE con radio LoRa, un sensore \emph{PIR}
+    (Panasonic EKMB139) per la presenza e sensori ambientali (BME280 per
+    temperatura, umidità e pressione, SCD40 per la CO\textsubscript{2}); la scheda
+    descritta nelle slide di progetto~\cite{slideUprise} prevede anche un sensore
+    \emph{UWB}, un accelerometro e il Bluetooth. I nodi comunicano con un
+    coordinatore LoRa (\textbf{DIPME-COORDINATOR}) e da questo con un gateway di
+    bordo (\emph{edge}) su Linux.
   \item[Raccolta e visualizzazione] In emergenza la rete di terra non è
     disponibile: i messaggi LoRa (bande sub-GHz libere, 433/868~MHz in Europa,
     con portate dell'ordine di 3--5~km in ambiente urbano) vengono raccolti da
@@ -40,18 +57,19 @@ L'idea del progetto si articola su tre livelli.
 
 Il sistema opera in due modalità: un ``tempo di pace'' di monitoraggio ordinario
 e un ``tempo di guerra'' di emergenza sismica, attivato da un trigger (accelerometro
-sul gateway, blackout della rete elettrica).
+sul gateway, blackout della rete elettrica). Nel dimostratore descritto
+in~\cite{callisto2026dipme} --- 42 nodi integrati nei banchi salva-vita di due aule
+di una scuola secondaria delle Marche, in esercizio da ottobre 2025 a marzo 2026 ---
+la transizione è comandata dal gateway al segnale di un accelerometro strutturale, e
+in emergenza \emph{il bit di presenza decide la cadenza di trasmissione del nodo}: un
+messaggio al minuto se il nodo rileva qualcuno, uno ogni quindici minuti se non rileva
+nessuno. La qualità del rilevamento di presenza stabilisce quindi quali banchi vengono
+ascoltati con priorità.
 
 \todo{inserire una figura di sistema: arredo $\to$ DIPME $\to$ coordinator $\to$
 gateway $\to$ drone $\to$ tablet}
 
-\section{Il problema specifico affrontato dalla tesi}
-\label{sec:problema}
-
-Questa tesi si occupa esclusivamente del livello più basso della catena: il
-\textbf{sensing di presenza}. La domanda di partenza è molto circoscritta e ha
-un'origine precisa nell'architettura esistente.
-
+\paragraph{Il limite del sensore adottato.}
 Il DIPME-DEVICE rileva la presenza con un sensore PIR (\emph{Passive InfraRed}).
 Il PIR è il sensore di presenza più diffuso al mondo per tre ragioni difficili
 da battere: consuma qualche decina di microampere, costa pochi euro e non richiede
@@ -62,10 +80,13 @@ persona ferma produce un flusso costante, quindi un segnale differenziale nullo:
 \emph{nessun PIR, a nessun prezzo, può rilevare una persona immobile}
 (\cref{sec:pir-principio}).
 
-Nello scenario UPRISE questo limite cade esattamente nel punto peggiore. Una
+Nello scenario DIPME questo limite cade esattamente nel punto peggiore. Una
 persona rifugiata sotto un banco dopo un crollo è, tipicamente, \textbf{ferma}:
 per paura, per scelta, o perché non può muoversi. È il caso cieco del sensore
-che il nodo monta oggi.
+che il nodo monta oggi. Gli stessi autori della piattaforma indicano fra gli sviluppi
+futuri l'estensione del livello di sensing con radar a onde millimetriche a
+complemento del PIR, da valutare nei compromessi fra accuratezza, consumo, privacy e
+complessità~\cite{callisto2026dipme}: questa tesi è, in concreto, quella valutazione.
 
 I radar \emph{mmWave} a onda continua modulata in frequenza (FMCW) a 24~GHz
 promettono di coprire proprio questo buco: rilevano i micro-movimenti
@@ -84,11 +105,18 @@ tesi:
         \emph{vitalità} utile al triage?
 \end{enumerate}
 
-\section{Obiettivi}
-\label{sec:obiettivi}
+\section{Obiettivo}
+\label{sec:obiettivo}
 
-Gli obiettivi sono stati concordati con il relatore e sono qui riportati nella
-formulazione originale, perché costituiscono la traccia di tutto il documento.
+La tesi si propone di caratterizzare e confrontare sperimentalmente le due tecnologie
+di rilevamento di presenza candidate per il nodo DIPME --- il sensore PIR
+attualmente impiegato e il radar mmWave a 24~GHz --- e di stabilire, con misure
+ripetibili e non con argomenti di principio, se e di quanto il radar sia necessario
+nello scenario della persona immobile sotto l'arredo.
+
+Attorno a questo obiettivo centrale il lavoro si articola in sei punti, concordati con
+il relatore e qui riportati nella formulazione originale perché costituiscono la
+traccia di tutto il documento.
 
 \begin{enumerate}[label=\textbf{O\arabic*.},leftmargin=2.6em,itemsep=4pt]
   \item \textbf{Studio dei sensori} --- chi li usa, come vengono usati, quali dati
@@ -104,7 +132,8 @@ formulazione originale, perché costituiscono la traccia di tutto il documento.
         \emph{Capitolo \ref{cap:consumi}.}
   \item \textbf{User interface web} --- l'ESP32 pubblica i dati, un sito web li
         visualizza in tempo reale, la stessa applicazione li salva con statistiche
-        ed esporta in CSV per l'analisi numerica. \emph{Capitolo \ref{cap:webui}.}
+        ed esporta in CSV per l'analisi numerica. \emph{\cref{sec:webui}, nel
+        Capitolo \ref{cap:metodologia}.}
   \item \textbf{Indice di vitalità} --- obiettivo avanzato: oltre alla presenza
         sì/no, un algoritmo che quantifichi quanto una persona si muove
         (per esempio 50 su 100) e la classifichi di conseguenza.
@@ -113,14 +142,14 @@ formulazione originale, perché costituiscono la traccia di tutto il documento.
 
 \paragraph{Fuori scope.} Non fanno parte della tesi: la radio LoRa e il suo
 protocollo, la raccolta con droni, il Digital Twin, la progettazione strutturale
-degli arredi. Questi elementi compaiono solo in \cref{sec:contesto} come
+degli arredi. Questi elementi compaiono solo nella \cref{sec:motivazioni} come
 inquadramento e, dove pertinente, come vincolo di progetto (per esempio l'assenza
 di connettività in emergenza, che orienta le scelte del \cref{cap:webui}).
 
-\section{Contributi}
+\paragraph{Contributi.}
 \label{sec:contributi}
-
-I contributi originali di questo lavoro sono:
+Il perseguimento degli obiettivi appena elencati ha prodotto i seguenti contributi
+originali:
 
 \begin{itemize}[leftmargin=1.4em,itemsep=3pt]
   \item una \textbf{piattaforma di misura riproducibile} su ESP32 che acquisisce
@@ -133,22 +162,70 @@ I contributi originali di questo lavoro sono:
   \item la \textbf{calibrazione della misura di distanza} del LD2410B su 25 prove
         fra 1 e 5~m, con individuazione di un errore di scala sistematico e del
         coefficiente che lo corregge (\cref{sec:distanza});
-  \item la \textbf{dimostrazione di misurabilità del respiro} con hardware
-        consumer, e l'individuazione documentata di quale dei venti canali di
+  \item la \textbf{misura del respiro} con hardware consumer, verificata contro un
+        ritmo imposto, e l'individuazione documentata di quale dei venti canali di
         energia disponibili sia effettivamente utilizzabile a ciascuna distanza
         (\cref{sec:respiro});
-  \item la \textbf{specifica e la taratura di un indice di vitalità}
-        implementabile su microcontrollore (\cref{cap:vitalita}).
+  \item la \textbf{quantificazione dell'attenuazione degli ostacoli} e della
+        portata residua su entrambi i radar, cartongesso e porta chiusa compresi, e la
+        misura della \textbf{portata massima} dei tre sensori nella stessa geometria
+        (\cref{sec:ostacoli,sec:portata-massima});
+  \item la \textbf{caratterizzazione del secondo radar} entro la portata
+        dell'esemplare, con la taratura necessaria a farlo funzionare e i suoi limiti
+        misurati (\cref{sec:ld2420-risultati});
+  \item un \textbf{indice di vitalità} a tre classi, specificato, tarato e validato su
+        trial separati, portato a bordo dell'ESP32 e verificato identico al calcolo di
+        riferimento (\cref{cap:vitalita});
+  \item un'\textbf{interfaccia web servita dal nodo} in Access Point, senza rete
+        esterna, con esportazione CSV verificata equivalente alla catena seriale
+        (\cref{cap:webui}).
 \end{itemize}
 
-\section{Struttura del documento}
+\section{Struttura della Tesi}
+\label{sec:struttura}
 
-Il \cref{cap:sensori} tratta i principi di funzionamento e lo stato dell'arte dei
-sensori di presenza (O1). Il \cref{cap:moduli} descrive i moduli in esame, i dati
-che producono e la piattaforma di acquisizione realizzata (O2). Il
-\cref{cap:confronto} è il capitolo centrale e riporta il confronto sperimentale
-(O3). Il \cref{cap:consumi} analizza i consumi (O4), il \cref{cap:webui} la web UI
-(O5), il \cref{cap:vitalita} l'indice di vitalità (O6). Il
-\cref{cap:conclusioni} risponde in sintesi alla domanda di partenza e indica gli
-sviluppi futuri. Le appendici raccolgono i dettagli del protocollo seriale e i
-listati principali.
+\begin{itemize}[leftmargin=1.4em,itemsep=4pt]
+  \item \textbf{Sensori di presenza: principi e stato dell'arte}. Il primo capitolo
+    offre una panoramica dei sensori di presenza, spiegando il principio fisico del
+    PIR e quello del radar FMCW a onde millimetriche, e inquadrando entrambi rispetto
+    alle alternative (UWB, ultrasuoni, visione). Presenta inoltre lo stato dell'arte
+    sull'uso del mmWave per il monitoraggio dei parametri vitali senza contatto (O1).
+
+  \item \textbf{I moduli in esame e i dati che producono}. Il secondo capitolo
+    descrive in dettaglio i tre sensori impiegati --- il PIR HC-SR501 e i due radar
+    Hi-Link LD2410B e LD2420 --- a partire dalla documentazione ufficiale del
+    costruttore, con le grandezze che ciascuno mette a disposizione e i limiti
+    dichiarati. Presenta poi la piattaforma di acquisizione realizzata su ESP32 e il
+    formato dati unico usato da tutta la catena di analisi (O2).
+
+  \item \textbf{Metodologia di confronto}. Il terzo capitolo fissa il metodo con cui i
+    sensori sono stati confrontati: le geometrie e gli scenari, le ripetizioni e la
+    ground truth, le metriche e le convenzioni di lettura dei dati, il protocollo
+    ridotto adottato per il secondo radar. Presenta inoltre l'interfaccia web servita
+    direttamente dall'ESP32 in modalità Access Point, senza alcuna rete esterna,
+    realizzata a supporto della campagna con visualizzazione in tempo reale,
+    statistiche ed esportazione CSV nello stesso formato della catena seriale (O5).
+
+  \item \textbf{Confronto sperimentale}. Il quarto capitolo è il capitolo centrale
+    della tesi e raccoglie i risultati della campagna di misura: accuratezza della
+    distanza, falsi positivi e negativi, latenze di rilevamento e rilascio, copertura
+    angolare, penetrazione degli ostacoli, portata massima e caratterizzazione del
+    secondo radar. Ogni risultato è riportato con la sua dispersione su ripetizioni
+    indipendenti (O3).
+
+  \item \textbf{Indice di vitalità}. Il quinto capitolo misura il respiro con verifica
+    a ritmo imposto e poi definisce, tara e valida un indice che quantifica quanto un
+    soggetto si muove, oltre alla semplice presenza binaria, descrivendone il porting
+    a bordo del microcontrollore e la verifica contro il calcolo di riferimento (O6).
+
+  \item \textbf{Consumo energetico}. Il sesto capitolo analizza i consumi dei tre
+    sensori a partire dai datasheet, ne stima l'autonomia a batteria nello scenario
+    del nodo DIPME e discute l'architettura ibrida PIR + mmWave che ne discende (O4).
+
+  \item \textbf{Conclusioni e sviluppi futuri}. La tesi si conclude rispondendo in
+    sintesi alla domanda di partenza, dichiarando i limiti del lavoro svolto e
+    indicando come può essere migliorato.
+\end{itemize}
+
+Le appendici raccolgono i dettagli del protocollo seriale dei due radar e i listati
+principali del software sviluppato.

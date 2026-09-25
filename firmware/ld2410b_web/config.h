@@ -2,19 +2,19 @@
  * config.h — l'unico file da toccare per configurare ld2410b_web.
  *
  * Rete: SOLO Access Point (decisione 05/09/2026, ANALISI_WEB_UI.md §1). L'ESP32 crea la
- * sua rete e non si collega a nessun WiFi esistente: nello scenario UPRISE la rete di
+ * sua rete e non si collega a nessun WiFi esistente: nello scenario DIPME la rete di
  * casa non c'e'. Nessun segreto qui dentro: la password dell'AP e' pubblica per
  * definizione (sta scritta sul dispositivo), quindi il file resta nel repo.
  */
 #pragma once
 
 // ---------------------------------------------------------------- Access Point
-#define AP_SSID        "UPRISE-Sensor"
-#define AP_PASSWORD    "uprise2026"     // WPA2, minimo 8 caratteri
+#define AP_SSID        "DIPME-Sensor"
+#define AP_PASSWORD    "dipme2026"      // WPA2, minimo 8 caratteri
 #define AP_CANALE      1
 #define AP_MAX_CLIENT  4                // coincide con il massimo di client WebSocket
 // IP dell'AP: 192.168.4.1 (default del softAP dell'ESP32). Il DNS catch-all risponde
-// con questo indirizzo a qualunque nome, quindi "uprise.local" o qualsiasi cosa
+// con questo indirizzo a qualunque nome, quindi "dipme.local" o qualsiasi cosa
 // scritta nel browser porta alla dashboard.
 
 // ---------------------------------------------------------------- Radar e PIR (dallo step 2)

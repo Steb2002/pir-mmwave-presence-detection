@@ -145,16 +145,16 @@ Fase 6, validazione, casi limite). Qui interessa solo il contratto verso il sito
 ### 2.6 WiFi — solo Access Point (rev. 05/09/2026)
 
 ```
-1. WiFi.mode(WIFI_AP); WiFi.softAP("UPRISE-Sensor", "uprise2026", canale 1, hidden 0, max 4)
+1. WiFi.mode(WIFI_AP); WiFi.softAP("DIPME-Sensor", "dipme2026", canale 1, hidden 0, max 4)
 2. IP fisso 192.168.4.1 (default del softAP), gateway = se stesso
 3. DNSServer sulla porta 53: risponde 192.168.4.1 a QUALUNQUE nome
-4. stampa su seriale "# AP UPRISE-Sensor attivo, http://192.168.4.1" (riga prefissata
+4. stampa su seriale "# AP DIPME-Sensor attivo, http://192.168.4.1" (riga prefissata
    con "# ", che acquire.py scarta)
 ```
 
 Niente modalità Station, niente credenziali di reti esistenti, niente timeout di
 connessione: l'ESP32 è la rete. Decisione dell'autore del 05/09/2026, coerente con lo
-scenario UPRISE (in emergenza non c'è infrastruttura) e con la motivazione del
+scenario DIPME (in emergenza non c'è infrastruttura) e con la motivazione del
 professore per il sito self-hosted. La modalità Station è nell'elenco estensioni di
 `ANALISI_WEB_UI.md` §8.
 
@@ -310,7 +310,7 @@ Riprende i 5 step di ANALISI_WEB_UI.md §6, con il "definition of done" di ciasc
 
 | Step | Contenuto | Accettazione (verificabile) |
 |---|---|---|
-| 1 | AP + DNS catch-all, `embed_web.py`, index statico da PROGMEM gzip | telefono e PC collegati a `UPRISE-Sensor` aprono la pagina su `192.168.4.1` e su un nome qualsiasi; lo sketch compila con Huge APP e le due librerie ESP32Async (rev. 05/09) |
+| 1 | AP + DNS catch-all, `embed_web.py`, index statico da PROGMEM gzip | telefono e PC collegati a `DIPME-Sensor` aprono la pagina su `192.168.4.1` e su un nome qualsiasi; lo sketch compila con Huge APP e le due librerie ESP32Async (rev. 05/09) |
 | 2 | WS + broadcast JSON + area A testuale | valori cambiano <0.5 s dopo un movimento; riconnessione automatica dopo reset ESP32 |
 | 3 | Chart.js locale + C1/C2/C3 + gauge B | 10 min di run senza rallentamenti su tablet; C3 mostra PIR che cade e radar che resta con persona ferma |
 | 4 | form sessione, stats, export CSV | **CSV web di 5 min analizzato da analizza_test.py = stessi numeri (±1 campione) del CSV seriale acquisito in parallelo** |

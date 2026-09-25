@@ -137,51 +137,49 @@ def fig_doserisposta():
         ax.text(xi, v + d + 2.5, f"{v:.1f}", ha="center", fontsize=9, color=C_PIR, fontweight="bold")
     ax.set_xticks(x); ax.set_xticklabels(lab)
     ax.set_ylabel("tempo con presenza rilevata [%]")
-    ax.set_ylim(0, 118)
+    ax.set_ylim(0, 128)
+    ax.set_yticks(range(0, 101, 20))
     ax.set_title("Rilevamento in funzione della quantità di movimento\n"
                  "(soggetto a 1 m, stessa postura e stesso setup: cambia solo il movimento)")
-    ax.legend(loc="upper left", bbox_to_anchor=(0.005, 0.97))
-    ax.axhline(100, color=C_GRIGIO, lw=0.7, ls=":")
+    ax.legend(loc="upper center", ncol=2, frameon=False)
     salva(fig, "fig01_dose_risposta")
     return list(zip(lab, et_rad, et_pir, ed_pir))
 
 
-def fig_timeline_uprise():
-    """Traccia appaiata radar/PIR nello scenario del progetto: persona ferma sotto il banco."""
-    f = DATI / "sotto_banco_immobile_H_T01.csv"
-    t, d = serie(f, ["radar_presence", "pir_presence", "stationary_distance_cm",
-                     "stationary_energy"])
-    m = t >= 40.0                       # convenzione sotto-banco
-    t, d = t[m] - 40.0, {k: v[m] for k, v in d.items()}
-
-    fig, axes = plt.subplots(3, 1, figsize=(7.6, 4.8), sharex=True,
+def fig_timeline_dipme():
+    """Traccia appaiata radar/PIR sulla persona immobile, nelle due geometrie del capitolo 4:
+    seduta a 2,3 m (Test 1.3, scarto 20 s) e sotto il banco a ~60 cm (Test 1.4, scarto 40 s)."""
+    casi = [("fermo_seduto_T01.csv", 20.0, "Seduto immobile a 2,3 m"),
+            ("sotto_banco_immobile_H_T01.csv", 40.0, "Immobile sotto il banco, ~60 cm")]
+    fig, axes = plt.subplots(3, 2, figsize=(10.4, 5.0), sharex="col",
                              gridspec_kw={"height_ratios": [1, 1, 1.5]})
-    axes[0].fill_between(t, 0, d["radar_presence"], step="post", color=C_RADAR, alpha=0.85)
-    axes[0].set_ylim(-0.1, 1.2); axes[0].set_yticks([0, 1]); axes[0].set_yticklabels(["no", "sì"])
-    axes[0].set_ylabel("mmWave", color=C_RADAR)
-    axes[0].set_title("Persona immobile sotto il banco (~60 cm) — scenario UPRISE, trial T01")
-
-    axes[1].fill_between(t, 0, d["pir_presence"], step="post", color=C_PIR, alpha=0.85)
-    axes[1].set_ylim(-0.1, 1.2); axes[1].set_yticks([0, 1]); axes[1].set_yticklabels(["no", "sì"])
-    axes[1].set_ylabel("PIR", color=C_PIR)
-
-    axes[2].plot(t, d["stationary_distance_cm"], lw=0.8, color=C_RADAR)
-    axes[2].set_ylabel("distanza\nbersaglio fermo [cm]")
-    axes[2].set_xlabel("tempo dall'inizio della finestra utile [s]")
-    axes[2].set_ylim(0, max(140, np.nanmax(d["stationary_distance_cm"]) * 1.15))
-
-    pir_pct = 100 * d["pir_presence"].mean()
-    rad_pct = 100 * d["radar_presence"].mean()
-    axes[0].text(0.99, 0.82, f"presenza rilevata {rad_pct:.1f} % del tempo",
-                 transform=axes[0].transAxes, ha="right", fontsize=9, color=C_RADAR)
-    axes[1].text(0.99, 0.82, f"presenza rilevata {pir_pct:.1f} % del tempo",
-                 transform=axes[1].transAxes, ha="right", fontsize=9, color=C_PIR)
-    for a in axes[:2]:
-        a.grid(False)
+    for j, (nome, skip, titolo) in enumerate(casi):
+        t, d = serie(DATI / nome, ["radar_presence", "pir_presence", "stationary_distance_cm"])
+        m = t >= skip
+        t, d = t[m] - skip, {k: v[m] for k, v in d.items()}
+        a0, a1, a2 = axes[0, j], axes[1, j], axes[2, j]
+        a0.fill_between(t, 0, d["radar_presence"], step="post", color=C_RADAR, alpha=0.85)
+        a1.fill_between(t, 0, d["pir_presence"], step="post", color=C_PIR, alpha=0.85)
+        for a, lab, col in ((a0, "mmWave", C_RADAR), (a1, "PIR", C_PIR)):
+            a.set_ylim(-0.1, 1.65); a.set_yticks([0, 1]); a.set_yticklabels(["no", "sì"])
+            a.grid(False)
+            if j == 0:
+                a.set_ylabel(lab, color=col)
+        a0.set_title(titolo)
+        a0.text(0.99, 0.86, f"presenza rilevata {100 * d['radar_presence'].mean():.1f} % del tempo",
+                transform=a0.transAxes, ha="right", fontsize=9, color=C_RADAR)
+        a1.text(0.99, 0.86, f"presenza rilevata {100 * d['pir_presence'].mean():.1f} % del tempo",
+                transform=a1.transAxes, ha="right", fontsize=9, color=C_PIR)
+        a2.plot(t, d["stationary_distance_cm"], lw=0.8, color=C_RADAR)
+        a2.set_xlabel("tempo dall'inizio della finestra utile [s]")
+        if j == 0:
+            a2.set_ylabel("distanza\nbersaglio fermo [cm]")
+        a2.set_ylim(0, max(140, float(np.nanmax(d["stationary_distance_cm"])) * 1.15))
+    fig.subplots_adjust(wspace=0.12)
     salva(fig, "fig02_timeline_sotto_banco")
 
 
-def fig_uprise_barre():
+def fig_dipme_barre():
     """Sotto il banco: con micro-movimenti il PIR va bene, da fermo no. Il radar sempre 100%."""
     gruppi = [("con micro-movimenti", "sotto_banco_movimenti_H_T*.csv"),
               ("immobile",            "sotto_banco_immobile_H_T*.csv")]
@@ -204,7 +202,7 @@ def fig_uprise_barre():
     ax.set_title("Scenario del progetto: persona sotto il banco (~60 cm)\n"
                  "5 trial per condizione, jumper H")
     ax.legend(loc="center right")
-    salva(fig, "fig03_uprise_sotto_banco")
+    salva(fig, "fig03_dipme_sotto_banco")
 
 
 def fig_distanza():
@@ -253,9 +251,9 @@ def fig_distanza():
                     edgecolor="white", linewidth=0.8)
     axes[1].set_ylabel("residuo [cm]")
     axes[1].set_xlabel("distanza reale [cm]")
-    axes[1].set_ylim(-8, 8)
-    axes[1].text(0.99, 0.08, f"residuo massimo sulle medie: {np.abs(res_m).max():.1f} cm",
-                 transform=axes[1].transAxes, ha="right", fontsize=9, color=C_GRIGIO)
+    axes[1].set_ylim(-9, 11)
+    axes[1].text(0.99, 0.93, f"residuo massimo sulle medie: {np.abs(res_m).max():.1f} cm",
+                 transform=axes[1].transAxes, ha="right", va="top", fontsize=9, color=C_GRIGIO)
     salva(fig, "fig04_distanza_regressione")
     return a, b, r2, per_dist
 
@@ -270,28 +268,25 @@ def fig_energia_distanza(per_dist=None):
         m, s = media_dev([r.get("mdist_dev_cm") for r in rs]); disp_m.append(m); disp_d.append(s)
         m, s = media_dev([r["pir_rate_%"] for r in rs]); pir_m.append(m); pir_d.append(s)
 
-    fig, axes = plt.subplots(1, 2, figsize=(9.0, 3.6))
-    axes[0].errorbar(dists, en_m, yerr=en_d, marker="o", color=C_RADAR, capsize=4, lw=1.6)
+    # Un solo pannello: la portata del PIR sul posto sta ora in fig28 (tipo di movimento).
+    fig, ax = plt.subplots(figsize=(6.4, 3.8))
+    ax.errorbar(dists, en_m, yerr=en_d, marker="o", color=C_RADAR, capsize=4, lw=1.6,
+                label="energia media del bersaglio in movimento")
     for x, y in zip(dists, en_m):
-        axes[0].annotate(f"{y:.1f}", (x, y), textcoords="offset points", xytext=(0, 9),
-                         ha="center", fontsize=9, color=C_RADAR)
-    axes[0].set_xlabel("distanza reale [m]"); axes[0].set_ylabel("energia media del bersaglio [0-100]")
-    axes[0].set_title("Energia del canale moving")
-    axes[0].set_ylim(0, 115); axes[0].set_xticks(dists)
-
-    axes[1].bar([d - 0.0 for d in dists], pir_m, 0.55, yerr=pir_d, capsize=4,
-                color=C_PIR, edgecolor="white")
-    for x, y in zip(dists, pir_m):
-        axes[1].annotate(f"{y:.1f} %", (x, y), textcoords="offset points", xytext=(0, 5),
-                         ha="center", fontsize=9, color=C_PIR)
-    axes[1].axhline(100, color=C_RADAR, lw=1.6, ls="-")
-    axes[1].text(3, 103, "mmWave: 100 % a tutte le distanze", ha="center",
-                 fontsize=9, color=C_RADAR)
-    axes[1].set_xlabel("distanza reale [m]"); axes[1].set_ylabel("tempo rilevato dal PIR [%]")
-    axes[1].set_title("Portata utile del PIR (movimento sul posto)")
-    axes[1].set_ylim(0, 118); axes[1].set_xticks(dists)
-    fig.suptitle("Comportamento in distanza dei due sensori (serie 1-5 m, 25 trial)", y=1.03)
-    salva(fig, "fig05_energia_e_portata")
+        ax.annotate(f"{y:.1f}", (x, y), textcoords="offset points", xytext=(0, 9),
+                    ha="center", fontsize=9, color=C_RADAR)
+    ax2 = ax.twinx()
+    ax2.bar(dists, disp_m, 0.35, yerr=disp_d, capsize=3, color=C_GRIGIO, alpha=0.35,
+            edgecolor="white", label="dispersione della distanza entro il trial")
+    ax2.set_ylabel("dispersione entro il trial [cm]", color=C_GRIGIO)
+    ax2.set_ylim(0, 130); ax2.set_yticks(range(0, 31, 10)); ax2.grid(False); ax2.spines["right"].set_visible(True)
+    ax.axhline(15, color=C_PIR, lw=1.0, ls=":", label="soglia di fabbrica dei gate lontani (15)")
+    ax.set_xlabel("distanza reale [m]"); ax.set_ylabel("energia media del bersaglio [0-100]")
+    ax.set_ylim(0, 115); ax.set_xticks(dists)
+    ax.set_title("LD2410B, cammino sul posto a 1-5 m (25 trial)")
+    h1, l1 = ax.get_legend_handles_labels(); h2, l2 = ax2.get_legend_handles_labels()
+    ax.legend(h1 + h2, l1 + l2, loc="upper right", fontsize=8.5)
+    salva(fig, "fig05_energia_distanza")
 
 
 def fig_latenza():
@@ -323,7 +318,7 @@ def fig_latenza():
     delta = [a_ - b_ for a_, b_ in zip(lat_r, lat_p)]
     md, dd = media_dev(delta)
     axes[0].scatter([0, 1], [mr, mp], marker="_", s=900, color="black", zorder=4, linewidth=2)
-    axes[0].set_xticks([0, 1]); axes[0].set_xticklabels(["mmWave", "PIR"])
+    axes[0].set_xticks([0, 1]); axes[0].set_xticklabels(["LD2410B", "PIR"])
     axes[0].set_xlim(-0.35, 1.35)
     axes[0].set_ylabel("latenza di rilevamento [s]")
     axes[0].set_title(f"Ingresso — {len(lat_r)} trial appaiati\n"
@@ -343,10 +338,10 @@ def fig_latenza():
         axes[1].text(xi, v + d + 0.5, f"{v:.2f} ± {d:.2f} s", ha="center", fontsize=9,
                      fontweight="bold")
     axes[1].axhline(5, color=C_GRIGIO, ls="--", lw=1)
-    axes[1].annotate("timeout configurato nel radar: 5 s", xy=(0.5, 5), xytext=(0.5, 8.5),
-                     ha="center", fontsize=8.5, color=C_GRIGIO,
+    axes[1].annotate("timeout\ndel radar\n5 s", xy=(0.5, 5), xytext=(0.5, 8.0),
+                     ha="center", va="bottom", fontsize=8, color=C_GRIGIO,
                      arrowprops=dict(arrowstyle="->", color=C_GRIGIO, lw=0.8))
-    axes[1].set_xticks(x); axes[1].set_xticklabels(["mmWave", "PIR"])
+    axes[1].set_xticks(x); axes[1].set_xticklabels(["LD2410B", "PIR"])
     axes[1].set_ylabel("tempo per dichiarare la stanza vuota [s]")
     axes[1].set_title(f"Uscita — {len(ril_r)} trial\nil radar tiene la presenza più a lungo")
     axes[1].set_ylim(0, max(mrr + drr, mpp + dpp) * 1.35)
@@ -385,10 +380,8 @@ def fig_impulsi_pir():
     axes[1].barh(y, [v for v, _ in dati], color=col, edgecolor="white", height=0.8)
     axes[1].set_yticks([])
     axes[1].set_xlabel("durata dell'impulso [s]")
-    axes[1].set_ylabel(f"i {len(dati)} impulsi, ordinati")
-    axes[1].axvline(m, color="black", ls="--", lw=1)
-    axes[1].text(m * 1.15, len(dati) * 0.5, f"durata fissa in L\n({m:.2f} s)",
-                 fontsize=8.5, rotation=90, va="center")
+    axes[1].set_ylabel(f"i {len(dati)} impulsi, ordinati", labelpad=10)
+    axes[1].axvline(m, color="black", ls="--", lw=1, label=f"durata fissa in L ({m:.2f} s)")
     axes[1].plot([], [], color=C_PIR, lw=6, label=f"{len(H_c)} impulsi completi")
     axes[1].plot([], [], color=C_GRIGIO, lw=6,
                  label=f"{len(H_t)} troncati dalla fine del trial\n(durata reale >= barra)")
@@ -416,11 +409,11 @@ def fig_due_persone():
         ax.plot(t, sd, ".", ms=2.2, color="#e08214", label="canale stazionario")
         ax.axhline(200, color=C_GRIGIO, ls="--", lw=0.9)
         ax.axhline(400, color=C_GRIGIO, ls="--", lw=0.9)
-        for yv, et in ((200, "A (ferma, 2 m)"), (400, "B (cammina, 4 m)")):
-            ax.text(t.max() * 0.99, yv + 12, et, fontsize=8, color=C_GRIGIO, ha="right",
-                    bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="none", alpha=0.85))
         ax.set_title(titolo); ax.set_xlabel("tempo [s]"); ax.set_ylim(0, 520)
     axes[0].set_ylabel("distanza riportata [cm]")
+    for yv, et in ((200, "A\n(ferma, 2 m)"), (400, "B\n(cammina, 4 m)")):
+        axes[1].text(1.02, yv, et, transform=axes[1].get_yaxis_transform(), fontsize=8,
+                     color=C_GRIGIO, ha="left", va="center")
     axes[0].legend(loc="lower left", fontsize=9, markerscale=4)
     fig.suptitle("Il LD2410B riporta un bersaglio per canale — chi sta dietro è invisibile", y=1.03)
     salva(fig, "fig08_due_persone")
@@ -440,19 +433,54 @@ def fig_selettivita():
         m20, d20 = media_dev([r["radar_rate_%"] for r in r20])
         m120, d120 = media_dev([r["radar_rate_%"] for r in r120])
         ax.bar(x[i] - w/2, m20, w, yerr=d20, capsize=4, color="#9fc5dd", edgecolor="white",
-               label="finestra standard (scarto 20 s)" if i == 0 else None)
+               label="finestra ordinaria: scarto dei primi 20 s" if i == 0 else None)
         ax.bar(x[i] + w/2, m120, w, yerr=d120, capsize=4, color=C_RADAR, edgecolor="white",
-               label="a regime (scarto 120 s)" if i == 0 else None)
+               label="a regime: scarto dei primi 120 s" if i == 0 else None)
         ax.text(x[i] + w/2, m120 + d120 + 3, f"{m120:.1f}", ha="center", fontsize=9,
                 color=C_RADAR, fontweight="bold")
         ax.text(x[i] - w/2, m20 + d20 + 3, f"{m20:.1f}", ha="center", fontsize=9,
                 color=C_GRIGIO)
     ax.set_xticks(x); ax.set_xticklabels([s[0] for s in sc])
-    ax.set_ylabel("tempo con presenza rilevata [%]"); ax.set_ylim(0, 118)
+    ax.set_ylabel("tempo con presenza rilevata [%]"); ax.set_ylim(0, 132)
     ax.set_title("Selettività spaziale con gate massimo 2 (portata tagliata a 150 cm)\n"
                  "tutti i soggetti fermi · 3 trial per scenario")
-    ax.legend(loc="center right", fontsize=9)
+    ax.legend(loc="upper center", fontsize=9, ncol=2)
     salva(fig, "fig09_selettivita")
+
+
+def fig_transitorio():
+    """Sezione 4.3.3: perche' negli scenari di selettivita' lo scarto iniziale e' 120 s e non 20.
+    I tre trial della persona ferma a 1 m a 90 gradi (gate massimo 2): la presenza e' attiva
+    dall'istante zero, si spegne una volta sola e non si riaccende. E' la coda del
+    posizionamento, non un rilevamento; con 20 s entrerebbe nella statistica."""
+    fig, axes = plt.subplots(3, 1, figsize=(8.6, 4.6), sharex=True)
+    for i, ax in enumerate(axes):
+        nome = f"sel_laterale_1m_T0{i + 1}.csv"
+        t, d = serie(DATI / nome, ["radar_presence"])
+        r20 = analizza_file(str(DATI / nome), salta_inizio_s=20.0)["radar_rate_%"]
+        r120 = analizza_file(str(DATI / nome), salta_inizio_s=120.0)["radar_rate_%"]
+        ax.axvspan(0, 20, color="#e9ecef", zorder=0)
+        ax.axvspan(20, 120, color="#fde2c8", zorder=0)
+        ax.fill_between(t, 0, d["radar_presence"], step="post", color=C_RADAR, alpha=0.85, zorder=2)
+        spegne = t[np.argmax(d["radar_presence"] == 0)] if (d["radar_presence"] == 0).any() else None
+        if spegne is not None:
+            ax.annotate(f"si spegne a {spegne:.0f} s\ne non si riaccende", xy=(spegne, 0.5),
+                        xytext=(spegne + 6, 0.62), fontsize=8, color=C_RADAR,
+                        arrowprops=dict(arrowstyle="-", color=C_RADAR, lw=0.8))
+        ax.set_ylim(-0.1, 1.25); ax.set_yticks([0, 1]); ax.set_yticklabels(["no", "sì"])
+        ax.grid(False)
+        ax.set_ylabel(f"T0{i + 1}", rotation=0, ha="right", va="center")
+        ax.text(1.01, 0.5, f"scarto 20 s:  {r20:4.1f} %\nscarto 120 s: {r120:4.1f} %",
+                transform=ax.transAxes, fontsize=8.5, va="center", family="monospace")
+        ax.set_xlim(0, t[-1])
+    axes[0].text(10, 1.12, "scarto\nordinario", ha="center", va="bottom", fontsize=8, color=C_GRIGIO)
+    axes[0].text(70, 1.12, "scarto negli scenari di selettività (120 s)", ha="center",
+                 va="bottom", fontsize=8, color="#b35c1e")
+    axes[-1].set_xlabel("tempo dall'inizio del trial [s]")
+    fig.suptitle("Presenza riportata dall'LD2410B con la persona ferma a 1 m a 90° (gate massimo 2)",
+                 fontsize=10.5, y=1.0)
+    fig.subplots_adjust(hspace=0.35, right=0.80)
+    salva(fig, "fig32_transitorio")
 
 
 # =========================================================== OBIETTIVO 2
@@ -471,16 +499,26 @@ def fig_gate_heatmap():
     M = np.vstack([d[c] for c in GATE_M])
     S = np.vstack([d[c] for c in GATE_S])
 
-    fig, axes = plt.subplots(3, 1, figsize=(8.2, 5.6), sharex=True,
-                             gridspec_kw={"height_ratios": [1.3, 1.3, 0.6]})
+    # Colorbar in una colonna propria: cosi' i tre assi del tempo hanno la stessa
+    # larghezza e le barre di presenza in basso stanno in colonna con le energie sopra.
+    fig = plt.figure(figsize=(8.2, 5.6))
+    gs = fig.add_gridspec(3, 2, height_ratios=[1.3, 1.3, 0.6], width_ratios=[1, 0.025],
+                          hspace=0.12, wspace=0.03)
+    axes = [fig.add_subplot(gs[0, 0])]
+    axes.append(fig.add_subplot(gs[1, 0], sharex=axes[0]))
+    axes.append(fig.add_subplot(gs[2, 0], sharex=axes[0]))
+    caxes = [fig.add_subplot(gs[0, 1]), fig.add_subplot(gs[1, 1]), fig.add_subplot(gs[2, 1])]
+    caxes[2].axis("off")
     ext = [t[0], t[-1], -0.5, 8.5]
-    for ax, Z, nome in ((axes[0], M, "moving"), (axes[1], S, "stazionario")):
+    for ax, cax, Z, nome in ((axes[0], caxes[0], M, "moving"),
+                             (axes[1], caxes[1], S, "stazionario")):
         im = ax.imshow(Z, aspect="auto", origin="lower", extent=ext,
                        cmap="magma", vmin=0, vmax=100, interpolation="nearest")
         ax.set_ylabel(f"gate\n({nome})")
         ax.set_yticks(range(0, 9, 2))
         ax.grid(False)
-        fig.colorbar(im, ax=ax, pad=0.012, label="energia [0-100]")
+        ax.tick_params(labelbottom=False)
+        fig.colorbar(im, cax=cax, label="energia [0-100]")
     dist = np.where(d["moving_target"] == 1, d["moving_distance_cm"] / 75.0, np.nan)
     axes[0].plot(t, dist, color="#7fd4ff", lw=1.0, label="gate atteso = distanza / 0,75 m")
     axes[0].legend(loc="upper right", fontsize=8.5, labelcolor="white",
@@ -491,17 +529,19 @@ def fig_gate_heatmap():
     axes[2].fill_between(t, -0.05, -0.05 - d["pir_presence"] * 0.9, step="post",
                          color=C_PIR, alpha=0.85, lw=0)
     axes[2].axhline(0, color="black", lw=0.6)
+    axes[2].set_xlim(t[0], t[-1])
     axes[2].set_ylim(-1.15, 1.15)
     axes[2].set_yticks([-0.5, 0.5])
-    axes[2].set_yticklabels(["PIR", "mmWave"])
+    axes[2].set_yticklabels(["PIR\n(mod. L)", "LD2410B"])
     axes[2].set_xlabel("tempo [s]")
     axes[2].grid(False)
-    axes[2].text(0.09, 0.78, f"presenza {100*d['radar_presence'].mean():.1f} % del tempo",
-                 transform=axes[2].transAxes, ha="left", fontsize=8.5, color=C_RADAR)
-    axes[2].text(0.09, 0.10, f"presenza {100*d['pir_presence'].mean():.1f} % del tempo",
-                 transform=axes[2].transAxes, ha="left", fontsize=8.5, color=C_PIR)
+    # percentuali di presenza nella colonna delle colorbar, fuori dalle barre
+    caxes[2].text(0.0, 0.72, f"{100*d['radar_presence'].mean():.0f} %", transform=caxes[2].transAxes,
+                  ha="left", va="center", fontsize=9, color=C_RADAR, fontweight="bold")
+    caxes[2].text(0.0, 0.28, f"{100*d['pir_presence'].mean():.0f} %", transform=caxes[2].transAxes,
+                  ha="left", va="center", fontsize=9, color=C_PIR, fontweight="bold")
     axes[0].set_title("Dati prodotti dai due sensori nello stesso istante\n"
-                      "mmWave: 18 canali di energia per-gate a 5 Hz  vs  PIR: 1 bit")
+                      "LD2410B: 18 canali di energia per gate a 5 Hz  vs  PIR: 1 bit")
     salva(fig, "fig10_gate_engineering")
 
 
@@ -523,7 +563,7 @@ def fig_saturazione():
         ax.set_xlabel("energia riportata [0-100]")
         ax.axvline(100, color=C_PIR, lw=1.4, ls="--")
     axes[0].set_ylabel("conteggio campioni")
-    fig.suptitle("Limite del dato di energia: soggetto fermo a 1 m (trial fermo_1m_H_T01)", y=1.05)
+    fig.suptitle("Limite del dato di energia: soggetto fermo a 1 m", y=1.05)
     salva(fig, "fig11_saturazione")
 
 
@@ -565,7 +605,7 @@ def fig_respiro():
     axes[0].plot(t[:600], v[:600], lw=0.9, color=C_RADAR)
     axes[0].set_xlabel("tempo [s]")
     axes[0].set_ylabel(f"energia {canale} [0-100]")
-    axes[0].set_title("Serie temporale dell'energia per-gate (primi 120 s)")
+    axes[0].set_title("Energia per-gate nel tempo (primi 120 s)")
 
     banda = (fr >= 0.0) & (fr <= 1.2)
     axes[1].plot(fr[banda], X[banda], lw=1.1, color=C_RADAR)
@@ -576,9 +616,8 @@ def fig_respiro():
                      fontsize=9, color=C_PIR)
     axes[1].set_xlabel("frequenza [Hz]")
     axes[1].set_ylabel("ampiezza FFT")
-    axes[1].set_title("Spettro - banda respiratoria 0,1-0,5 Hz evidenziata")
-    fig.suptitle("Micro-movimento respiratorio su soggetto immobile a 2,3 m "
-                 "(trial fermo_seduto_T01)", y=1.05)
+    axes[1].set_title("Spettro, banda respiratoria 0,1-0,5 Hz")
+    fig.suptitle("Micro-movimento respiratorio su soggetto immobile a 2,3 m", y=1.05)
     salva(fig, "fig12_respiro")
     return canale, picco_f, snr
 
@@ -633,14 +672,15 @@ def fig_consumi():
 def main():
     print(f"Figure -> {OUT}")
     dose = fig_doserisposta()
-    fig_timeline_uprise()
-    fig_uprise_barre()
+    fig_timeline_dipme()
+    fig_dipme_barre()
     a, b, r2, _ = fig_distanza()
     fig_energia_distanza()
     lat = fig_latenza()
     imp = fig_impulsi_pir()
     fig_due_persone()
     fig_selettivita()
+    fig_transitorio()
     fig_gate_heatmap()
     fig_saturazione()
     resp = fig_respiro()

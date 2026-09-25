@@ -1,7 +1,7 @@
 /*
  * ld2410b_web — dashboard self-hosted sull'ESP32 (obiettivo 5 della tesi).
  *
- * L'ESP32 crea la propria rete WiFi (Access Point "UPRISE-Sensor", nessuna connessione
+ * L'ESP32 crea la propria rete WiFi (Access Point "DIPME-Sensor", nessuna connessione
  * a reti esistenti), serve la pagina web dalla flash e spinge i dati del radar LD2410B
  * e del PIR al browser via WebSocket a 5 Hz. Il browser disegna i grafici, calcola le
  * statistiche e genera il CSV con le stesse colonne di acquire.py.
@@ -37,13 +37,14 @@
  *                        veniva corrotta dalla stampa concorrente); avviso portale captive nella pagina
  *   BUILD 6 (10/09/2026) step 5: vitality.h a bordo (v3, fondo per gate, 3 classi), gauge collegata,
  *                        vitalita' in C1 e nel CSV web (colonne extra vitality_onboard*)
+ *   BUILD 7 (23/09/2026) progetto rinominato: rete DIPME-Sensor / dipme2026, pagina "DIPME Sensor"
  */
 #include "config.h"
 #include "radar_task.h"
 #include "vitality.h"
 #include "web_server.h"
 
-#define BUILD "ld2410b_web BUILD 6 - step 5: indice di vitalita' a bordo"
+#define BUILD "ld2410b_web BUILD 7 - rete DIPME-Sensor"
 
 static RadarSample campione;
 static unsigned long ultimoCampione = 0;
