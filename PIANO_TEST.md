@@ -195,7 +195,7 @@ python acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv 
 - Annotare la **temperatura**: sopra ~28 °C il contrasto termico corpo/ambiente cala e il
   PIR è penalizzato. Dichiararlo, o ripetere una serie in condizioni più fresche
 
-### Test 1.4 - Persona sotto il banco (scenario UPRISE reale)
+### Test 1.4 - Persona sotto il banco (scenario DIPME reale)
 - **Metrica**: come 1.3, ma nella postura e alla distanza reali del progetto. E' il test
   che da' il senso alla tesi: il sensore vede la persona rifugiata sotto l'arredo?
 - **Perche' e' diverso dal 1.3**: qui la distanza e' di **30-80 cm**, cioe' la regione in
@@ -211,7 +211,7 @@ python acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv 
   l'interno/basso (verso il torace di chi sta sotto). Nastro di carta, niente viti
 - Il PIR affiancato, stessa direzione, cosi' il confronto resta a parita' di vista
 - Annotare altezza da terra e orientamento: e' parte del setup da fotografare
-- ⚠️ **Il banco reale UPRISE ha un piano rinforzato con lamiera forata antisfondamento**,
+- ⚠️ **Il banco reale DIPME ha un piano rinforzato con lamiera forata antisfondamento**,
   ma dai render del progetto il sensore sta **sotto** il piano: la lamiera e' dietro
   all'antenna, non tra sensore e persona. Quindi non e' un ostacolo da attraversare, ma un
   **riflettore ravvicinato** che puo' alterare il diagramma di irradiazione a 24 GHz — vedi
@@ -282,6 +282,8 @@ python acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv 
 
 > **ESITO: superato a tutte le distanze.** `pir_rate_%` = 100,00 / 100,00 / 98,83 / 98,73
 > a 2 / 3 / 4 / 5 m (3 trial ciascuna, jumper H, trimmer a metà corsa), contro **0,0 %**
+> ✔ **Esteso a 1 m il 25/09/2026**: `attraversamento_1m_T01..T03` = **100,00 ± 0,00 %** (a 1 m il
+> cammino sul posto era già rilevato all'85 %: la prova completa la figura, non cambia la conclusione).
 > del cammino sul posto alle stesse distanze. Radar `fn_radar_%` = 0,00 ovunque.
 > Il PIR non è né guasto né mal tarato: la variabile che decide è il **tipo di movimento**,
 > non la distanza. Dettagli e conseguenze in CLAUDE.md; riga nel registro sessioni.
@@ -444,10 +446,10 @@ python ..\analisi\analizza_test.py data\attraversamento_*.csv --salta-inizio 20
 ```
   mette in fila le tre condizioni. Atteso: radar ~100% in tutte e tre, PIR in mezzo fra
   1.5% e 85%
-- **Rilevanza per UPRISE**: e' la condizione realistica di una persona **cosciente ma
+- **Rilevanza per DIPME**: e' la condizione realistica di una persona **cosciente ma
   ferita**, che non cammina sul posto e non sta immobile come una statua
 
-### Test 2.4 — Selettività spaziale (scenario "banchi adiacenti" UPRISE)
+### Test 2.4 — Selettività spaziale (scenario "banchi adiacenti" DIPME)
 - **Perché**: in un'aula reale i banchi sono affiancati e il radar vede attraverso il
   legno → il sensore del banco A rischia di rilevare la persona sotto il banco B,
   falsando la mappa dei sopravvissuti. La mitigazione è limitare la portata al volume
@@ -550,7 +552,7 @@ python ..\analisi\analizza_test.py data\attraversamento_*.csv --salta-inizio 20
 python acquire.py --port COM3 --duration 180 --output data/selettivita_solo_B_T01.csv --scenario selettivita_solo_B --trial T01 --ground_truth_presence 0 --ground_truth_state absent
 ```
 - **Analisi**: `radar_rate_%` in `selettivita_solo_B` è il tasso di "falso vicino" —
-  numero chiave per l'applicabilità UPRISE multi-banco. Annotare nel registro che questi
+  numero chiave per l'applicabilità DIPME multi-banco. Annotare nel registro che questi
   trial usano una configurazione **non di fabbrica**: senza quella nota, a distanza di
   settimane sembreranno confrontabili con gli altri e non lo sono
 
