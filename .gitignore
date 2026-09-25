@@ -33,3 +33,15 @@ tesi-unicam/capitolo5_bozza.pdf
 tesi-unicam/capitolo6_bozza.pdf
 tesi-unicam/capitolo7_bozza.pdf
 tesi-unicam/capitolo8_bozza.pdf
+
+# Copie di sicurezza locali: il contenuto e' gia' nella storia git
+/overleaf - Copia/
+tesi-unicam/capitoli/backup/
+
+# Log di compilazione LaTeX e PDF generati nella radice e in tesi-unicam
+/*.log
+/overleaf_anteprima_locale.pdf
+tesi-unicam/abstract.pdf
+
+# Log del tool PC Hi-Link LD2410: rigenerati a ogni avvio
+HLK-LD2410x/LD2410 Tool/Log/
