@@ -14,12 +14,12 @@ Il confronto tra i due sensori trova uno scenario di applicazione concreto nel p
 L'idea del progetto si articola su tre livelli:
 
 \begin{itemize}
-    \item \textbf{Arredi salva-vita.} Il primo livello riguarda l'arredo stesso. Banchi e pareti sono progettati dalla Scuola di Architettura e Design di UNICAM per resistere al crollo del solaio e mantenere al di sotto di sé un volume in cui una persona possa trovare riparo (Figura~\ref{fig:arredo-render}). Non si tratta quindi di semplici mobili rinforzati, ma di elementi strutturali progettati per lavorare insieme e vincolati tra loro
+    \item \textbf{Arredi salva-vita.} Banchi e pareti sono progettati dalla Scuola di Architettura e Design di UNICAM per resistere al crollo del solaio e mantenere al di sotto di sé un volume in cui una persona possa trovare riparo (Figura~\ref{fig:arredo-render}). Non si tratta quindi di semplici mobili rinforzati, ma di elementi strutturali pensati per lavorare insieme e vincolati tra loro
     \cite{pietroni2021furniture}.
 
-    \item \textbf{Nodi di sensing.} All'interno dell'arredo è integrata l'elettronica della piattaforma DIPME, sviluppata con partner industriali, fra cui AM Microsystems~\cite{slideDipme}, nell'ambito del progetto VITALITY~\cite{callisto2026dipme}. Ogni nodo, il DIPME-DEVICE, è un'unità autonoma alimentata a batteria e integra una radio LoRa, un sensore di presenza a infrarossi passivi (PIR) e alcuni sensori ambientali per la misura di temperatura, umidità, pressione e anidride carbonica.
+    \item \textbf{Nodi di sensing.} All'interno dell'arredo è integrata l'elettronica della piattaforma DIPME, sviluppata con partner industriali, fra cui AM Microsystems~\cite{slideDipme}, nell'ambito del progetto VITALITY~\cite{callisto2026dipme}. Ogni nodo, il DIPME-DEVICE, è un'unità autonoma alimentata a batteria e integra una radio LoRa, un sensore di presenza PIR e alcuni sensori ambientali per la misura di temperatura, umidità, pressione e anidride carbonica.
 
-    \item \textbf{Raccolta e visualizzazione.} I nodi comunicano via LoRa con un coordinatore, che inoltra i dati a un gateway locale. LoRa permette di trasmettere a basse potenze anche su distanze dell'ordine di 3--5~km in ambiente urbano. Il gateway, alimentato da un gruppo di continuità, coordina il comportamento dei nodi e inoltra i dati a una piattaforma cloud con cruscotti di monitoraggio, conservandoli quando la connessione si interrompe e reinviandoli al ripristino~\cite{callisto2026dipme}. La piattaforma SAFE, di cui DIPME estende l'approccio, prevede inoltre un sottosistema di localizzazione basato su droni e dispositivi mobili a supporto dei soccorritori~\cite{callisto2024safe,callisto2026dipme}.
+    \item \textbf{Raccolta e visualizzazione.} I nodi comunicano via LoRa con un coordinatore, che inoltra i dati a un gateway locale. LoRa permette di trasmettere a basse potenze anche su distanze dell'ordine di 3--5~km in ambiente urbano. Il gateway, alimentato da un gruppo di continuità, coordina il comportamento dei nodi e trasmette i dati a una piattaforma cloud con cruscotti di monitoraggio, conservandoli quando la connessione si interrompe e reinviandoli al ripristino~\cite{callisto2026dipme}. La piattaforma SAFE, di cui DIPME estende l'approccio, prevede inoltre un sottosistema di localizzazione basato su droni e dispositivi mobili a supporto dei soccorritori~\cite{callisto2024safe,callisto2026dipme}.
 \end{itemize}
 
 \begin{figure}[htbp]
@@ -29,16 +29,14 @@ L'idea del progetto si articola su tre livelli:
   \label{fig:arredo-render}
 \end{figure}
 
-Il sistema opera in due modalità, un tempo di \emph{pace}, dedicato al monitoraggio ordinario, e un tempo di \emph{guerra}, associato alla gestione dell'emergenza sismica. Il passaggio dalla prima alla seconda è comandato dal gateway al segnale di un accelerometro strutturale. Se il gateway non conferma i messaggi per tre ore, il nodo passa da solo al regime di emergenza. È in questa situazione che il rilevamento della presenza assume un'importanza particolare, perché da questo dato dipende la frequenza con cui il nodo trasmette i propri dati. Se viene rilevata una persona il nodo trasmette un messaggio al minuto, mentre in assenza di presenza la trasmissione avviene ogni quindici minuti. Una persona sotto un banco che il sensore non rileva verrebbe quindi segnalata come assente, e il suo banco trasmetterebbe quindici volte meno spesso, proprio durante l'emergenza. Il dimostratore su cui è stato osservato questo comportamento conta 42 nodi installati nei banchi di due aule di una scuola secondaria delle Marche, in esercizio da ottobre 2025 a marzo 2026 \cite{callisto2026dipme}.
+Il sistema opera in due modalità, un tempo di \emph{pace}, dedicato al monitoraggio ordinario, e un tempo di \emph{guerra}, associato alla gestione dell'emergenza sismica. Il passaggio dalla prima alla seconda è comandato dal gateway al segnale di un accelerometro strutturale. Se il gateway non conferma i messaggi per tre ore, il nodo passa da solo al regime di emergenza. È in questa situazione che il rilevamento della presenza assume un'importanza particolare, perché da questo dato dipende la cadenza delle trasmissioni del nodo. Con una persona rilevata il nodo invia un messaggio al minuto, senza presenza uno ogni quindici minuti. Una persona sotto un banco che il sensore non rileva verrebbe quindi segnalata come assente, e il suo banco trasmetterebbe quindici volte meno spesso, proprio durante l'emergenza. Il dimostratore su cui è stato osservato questo comportamento conta 42 nodi installati nei banchi di due aule di una scuola secondaria delle Marche, in esercizio da ottobre 2025 a marzo 2026 \cite{callisto2026dipme}.
 
 \subsection{Il limite del sensore adottato}
 \label{sec:limite-pir}
 
 Il PIR, la soluzione più diffusa per questa funzione grazie ai consumi e ai costi ridotti, ha però un limite che non dipende dalla qualità del componente, ma dal suo principio di funzionamento, discusso nel Capitolo~\ref{chap:sensori}. Il sensore risponde infatti alla variazione del flusso infrarosso, non al suo valore, e quindi non è in grado di rilevare una persona immobile. 
 
-Nello scenario DIPME questo limite si presenta proprio nella situazione più critica, perché una persona rifugiata sotto un banco dopo un crollo è, tipicamente, ferma. Gli stessi autori della piattaforma indicano, tra gli sviluppi futuri, l'estensione del sistema di sensing con radar a onde millimetriche a complemento del PIR, da valutare in termini di accuratezza, consumo, privacy e complessità \cite{callisto2026dipme}. 
-
-I radar mmWave a 24 GHz promettono di superare questo limite grazie alla capacità di rilevare i micro-movimenti e di misurare la distanza del bersaglio.
+Nello scenario DIPME questo limite si presenta proprio nella situazione più critica, perché una persona rifugiata sotto un banco dopo un crollo è, tipicamente, ferma. Gli stessi autori della piattaforma indicano, tra gli sviluppi futuri, l'estensione del sistema di sensing con radar mmWave a complemento del PIR, da valutare in termini di accuratezza, consumo, privacy e complessità \cite{callisto2026dipme}. Un radar a 24 GHz, sensibile ai micro-movimenti e in grado di misurare la distanza del bersaglio, può in linea di principio superare il limite del PIR.
 
 
 \section{Obbiettivo}
@@ -51,7 +49,7 @@ Il lavoro è stato organizzato in sei punti:
 \begin{itemize}
     \item \textbf{O1. Studiare i sensori}, per capire chi li utilizza, in quali contesti e quali dati producono.
 
-    \item \textbf{O2. Analizzare i dati forniti}, per capire quali grandezze ciascun sensore mette a disposizione e con quale accuratezza.
+    \item \textbf{O2. Analizzare i dati forniti}, individuando quali grandezze ciascun sensore mette a disposizione e con quale accuratezza.
 
     \item \textbf{O3. Confrontare sperimentalmente} PIR e mmWave con metriche quantitative.
 
@@ -74,9 +72,9 @@ Gli altri elementi del progetto DIPME (la radio LoRa, il gateway e la piattaform
     
     \item \textbf{Metodologia di confronto.} Il Capitolo~\ref{chap:metodologia} fissa il protocollo, le metriche e le convenzioni con cui i sensori sono stati confrontati, e presenta l'interfaccia web servita direttamente dall'ESP32, senza alcuna rete esterna, realizzata a supporto della campagna (O5).
 
-    \item \textbf{Confronto sperimentale.} Il Capitolo~\ref{chap:confronto} è il capitolo centrale e raccoglie i risultati della campagna di misura, con ogni risultato accompagnato dalla sua dispersione su ripetizioni indipendenti (O3).
+    \item \textbf{Confronto sperimentale PIR vs mmWave.} Il Capitolo~\ref{chap:confronto} è il cuore della tesi e raccoglie i risultati della campagna di misura, con ogni risultato accompagnato dalla sua dispersione su ripetizioni indipendenti (O3).
 
-    \item \textbf{Indice di vitalità.} Il Capitolo~\ref{chap:vitalita} misura il respiro con verifica a ritmo imposto, poi definisce, tara e valida l'indice e ne descrive il porting a bordo del microcontrollore (O6).
+    \item \textbf{L'indice di vitalità.} Il Capitolo~\ref{chap:vitalita} misura il respiro con verifica a ritmo imposto, poi definisce, tara e valida l'indice e ne descrive il porting a bordo del microcontrollore (O6).
 
     \item \textbf{Consumo energetico.} Il Capitolo~\ref{chap:consumi} stima consumi e autonomia dei tre sensori e discute l'architettura ibrida PIR + mmWave che ne discende (O4).
 
