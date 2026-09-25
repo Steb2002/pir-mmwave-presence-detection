@@ -45,9 +45,7 @@ Deep-sleep (solo dominio RTC) & 0,01~mA \\
 \label{sec:consumi-nodi}
 
 Sommando microcontrollore e sensore si ottengono le configurazioni usate in questa
-tesi e quelle rilevanti per il progetto (Tabella~\ref{tab:consumi-nodi}). Le prime due sono
-la web UI della Sezione~\ref{sec:webui} e il logger del Capitolo~\ref{chap:moduli}. La terza è l'equivalente con il secondo radar. Le ultime due sono le
-configurazioni a cui il nodo del progetto può aspirare.
+tesi e quelle rilevanti per il progetto (Tabella~\ref{tab:consumi-nodi}). Le prime tre sono le configurazioni usate nella tesi, le ultime due quelle a cui può aspirare il nodo del progetto.
 
 \begin{table}[htbp]
 \centering
@@ -70,8 +68,7 @@ ESP32 in deep-sleep + PIR, sveglia su interrupt & $\mathbf{0{,}06}$~\textbf{mA} 
 
 L'ultima riga è il punto chiave, perché l'uscita digitale del PIR può risvegliare
 l'ESP32 dal deep-sleep con un interrupt su GPIO. Il nodo può quindi restare in attesa a
-costo praticamente nullo, con il PIR nel ruolo di guardiano, mentre il radar costa tre
-ordini di grandezza in più ed è progettato per un'alimentazione fissa.
+costo praticamente nullo, con il PIR nel ruolo di guardiano.
 
 \section{Autonomia a batteria}
 \label{sec:autonomia}
@@ -82,8 +79,7 @@ insieme ai consumi dei componenti.
 
 \begin{table}[htbp]
 \centering
-\caption{Autonomia stimata con una cella Li-ion 18650 da 3000~mAh e rendimento del
-regolatore dell'85\,\%, calcolata come capacità per rendimento diviso la corrente assorbita, trascurando la differenza fra la tensione della cella e quella dei moduli. Nel regime dormiente il fattore limitante è l'autoscarica della cella, non il consumo.}
+\caption{Autonomia stimata, calcolata come capacità per rendimento diviso la corrente assorbita, trascurando la differenza fra la tensione della cella e quella dei moduli. Nel regime dormiente il fattore limitante è l'autoscarica della cella, non il consumo.}
 \label{tab:autonomia}
 \small
 \begin{tabular}{@{}lrr@{}}
@@ -117,7 +113,7 @@ vede le persone ferme (Capitolo~\ref{chap:confronto}). La soluzione non è scegl
 sensori ma metterli in sequenza temporale.
 
 \begin{enumerate}[leftmargin=1.8em,itemsep=3pt]
-  \item \textbf{Tempo di pace.} Il nodo resta in deep-sleep e si risveglia allo scadere del polling oppure quando il PIR rileva una presenza, come già fa il nodo del progetto~\cite{callisto2026dipme}. Il consumo è dell'ordine dei microampere e l'autonomia, pluriennale, è limitata dall'autoscarica della batteria. Durante le lezioni però il PIR sveglia il nodo di continuo, quindi i 4,9 anni al solo consumo sono un limite superiore e l'autonomia reale dipende da quanto spesso l'aula è occupata.
+  \item \textbf{Tempo di pace.} Il nodo resta in deep-sleep e si risveglia allo scadere del polling oppure quando il PIR rileva una presenza, come già fa il nodo del progetto~\cite{callisto2026dipme}. Il consumo è dell'ordine dei microampere e l'autonomia è pluriennale. Durante le lezioni però il PIR sveglia il nodo di continuo, quindi i 4,9 anni al solo consumo sono un limite superiore e l'autonomia reale dipende da quanto spesso l'aula è occupata.
   \item \textbf{Emergenza.} Al passaggio in emergenza, comandato come descritto nella Sezione~\ref{sec:dipme}, si accende il radar, che rileva anche la persona ferma sotto il banco e calcola l'indice di vitalità. L'autonomia di circa 20~ore (13 con il WiFi della web UI) copre la
         finestra critica iniziale delle operazioni di ricerca e soccorso.
   \item \textbf{Estensione della finestra.} Per coprire le prime 72~ore, l'orizzonte
@@ -130,5 +126,5 @@ sensori ma metterli in sequenza temporale.
 Il PIR quindi non va sostituito. Non è un concorrente del radar ma il guardiano a
 basso costo che decide quando accenderlo, mentre il radar resta lo strumento di misura
 della fase di emergenza. I dati del Capitolo~\ref{chap:confronto} e quelli di questo
-capitolo lo mostrano da due direzioni opposte. La stessa direzione compare fra gli sviluppi futuri della piattaforma, che prevedono di combinare le rilevazioni di presenza locali con gli altri segnali del nodo~\cite{callisto2026dipme}. Il Capitolo~\ref{chap:conclusioni} riprende questa architettura fra le
+capitolo lo mostrano da due direzioni opposte. Anche fra gli sviluppi futuri della piattaforma compare la combinazione della presenza con gli altri segnali del nodo~\cite{callisto2026dipme}. Il Capitolo~\ref{chap:conclusioni} riprende questa architettura fra le
 raccomandazioni per il progetto.

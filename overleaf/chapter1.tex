@@ -14,7 +14,7 @@ In particolare, la Sezione~\ref{sec:pir} descrive il sensore PIR, il suo princip
 
 PIR è l'acronimo di Passive InfraRed. Il sensore non emette nulla e si limita a osservare la radiazione infrarossa che lo raggiunge. Il cuore del componente è un cristallo piroelettrico, un materiale che genera una piccola carica elettrica quando la radiazione incidente cambia. Il corpo umano, con una temperatura di circa 36 °C (309 K), emette con un picco intorno a 9,4 µm, e il sensore è filtrato con una finestra ottica di 5–14 µm proprio per privilegiare quella banda \cite{niceraPyro}.
 
-Il comportamento del PIR dipende dalla sua capacità di rilevare le variazioni della radiazione infrarossa che raggiunge il sensore, e non la quantità di radiazione presente in un determinato istante. Costruttivamente, il sensore contiene due elementi piroelettrici disposti in configurazione differenziale, collegati in serie con polarità opposte. Da questa configurazione seguono due conseguenze fondamentali (Figura~\ref{fig:pir-detection}):
+Il PIR risponde quindi alle variazioni della radiazione, non alla sua quantità in un dato istante. Costruttivamente, il sensore contiene due elementi piroelettrici disposti in configurazione differenziale, collegati in serie con polarità opposte. Da questa configurazione seguono due conseguenze fondamentali (Figura~\ref{fig:pir-detection}):
 
 \begin{itemize}
     \item una persona che si muove investe i due elementi in tempi diversi, generando una differenza tra i segnali prodotti e quindi un rilevamento;
@@ -31,8 +31,6 @@ Il comportamento del PIR dipende dalla sua capacità di rilevare le variazioni d
 
 Lo stesso principio spiega la buona immunità del PIR alle variazioni lente e globali della scena, come il sole che riscalda l'ambiente. Queste interessano entrambi gli elementi allo stesso modo e si cancellano nel segnale differenziale. Il rovescio della medaglia è che il segnale utile dipende dal contrasto termico fra corpo e sfondo. Con una temperatura ambiente di 20~°C il contrasto è di circa 16~°C, mentre a 30--32~°C si riduce a 4--6~°C, con segnale più debole e portata ridotta \cite{hcsr501}.
 
-In definitiva, poiché il rilevamento richiede una variazione della radiazione infrarossa tra i due elementi, un PIR non può rilevare un corpo immobile.
-
 \subsection{La lente di Fresnel}
 \label{subsec:fresnel}
 
@@ -42,7 +40,7 @@ Due soli elementi coprirebbero un campo visivo strettissimo. La cupola bianca ch
 \begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.6\linewidth]{Immagini/Zone_lente_fresnel}
-  \caption{Zone di rilevamento create dalla lente di Fresnel, focalizzate alternativamente sui due elementi e separate da spazi ciechi. Un movimento trasversale attraversa molte zone, un movimento radiale resta nella stessa zona.}
+  \caption{Zone di rilevamento create dalla lente di Fresnel, focalizzate alternativamente sui due elementi e separate da spazi ciechi. }
   \label{fig:zone-fresnel}
 \end{figure}
 
@@ -51,7 +49,7 @@ Questo dettaglio costruttivo ha due conseguenze dirette sul tipo di movimento ch
 \begin{enumerate}
     \item Il movimento trasversale, che attraversa le zone, genera molte transizioni di flusso ed è rilevato bene. Il movimento radiale, diretto verso il sensore, resta più a lungo nella stessa zona ed è rilevato male.
 
-    \item La portata dichiarata, tipicamente 3--7~m, vale per il movimento trasversale di tutto il corpo. Un movimento sul posto non attraversa le zone e cade nel caso sfavorevole, a qualunque distanza.
+    \item La portata dichiarata, tipicamente 3--7~m, vale per il movimento trasversale di tutto il corpo. Un movimento sul posto attraversa poche zone, e sempre meno al crescere della distanza, perché le zone si allargano a ventaglio.
 \end{enumerate}
 
 Queste due previsioni vengono messe alla prova nel Capitolo~\ref{chap:confronto}.
@@ -66,15 +64,13 @@ Fa eccezione la modalità di trigger, selezionabile con un ponticello, perché d
 \begin{itemize}
     \item \textbf{Modalità L} (\textit{single trigger}). Il primo movimento alza l'uscita per il tempo di ritenuta e i movimenti successivi, finché l'uscita è alta, vengono ignorati. Allo scadere della ritenuta l'uscita torna bassa anche se la persona si sta ancora muovendo, e serve un nuovo trigger per rialzarla. Il bit si comporta come un monostabile a durata fissa e, di fatto, conta eventi.
 
-    \item \textbf{Modalità H} (\textit{repeat trigger}). Ogni movimento rilevato durante la ritenuta la fa ripartire da zero. Finché il movimento continua l'uscita resta alta, e torna bassa solo quando il movimento cessa per un tempo pari alla ritenuta. In questa modalità la durata del bit alto segue la durata del movimento e il sensore si avvicina di più a un rilevatore di presenza.
+    \item \textbf{Modalità H} (\textit{repeat trigger}). Ogni movimento rilevato durante la ritenuta la fa ripartire da zero. Finché il movimento continua l'uscita resta alta, e torna bassa solo quando il movimento cessa per un tempo pari alla ritenuta, per cui il sensore si avvicina di più a un rilevatore di presenza.
 \end{itemize}
 
 \begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.9\linewidth]{Immagini/Pir_L_H}
-  \caption{Uscita del PIR nelle due modalità di trigger a parità di movimenti. In L ogni
-  impulso dura quanto la ritenuta e i movimenti al suo interno sono ignorati; in H ogni
-  movimento riarma la ritenuta e l'uscita resta alta finché il movimento continua.}
+  \caption{Uscita del PIR nelle due modalità di trigger a parità di movimenti.}
   \label{fig:pir-lh}
 \end{figure}
 
@@ -89,7 +85,7 @@ Il PIR è il sensore di presenza più diffuso al mondo e da decenni equipaggia l
 
     \item \textbf{Costo.} Un modulo completo di lente e circuito di condizionamento costa pochi euro.
 
-    \item \textbf{Semplicità.} Il modulo fornisce direttamente il bit di presenza e non richiede alcuna elaborazione a valle.
+    \item \textbf{Semplicità.} Il modulo fornisce direttamente un bit di rilevamento e non richiede alcuna elaborazione a valle.
 
     \item \textbf{Natura passiva.} Il sensore non emette alcuna radiazione, e questo semplifica sia le certificazioni sia la conformità in materia di privacy.
 \end{itemize}
@@ -126,15 +122,15 @@ Il principio di funzionamento si può descrivere in quattro passi \cite{tiFmcw}:
   \label{fig:fmcw}
 \end{figure}
 
-Il risultato di ogni chirp è quindi un profilo che associa a ciascuna distanza un'intensità di eco. La separazione minima fra due oggetti distinguibili dipende dalla larghezza di banda della rampa e, con i 250~MHz disponibili a 24~GHz, è di circa 60~cm \cite{tiFmcw}. È per questo che i moduli di questa classe lavorano con celle di distanza di 70--75~cm.
+Il risultato di ogni chirp è quindi un profilo che associa a ciascuna distanza un'intensità di eco. La separazione minima fra due oggetti distinguibili dipende dalla larghezza di banda della rampa e, con i 250~MHz disponibili a 24~GHz, è di circa 60~cm \cite{tiFmcw}. È per questo che i moduli di questa classe suddividono l'asse delle distanze in intervalli di 70--75~cm, detti gate.
 
-I moduli consumer non espongono il profilo grezzo, ma una sua versione già elaborata. L'asse delle distanze è suddiviso in un numero fisso di intervalli contigui, detti gate, e per ciascun gate il modulo riporta a ogni frame un valore di energia riflessa, insieme alla decisione di presenza e alla distanza del bersaglio ricavate da quei valori. Il numero di gate, la scala dell'energia e i canali disponibili variano da modulo a modulo e sono descritti nel Capitolo~\ref{chap:moduli} per i due esemplari in esame.
+I moduli consumer non espongono il profilo grezzo. Per ciascun gate riportano a ogni frame un valore di energia riflessa, insieme alla decisione di presenza e alla distanza del bersaglio ricavate da quei valori. Il numero di gate, la scala dell'energia e i canali disponibili variano da modulo a modulo e sono descritti nel Capitolo~\ref{chap:moduli} per i due esemplari in esame.
 
 \FloatBarrier
 \subsection{Come si rileva un corpo immobile}
 \label{subsec:corpo-immobile}
 
-Un radar FMCW puro misura la distanza e non il movimento, quindi un corpo fermo produce comunque un'eco. In pratica, i moduli commerciali separano due contributi:
+Un radar FMCW puro misura la distanza e non il movimento, quindi un corpo fermo produce comunque un'eco, come del resto pareti e arredi. In pratica, i moduli commerciali separano due contributi:
 
 \begin{itemize}
     \item la componente \textit{moving}, associata a variazioni rapide della fase dell'eco, cioè allo spostamento del bersaglio;
@@ -150,7 +146,7 @@ Una persona ferma non è mai realmente immobile, perché il torace si muove di a
 I radar mmWave di fascia consumer si sono diffusi negli ultimi anni in diversi ambiti, per esempio nell'illuminazione automatica di uffici e abitazioni, nell'automazione degli edifici per stimare l'occupazione degli ambienti, nel monitoraggio del sonno e nei sistemi di rilevamento delle cadute per l'assistenza agli anziani \cite{mmwaveOccupancy}. In ambito di ricerca gli stessi radar sono impiegati per il monitoraggio senza contatto dei parametri vitali, in particolare della frequenza respiratoria e cardiaca \cite{upm2024vitals,uts2024vitals,mdpi2024mmwaverm}. La loro diffusione si spiega con diversi fattori:
 
 \begin{itemize}
-    \item \textbf{Rilevamento del corpo fermo.} Il modulo conferma la presenza di una persona anche quando è immobile, grazie alla sensibilità ai micro-movimenti descritta nella Sezione~\ref{subsec:corpo-immobile}.
+    \item \textbf{Rilevamento del corpo fermo.} Il modulo conferma la presenza anche di una persona immobile (Sezione~\ref{subsec:corpo-immobile}).
 
     \item \textbf{Informazione graduata.} Oltre alla presenza il modulo riporta la distanza del bersaglio e un'energia riflessa per ogni gate, che permettono di sapere non solo se c'è qualcuno ma dove si trova e quanto si muove.
 
@@ -158,7 +154,7 @@ I radar mmWave di fascia consumer si sono diffusi negli ultimi anni in diversi a
 
     \item \textbf{Privacy.} Il radar non produce immagini e non permette di riconoscere una persona, e per questo è accettato in ambienti sensibili come scuole o camere da letto. I dati grezzi per gate permettono però di ricavare anche grandezze sullo stato fisico, come il respiro. In questa tesi sono esportati integralmente per l'analisi, mentre in un'installazione reale andrebbero trattati con le cautele del GDPR indicate dal progetto per gli ambienti scolastici~\cite{callisto2026dipme}.
 
-    \item \textbf{Costo.} I moduli integrati, completi di antenne ed elaborazione a bordo, costano nell'ordine della decina di euro e forniscono i dati già elaborati su una porta seriale.
+    \item \textbf{Costo.} I moduli integrati, completi di antenne ed elaborazione a bordo, costano nell'ordine della decina di euro.
 \end{itemize}
 
 Il lato negativo è il consumo. Un radar è un sensore attivo, che deve alimentare un trasmettitore e un'elaborazione continua del segnale, e la sua corrente di alimentazione è dell'ordine delle decine di milliampere. Questo ne condiziona l'impiego nei dispositivi a batteria.
@@ -184,6 +180,6 @@ Oltre al PIR e al radar mmWave esistono altre tecnologie in grado di rilevare la
 
  Le caratteristiche elencate nelle Sezioni~\ref{subsec:pir-usi} e~\ref{subsec:mmwave-usi} mostrano che PIR e radar mmWave non sono alternative equivalenti, ma rispondono a esigenze diverse.
 
-Il PIR è la scelta giusta quando l'obbiettivo è rilevare il passaggio o l'attività di una persona e il dispositivo deve funzionare a batteria per lungo tempo. Il suo limite è strutturale e non dipende dal modello o dalla configurazione. Per il principio descritto nella Sezione~\ref{subsec:pir-principio} non rileva un corpo immobile, e per la geometria della lente descritta nella Sezione~\ref{subsec:fresnel} rileva male anche chi si muove senza spostarsi. È quindi inadatto ogni volta che la persona da rilevare può stare ferma.
+Il PIR è la scelta giusta quando l'obbiettivo è rilevare il passaggio o l'attività di una persona e il dispositivo deve funzionare a batteria per lungo tempo. Il suo limite è strutturale e non dipende dal modello o dalla configurazione. Per il principio descritto nella Sezione~\ref{subsec:pir-principio} non rileva un corpo immobile, e per la geometria della lente descritta nella Sezione~\ref{subsec:fresnel} rileva male anche chi si muove senza spostarsi, se non da vicino.
 
-Il radar mmWave è preferibile quando serve confermare la presenza di una persona immobile, oppure sapere dove si trova e quanto si muove. Il suo limite è il consumo, che ne condiziona l'uso continuo a batteria. Queste capacità e questo limite sono verificati sperimentalmente nel Capitolo~\ref{chap:confronto} e analizzati nel Capitolo~\ref{chap:consumi}.
+Il radar mmWave è preferibile quando serve confermare la presenza di una persona immobile, oppure sapere dove si trova e quanto si muove. Il suo limite resta il consumo. Queste capacità e questo limite sono verificati sperimentalmente nel Capitolo~\ref{chap:confronto} e analizzati nel Capitolo~\ref{chap:consumi}.

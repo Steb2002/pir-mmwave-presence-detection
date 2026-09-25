@@ -3,13 +3,13 @@
 
 Questo capitolo descrive i moduli sensore impiegati nel lavoro sperimentale, analizzandone le specifiche tecniche, le interfacce di comunicazione e i dati che forniscono. L'analisi permette di comprendere quali grandezze ciascun modulo mette effettivamente a disposizione e con quali limiti, e costituisce la base su cui sono state costruite la piattaforma di acquisizione e le analisi dei capitoli successivi.
 
-Il capitolo è organizzato come segue. La Sezione~\ref{sec:c3-1} presenta il radar \ldb{}, il modulo principale della tesi, con le specifiche, la piedinatura, gli strumenti di configurazione, il protocollo seriale, la engineering mode che sblocca i dati per gate e l'identità dell'esemplare in prova. La Sezione~\ref{sec:c3-2} presenta con la stessa struttura il secondo radar, l'\ldc{}. La Sezione~\ref{sec:c3-3} descrive il PIR \pir{} e la configurazione adottata. La Sezione~\ref{sec:c3-4} illustra la piattaforma di acquisizione, dal repository di riferimento ai firmware, al formato dei dati e alla catena di analisi. La Sezione~\ref{sec:c3-5} verifica i dati prodotti e descrive i comportamenti del modulo da tenere presenti nel leggere i risultati. La Sezione~\ref{sec:c3-6} spiega perché le soglie del LD2410B sono rimaste di fabbrica mentre il LD2420 ha richiesto una taratura.
+Il capitolo è organizzato come segue. La Sezione~\ref{sec:c3-1} presenta il radar \ldb{}, il modulo principale della tesi, con le specifiche, la piedinatura, gli strumenti di configurazione, il protocollo seriale, la engineering mode che sblocca i dati per gate e l'identità dell'esemplare in prova. La Sezione~\ref{sec:c3-2} presenta con la stessa struttura il secondo radar, l'\ldc{}. La Sezione~\ref{sec:c3-3} descrive il PIR \pir{} e la configurazione adottata. La Sezione~\ref{sec:c3-4} illustra la piattaforma di acquisizione, dal repository di riferimento ai firmware, al formato dei dati e alla catena di analisi. La Sezione~\ref{sec:c3-5} verifica i dati prodotti e descrive i comportamenti del modulo da tenere presenti nel leggere i risultati. La Sezione~\ref{sec:c3-6} spiega perché le soglie dell'\ldb{} sono rimaste di fabbrica mentre l'\ldc{} ha richiesto una taratura.
 
 \FloatBarrier
 \section{Il radar \ldb{}}
 \label{sec:c3-1}
 
-L'\ldb{} è un modulo radar a 24~GHz per il rilevamento della presenza umana prodotto da Shenzhen Hi-Link Electronic \cite{hilinkManualV104}. Si presenta come una piccola scheda che integra il chip radar FMCW, le antenne a patch per trasmissione e ricezione, un microcontrollore che elabora il segnale e, nella variante B, un ricetrasmettitore Bluetooth per la configurazione da smartphone. L'elaborazione del segnale avviene interamente a bordo. Il modulo emette il segnale, analizza l'eco e comunica all'esterno soltanto il risultato, cioè lo stato di presenza, la distanza e l'energia del bersaglio, attraverso un connettore a cinque piedini che porta una linea seriale e un'uscita digitale. È in grado di distinguere un bersaglio in movimento da uno stazionario e di mantenere la presenza anche su una persona immobile, sfruttando i micro-movimenti del corpo descritti nella Sezione~2.2.2. Il modulo è mostrato nella Figura~\ref{fig:c3-foto2410}.
+L'\ldb{} è un modulo radar a 24~GHz per il rilevamento della presenza umana prodotto da Shenzhen Hi-Link Electronic \cite{hilinkManualV104}. Si presenta come una piccola scheda che integra il chip radar FMCW, le antenne a patch per trasmissione e ricezione, un microcontrollore che elabora il segnale e, nella variante B, un ricetrasmettitore Bluetooth per la configurazione da smartphone. L'elaborazione del segnale avviene interamente a bordo. Il modulo emette il segnale, analizza l'eco e comunica all'esterno soltanto il risultato, cioè lo stato di presenza, la distanza e l'energia del bersaglio, attraverso un connettore a cinque piedini che porta una linea seriale e un'uscita digitale. È in grado di distinguere un bersaglio in movimento da uno stazionario e di mantenere la presenza anche su una persona immobile, sfruttando i micro-movimenti del corpo descritti nella Sezione~\ref{subsec:corpo-immobile}. Il modulo è mostrato nella Figura~\ref{fig:c3-foto2410}.
 
 \begin{figure}[!htb]
 \centering
@@ -118,7 +118,7 @@ Chiusura & 4~byte & 04 03 02 01 \\
 \end{tabularx}
 \end{table}
 
-\textbf{Frame di dati} (inviati dal modulo all'host a cadenza fissa): La struttura è riportata nella Tabella~\ref{tab:c3-4}. Il byte di tipo distingue il frame normale (0x02) da quello di engineering mode (0x01). Il byte di stato è una maschera di bit dove 0x01 indica un bersaglio in movimento, 0x02 un bersaglio stazionario, e i due possono essere presenti insieme. Seguono, per ciascuna delle due componenti, la distanza in centimetri e un valore di energia normalizzato nell'intervallo 0–100, poi la distanza di rilevamento complessiva. In engineering mode il frame prosegue con i gate massimi configurati, le nove energie per gate della componente in movimento e le nove della componente stazionaria, la lettura del fotosensore e lo stato del pin OUT. Sono questi ultimi campi a fare la differenza fra un sensore binario e uno strumento di misura, come discusso nella Sezione~\ref{sec:c3-1-5}.
+\textbf{Frame di dati} (inviati dal modulo all'host a cadenza fissa): La struttura è riportata nella Tabella~\ref{tab:c3-4}. Il byte di tipo distingue il frame normale (0x02) da quello di engineering mode (0x01), e il byte di stato è una maschera di bit in cui un bersaglio in movimento e uno stazionario possono essere presenti insieme. I campi aggiunti dall'engineering mode sono quelli che fanno la differenza fra un sensore binario e uno strumento di misura (Sezione~\ref{sec:c3-1-5}).
 
 \begin{table}[!htb]
 \centering
@@ -212,13 +212,13 @@ Soglie stazionarie (gate 0–8) & 0, 0, 40, 40, 30, 30, 20, 20, 20 \\
 \end{tabularx}
 \end{table}
 
-Le soglie coincidono valore per valore con quelle di fabbrica riportate nella Tabella 7 del protocollo \cite{hilinkProtoV107}. Le soglie stazionarie dei gate 0 e 1 sono indicate dal documento come non impostabili, con le conseguenze discusse nella Sezione~\ref{sec:c3-5-2}. Il firmware 2.44 è l'ultima versione rilasciata dal produttore ed è quella che introduce l'auto-calibrazione del rumore di fondo, cioè la taratura automatica delle soglie di movimento e stazionarie \cite{hilinkV244}.
+Le soglie coincidono valore per valore con quelle di fabbrica riportate nella Tabella 7 del protocollo \cite{hilinkProtoV107}. Le soglie stazionarie dei gate 0 e 1 sono indicate dal documento come non impostabili, con le conseguenze discusse nella Sezione~\ref{sec:c3-5-2}. Il firmware 2.44 è l'ultima versione rilasciata dal produttore, la stessa che introduce l'auto-calibrazione citata nella Sezione~\ref{sec:c3-1-3} \cite{hilinkV244}.
 
 \FloatBarrier
 \section{Il radar \ldc{}}
 \label{sec:c3-2}
 
-L'\ldc{} è un modulo radar a 24~GHz per il rilevamento della presenza umana, anch'esso prodotto da Shenzhen Hi-Link Electronic \cite{hilinkManualLD2420}. È una scheda quadrata che integra il chip radar FMCW, le antenne e un microcontrollore, ma non dispone di Bluetooth, quindi la configurazione avviene soltanto via seriale. L'elaborazione è a bordo e verso l'esterno il modulo espone, su un connettore a cinque piedini, una linea seriale e un'uscita digitale di presenza. Riporta lo stato di occupazione e la distanza del bersaglio in movimento. Sulla persona immobile, invece, mantiene la presenza sfruttando i micro-movimenti del corpo (Sezione~2.2.2), ma non è in grado di misurarne la distanza, come dichiarato dal produttore \cite[§8]{hilinkManualLD2420}. Il modulo è mostrato nella Figura~\ref{fig:c3-foto2420}.
+L'\ldc{} è un modulo radar a 24~GHz per il rilevamento della presenza umana, anch'esso prodotto da Shenzhen Hi-Link Electronic \cite{hilinkManualLD2420}. È una scheda quadrata che integra il chip radar FMCW, le antenne e un microcontrollore, ma non dispone di Bluetooth, quindi la configurazione avviene soltanto via seriale. L'elaborazione è a bordo e verso l'esterno il modulo espone, su un connettore a cinque piedini, una linea seriale e un'uscita digitale di presenza. Riporta lo stato di occupazione e la distanza del bersaglio in movimento. Sulla persona immobile, invece, mantiene la presenza sfruttando i micro-movimenti del corpo (Sezione~\ref{subsec:corpo-immobile}), ma non è in grado di misurarne la distanza, come dichiarato dal produttore \cite[§8]{hilinkManualLD2420}. Il modulo è mostrato nella Figura~\ref{fig:c3-foto2420}.
 
 \begin{figure}[!htb]
 \centering
@@ -306,7 +306,7 @@ Il produttore distribuisce l'\ldc{}\_TOOL per PC \cite{hilinkDriveLD2420}, che d
 \label{fig:c3-tool2420}
 \end{figure}
 
-La funzione più importante è la scansione del rumore di fondo (bottom noise scan, \cite[§4.2.2–4.2.3]{hilinkManualLD2420}). A stanza vuota il tool registra per ogni gate il livello di energia del fondo e ne ricava le due soglie, una di attivazione (trigger, consigliata a circa 5 volte il rumore) e una di mantenimento (maintain, a 2–5 volte), che poi scrive nella memoria non volatile del modulo. È l'unica via per rendere persistente una configurazione, perché i parametri scritti via UART restano in RAM (Sezione~\ref{sec:c3-2-4}).
+La funzione più importante è la scansione del rumore di fondo (bottom noise scan, \cite[§4.2.2–4.2.3]{hilinkManualLD2420}). A stanza vuota il tool registra per ogni gate il livello di energia del fondo e ne ricava le due soglie, una di attivazione (trigger, consigliata a circa 5 volte il rumore) e una di mantenimento (maintain, a 2–5 volte), che poi scrive nella memoria non volatile del modulo.
 
 \subsection{Protocollo seriale}
 \label{sec:c3-2-4}
@@ -346,7 +346,7 @@ L'unità di misura del campo Range non è indicata in nessuno dei due documenti 
 \subsection{Energy mode e dati per gate}
 \label{sec:c3-2-5}
 
-Il LD2420 può trasmettere, al posto della sola decisione di presenza, il profilo di energia per gate da cui quella decisione è ricavata. Questa modalità, detta energy mode, non è descritta in alcun documento ufficiale, anche se il tool del produttore la utilizza per tracciare i grafici dell'energia per gate. Il suo funzionamento è stato ricostruito dalla comunità ESPHome tramite reverse engineering, e il risultato è implementato nel componente ld2420 \cite{esphomeLD2420src}, che costituisce la fonte su cui si basa il logger realizzato per questo lavoro. Si attiva con il comando 0x0012 della Tabella~\ref{tab:c3-9}, dopodiché il modulo emette a 10~Hz frame binari da 45~byte con la struttura della Tabella~\ref{tab:c3-10}.
+L'\ldc{} può trasmettere, al posto della sola decisione di presenza, il profilo di energia per gate da cui quella decisione è ricavata. Questa modalità, detta energy mode, non è descritta in alcun documento ufficiale, anche se il tool del produttore la utilizza per tracciare i grafici dell'energia per gate. Il suo funzionamento è stato ricostruito dalla comunità ESPHome tramite reverse engineering, e il risultato è implementato nel componente ld2420 \cite{esphomeLD2420src}, che costituisce la fonte su cui si basa il logger realizzato per questo lavoro. Si attiva con il comando 0x0012 della Tabella~\ref{tab:c3-9}, dopodiché il modulo emette a 10~Hz frame binari da 45~byte con la struttura della Tabella~\ref{tab:c3-10}.
 
 \begin{table}[!htb]
 \centering
@@ -393,7 +393,7 @@ Soglie maintain, gate 9–15 & 100 (20~dB) \\
 \end{tabularx}
 \end{table}
 
-Il modulo era in configurazione di fabbrica \cite{hilinkProtoLD2420}. Il firmware non è aggiornabile, per cui la versione riportata è quella con cui il modulo è stato prodotto.
+Il modulo era in configurazione di fabbrica \cite{hilinkProtoLD2420}. Il produttore non distribuisce aggiornamenti del firmware, per cui la versione riportata è quella con cui il modulo è stato prodotto.
 
 Il radar in dotazione è con ogni probabilità difettoso, perché nelle prove a distanza nota rileva una persona in movimento fino a circa 1~m e la mantiene fino a 2~m, contro gli 8~m dichiarati. Le energie per gate indicano un trasmettitore molto più debole del previsto, mentre il ricevitore funziona. Soglie, configurazione dei gate, firmware, parser, orientamento e cablaggio sono stati esclusi con prove dedicate. Le conseguenze sul protocollo della campagna sono dichiarate nella Sezione~\ref{sec:protocollo-ld2420}.
 
@@ -401,7 +401,7 @@ Il radar in dotazione è con ogni probabilità difettoso, perché nelle prove a 
 \section{Il sensore PIR in dotazione: \pir{}}
 \label{sec:c3-3}
 
-Il modulo in dotazione è un \pir{}, il PIR più diffuso per microcontrollori. Sulla scheda si trova l'elemento piroelettrico, coperto dalla cupola bianca della lente di Fresnel (Sezione~2.1.2). Il circuito integrato BISS0001 \cite{biss0001} amplifica il segnale e lo trasforma in un'uscita digitale con soglia e tempo di ritenuta. Un regolatore lineare HT7133 porta l'alimentazione a 3,3~V e fissa a questo livello anche l'uscita. Due trimmer regolano la sensibilità, e quindi la portata, e il tempo di ritenuta dell'uscita, mentre un ponticello a tre pin seleziona la modalità di trigger, singolo o ripetibile. Il modulo è mostrato nella Figura~\ref{fig:c3-fotopir}.
+Il modulo in dotazione è un \pir{}, il PIR più diffuso per microcontrollori. Sulla scheda si trova l'elemento piroelettrico, coperto dalla cupola bianca della lente di Fresnel (Sezione~\ref{subsec:fresnel}). Il circuito integrato BISS0001 \cite{biss0001} amplifica il segnale e lo trasforma in un'uscita digitale con soglia e tempo di ritenuta. Un regolatore lineare HT7133 porta l'alimentazione a 3,3~V e fissa a questo livello anche l'uscita. Due trimmer regolano la sensibilità, e quindi la portata, e il tempo di ritenuta dell'uscita, mentre un ponticello a tre pin seleziona la modalità di trigger, singolo o ripetibile. Il modulo è mostrato nella Figura~\ref{fig:c3-fotopir}.
 
 \begin{figure}[!htb]
 \centering
@@ -463,11 +463,11 @@ Il modulo espone tre piedini, riportati nella Tabella~\ref{tab:c3-13} insieme al
 \subsection{Configurazione adottata}
 \label{sec:c3-3-3}
 
-La configurazione del modulo è riassunta nell'elenco seguente. Il tempo di ritenuta è rimasto lo stesso per tutta la campagna, mentre ponticello e sensibilità sono cambiati una volta ciascuno, con effetti discussi nel Capitolo~\ref{chap:confronto}. Il ponticello è stato spostato da L a H dopo le prime acquisizioni, e la sensibilità è stata portata al massimo soltanto nelle prove di portata massima.
+La configurazione del modulo è riassunta nell'elenco seguente, e i suoi effetti sono discussi nel Capitolo~\ref{chap:confronto}.
 
 \begin{enumerate}
   \item \textbf{Ponticello di trigger}: Le prime acquisizioni sono state svolte in posizione L, poi il ponticello è stato spostato su H ripetendo gli scenari interessati.
-  \item \textbf{Trimmer del tempo di ritenuta al minimo}: La ritenuta misurata è di circa 3,4~s.
+  \item \textbf{Trimmer del tempo di ritenuta al minimo}: La ritenuta misurata è di circa 3,4~s, invariata per tutta la campagna.
   \item \textbf{Trimmer di sensibilità a metà corsa:} È stato portato al massimo soltanto nelle prove di portata massima, per verificare il valore dichiarato dal datasheet.
 \end{enumerate}
 
@@ -548,7 +548,7 @@ I due sketch, uno per modulo, hanno tre accorgimenti importanti:
 \begin{itemize}
   \item Dopo ogni scrittura i parametri sono riletti per conferma.
   \item Lo sketch avvisa quando la configurazione corrente è diversa da quella di fabbrica, per non condurre acquisizioni con parametri modificati inconsapevolmente.
-  \item Nello sketch del LD2410B un comando riscrive i valori di fabbrica dell'esemplare (Tabella~\ref{tab:c3-6}), così da poter tornare in ogni momento alla configurazione di riferimento.
+  \item Nello sketch dell'\ldb{} un comando riscrive i valori di fabbrica dell'esemplare (Tabella~\ref{tab:c3-6}), così da poter tornare in ogni momento alla configurazione di riferimento.
 \end{itemize}
 
 Sul \ldc{} lo sketch ha permesso di verificare che le 32 soglie in flash coincidessero con quelle mostrate in decibel dallo strumento del produttore (Sezione~\ref{sec:c3-2-3}).
@@ -574,7 +574,7 @@ Legge lo stesso radar e lo stesso PIR del logger dell'\ldb{} e scrive sulla seri
 \subsection{Il formato dei dati}
 \label{sec:c3-4-3}
 
-Tutti i file della tesi seguono lo stesso schema a strati (Tabella~\ref{tab:c3-15}). Le prime nove colonne coincidono con quelle del repository di riferimento e sono prodotte da tutti i firmware. Su queste lavora lo script di confronto del Capitolo~\ref{chap:confronto}, quindi le metriche di presenza, falsi positivi, latenze e distanza si calcolano allo stesso modo per i due radar. Seguono le colonne proprie di ciascun radar. L'\ldb{} aggiunge le diciotto energie per gate dei due canali, il livello del fotosensore e lo stato del pin OUT, per 29 colonne in totale, mentre l'\ldc{} aggiunge le sedici energie grezze a 16~bit, il conteggio dei frame validi e la distanza grezza, per 27 colonne. I nomi delle energie sono distinti (menergy, senergy contro energy2420) perché le scale sono diverse, 0--100 contro 0--65\,535, e nessuno script deve confonderle. Le grandezze che un radar non possiede valgono zero. Il solo CSV esportato dalla web UI aggiunge in coda due colonne con il valore e la classe dell'indice di vitalità calcolato a bordo (Capitolo~\ref{chap:vitalita}), messe in fondo perché la catena di analisi non le richiede e le ignora.
+Tutti i file della tesi seguono lo stesso schema a strati (Tabella~\ref{tab:c3-15}). Le prime nove colonne coincidono con quelle del repository di riferimento e sono prodotte da tutti i firmware. Su queste lavora lo script di confronto del Capitolo~\ref{chap:confronto}, quindi le metriche di presenza, falsi positivi, latenze e distanza si calcolano allo stesso modo per i due radar. Seguono le colonne proprie di ciascun radar, con nomi distinti (menergy, senergy contro energy2420) perché le scale sono diverse, 0--100 contro 0--65\,535, e nessuno script deve confonderle. Le grandezze che un radar non possiede valgono zero. Il solo CSV esportato dalla web UI aggiunge in coda due colonne con il valore e la classe dell'indice di vitalità calcolato a bordo (Capitolo~\ref{chap:vitalita}), messe in fondo perché la catena di analisi non le richiede e le ignora.
 
 \begin{table}[!htb]
 \centering
@@ -596,14 +596,14 @@ Indice a bordo & vitality\_\allowbreak{}onboard, vitality\_\allowbreak{}class\_\
 
 Nei test dell'\ldc{} il PIR non è cablato. Un piedino non collegato leggerebbe zero per tutto il file, e gli script ne ricaverebbero un 100~\% di falsi negativi con una persona davanti. Per questo il firmware scrive il valore sentinella \(-\)1, che lo script di analisi riconosce. In quel caso lo script omette ogni metrica del PIR e lo segnala in una colonna di stato del foglio Excel.
 
-L'intestazione è stampata dal firmware una sola volta all'avvio. Le righe che iniziano con il cancelletto sono commenti, che lo script di acquisizione scarta, e contengono il marcatore di build di ogni sketch e la configurazione dell'\ldc{} (Sezione~\ref{sec:c3-4-2}). Il numero di colonne di una riga di dati identifica il formato, 9 per la modalità base e 29 per l'engineering mode completo, ed è ciò che permette di ricostruire un'intestazione mancante (Sezione~\ref{sec:c3-4-4}). A 27 colonne il logger dell'\ldc{} e l'engineering mode senza fotosensore non si distinguono, quindi l'intestazione stampata dal firmware è indispensabile.
+L'intestazione è stampata dal firmware una sola volta all'avvio. Le righe che iniziano con il cancelletto sono commenti, che lo script di acquisizione scarta, e contengono il marcatore di build di ogni sketch e la configurazione dell'\ldc{} (Sezione~\ref{sec:c3-4-2}). Lo script di acquisizione ricostruisce un'intestazione mancante dal numero di colonne (Sezione~\ref{sec:c3-4-4}), ma a 27 colonne il logger dell'\ldc{} e l'engineering mode senza fotosensore non si distinguono, quindi l'intestazione stampata dal firmware è indispensabile.
 
 \subsection{Lo script di acquisizione}
 \label{sec:c3-4-4}
 
 Lo script acquire.py legge la seriale e aggiunge a ogni riga le sei colonne di metadati sperimentali della Tabella~\ref{tab:c3-15}, dichiarati dall'operatore da riga di comando. Il file prende il nome dello scenario e del trial, e lo script richiede la sola libreria pyserial.
 
-Lo script ricostruisce l'intestazione dal numero di colonne della prima riga di dati (Sezione~\ref{sec:c3-4-3}), invece di attendere quella stampata dall'ESP32 all'avvio. Altrimenti, quando il reset all'apertura della porta seriale non scatta, il CSV resterebbe vuoto senza alcun avviso.
+Lo script ricostruisce l'intestazione dal numero di colonne della prima riga di dati (9 per la modalità base, 29 per l'engineering mode completo), invece di attendere quella stampata dall'ESP32 all'avvio. Altrimenti, quando il reset all'apertura della porta seriale non scatta, il CSV resterebbe vuoto senza alcun avviso.
 
 Per facilitare i test sono stati introdotti:
 
@@ -637,7 +637,7 @@ Esegue l'analisi in frequenza (Sezione~\ref{sec:respiro}) e richiede NumPy. Appl
 
 \paragraph{Materiali derivati}
 
-Un ultimo gruppo di script produce i materiali derivati, cioè rifà dai CSV, con un solo comando, le figure di questa tesi, il foglio Excel con una riga per trial valido e la pagina di riepilogo. Le figure importano le funzioni di analizza\_test.py anziché ricalcolare, così ogni numero nei grafici coincide per costruzione con quello nel testo. Il foglio Excel ha una lista separata con i file esclusi e la ragione dell'esclusione, perché nessun file di prova o di controllo entri nelle statistiche per una svista. Figure e materiali derivati non sono versionati perché si possono rifare, mentre i CSV lo sono.
+Un ultimo gruppo di script produce i materiali derivati, cioè rifà dai CSV, con un solo comando, le figure di questa tesi, il foglio Excel con una riga per trial valido e la pagina di riepilogo. Le figure importano le funzioni di analizza\_test.py anziché ricalcolare, così ogni numero nei grafici coincide per costruzione con quello nel testo. Il foglio Excel ha una lista separata con i file esclusi e la ragione dell'esclusione, perché nessun file di prova o di controllo entri nelle statistiche per una svista.
 
 \FloatBarrier
 \section{Verifica dei dati e comportamenti del modulo da conoscere}
@@ -671,14 +671,14 @@ L'energia riportata dal modulo è un intero fra 0 e 100, che non è una potenza 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=\linewidth]{Saturazione_segnale}
-\caption{La saturazione dell'energia. L'indice è un intero 0--100 e sul bersaglio vicino il canale stazionario è a fondo scala nella quasi totalità dei campioni. Un segnale clippato non porta informazione, e nessuna soglia lo risolve.}
+\caption{La saturazione dell'energia. L'indice è un intero 0--100 e sul bersaglio vicino il canale stazionario è a fondo scala nella quasi totalità dei campioni. }
 \label{fig:c3-2}
 \end{figure}
 
 \subsection{Canali stazionari disattivati sotto 1,5~m}
 \label{sec:c3-5-2}
 
-Le energie stazionarie dei gate 0 e 1 sono risultate nulle in tutti i 673 campioni, ma non si tratta di un difetto dell'esemplare. L'esempio di frame riportato nel protocollo \cite[§2.3.2]{hilinkProtoV107} mostra gli stessi valori nulli, e le soglie di fabbrica di quei due gate valgono 0 (Tabella~\ref{tab:c3-6}). Poiché un gate è attivo solo quando l'energia supera la soglia, il canale stazionario è disattivato per costruzione entro 1,5~m. Il modulo continua comunque a rilevare un bersaglio fermo a quella distanza. Nei dati compaiono infatti distanze stazionarie fra 70 e 89~cm con energia aggregata pari a 100, e quello che manca è soltanto il dettaglio per gate. Il vincolo che ne deriva riguarda le analisi costruite sulle serie per gate, come il respiro e l'indice di vitalità, che per un soggetto entro 1,5~m devono usare i canali in movimento. È il caso dello scenario DIPME, dove la persona sotto il banco si trova proprio a quella distanza (Sezione~\ref{sec:sotto-banco}).
+Le energie stazionarie dei gate 0 e 1 sono risultate nulle in tutti i 673 campioni, ma non si tratta di un difetto dell'esemplare. L'esempio di frame riportato nel protocollo \cite[§2.3.2]{hilinkProtoV107} mostra gli stessi valori nulli, e il protocollo indica le soglie di quei due gate come non impostabili (la lettura restituisce 0, Tabella~\ref{tab:c3-6}). Il canale stazionario è quindi disattivato per costruzione entro 1,5~m. Il modulo continua comunque a rilevare un bersaglio fermo a quella distanza. Nei dati compaiono infatti distanze stazionarie fra 70 e 89~cm con energia aggregata pari a 100, e quello che manca è soltanto il dettaglio per gate. Il vincolo che ne deriva riguarda le analisi costruite sulle serie per gate, come il respiro e l'indice di vitalità, che per un soggetto entro 1,5~m devono usare i canali in movimento. È il caso dello scenario DIPME, dove la persona sotto il banco si trova proprio a quella distanza (Sezione~\ref{sec:sotto-banco}).
 
 \subsection{Coda di presenza}
 \label{sec:c3-5-3}
@@ -701,11 +701,11 @@ Due verifiche minori completano il quadro. Lo stato del pin OUT, letto dal frame
 \section{Soglie di fabbrica e necessità di taratura}
 \label{sec:c3-6}
 
-Sul LD2410B le soglie (Tabella~\ref{tab:c3-6}) sono state lasciate ai valori di fabbrica per tutta la campagna. Confrontate con il rumore di fondo misurato a stanza vuota, restano sopra il massimo del rumore su ogni gate, e in tutta la campagna il radar non ha prodotto alcun falso positivo (Sezione~\ref{sec:falsi-positivi}). Non c'era quindi motivo di ricalibrare, e tenere la configurazione di fabbrica ha due vantaggi:
+Sull'\ldb{} le soglie (Tabella~\ref{tab:c3-6}) sono state lasciate ai valori di fabbrica per tutta la campagna. Confrontate con il rumore di fondo misurato a stanza vuota, restano sopra il massimo del rumore su ogni gate, e in tutta la campagna il radar non ha prodotto alcun falso positivo (Sezione~\ref{sec:falsi-positivi}). Non c'era quindi motivo di ricalibrare, e tenere la configurazione di fabbrica ha due vantaggi:
 
 \begin{itemize}
   \item I trial sono confrontabili fra loro, perché nessun parametro è cambiato a metà campagna
   \item Le prove sono riproducibili da chiunque disponga dello stesso modulo, senza dover replicare una taratura.
 \end{itemize}
 
-Il LD2420 si è comportato in modo opposto. Con la configurazione di fabbrica (Tabella~\ref{tab:c3-11}) il gate massimo a 12 porta il campo a 840~cm, oltre le pareti della stanza di prova, e le soglie di mantenimento dei gate lontani sono così basse che il riflesso del muro tiene la presenza sempre attiva. A stanza vuota il modulo non ha mai dichiarato l'assenza. È stato quindi necessario ridurre il gate massimo a 6 e ricavare le soglie dal rumore di fondo della stanza. La procedura automatica del tool (Sezione~\ref{sec:c3-2-3}) produceva soglie sotto le code del rumore reale, e il modulo continuava a non rilasciare. Le soglie usate nella campagna sono quindi state calcolate a mano con la regola del manuale a partire dal fondo misurato a stanza vuota (Sezione~\ref{sec:protocollo-ld2420}).
+L'\ldc{} si è comportato in modo opposto. Con la configurazione di fabbrica (Tabella~\ref{tab:c3-11}) il gate massimo a 12 porta il campo a 840~cm, oltre le pareti della stanza di prova, e le soglie di mantenimento dei gate lontani sono così basse che il riflesso del muro tiene la presenza sempre attiva. A stanza vuota il modulo non ha mai dichiarato l'assenza. È stato quindi necessario ridurre il gate massimo a 6 e ricavare le soglie dal rumore di fondo della stanza. La procedura automatica del tool (Sezione~\ref{sec:c3-2-3}) produceva soglie sotto le code del rumore reale, e il modulo continuava a non rilasciare. Le soglie usate nella campagna sono quindi state calcolate a mano con la regola del manuale a partire dal fondo misurato a stanza vuota (Sezione~\ref{sec:protocollo-ld2420}).

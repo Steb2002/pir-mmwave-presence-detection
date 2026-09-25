@@ -1,6 +1,8 @@
 \chapter{Conclusioni e sviluppi futuri}
 \label{chap:conclusioni}
 
+Questo capitolo raccoglie le conclusioni del lavoro. La Sezione~\ref{sec:conclusioni-risposta} risponde alla domanda di partenza con cinque affermazioni sostenute da misure e ne ricava la raccomandazione per il progetto. La Sezione~\ref{sec:conclusioni-contributi} riassume i contributi e gli esiti metodologici utili a chi ripete il lavoro, e la Sezione~\ref{sec:conclusioni-sviluppi} delimita il perimetro della tesi e indica gli sviluppi futuri.
+
 \section{Risposta alla domanda di partenza}
 \label{sec:conclusioni-risposta}
 
@@ -38,13 +40,11 @@ da ciascuno dei pannelli interposti (Sezione~\ref{sec:ostacoli}). In corridoio i
 100\,\% fino a 6~m e scende a zero a 7, e così il tetto di otto gate da 75~cm risulta
 misurato. Il PIR
 arriva a 5--6~m a metà corsa e a 7--8~m al massimo, ma solo su chi attraversa il suo
-campo abbastanza in fretta (Sezione~\ref{sec:portata-massima}). Il solo materiale che blocca
-il radar è il metallo, e nel banco reale la lamiera sta dietro al modulo.
+campo abbastanza in fretta (Sezione~\ref{sec:portata-massima}). Il solo materiale che blocca il radar è il metallo.
 
 \paragraph{4. Fra i due radar, per questo scenario, l'\ldb.} L'\ldc\ rileva la
 persona immobile a 1~m e sotto il banco (100 e 98,4\,\%), quindi nello scenario del
-progetto funziona. Dice però se c'è qualcuno e non dove, non gradua il movimento e non
-lavora fuori dalla scatola. A soglie di fabbrica non rilascia mai la presenza,
+progetto funziona. Dice però se c'è qualcuno e non dove e non gradua il movimento. A soglie di fabbrica non rilascia mai la presenza,
 richiede una taratura per installazione e anche dopo conserva 5,4 riaccensioni l'ora,
 contro zero dell'\ldb\ (Sezione~\ref{sec:ld2420-risultati}). Ogni numero dell'\ldc\ è
 attribuito all'esemplare, che ha una portata di circa 2~m contro gli 8 dichiarati.
@@ -57,11 +57,7 @@ l'architettura ibrida di Sezione~\ref{sec:architettura-ibrida}, in cui il PIR fa
 microampere in tempo di pace. Il radar è lo strumento di misura nella finestra di
 emergenza, e un ciclo di lavoro ne estende l'autonomia oltre le 72 ore.
 
-La raccomandazione per il progetto è quindi di aggiungere un modulo mmWave della
-classe dell'\ldb\ al nodo, mantenendo il PIR come sorgente di risveglio. Il radar va
-attivato al passaggio in modalità emergenza, e all'installazione va prevista una
-taratura del fondo e dell'indice di vitalità, sotto l'arredo in cui il sensore viene
-montato.
+La raccomandazione per il progetto è quindi di aggiungere al nodo un modulo mmWave della classe dell'\ldb\ secondo questa architettura, prevedendo all'installazione una taratura del fondo e dell'indice di vitalità sotto l'arredo in cui il sensore viene montato.
 
 \section{Contributi}
 \label{sec:conclusioni-contributi}
@@ -117,8 +113,7 @@ metallici. La seconda è il comportamento con più persone presenti, che è il l
 strutturale di entrambi i radar (Sezione~\ref{sec:due-persone}).
 
 \paragraph{Montaggio sulla lamiera forata.} È la questione di progetto più concreta.
-Il piano del banco è rinforzato con lamiera forata e il metallo è l'unico materiale
-che blocca il radar. Le configurazioni da valutare sono tre. La prima, con il sensore
+Il piano del banco è rinforzato con lamiera forata, quindi la posizione del sensore rispetto al metallo va scelta. Le configurazioni da valutare sono tre. La prima, con il sensore
 sotto il piano rivolto al volume di rifugio, è la geometria provata in questa tesi e
 l'ipotesi preferibile. La seconda, con il sensore sopra il piano, richiede di
 verificare se il passo dei fori consente la trasmissione a 24~GHz, perché fori molto

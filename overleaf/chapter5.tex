@@ -82,8 +82,7 @@ più tre trial di stanza vuota come controllo negativo
 \begin{table}[htbp]
 \centering
 \caption{Stima respiratoria contro ritmo imposto, \ldb\ a 2~m. ``Trial concordi''
-conta quelli in cui l'analisi ha restituito la fondamentale. Nei rimanenti ha
-restituito esattamente il doppio.}
+conta quelli in cui l'analisi ha restituito la fondamentale. }
 \label{tab:respiro-metronomo}
 \small
 \begin{tabular}{@{}lccc@{}}
@@ -100,8 +99,7 @@ Stanza vuota & --- & \multicolumn{2}{c}{\textbf{nessuna stima in 3 trial su 3}} 
 \end{table}
 
 Dove l'analisi identifica la fondamentale la stima è accurata, con errore assoluto
-medio di 0,22 atti al minuto sui tredici trial concordi e massimo 0,4. Il controllo
-negativo non produce alcuna stima. Nei due trial non concordi l'analisi ha restituito
+medio di 0,22 atti al minuto sui tredici trial concordi e massimo 0,4. Nei due trial non concordi l'analisi ha restituito
 esattamente il doppio del ritmo imposto, mai un valore intermedio, per una ragione
 fisica. L'energia per gate risponde all'entità dello spostamento e non al suo verso.
 Un ciclo completo (inspirazione ed espirazione) produce quindi due escursioni di
@@ -203,8 +201,7 @@ classificare. Le classi descrivono quanto si muove chi c'è (Tabella~\ref{tab:vi
 \begin{table}[htbp]
 \centering
 \caption{Classi dell'indice di vitalità con le soglie tarate
-(Sezione~\ref{sec:vitalita-taratura}) e loro significato operativo. L'ordine di priorità per
-i soccorritori è inverso a quello dell'indice.}
+(Sezione~\ref{sec:vitalita-taratura}) e loro significato operativo. }
 \label{tab:vitalita-classi}
 \small
 \begin{tabularx}{\linewidth}{@{}llXl@{}}
@@ -252,9 +249,7 @@ discussa sotto.
 
 \begin{table}[htbp]
 \centering
-\caption{Prestazione dell'indice a tre classi con i parametri tarati
-($\alpha_m = 0{,}05$, $\alpha_v = 0{,}01$, $k = 0{,}5$, soglie a 45 e 95, gate fisso
-2). La recall è media per classe e per campione.}
+\caption{Prestazione dell'indice a tre classi con i parametri tarati e gate fisso 2. La recall è media per classe e per campione.}
 \label{tab:vitalita-validazione}
 \small
 \begin{tabular}{@{}lc@{}}
@@ -273,9 +268,7 @@ Discriminazione immobile / in movimento, entrambe le geometrie & $\mathbf{96{,}1
 \begin{table}[htbp]
 \centering
 \caption{Dettaglio per scenario con i parametri tarati, tutti i trial, gate fisso 2 e fondo della stanza vuota di giorno.
-L'indice è la media dell'indice medio per trial. Il 97,5\,\% sotto il banco dipende dal
-gate fisso e non indica che le soglie si trasferiscono alla geometria del banco (vedi
-testo).}
+L'indice è la media dell'indice medio per trial. }
 \label{tab:vitalita-scenari}
 \small
 \begin{tabular}{@{}lrlr@{}}
@@ -363,11 +356,7 @@ dashboard (Sezione~\ref{sec:webui}). Le
 Equazioni~\ref{eq:gate-attivo}, \ref{eq:netta}, \ref{eq:livello}, \ref{eq:variabilita} e~\ref{eq:vitalita} sono
 implementate in 74 righe di C++ senza dipendenze, con le stesse costanti del prototipo
 in un unico file di configurazione. Il costo è di poche operazioni in virgola mobile
-per campione. Il firmware usa il gate dalla distanza riportata. A 1~m riproduce la
-taratura (28,4, 73,9 e 99,4 contro 28,6, 71,0 e 99,2 con il gate fisso), mentre sotto
-il banco dà 45,4 anziché 25,7 per la ragione appena discussa. Il firmware legge cioè
-il gate in cui il radar colloca la persona, e la dipendenza dalla geometria è
-dichiarata anziché nascosta. Il fondo per gate è quello della stanza vuota notturna di
+per campione. Il firmware usa il gate dalla distanza riportata. A 1~m riproduce la taratura (28,4, 73,9 e 99,4 contro 28,6, 71,0 e 99,2 con il gate fisso), e sotto il banco legge il gate in cui il radar colloca davvero la persona (Sezione~\ref{sec:vitalita-taratura}), così che la dipendenza dalla geometria è dichiarata anziché nascosta. Il fondo per gate è quello della stanza vuota notturna di
 6,5~ore, e la scelta del file di fondo sposta l'indice di meno di un punto.
 
 Il criterio di accettazione era che l'indice calcolato sull'ESP32 e quello calcolato
@@ -436,8 +425,6 @@ Persona oltre 4--5~m & energia debole, indice sottostimato & la portata utile
   dell'indice non è stata caratterizzata \\
 Persona a meno di 1,5~m & nessun effetto, l'indice usa i soli canali in movimento &
   scelta imposta da Sezione~\ref{sec:c3-5-2} \\
-Geometria diversa da quella di taratura & soglie non trasferibili & taratura per
-  installazione (Sezione~\ref{sec:vitalita-taratura}) \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -455,4 +442,4 @@ attivo, che direbbe quanto fidarsi del valore. La sostituzione della componente 
 con una potenza in banda respiratoria, ipotizzata nella prima specifica, non è invece
 più fra le priorità, per la scelta di formulazione della Sezione~\ref{sec:vitalita-motivazione}.
 
-Resta infine un aspetto di trattamento dei dati. Per il monitoraggio in ambienti scolastici il progetto indica le cautele del GDPR, fino a una valutazione d'impatto quando sono coinvolti minori~\cite{callisto2026dipme}. L'indice di vitalità non aggiunge un problema nuovo, perché è una misura generica di quanto si muove chi è presente, calcolata a bordo dall'energia radar, e non una misura fisiologica come il respiro. Rientra quindi nella stessa valutazione che riguarda già il dato di presenza.
+Resta infine un aspetto di trattamento dei dati. Per il monitoraggio in ambienti scolastici il progetto indica le cautele del GDPR, fino a una valutazione d'impatto quando sono coinvolti minori~\cite{callisto2026dipme}. L'indice di vitalità non aggiunge un problema nuovo, perché è una misura generica di quanto si muove chi è presente e non una misura fisiologica (Sezione~\ref{sec:vitalita-motivazione}). Rientra quindi nella stessa valutazione che riguarda già il dato di presenza.

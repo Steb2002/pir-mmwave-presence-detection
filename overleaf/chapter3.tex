@@ -29,20 +29,13 @@ Il confronto poggia su due attività distinte che si alimentano a vicenda.
     un file e a una riga di comando precisi.
 \end{itemize}
 
-Questa divisione ha anche una conseguenza pratica. Durante la prova l'operatore non ha
-bisogno di leggere i numeri. Gli basta sapere che i dati stanno arrivando e che i sensori
-vedono ciò che devono vedere. Questo è il compito dell'interfaccia web presentata nella
-Sezione~\ref{sec:webui}, che mostra i sensori in tempo reale e permette di controllare il
-posizionamento prima di avviare la registrazione. Nel confronto il suo ruolo è quindi di
-supporto e di verifica, come precisato nella Sezione~\ref{sec:webui-ruolo}.
+Durante la prova, quindi, l'operatore non ha bisogno di leggere i numeri, e l'interfaccia web serve a controllare in tempo reale che i sensori vedano ciò che devono vedere (Sezione~\ref{sec:webui-ruolo}).
 
 \section{Protocollo sperimentale}
 \label{sec:protocollo}
 \label{sec:protocollo-configurazione}
 
-Il protocollo è stato definito prima delle acquisizioni ed è rimasto invariato per tutta
-la campagna. Il PIR lavora nella configurazione a lui più favorevole, con il ponticello di
-ritrigger in posizione H (Sezioni~\ref{subsec:pir-dati} e~\ref{sec:c3-3-3}), mentre
+Il protocollo è stato definito prima delle acquisizioni. Il PIR lavora nella configurazione a lui più favorevole, con il ponticello di ritrigger in posizione H, in tutte le serie in cui il ponticello conta (Sezione~\ref{sec:interpretazione-pir}), mentre
 l'\ldb\ mantiene sempre le soglie di fabbrica (Sezione~\ref{sec:c3-6}). L'\ldc\ è stato
 provato in un secondo tempo nelle stesse geometrie, con le deroghe dichiarate nella
 Sezione~\ref{sec:protocollo-ld2420}. Ogni scenario è ripetuto più volte, e i valori
@@ -58,8 +51,7 @@ supporto di cartone appoggiato sul bordo di un tavolo, a circa 85~cm di altezza
 (Figura~\ref{fig:setup-foto}), e puntano verso un'area di prova che ricade nel campo di
 entrambi. Nella stanza non ci sono oggetti in movimento (nessun ventilatore, tende ferme,
 porta chiusa). Le quattro geometrie di prova sono schematizzate in
-Figura~\ref{fig:geometrie}. Lo stesso supporto ha ospitato l'\ldc\ nella campagna ridotta
-(Sezione~\ref{sec:protocollo-ld2420}).
+Figura~\ref{fig:geometrie}.
 
 \begin{figure}[!htbp]
 \centering
@@ -85,12 +77,10 @@ più lontani.}
 \subsection{Scenari}
 \label{sec:protocollo-scenari}
 
-La Tabella~\ref{tab:scenari} raggruppa gli scenari per domanda e riporta per ciascuno il
-numero di ripetizioni, lo scarto iniziale della Sezione~\ref{sec:metriche-transitorio} e la
-sezione del Capitolo~\ref{chap:confronto} con i risultati. Di norma uno scenario è ripetuto
+La Tabella~\ref{tab:scenari} raggruppa gli scenari per domanda. Di norma uno scenario è ripetuto
 cinque volte, dieci per la latenza d'ingresso e tre quando serve una seconda persona o le
 condizioni da coprire sono molte. Ogni scenario ha un nome, che è anche il nome dei suoi
-file. Il respiro a ritmo imposto usa gli stessi file e le stesse geometrie ed è trattato
+file. Il respiro a ritmo imposto usa lo stesso setup e lo stesso formato dei file ed è trattato
 nel Capitolo~\ref{chap:vitalita}.
 
 \begin{table}[!htbp]
@@ -226,8 +216,7 @@ Le soglie sono tarate sul fondo misurato e il gate massimo è fissato a 6, per l
 della Sezione~\ref{sec:c3-6}. Inoltre, il gate~0 è portato sopra la coda del rumore, nella
 configurazione v2 (Sezione~\ref{sec:ld2420-risultati}). Infine, il PIR non è cablato nei
 test del solo \ldc, e i suoi valori sono marcati come assenti (Sezione~\ref{sec:c3-4-3}).
-Poiché l'esemplare in dotazione è con ogni probabilità difettoso
-(Sezione~\ref{sec:c3-2-6}), i risultati ottenuti descrivono quel singolo modulo e non vanno
+Poiché l'esemplare in dotazione è con ogni probabilità difettoso, i risultati ottenuti descrivono quel singolo modulo e non vanno
 generalizzati al modello \ldc.
 
 Due accorgimenti operativi completano il protocollo. Dopo ogni accensione nessuno resta
@@ -240,9 +229,7 @@ il fondo per gate sia quello atteso.
 \label{chap:webui}
 
 L'ESP32 pubblica i dati e una pagina web li mostra in tempo reale, li salva insieme alle
-statistiche di sessione e li esporta in CSV. Il risultato è una dashboard servita
-direttamente dal nodo, senza alcuna rete esterna, che produce lo stesso formato dati della
-catena seriale. Questa sezione ne riassume requisiti, progetto, realizzazione e verifica,
+statistiche di sessione e li esporta in CSV. Questa sezione ne riassume requisiti, progetto, realizzazione e verifica,
 e chiarisce il ruolo che ha avuto nella campagna.
 
 \subsection{Requisiti e architettura}
@@ -331,8 +318,7 @@ l'\ldb~\cite{ld2410configurator}, da cui è ripresa la rappresentazione a barre 
 energie per gate con la soglia sovrapposta. La pagina è divisa in quattro aree
 (Figure~\ref{fig:dashboard} e~\ref{fig:dashboard-sessione}). La prima
 mostra lo stato istantaneo dei due sensori. La seconda contiene la gauge dell'indice di
-vitalità, con i colori del semaforo in ordine inverso all'indice, cioè rosso per la classe
-bassa, che per il soccorso è la più urgente (Sezione~\ref{sec:vitalita-classi}). La terza
+vitalità, con i colori del semaforo (Sezione~\ref{sec:vitalita-classi}). La terza
 raccoglie i tre grafici degli ultimi 60~s, con l'energia, le barre per gate con le soglie
 lette dal modulo all'avvio e la timeline della presenza di radar e PIR sulla stessa base
 dei tempi. La quarta gestisce la sessione di registrazione, con gli stessi metadati
@@ -434,9 +420,7 @@ formati compatibili, ma dello stesso dato raggiunto per due vie.
 \centering
 \includegraphics[width=\linewidth]{figures/fig30_percorsi_dati}
 \caption{I due percorsi dei dati del firmware della web UI. Sopra il percorso seriale, in
-cui lo script di acquisizione aggiunge i metadati sperimentali. Sotto la web UI, servita
-dal nodo in modalità Access Point senza alcuna rete esterna, che esporta dal browser lo
-stesso CSV con in coda le due colonne dell'indice calcolato a bordo. I due file coincidono
+cui lo script di acquisizione aggiunge i metadati sperimentali. Sotto la web UI, servita dal nodo in modalità Access Point, che esporta dal browser lo stesso CSV. I due file coincidono
 campione per campione e sono letti dallo stesso script di analisi.}
 \label{fig:percorsi-dati}
 \end{figure}
@@ -444,7 +428,7 @@ campione per campione e sono letti dallo stesso script di analisi.}
 \subsection{Ruolo nella campagna}
 \label{sec:webui-ruolo}
 
-Nella campagna l'interfaccia ha svolto tre funzioni.
+Nella campagna l'interfaccia ha svolto due funzioni.
 \begin{itemize}
   \item \textbf{Controllo in tempo reale:} durante il posizionamento dei sensori e del
     soggetto permette di verificare, prima di registrare, che ogni sensore veda ciò che
@@ -454,11 +438,5 @@ Nella campagna l'interfaccia ha svolto tre funzioni.
     (Sezione~\ref{sec:portata-massima}) è stata acquisita con il firmware della web UI, e
     grazie alla verifica di equivalenza quei dati sono entrati nella catena di analisi
     senza alcuna modifica.
-  \item \textbf{Indice di vitalità a bordo:} l'interfaccia ospita il calcolo dell'indice
-    sul nodo, confrontato con il riferimento offline nella
-    Sezione~\ref{sec:vitalita-bordo}.
 \end{itemize}
-Il calcolo delle metriche di confronto resta invece affidato alla catena di analisi sui
-file, secondo la divisione descritta nella Sezione~\ref{sec:metodo-approccio}, perché solo
-così ogni numero del Capitolo~\ref{chap:confronto} si può ricalcolare a partire dagli
-stessi dati.
+Il calcolo delle metriche di confronto resta invece affidato alla catena di analisi sui file (Sezione~\ref{sec:metodo-approccio}).
