@@ -3,7 +3,7 @@
 
 Questo capitolo riporta i risultati della campagna sperimentale, svolta sui tre sensori, con 444 trial validi e 32,1 ore di acquisizione. Protocollo, metriche e convenzioni sono quelli del Capitolo~\ref{chap:metodologia}. Ogni risultato è accompagnato dalla sua dispersione su ripetizioni indipendenti. Il rilevamento del respiro poggia sulla stessa campagna ed è trattato nel Capitolo~\ref{chap:vitalita} insieme all'indice di vitalità.
 
-Il capitolo è organizzato come segue. La Sezione~\ref{sec:falsi-positivi} misura i falsi positivi a stanza vuota. La Sezione~\ref{sec:persona-ferma} affronta la persona immobile e spiega che cosa misura davvero il bit del PIR, mentre la Sezione~\ref{sec:dose-risposta} mostra come la sua risposta dipenda dalla quantità e dal tipo di movimento più che dalla distanza. La Sezione~\ref{sec:sotto-banco} porta il confronto nello scenario del progetto, con la persona sotto il banco. Le Sezioni~\ref{sec:distanza} e~\ref{sec:latenza} caratterizzano l'accuratezza della distanza, l'energia del bersaglio e le latenze di rilevamento e di rilascio. La Sezione~\ref{sec:angolare} misura la copertura angolare e ne ricava le conseguenze sulla selettività fra banchi adiacenti, e la Sezione~\ref{sec:due-persone} esamina il caso di due persone davanti al radar. La Sezione~\ref{sec:ostacoli} quantifica l'attenuazione dei materiali interposti e la Sezione~\ref{sec:portata-massima} la portata massima dei tre sensori in corridoio. La Sezione~\ref{sec:ld2420-risultati} riassume che cosa cambia con il secondo radar, e la Sezione~\ref{sec:discussione} raccoglie la sintesi del confronto.
+Il capitolo è organizzato come segue. La Sezione~\ref{sec:falsi-positivi} misura i falsi positivi a stanza vuota. La Sezione~\ref{sec:persona-ferma} affronta la persona immobile e spiega che cosa misura davvero il bit del PIR, mentre la Sezione~\ref{sec:dose-risposta} mostra come la sua risposta dipenda dalla quantità e dal tipo di movimento più che dalla distanza. La Sezione~\ref{sec:sotto-banco} porta il confronto nello scenario del progetto, con la persona sotto il banco. Le Sezioni~\ref{sec:distanza} e~\ref{sec:latenza} caratterizzano l'accuratezza della distanza, l'energia del bersaglio e le latenze di rilevamento e di rilascio. La Sezione~\ref{sec:angolare} misura la copertura angolare e ne ricava le conseguenze sulla selettività fra banchi adiacenti, e la Sezione~\ref{sec:due-persone} esamina il caso di due persone davanti al radar. La Sezione~\ref{sec:ostacoli} quantifica l'attenuazione dei materiali interposti e la Sezione~\ref{sec:portata-massima} la portata massima dei tre sensori in corridoio.
 
 \section{Stanza vuota: falsi positivi}
 \label{sec:falsi-positivi}
@@ -14,8 +14,7 @@ falso positivo. Con zero eventi osservati si riporta il limite superiore $3/T$ d
 Sezione~\ref{sec:metriche-zero}, $\leq 0{,}43$ eventi/h per entrambi i sensori.
 
 L'\ldc\ nella stessa stanza si comporta in modo molto diverso
-(Figura~\ref{fig:falsi-positivi}). Con le soglie già tarate sul fondo misurato
-(Sezione~\ref{sec:ld2420-risultati}) produce 26,2 riaccensioni all'ora in una notte di 7~h
+(Figura~\ref{fig:falsi-positivi}). Con le soglie già tarate sul fondo misurato (Sezione~\ref{sec:c3-6}) produce 26,2 riaccensioni all'ora in una notte di 7~h
 e dichiara la presenza nel 26\,\% del tempo senza nessuno nella stanza. Con la
 successiva correzione del gate~0 scende a 5,4 eventi/h. Quest'ultimo valore viene però da un'ora di giorno e non da una notte.
 
@@ -134,7 +133,7 @@ Cammino sul posto & $85{,}20 \pm 11{,}52\,\%$ & $14\,\%$ & $\mathbf{100\,\%}$ & 
 \centering
 \includegraphics[width=\linewidth]{figures/fig01_dose_risposta}
 \caption{La curva dose-risposta a 1~m. Il PIR passa dall'1,5 all'85\,\%,
-con la dispersione massima nella zona intermedia. Il radar resta al 100\,\% in tutte e tre le condizioni.}
+con la dispersione massima nella zona intermedia. I due radar restano al 100\,\% in tutte e tre le condizioni. L'\ldc\ è stato provato nella stessa geometria in una sessione separata, e a stanza vuota non è riportato perché il suo valore dipende dalla configurazione (Sezione~\ref{sec:falsi-positivi}).}
 \label{fig:dose-risposta}
 
 \end{figure}
@@ -146,8 +145,7 @@ Per un'applicazione di soccorso il dato più rilevante è la dispersione della c
 Le ultime due colonne della
 Tabella~\ref{tab:dose-risposta} sono un risultato a sé. L'energia del bersaglio in movimento
 cresce con la quantità di movimento, mentre la dispersione della distanza cala, perché un'eco più forte dà una stima più stabile.
-Sono due grandezze continue e monotone misurate a geometria costante, e su di esse
-poggia l'indice di vitalità del Capitolo~\ref{chap:vitalita}.
+Sono due grandezze continue e monotone misurate a geometria costante, e su di esse poggia l'indice di vitalità del Capitolo~\ref{chap:vitalita}. L'\ldc, provato nella stessa geometria, rileva la persona nel 100\,\% del tempo in tutte e tre le condizioni (Figura~\ref{fig:dose-risposta}), ma la sua energia non cresce con il movimento.
 
 \subsection{Tipo di movimento}
 \label{sec:attraversamento}
@@ -208,23 +206,14 @@ ferma. L'\ldb\ è al 100\,\% in entrambe le condizioni su 7554 campioni per
 condizione. L'\ldc\ è al 100\,\% con i micro-movimenti e al $98{,}4 \pm 3{,}6\,\%$
 da immobile, con un solo rilascio di 24~s in un trial.
 
-\paragraph{Il radar rileva bene ma localizza male.} La dispersione della distanza
-entro il trial vale 14--24~cm sotto il banco, contro $1{,}48 \pm 0{,}77$~cm sul
-soggetto seduto a 2,3~m (Figura~\ref{fig:timeline-sotto-banco}), cioè circa dieci volte
-peggio su un bersaglio immobile più vicino. Per il progetto è irrilevante, perché al
-soccorritore serve sapere se c'è qualcuno sotto quel banco e non a quanti centimetri,
-ma esclude l'uso della distanza come misura fine in questa geometria. Gli sbalzi
-verso 200--300~cm visibili in Figura~\ref{fig:timeline-sotto-banco} riguardano dallo 0,3 al
-7,4\,\% dei campioni nei cinque trial e avvengono con il canale in movimento meno
-attivo del solito e con il PIR a zero. Non sono movimenti del soggetto, perché i file terminano prima che l'operatore si alzi e i primi 40~s sono scartati, ma il canale stazionario che si aggancia a un riflesso lontano. La lettura per gate spiega perché la localizzazione è rumorosa. Sull'\ldb\ i gate stazionari 0 e 1
-sono strutturalmente nulli (Sezione~\ref{sec:c3-5-2}) e la presenza è retta dai gate 2
-e 3, con un'energia che resta a 24 anche al gate~8 contro 6,5 nello scenario da
-seduto. Sull'\ldc\ la presenza da immobile è retta dal gate~2 (70--140~cm) e non dal
-gate~1 in cui la persona sta. Lo stesso fenomeno compare su due moduli diversi,
-verosimilmente per cammini multipli sotto il piano. È una spiegazione coerente, non
-una misura, perché il segnale grezzo non è accessibile. Resta comunque acquisito il
-punto operativo, cioè che sotto il metro l'indice di vitalità deve usare i canali in
-movimento (Capitolo~\ref{chap:vitalita}).
+\subsection{Il radar rileva bene ma localizza male}
+\label{sec:sotto-banco-localizzazione}
+
+Sotto il banco la distanza riportata sulla persona immobile oscilla entro il trial di $24 \pm 9$~cm, contro $1{,}48 \pm 0{,}77$~cm per il soggetto seduto immobile a 2,3~m (Figura~\ref{fig:timeline-sotto-banco}). Il bersaglio è più vicino e ugualmente fermo, eppure la dispersione è circa sedici volte più ampia. Non dipende da piccoli movimenti del soggetto, perché con i micro-movimenti la dispersione scende a 14~cm. Lo stesso accade a 1~m (Sezione~\ref{sec:dose-risposta-1m}), perché un'eco più forte dà una distanza più stabile. Per il progetto conta poco, perché al soccorritore serve sapere se sotto quel banco c'è qualcuno e non a quanti centimetri si trova. In questa geometria, però, la distanza non va usata per localizzare con precisione la persona.
+
+Gli sbalzi verso 200--300~cm visibili nella Figura~\ref{fig:timeline-sotto-banco} riguardano dallo 0,3 al 7,4\,\% dei campioni. Durante gli sbalzi il PIR resta a zero, quindi non sono movimenti del soggetto, ma il bersaglio stazionario fittizio già visto nella Sezione~\ref{sec:c3-5-3}, che il canale riporta a una distanza sbagliata.
+
+La lettura per gate indica il perché. Su entrambi i radar la persona immobile compare soprattutto in gate più lontani di quello in cui si trova. Sull'\ldb, i cui gate stazionari 0 e 1 sono nulli per costruzione (Sezione~\ref{sec:c3-5-2}), la presenza è retta dai gate 2 e 3, e al gate~8 resta un'energia di 24 contro 6,5 da seduto. Sull'\ldc\ è retta dal gate~2 (70--140~cm) invece che dal gate~1, dove sta la persona. La causa più probabile sono i cammini multipli sotto il piano, cioè echi che rimbalzano su pavimento e piano del banco e arrivano come da più lontano. Resta però un'ipotesi, perché i moduli forniscono solo l'energia già elaborata per gate e non il segnale da cui si potrebbero separare i diversi percorsi (Sezione~\ref{subsec:fmcw}).
 
 \section{Accuratezza della distanza ed energia}
 \label{sec:distanza}
@@ -232,15 +221,11 @@ movimento (Capitolo~\ref{chap:vitalita}).
 \subsection{Accuratezza della distanza}
 \label{sec:distanza-accuratezza}
 
-I 25 trial di cammino sul posto a 1--5~m caratterizzano la misura di distanza dell'\ldb\ (Tabella~\ref{tab:distanza}, Figura~\ref{fig:distanza-regressione}).
+Per misurare quanto è precisa la distanza riportata dall'\ldb, il soggetto ha camminato sul posto a 1, 2, 3, 4 e 5~m dal sensore, con cinque trial da 62~s per ogni distanza. Per ogni trial si confronta la distanza media riportata dal radar con quella segnata sul pavimento. La Tabella~\ref{tab:distanza} riporta i risultati distanza per distanza e la Figura~\ref{fig:distanza-regressione} li mostra in un grafico.
 
 \begin{table}[htbp]
 \centering
-\caption{Accuratezza della distanza riportata dall'\ldb, 25 trial (5 distanze $\times$
-5 ripetizioni, 62~s utili ciascuno). ``Misurata'' è la media fra trial con la sua
-deviazione standard, ``residuo'' lo scarto dalla retta dell'Equazione~\ref{eq:regressione},
-``disp.\ entro trial'' la deviazione standard della distanza dentro un trial, mediata
-sui cinque. L'energia è il valore medio del bersaglio in movimento.}
+\caption{Accuratezza della distanza riportata dall'\ldb, cinque trial da 62~s per distanza. ``Misurata'' è la media dei cinque trial, ``errore'' la differenza dalla distanza reale, ``residuo'' lo scarto dalla retta dell'Equazione~\ref{eq:regressione} e ``disp.\ entro trial'' quanto oscilla la distanza dentro un trial. L'energia è discussa nella Sezione~\ref{sec:energia-distanza}.}
 \label{tab:distanza}
 
 \small
@@ -261,30 +246,20 @@ sui cinque. L'energia è il valore medio del bersaglio in movimento.}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{figures/fig04_distanza_regressione}
-\caption{Accuratezza della distanza dell'\ldb, 25 trial fra 1 e 5~m. La retta è calcolata sulle cinque medie per distanza, sui 25 trial singoli $R^2$ sarebbe 0,99949 anziché 0,99965.}
+\caption{Accuratezza della distanza dell'\ldb, 25 trial fra 1 e 5~m, con la retta di regressione calcolata sulle cinque medie per distanza.}
 \label{fig:distanza-regressione}
 
 \end{figure}
 
-La regressione lineare fra distanza misurata e reale dà
+A 1~m il radar sbaglia di mezzo centimetro, a 5~m di 18~cm. L'errore cresce con la distanza perché il radar legge sistematicamente un po' più lungo del vero. La retta che interpola i punti è
 \begin{equation}
 d_{\text{misurata}} = 1{,}0381 \cdot d_{\text{reale}} - 1{,}32~\text{cm},
 \qquad R^2 = 0{,}99965.
 \label{eq:regressione}
 \end{equation}
-Il radar è estremamente lineare, con residui dalla retta non superiori a 4,9~cm su
-tutto il range. L'errore è quasi interamente di scala ($+3{,}81\,\%$) con offset
-trascurabile, e questo spiega perché l'errore grezzo cresce con la distanza, da
-$-0{,}5$~cm a 1~m a $+18{,}2$~cm a 5~m. È correggibile dividendo la lettura per 1,0381. I dati non
-permettono di attribuire il $+3{,}81\,\%$ al modulo piuttosto che al riferimento con
-cui sono state segnate le distanze sul pavimento, e per farlo servirebbe un
-distanziometro indipendente.
+La pendenza 1,0381 indica che il radar allunga ogni distanza del 3,8\,\%, mentre il termine costante di $-1{,}32$~cm è trascurabile. I punti si scostano dalla retta al più di 4,9~cm (colonna ``residuo''). La retta è calcolata sulle cinque medie per distanza, e sui 25 trial singoli $R^2$ scende a 0,99949 mentre lo scostamento massimo sale a 6,0~cm. Il radar è quindi molto lineare, e il suo errore si corregge quasi del tutto dividendo la lettura per 1,0381. I dati non permettono di dire se il 3,8\,\% dipenda dal modulo o dal metro con cui sono state segnate le distanze, e per stabilirlo servirebbe un distanziometro indipendente.
 
-La dispersione entro il trial (10--26~cm) non è rumore del sensore, ma l'oscillazione
-reale del busto di chi cammina sul posto, come mostra il confronto con l'1,48~cm del
-soggetto seduto immobile. In quello scenario la variabilità fra trial della distanza
-media ($\pm 2{,}38$~cm) è maggiore di quella entro il trial, quindi il fattore
-limitante è come il soggetto si siede e non lo strumento.
+La colonna ``disp.\ entro trial'' indica invece quanto oscilla la distanza riportata durante un singolo trial, fra 10 e 26~cm. Non è rumore del sensore ma il movimento reale del busto di chi cammina sul posto (Figura~\ref{fig:energia-portata}). Lo conferma il soggetto seduto immobile a 2,3~m (Sezione~\ref{sec:persona-ferma}), su cui la stessa grandezza vale appena 1,5~cm.
 
 \subsection{Energia del bersaglio}
 \label{sec:energia-distanza}
@@ -292,33 +267,21 @@ limitante è come il soggetto si siede e non lo strumento.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{figures/fig05_energia_distanza}
-\caption{Energia del bersaglio in movimento e dispersione della distanza entro il
-trial in funzione della distanza, 25 trial. A 5~m l'energia (27,6) è ancora quasi il
-doppio della soglia di fabbrica dei gate lontani.}
+\caption{Energia del bersaglio in movimento e dispersione della distanza entro il trial al variare della distanza, 25 trial.}
 \label{fig:energia-portata}
 
 \end{figure}
 
-L'energia media del bersaglio decade da 99 a 1~m a 28 a 5~m
-(Figura~\ref{fig:energia-portata}). Il decadimento è molto più lento della dipendenza
-$1/D^4$ della potenza ricevuta da un bersaglio puntiforme, perché il valore non è una potenza ma un indice normalizzato prodotto da un'elaborazione interna non documentata (Sezione~\ref{sec:c3-5-1}). Per questo se ne usa
-la monotonia e non il valore assoluto in termini fisici. Il range di 1--5~m è un limite
-della stanza e non del sensore, e la portata oltre i 5~m è misurata in corridoio in
-Sezione~\ref{sec:portata-massima}.
+La stessa serie mostra come cambia con la distanza l'energia del bersaglio. Scende da 99 a 1~m a 28 a 5~m (Figura~\ref{fig:energia-portata}), perché una persona più lontana restituisce un'eco più debole, ma molto più lentamente di quanto farebbe la potenza ricevuta, che a 5~m sarebbe centinaia di volte più bassa. È la conferma che l'energia è un indice elaborato dal modulo e non una potenza (Sezione~\ref{sec:c3-5-1}).
+
+Ne seguono due conseguenze pratiche. A 5~m l'energia vale ancora 27,6, quasi il doppio della soglia di 15 dei gate lontani, quindi il radar vedrebbe anche oltre i 5~m della stanza, come conferma la prova in corridoio (Sezione~\ref{sec:portata-massima}). Inoltre la stessa persona, con lo stesso movimento, dà un'energia diversa a seconda della distanza, quindi un indice costruito sull'energia va tarato sull'installazione (Capitolo~\ref{chap:vitalita}).
 
 \subsection{Il secondo radar e il PIR}
 \label{sec:distanza-ld2420}
 
-Il PIR non compare in questa sezione perché
-non misura né una distanza né un'energia, e il suo dato è un bit. L'\ldc\ riporta una
-distanza solo sul bersaglio in movimento e, sull'esemplare in dotazione, solo da
-vicino. In venti trial di cammino sul posto da 0,5 a 2~m la distanza riportata vale
-$59 \pm 5$~cm a 0,5~m e $121 \pm 9$~cm a 1~m, con errori di $+9$ e $+21$~cm e da 4 a
-38 valori distinti al minuto. A 1,5 e 2~m il modulo riporta un solo valore stantio per
-trial, quindi una retta di calibrazione non è costruibile. Sulla persona immobile
-riporta il valore di riposo (2--5~cm) con la presenza al 100\,\%, come dichiara il
-produttore. Anche l'energia del gate della persona non è una grandezza graduata su
-questo esemplare, come mostra la dose-risposta ripetuta in Sezione~\ref{sec:ld2420-risultati}.
+Il PIR non compare in questa sezione perché non misura né una distanza né un'energia, e il suo dato è un bit.
+
+L'\ldc\ riporta una distanza solo sul bersaglio in movimento e, sull'esemplare in dotazione, solo da vicino. Nella stessa prova ripetuta da 0,5 a 2~m, con venti trial, la distanza riportata vale $59 \pm 5$~cm a 0,5~m e $121 \pm 9$~cm a 1~m, cioè 9 e 21~cm più del vero, contro il mezzo centimetro dell'\ldb\ a 1~m. La lettura inoltre si aggiorna di rado, da 4 a 38 valori diversi al minuto, mentre quella dell'\ldb\ segue il movimento di continuo. A 1,5 e 2~m resta ferma su un solo valore per tutto il trial, quindi non è una misura e una retta come quella dell'Equazione~\ref{eq:regressione} non si può costruire. Sulla persona immobile il modulo dichiara la presenza al 100\,\%, ma come distanza riporta 2--5~cm, il valore che usa quando non ha un bersaglio in movimento. È quanto prevede il manuale, secondo cui il modulo non misura la distanza dei corpi fermi~\cite[§8]{hilinkManualLD2420}. Su questo esemplare nemmeno l'energia del gate della persona cresce con il movimento, come mostra la dose-risposta (Sezione~\ref{sec:dose-risposta}).
 
 \section{Latenze di rilevamento e di rilascio}
 \label{sec:latenza}
@@ -337,7 +300,7 @@ nello stesso trial (10 all'ingresso, 5 all'uscita), con la differenza appaiata
 calcolata trial per trial e nessuna riaccensione dopo il rilascio. L'\ldc\ è misurato
 in una sessione separata (5 trial all'ingresso, 3 all'uscita) con il ritardo di
 scomparsa portato da 30 a 5~s come sull'\ldb. Il PIR non era cablato, quindi manca la
-differenza appaiata.}
+differenza appaiata. Per l'\ldc\ il rilascio è la prima caduta della presenza, seguita in due trial su tre da brevi riaccensioni a stanza vuota.}
 \label{tab:latenze}
 
 \small
@@ -350,7 +313,7 @@ Latenza all'ingresso & $5{,}36 \pm 0{,}30$~s & $5{,}96 \pm 0{,}31$~s & $7{,}28 \
 Differenza appaiata \ldb\ $-$ PIR & \multicolumn{2}{c}{$\mathbf{-0{,}60 \pm 0{,}35}$~\textbf{s}} & --- &
   il radar rileva per primo in 10 trial su 10 \\
 Tempo di rilascio all'uscita & $\mathbf{18{,}36 \pm 0{,}54}$~s & $12{,}96 \pm 1{,}40$~s & $7{,}7 \pm 0{,}5$~s &
-  \ldb\ più lento del PIR di $5{,}40 \pm 0{,}67$~s. \ldc\ con ritardo 5~s \\
+  \ldb\ più lento del PIR di $5{,}40 \pm 0{,}67$~s. \ldc\ con ritardo 5~s, prima caduta \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -358,17 +321,12 @@ Tempo di rilascio all'uscita & $\mathbf{18{,}36 \pm 0{,}54}$~s & $12{,}96 \pm 1{
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{figures/fig06_latenze}
-\caption{A sinistra le latenze appaiate all'ingresso. A destra la latenza di rilascio all'uscita, dove il radar impiega 18~s
-a dichiarare la stanza vuota contro un timeout configurato di 5.}
+\caption{A sinistra le latenze all'ingresso, appaiate per \ldb\ e PIR e da una sessione separata per l'\ldc. A destra il tempo di rilascio all'uscita, dove l'\ldb\ impiega 18~s a dichiarare la stanza vuota con un ritardo di scomparsa di 5~s. Per l'\ldc, con lo stesso ritardo, è riportata la prima caduta della presenza.}
 \label{fig:latenze}
 
 \end{figure}
 
-\paragraph{Ingresso.} Le latenze assolute intorno a 5--6~s sono una latenza operativa, che comprende il tragitto e il tempo di reazione del soggetto, e la grandezza pulita è la differenza appaiata (Sezione~\ref{sec:metriche-elenco}). Il valore $-0{,}60 \pm 0{,}35$~s è una proprietà dei
-sensori, con errore standard della media di 0,11~s. Il segno è concorde in tutti e
-dieci i trial, con probabilità $\approx 0{,}002$ sotto l'ipotesi di equivalenza. Con
-il campionamento a 5~Hz le singole differenze valgono da uno a sette campioni, quindi
-la conclusione poggia sulla concordanza del segno e non sull'ampiezza di una misura. Ci si
+\paragraph{Ingresso.} Le latenze intorno a 5--6~s non misurano solo i sensori, perché comprendono anche il tragitto del soggetto dalla porta e il suo tempo di reazione all'annuncio. Questi due tempi però sono uguali per i due sensori, che osservano lo stesso ingresso nello stesso trial. Sottraendo trial per trial la latenza del PIR da quella del radar si cancellano, e resta solo la differenza fra i sensori (Sezione~\ref{sec:metriche-elenco}). Vale $-0{,}60 \pm 0{,}35$~s, cioè il radar rileva in media 0,6~s prima del PIR, con un errore standard della media di 0,11~s. Il radar arriva primo in tutti e dieci i trial, e se i due sensori fossero equivalenti la probabilità che accada per caso sarebbe di circa 2 su mille. A 5~Hz un campione dura 0,2~s e le singole differenze vanno da 0,2 a 1,4~s, quindi il singolo trial è poco preciso, e la conclusione poggia sul fatto che il radar arrivi primo ogni volta. Ci si
 attendeva il contrario, perché attraversare una porta è lo stimolo trasversale per
 cui la lente di Fresnel è progettata. Una spiegazione plausibile, non dimostrata, è
 che il radar agganci il soggetto ancora in avvicinamento grazie ai 6~m di portata.
@@ -390,20 +348,12 @@ dispersione quattro volte maggiore. La ragione è che aggancia il soggetto solo 
 circa 1~m, mentre l'\ldb\ lo aggancia in avvicinamento a 4--5~m. Il rilascio va
 letto insieme al suo parametro. Con il ritardo di scomparsa di fabbrica, 30~s, il
 modulo restava in presenza per 87--120~s dopo l'uscita, perché basta un superamento
-della soglia di mantenimento ogni mezzo minuto a riarmare il ritardo
-(Sezione~\ref{sec:ld2420-risultati}). Portato a 5~s come sull'\ldb, il rilascio scende a $7{,}7 \pm 0{,}5$~s. La prova ha chiarito anche l'unità del parametro, su cui manuale e documento di protocollo si contraddicono, e ha mostrato che sono secondi. Il confronto a parametro pari (7,7 contro 18,4~s) è però dominato
-dal tempo di uscita dal campo (1--2~m di portata contro 5--6), quindi non significa
-che l'\ldc\ rilasci più in fretta.
+della soglia di mantenimento ogni mezzo minuto a riarmare il ritardo. Con il ritardo portato a 5~s, lo stesso valore dell'\ldb, il rilascio scende a $7{,}7 \pm 0{,}5$~s, e la prova mostra anche che il parametro è espresso in secondi. Il valore è la prima caduta della presenza, perché in due trial su tre il modulo si è poi riacceso per qualche secondo a stanza vuota, come nei falsi positivi della Sezione~\ref{sec:falsi-positivi}. A pari ritardo l'\ldc\ rilascia quindi in 7,7~s contro 18,4, ma la differenza viene dalla portata, come all'ingresso. Il soggetto esce prima dal campo più corto, e il modulo non è più rapido a dichiarare la stanza vuota.
 
 \section{Copertura angolare e selettività fra banchi}
 \label{sec:angolare}
 
-Nell'architettura del progetto ogni arredo ha il proprio sensore, che deve riportare
-il proprio occupante e non quello del banco accanto. Lo strumento offerto dall'\ldb\ è
-il gate massimo, che con la regola documentata di 75~cm per gate porta la portata a
-150~cm quando vale 2 (Tabella~\ref{tab:c3-6}). Il gate limita però la distanza e non
-l'angolo, quindi la domanda è doppia. Bisogna capire se il limite di distanza funziona
-e se il vicino laterale viene visto.
+Nell'architettura del progetto ogni arredo ha il proprio sensore, che deve rilevare chi sta sotto quel banco e non chi sta sotto quello accanto. Per restringere il campo l'\ldb\ offre un solo parametro, il gate massimo. Con la regola documentata di 75~cm per gate, un gate massimo di 2 limita la portata a 150~cm (Tabella~\ref{tab:c3-6}). Il gate però taglia la distanza e non l'angolo, e il banco adiacente sta di lato, non più lontano. Le prove di questa sezione rispondono quindi a due domande. La prima è se il taglio a 150~cm funziona davvero, la seconda se entro quella distanza il radar vede una persona che sta di lato. La Sezione~\ref{sec:selettivita} prova il taglio con persone ferme, la~\ref{sec:angolare-copertura} misura fino a quale angolo il radar vede, e la~\ref{sec:selettivita-configurazione} mette insieme i due risultati.
 
 \subsection{Selettività con gate massimo 2}
 \label{sec:selettivita}
@@ -411,8 +361,7 @@ e se il vicino laterale viene visto.
 Sono stati provati quattro scenari con
 soggetti sempre fermi, con tre trial da 182~s ciascuno (Figura~\ref{fig:selettivita}).
 L'occupante a 1~m sull'asse è rilevato al 100\,\%, mentre una persona a 3~m sull'asse,
-oltre il taglio, è rilevata allo 0,00\,\%. Anche una persona a 1~m a 90\textdegree\ è rilevata allo 0,00\,\% a regime, e il $24{,}8 \pm 19{,}6\,\%$ che si ottiene con lo scarto ordinario di 20~s è la coda del posizionamento della Figura~\ref{fig:transitorio}. Con l'occupante e il vicino insieme, nessuna grandezza dell'occupante cambia
-oltre $2\,\sigma$ (la distanza di 4~cm, l'energia di 4 punti).
+oltre il taglio, è rilevata allo 0,00\,\%. Anche una persona a 1~m a 90\textdegree\ è rilevata allo 0,00\,\% a regime, e il $24{,}8 \pm 19{,}6\,\%$ che si ottiene con lo scarto ordinario di 20~s è la coda del posizionamento della Figura~\ref{fig:transitorio}. L'\ldc\ nella stessa posizione dà lo stesso esito (0\,\% in tre trial), coerente con la sua copertura angolare (Sezione~\ref{sec:angolare-copertura}). Con il vicino accanto, l'occupante resta rilevato al 100\,\%, e distanza ed energia cambiano di circa 4~cm e 4 punti, entro la variabilità fra trial.
 
 \begin{figure}[htbp]
 \centering
@@ -460,27 +409,13 @@ dichiarati. Il PIR non è ripetibile fra 45 e 75\textdegree. B: l'esemplare di \
 \subsection{Selettività per configurazione}
 \label{sec:selettivita-configurazione}
 
-Incrociando le due
-prove alla stessa distanza, allo stesso angolo e con lo stesso gate, il vicino a 1~m a
-90\textdegree\ è rilevato allo 0\,\% se è fermo e al 100\,\% se si muove. Ciò che
-nella prima prova sembrava selettività era la debolezza dell'eco di un corpo immobile. Il diagramma
-di irradiazione non attenua abbastanza a 90\textdegree\ da escludere un bersaglio in
-movimento, quindi un banco vuoto accanto a una persona che si muove risulta occupato.
-La separazione fra arredi adiacenti va cercata nel montaggio fisico (orientamento verso
-il basso, schermatura del lobo laterale) e non nei parametri del modulo. Fuori asse
-l'\ldb\ sottostima anche la distanza (108, 107, 95, 94 e 85~cm da 0 a 90\textdegree\
-sull'arco a 100~cm), verosimilmente perché aggancia la porzione di corpo più vicina.
+Il vicino a 1~m a 90\textdegree\ compare in entrambe le prove, con lo stesso gate. Fermo (Sezione~\ref{sec:selettivita}) è rilevato allo 0\,\%, mentre in movimento (Sezione~\ref{sec:angolare-copertura}) è rilevato al 100\,\%. Quella che nella prima prova sembrava selettività era quindi la debolezza dell'eco di un corpo immobile. A 90\textdegree\ il diagramma di irradiazione non attenua abbastanza da escludere chi si muove, e un banco vuoto accanto a una persona in movimento risulta occupato. La separazione fra arredi adiacenti va cercata nel montaggio fisico (orientamento verso
+il basso, schermatura del lobo laterale) e non nei parametri del modulo. L'esemplare di \ldc, al fondo a 90\textdegree, non vedrebbe il vicino, ma il merito è del suo trasmettitore debole più che dell'antenna (Sezione~\ref{sec:c3-2-6}).
 
 \section{Due persone davanti al radar}
 \label{sec:due-persone}
 
-L'\ldb\ non ha risoluzione angolare, ma espone due canali indipendenti, uno per il
-bersaglio in movimento e uno per quello stazionario, ciascuno con la propria distanza
-(Sezione~\ref{sec:c3-1-4}). Nella prova la persona A è ferma a 2~m e la persona B a
-4~m, sfalsate lateralmente di 50~cm per evitare l'ombra reciproca, con tre trial da
-102~s per geometria. La variante in fila è acquisita come confronto. Un trial di controllo con B da sola
-ferma a 4~m dà rilevamento al 100\,\% e distanza $388{,}9 \pm 3{,}7$~cm, quindi il
-confondente della distanza è escluso (Tabella~\ref{tab:due-persone}, Figura~\ref{fig:due-persone}).
+L'\ldb\ misura la distanza dei bersagli ma non la loro direzione, quindi non può separare due persone in base a dove si trovano. Ha però due canali, uno per il bersaglio in movimento e uno per quello fermo, ciascuno con la propria distanza (Sezione~\ref{sec:c3-1-4}). La prova verifica se questi due canali bastano a riportare due persone insieme. La persona A sta ferma a 2~m e la persona B a 4~m, in tre geometrie con tre trial da 102~s ciascuna (Tabella~\ref{tab:due-persone}, Figura~\ref{fig:due-persone}). Nelle prime due le persone sono sfalsate di lato di 50~cm, perché A non copra B, e B cammina oppure sta ferma. Nella terza B cammina in fila dietro A. Da sola, ferma a 4~m, B è rilevata al 100\,\% (a $388{,}9 \pm 3{,}7$~cm), quindi quando nelle prove non compare è perché è coperta da A.
 
 \begin{table}[htbp]
 \centering
@@ -516,46 +451,15 @@ ogni caso.}
 
 \end{figure}
 
-Il limite del modulo va quindi formulato dicendo che riporta un bersaglio per canale.
-Con A ferma
-e B in movimento i due canali sono attivi insieme nel 79\,\% dei campioni e riportano
-due distanze separate da 177~cm. L'energia in movimento (38,4) è coerente con quella
-misurata a 4~m nella caratterizzazione della distanza (35,1). Con entrambe ferme i
-due bersagli competono per lo stesso canale e la più vicina vince nel 93\,\% dei
-campioni, anche se B compare comunque nel 19,5\,\% grazie ai suoi micro-movimenti
-involontari.
-In fila il corpo davanti nasconde del tutto quello dietro, e i due canali riportano lo
-stesso bersaglio, con differenza mediana di 3~cm. In ogni geometria la presenza è al
-100\,\%, quindi il radar non sbaglia mai a dire che c'è qualcuno e ciò che perde è il
-conteggio. Per il progetto questo rafforza l'architettura a un sensore per arredo, dove
-ogni sensore ha un solo bersaglio, ed esclude invece l'uso di un sensore singolo come
-contatore di presenze in aula.
+Con A ferma e B in movimento i due canali sono attivi insieme nel 79\,\% dei campioni, con distanze separate da 177~cm, e l'energia in movimento (38,4) è vicina a quella misurata a 4~m nella caratterizzazione della distanza (35,1), quindi il canale in movimento segue B. Con entrambe ferme le due persone si contendono il canale stazionario e vince la più vicina nel 93\,\% dei campioni, anche se B compare nel 19,5\,\% grazie ai suoi micro-movimenti involontari. In fila A nasconde del tutto B, e i due canali riportano la stessa persona (differenza mediana di 3~cm). Il modulo separa quindi due persone solo quando una si muove e l'altra è ferma, perché riporta un bersaglio per canale. La presenza resta al 100\,\% in ogni geometria, quindi il radar dice sempre che c'è qualcuno ma non quante persone ci sono. Per il progetto va bene, perché ogni arredo ha il proprio sensore e un solo occupante da rilevare, ma un sensore singolo non può contare le persone in un'aula.
 
-\paragraph{Il secondo radar.} L'\ldc\ ha un solo canale di bersaglio
-(Sezione~\ref{sec:c3-2}), e la prova ripetuta con A ferma a 1~m e B a 2~m lo mostra. La
-presenza è al 100\,\% in tutte le geometrie, ma non esiste un canale su cui B possa
-comparire. In fila B è invisibile come sull'\ldb, mentre con le persone sfalsate le
-energie per gate non le separano. La distanza riportata si aggancia a B quando B è in
-movimento (211--214~cm in due trial su tre) e resta piantata su un valore fisso
-(268~cm) con entrambe ferme. Il secondo radar dice che c'è qualcuno e non quanti,
-anche nella geometria in cui l'\ldb\ riporta la seconda persona nel 74\,\% dei
-campioni.
+\paragraph{Il secondo radar.} L'\ldc\ ha un solo canale di bersaglio (Sezione~\ref{sec:c3-2}), quindi non ha dove riportare la seconda persona, e la prova ripetuta con A ferma a 1~m e B a 2~m lo conferma. La presenza è al 100\,\% in tutte le geometrie. In fila B è invisibile come sull'\ldb, e con le persone sfalsate nemmeno le energie per gate le separano. La distanza riportata si aggancia a B quando B cammina (211--214~cm in due trial su tre) e resta su un valore fisso (268~cm) con entrambe ferme. Il secondo radar dice quindi che c'è qualcuno ma non quante persone, anche quando una delle due si muove.
 
 \section{Penetrazione degli ostacoli}
 \label{sec:ostacoli}
 
 Il pannello è interposto a 20~cm dal sensore, perpendicolare all'asse e libero di
-reggersi da solo. Serve un soggetto in movimento sul posto, perché su un bersaglio
-fermo il canale stazionario satura e l'attenuazione non sarebbe osservabile. Servono
-anche due distanze, 3~m per l'\ldb, dove l'energia vale circa metà scala, e 1~m per
-il PIR, che a 3~m non rileva il movimento sul posto. L'\ldc\ ha ripetuto la serie a
-1~m, l'unica distanza a cui l'esemplare lavora. Le sue energie sono interi a 16~bit
-che lo strumento del produttore mostra in decibel, quindi la sua attenuazione è
-espressa come $10\log_{10}(E_0/E)$ sul gate della persona. È un'ipotesi dichiarata,
-perché il produttore non documenta il campo. Il riferimento senza ostacolo è la media
-di sei trial a inizio e fine sessione, perché la baseline è la misura meno
-riproducibile della serie (da 47,8 a 57,3 sull'\ldb). I risultati sono in
-Tabella~\ref{tab:ostacoli} e Figura~\ref{fig:attenuazione}.
+reggersi da solo. Il soggetto cammina sul posto, perché da fermo il canale stazionario satura e l'attenuazione non sarebbe misurabile. Le distanze sono due. L'\ldb\ lavora a 3~m, dove la sua energia sta circa a metà scala, lontana sia dalla saturazione sia dal fondo. Il PIR lavora a 1~m, perché a 3~m già senza ostacolo non vede il movimento sul posto. L'\ldc\ ha ripetuto la serie a 1~m, perché oltre l'esemplare non rileva (Sezione~\ref{sec:portata-massima}). Per l'\ldc\ l'attenuazione è in decibel, $10\log_{10}(E_0/E)$ sull'energia del gate della persona, con $E_0$ senza ostacolo ed $E$ con l'ostacolo, la stessa conversione usata dal tool del produttore (Sezione~\ref{sec:c3-2-5}). Il produttore non documenta però che quelle energie siano potenze, quindi il valore in decibel resta un'ipotesi. Il riferimento senza ostacolo è la media di sei trial a inizio e fine sessione, e i risultati sono in Tabella~\ref{tab:ostacoli} e Figura~\ref{fig:attenuazione}.
 
 \subsection{Attenuazione per materiale}
 \label{sec:ostacoli-materiali}
@@ -563,26 +467,23 @@ Tabella~\ref{tab:ostacoli} e Figura~\ref{fig:attenuazione}.
 
 \begin{table}[htbp]
 \centering
-\caption{Attenuazione per materiale sui due radar e rilevamento del PIR a 1~m. \ldb:
-riduzione dell'energia del bersaglio in movimento a 3~m rispetto alla baseline
-mediata (53,45), in unità dello strumento. \ldc: attenuazione in decibel del gate~2
-grezzo a 1~m (fondo 13). Legno e metallo sono al fondo, perché la dinamica dell'esemplare è di 5~dB. I pannelli hanno inoltre coperture angolari diverse ($\pm 42$ a $\pm 70$\textdegree), quindi tutte le attenuazioni sono limiti inferiori. Il confronto più pulito è legno contro cartone, entrambi a
-$\pm 54$\textdegree.}
+\caption{Attenuazione per materiale. Per l'\ldb\ è la riduzione dell'energia in movimento rispetto alla baseline (53,45), in unità dello strumento, per il PIR la riduzione del tempo con presenza rilevata. Il cartongesso di questi due sensori viene da una sessione successiva con la stessa geometria ed è calcolato sulla baseline di quella sessione (Sezione~\ref{sec:ostacoli-portata}). Per l'\ldc, con legno e metallo l'energia scende fino al fondo (13), perché l'esemplare ha solo 5~dB di dinamica, e il valore è un minimo. Le coperture angolari diverse fanno sì che anche le altre attenuazioni possano essere sottostimate, e il confronto più pulito è legno contro cartone, che hanno la stessa copertura.}
 \label{tab:ostacoli}
 
 \small
-\begin{tabular}{@{}llrrr@{}}
+\begin{tabular}{@{}lllrrr@{}}
 \toprule
-\textbf{Materiale} & \textbf{Spessore} & \textbf{\ldb\ (3~m)} & \textbf{\ldc\ (1~m)} & \textbf{PIR (1~m)} \\
+\textbf{Materiale} & \textbf{Spessore} & \textbf{Copertura} & \textbf{\ldb} & \textbf{\ldc} & \textbf{PIR} \\
+ & & & \textbf{(3~m)} & \textbf{(1~m)} & \textbf{(1~m)} \\
 \midrule
-Nessuno (riferimento) & --- & --- & --- & $79{,}6\,\%$ \\
-Plastica (tanica cava) & $2 \times 5$~mm + aria & $-7{,}5\,\%$ & 0,4~dB & $0\,\%$ \\
-Cartongesso & 10~mm & $-26\,\%$ & \textbf{0,7~dB} & $0\,\%$ \\
-Cartone (scatola) & $2 \times 5$~mm + aria & $-17{,}2\,\%$ & 1,0~dB & $0\,\%$ \\
-Vetroresina & 1~mm & $-19{,}6\,\%$ & 1,0~dB & $0\,\%$ \\
-Vetro & 5~mm & $-40{,}9\,\%$ & 2,4~dB & $\sim 0\,\%$ \\
-Legno & 10~mm & $-41{,}6\,\%$ & $\geq 4{,}1$~dB & $\sim 0\,\%$ \\
-Metallo & 1~mm & \textbf{blocca} & $\geq 5{,}5$~dB & $0\,\%$ \\
+Nessuno (riferimento) & --- & --- & --- & --- & --- \\
+Plastica (tanica cava) & $2 \times 5$~mm + aria & $\pm 42$\textdegree & $-7{,}5\,\%$ & 0,4~dB & $-100\,\%$ \\
+Cartongesso & 10~mm & $\pm 63$\textdegree & $-26\,\%$ & \textbf{0,7~dB} & $-100\,\%$ \\
+Cartone (scatola) & $2 \times 5$~mm + aria & $\pm 54$\textdegree & $-17{,}2\,\%$ & 1,0~dB & $-100\,\%$ \\
+Vetroresina & 1~mm & $\pm 70$\textdegree & $-19{,}6\,\%$ & 1,0~dB & $-100\,\%$ \\
+Vetro & 5~mm & $\pm 61$\textdegree & $-40{,}9\,\%$ & 2,4~dB & $-95\,\%$ \\
+Legno & 10~mm & $\pm 54$\textdegree & $-41{,}6\,\%$ & $\geq 4{,}1$~dB & $-95\,\%$ \\
+Metallo & 1~mm & $\pm 50$\textdegree & \textbf{blocca} & $\geq 5{,}5$~dB & $-100\,\%$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -590,49 +491,23 @@ Metallo & 1~mm & \textbf{blocca} & $\geq 5{,}5$~dB & $0\,\%$ \\
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{figures/fig15_attenuazione_materiali}
-\caption{Attenuazione per materiale sui due radar, pannello a 20~cm dal sensore. A:
-\ldb\ a 3~m, riduzione dell'energia in movimento. Vale la graduatoria dei materiali, non il valore. B: \ldc\ a 1~m, energie grezze a 16~bit in decibel. Legno e metallo sono limiti inferiori.}
+\caption{Attenuazione per materiale sui due radar, con i valori della Tabella~\ref{tab:ostacoli}. A: \ldb\ a 3~m, in unità dello strumento. B: \ldc\ a 1~m, in decibel.}
 \label{fig:attenuazione}
 
 \end{figure}
 
-L'\ldb\ rileva la presenza nel 100\,\% dei campioni attraverso tutti i materiali
-dielettrici, con attenuazioni fra il 7 e il 42\,\% dell'energia, mentre il PIR è
-azzerato da ognuno di essi. Il caso più immediato è quello del vetro, un materiale
-trasparente alla luce visibile che il radar attraversa e che per il PIR è opaco, perché il vetro comune
-non trasmette oltre i 4--5~\textmu m mentre l'emissione del corpo è centrata sui 10.
-La graduatoria è identica sui due radar, a due distanze e in due unità (plastica,
-cartone e vetroresina, vetro, legno, metallo). Il cartongesso, il materiale delle
-pareti di un'aula, attenua come plastica e cartone. Con il metallo l'\ldb\ riporta un
-bersaglio a 30,0~cm con dispersione nulla, cioè il pannello stesso, e del soggetto non
-resta traccia, il che prova anche che l'aggiramento del pannello è sotto soglia. Sull'\ldc\ la frazione di campioni sopra la
-soglia di mantenimento del gate~2 passa dal 25--33\,\% senza ostacolo allo 0--1\,\%
-dietro 10~mm di legno. Quell'esemplare non acquisirebbe quindi una persona a 1~m
-dietro un pannello di legno, dove l'\ldb\ a 3~m è al 100\,\%.
+Tutti i materiali dielettrici attenuano l'energia dell'\ldb\ fra il 7 e il 42\,\%, ma la presenza resta al 100\,\%. Il PIR invece, che a 1~m senza ostacolo rileva la persona nel 90\,\% circa del tempo, scende a zero con plastica, cartone, cartongesso, vetroresina e metallo e sotto il 5\,\% con vetro e legno. Il vetro è il caso più evidente, perché è trasparente alla luce ma opaco per il PIR. Il vetro comune non trasmette oltre i 4--5~\textmu m e il corpo emette intorno ai 10~\textmu m, mentre il radar lo attraversa. I due radar ordinano allo stesso modo i sei materiali della serie comune (plastica, cartone e vetroresina, vetro, legno, metallo), pur a distanze e in unità diverse, ed è questa graduatoria che si confronta, non i valori (Sezione~\ref{sec:c3-5-1}). Il cartongesso, materiale comune delle pareti interne, sull'\ldc\ attenua quanto plastica e cartone, sull'\ldb\ un po' di più, fra vetroresina e vetro, ma quel valore viene da un'altra sessione. In entrambi i casi resta ben sotto vetro e legno. Il metallo invece blocca del tutto l'\ldb, che riporta un bersaglio fisso a 30~cm, cioè il pannello, e non vede più il soggetto, quindi il segnale non aggira il pannello. Sull'\ldc\ il legno porta il gate~2 quasi sempre sotto la soglia di mantenimento (0--1\,\% dei campioni sopra, contro il 25--33\,\% senza ostacolo), e quindi anche sotto quella di attivazione. L'esemplare non acquisirebbe una persona a 1~m dietro un pannello di legno, che l'\ldb\ rileva al 100\,\% a 3~m.
 
 \subsection{Portata residua con l'ostacolo}
 \label{sec:ostacoli-portata}
 
-Le percentuali non rispondono alla domanda
-pratica del relatore, cioè fin dove arriva con una porta di mezzo un radar che senza
-ostacolo arriva a 5~m. L'\ldb\ ha quindi ripetuto la geometria percorrendo le distanze da 1
-a 5~m con il cartongesso, e a 3--5~m con legno, vetro e una porta interna chiusa
-(tamburata, senza vetro, con il sensore all'interno a 20--30~cm dal battente), tre
-trial per punto (Figura~\ref{fig:portata-ostacoli}). Nessun dielettrico accorcia la portata
-entro i 5~m della stanza, e in tutti i 39 trial con ostacolo, porta compresa, la
-presenza è al 100\,\% e la distanza è corretta. Ciò che degrada è il canale in
-movimento, la cui frazione di campioni attivi a 5~m passa dal 78\,\% senza ostacolo al
-44 con il cartongesso, 26 con il vetro, 19 con il legno e 3\,\% con la porta, mentre la
-presenza la tiene il canale stazionario. La porta è trasparente a 3~m (energia pari
-alla baseline) e quasi opaca a 5, più del legno pieno, e il fenomeno non è spiegato.
-Nella stessa sessione il PIR a 1~m passa dal 44--97\,\% senza ostacolo allo 0\,\% con il cartongesso.
+L'\ldb\ ha ripetuto la geometria allontanando il soggetto da 1 a 5~m dietro il cartongesso e da 3 a 5~m dietro legno e vetro, con tre trial per punto (Figura~\ref{fig:portata-ostacoli}). Una prova a parte usa una porta interna chiusa, tamburata e senza vetro, a circa 3,8~m dal sensore, con il soggetto a 3, 4 e 5~m. Nessun ostacolo accorcia la portata entro i 5~m della stanza, e in tutti i trial con ostacolo la presenza è al 100\,\% e la distanza è corretta. A degradare è il canale in movimento. A 5~m la frazione di campioni in cui è attivo passa dal 78\,\% senza ostacolo al 44\,\% con il cartongesso, al 26\,\% con il vetro, al 19\,\% con il legno e al 3\,\% oltre la porta, mentre la presenza la tiene il canale stazionario. Con il soggetto a 3~m, ancora davanti alla porta, l'energia è pari alla baseline, e appena la porta si interpone, a 4~m, il canale in movimento scende al 20\,\%. Anche qui il PIR è a zero dietro ogni ostacolo, porta compresa.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{figures/fig14_portata_ostacoli}
 \vspace{2.3cm}% spazio per la didascalia nel margine (tufte non lo riserva)
-\caption{\ldb, portata residua con l'ostacolo a 20~cm dal sensore. A: energia in
-movimento con cartongesso a 1--5~m e con legno, vetro e porta chiusa a 3--5~m. B: frazione di campioni con il canale in movimento attivo.}
+\caption{\ldb, portata residua con i pannelli a 20~cm dal sensore e la porta a circa 3,8~m, tre trial per punto. A: energia in movimento. B: frazione di campioni con il canale in movimento attivo.}
 \label{fig:portata-ostacoli}
 
 \end{figure}
@@ -644,21 +519,12 @@ reale la lamiera di rinforzo sta dietro al modulo e non davanti.
 \section{Portata massima in corridoio}
 \label{sec:portata-massima}
 
-A 5~m nessuno dei tre sensori aveva mostrato il proprio limite in stanza. La prova di
-portata è stata quindi svolta per ultima in un corridoio largo 120~cm
-(Figura~\ref{fig:geometrie}d), con i sensori a 80~cm da terra e i punti a 6, 7 e 8~m visti
-attraverso due vani porta. Venti minuti di corridoio vuoto non producono alcun evento
-su radar e PIR. Il fondo dei gate lontani dell'\ldb\ ha massimo 7 contro una soglia di
-15, quindi vani e muro di fondo non compaiono. I risultati dei tre sensori sono
-riassunti in Figura~\ref{fig:portata-tre-sensori}.
+La prova di portata si svolge in un corridoio largo 120~cm (Figura~\ref{fig:geometrie}d), con i sensori a 80~cm da terra e due vani porta a 4 e 5~m, attraverso i quali sono visti i punti a 6, 7 e 8~m. In venti minuti di corridoio vuoto l'\ldb\ e il PIR non danno alcun falso positivo, e i gate lontani dell'\ldb, dove cadono vani e muro di fondo, restano sempre sotto metà soglia (al massimo 7 contro 15). I risultati dei tre sensori sono in Figura~\ref{fig:portata-tre-sensori}.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{figures/fig17_portata_tre_sensori}
-\caption{Portata dei tre sensori sulla stessa scala, in stanza fino a 5~m e in corridoio fino a 8~m. \ldb: 100\,\% fino a 6~m, zero a 7 per il tetto configurato. PIR a metà
-corsa: attraversamento a circa 1~m/s rilevato fino a 5~m, quasi nullo a 6. Al massimo
-di sensibilità 100\,\% a 5--6~m, 57\,\% a 7, 15\,\% a 8. \ldc\ (esemplare): si accende
-entro 1~m (triangoli pieni) e mantiene la presenza fino a 2~m (triangoli vuoti).}
+\caption{Portata dei tre sensori sulla stessa scala, con un punto per metro. L'\ldb\ e il PIR sono misurati in stanza fino a 5~m e in corridoio oltre, l'\ldc\ tutto in corridoio. Il PIR ha due serie, a metà corsa (la sensibilità della campagna) e al massimo. Per l'\ldc\ i triangoli pieni indicano l'acquisizione della presenza, quelli vuoti il solo mantenimento.}
 \label{fig:portata-tre-sensori}
 
 \end{figure}
@@ -668,20 +534,9 @@ rileva al 100\,\% a 5 e 6~m e allo 0\,\% a 7~m in tre trial su tre. A 6~m la dis
 riportata ha massimo esattamente 600~cm in cinque trial su cinque, con dispersione di
 2--5~cm contro i 10--11 di 5~m. Non si tratta di una misura più precisa, ma del tetto
 degli otto gate da 75~cm configurati. La presenza a 6~m è retta dal canale stazionario
-(energia 62--82), mentre a 7~m i gate 7 e 8 restano molto sotto le soglie. Il tetto di
-600~cm dichiarato dal manuale risulta così misurato, e il punto a 6~m non entra nella
-regressione della distanza perché saturo.
+(energia 62--82), mentre a 7~m i gate 7 e 8 restano molto sotto le soglie. Il tetto di 600~cm dichiarato dal manuale risulta così misurato.
 
-\paragraph{PIR.} A metà corsa, la sensibilità di tutta la campagna, l'oscillazione
-trasversale è rilevata al 24--33\,\% anche a 7~m, dove il radar per configurazione non
-vede nulla. L'attraversamento vero a circa 1~m/s dà 0, 6 e 0\,\% a 6~m contro il
-98,7\,\% di 5~m. Un transito più veloce alla stessa distanza dà il 30\,\% con cinque
-impulsi. Al limite della portata la velocità del transito decide, al pari del tipo e
-dell'ampiezza del movimento. Con il trimmer al massimo l'attraversamento è rilevato al
-100, 100, $56{,}8 \pm 18{,}0$ e $14{,}7 \pm 10{,}0\,\%$ a 5, 6, 7 e 8~m. Il limite sta
-fra 7 e 8~m, coerente con i 3--7~m del datasheet. Oltre il tetto del radar il PIR al
-massimo vede ancora, ma solo chi attraversa il suo campo abbastanza in fretta. La
-serie al massimo è dichiaratamente separata dal resto della campagna.
+\paragraph{PIR.} Con il trimmer a metà corsa, la sensibilità usata in tutta la campagna, l'oscillazione trasversale è rilevata al 24--33\,\% anche a 7~m, dove il radar per configurazione non vede più nulla. L'attraversamento a circa 1~m/s, rilevato al 98,7\,\% a 5~m, scende invece a 0, 6 e 0\,\% nei tre trial a 6~m, e sale al 30\,\% se il transito è più veloce. Al limite della portata conta quindi anche la velocità del transito, oltre al tipo e all'ampiezza del movimento. Con il trimmer al massimo, in una serie a parte rispetto al resto della campagna, l'attraversamento è rilevato al 100, 100, $56{,}8 \pm 18{,}0$ e $14{,}7 \pm 10{,}0\,\%$ a 5, 6, 7 e 8~m. Il limite sta quindi fra 7 e 8~m, coerente con i 3--7~m del datasheet, e supera il tetto del radar, ma solo per chi attraversa il campo.
 
 \paragraph{\ldc.} Con il gate massimo portato a 12 (840~cm), il valore di fabbrica
 che copre gli 8~m dichiarati, l'esemplare acquisisce a 1~m e mantiene a 2~m. Da 3~m in
@@ -689,194 +544,4 @@ su le sue energie sono il fondo del corridoio vuoto gate per gate. Il gate massi
 ha quindi aggiunto nulla, e il limite è dell'esemplare e non della configurazione né
 della stanza.
 
-Per un sensore sotto un banco i 6~m dell'\ldb\ sono molto più del necessario, e la domanda di
-progetto va nella direzione opposta, cioè come restringere il campo (Sezione~\ref{sec:angolare}).
-
-\section{Il secondo radar: che cosa cambia}
-\label{sec:ld2420-risultati}
-\label{sec:ld2420-taratura}
-\label{sec:ld2420-fp}
-\label{sec:ld2420-dipme}
-\label{sec:ld2420-limiti}
-\label{sec:ld2420-latenze}
-\label{sec:ld2420-angolare}
-
-La campagna sul secondo radar segue il protocollo della Sezione~\ref{sec:protocollo-ld2420}. I
-suoi risultati test per test sono già nelle figure delle sezioni precedenti. Questa
-sezione raccoglie ciò che cambia rispetto all'\ldb, e la Tabella~\ref{tab:ld2420-sintesi}
-li riassume.
-
-\paragraph{La taratura è una condizione necessaria.} La Sezione~\ref{sec:c3-6} spiega perché a
-configurazione di fabbrica il modulo non rilascia mai la presenza nella stanza di
-prova. Le misure lo quantificano. Il muro a circa 5~m sta nel gate~7 e supera la
-soglia di mantenimento nel 4\,\% dei campioni, e con un ritardo di scomparsa di 30~s
-basta un superamento ogni mezzo minuto. La soglia di mantenimento del gate~5 esce
-dalla scansione dello strumento a 13,8~dB in tre scansioni, contro un fondo misurato
-su 120~s con media 15 e massimo 34.
-
-\paragraph{Falsi positivi.} Le 181 riaccensioni in 7~h di Sezione~\ref{sec:falsi-positivi}
-hanno una firma precisa, episodi di 31,8~s mediani, cioè un trigger isolato più i 30~s
-di ritardo. L'attribuzione per gate indica il gate~0 in 80 casi su 181, e il gate~0 è
-l'accoppiamento fra trasmettitore e ricevitore, non una distanza. Portando il solo
-gate~0 sopra la coda del rumore, un'ora di giorno dà 5 riaccensioni, cioè 5,4 eventi/h. Il
-residuo viene dai gate 1 e 2, che non si possono alzare perché sono quelli in cui la
-persona a 50~cm e a 1~m produce il suo segnale con margine quasi nullo. Su questo
-esemplare rumore e persona si sovrappongono, e 5,4 eventi/h è un pavimento
-strutturale. Il modulo inoltre stima il fondo all'accensione, quindi un corpo a 20~cm
-nei primi 60~s lo lascia in presenza permanente senza risposta alla persona, finché non
-viene spento per un quarto d'ora. L'\ldb\ non l'ha mai fatto in decine di riavvii.
-
-\paragraph{Nessuna grandezza continua.} La dose-risposta di Sezione~\ref{sec:dose-risposta},
-ripetuta sull'\ldc\ nella stessa geometria, non gradua il movimento. L'energia del
-gate~2 vale 13,4 a stanza vuota, $41{,}0 \pm 9{,}3$ da immobile, $34{,}8 \pm 1{,}0$
-con i micro-movimenti e 31,0 in cammino. L'ordine è rovesciato rispetto all'\ldb\ e le condizioni si sovrappongono. Il canale separa vuoto da
-occupato e poi non distingue. Su questo esemplare non esiste quindi la grandezza da
-cui costruire l'indice di vitalità.
-
-\paragraph{Gate minimo.} Il gate minimo è l'unica funzione che l'\ldc\ ha e
-l'\ldb\ no, ma non tocca la decisione di presenza (100\,\% con la persona nel gate
-escluso) e confina la distanza al bordo della finestra.
-
-\paragraph{Respiro.} Con il metronomo a 15 atti al minuto a 1~m, il criterio della
-Sezione~\ref{sec:respiro} recupera la frequenza in un trial su tre (due su tre a gate
-fissato), con controlli negativi puliti, contro 13 su 15 dell'\ldb. La persona occupa
-due gate soli contro i 7--14 canali concordi dell'\ldb, e il rapporto segnale-rumore
-massimo è 6,1 contro 12,8. La saturazione è zero, ma il vantaggio dei 16~bit è
-annullato dal segnale debole dell'esemplare.
-
-\begin{table}[htbp]
-\centering
-\caption{I due radar a confronto, tutte grandezze misurate in questa tesi. Le righe
-dell'\ldc\ si riferiscono all'esemplare in dotazione, con soglie tarate.}
-\label{tab:ld2420-sintesi}
-
-\small
-\begin{tabularx}{\linewidth}{@{}Xll@{}}
-\toprule
-\textbf{Grandezza} & \textbf{\ldb} & \textbf{\ldc\ (esemplare)} \\
-\midrule
-Funziona a soglie di fabbrica nella stanza di prova & sì & no, presenza permanente \\
-Falsi positivi a stanza vuota & $\leq 0{,}43$/h (0 in 6,6~h) & 26,2/h tarato, 5,4/h con gate~0 alzato \\
-Portata su persona in movimento & 6~m (tetto configurato) & 1~m acquisizione, 2~m mantenimento \\
-Persona immobile a 1~m / sotto il banco & $100\,\%$ / $100\,\%$ & $100\,\%$ / $98{,}4\,\%$ \\
-Distanza su bersaglio fermo & sì, dispersione 1,5~cm & no (manuale \S8, misurato) \\
-Distanza su bersaglio in moto & continua fino a 5~m, $R^2 = 0{,}99965$ & valida fino a 1~m, poi stantia \\
-Graduazione del movimento & 68,6, 84,4, 99,3 & piatta e rovesciata \\
-Latenza d'ingresso & $5{,}36 \pm 0{,}30$~s & $7{,}28 \pm 1{,}40$~s \\
-Rilascio (parametro 5~s) & $18{,}4$~s & $7{,}7$~s (campo più corto) \\
-Copertura angolare a 1~m & $\geq \pm 90$\textdegree & $\approx \pm 75$\textdegree \\
-Cartongesso 10~mm & $-26\,\%$ a 3~m, portata intatta & 0,7~dB \\
-Legno 10~mm & $-42\,\%$, portata intatta & non acquisirebbe a 1~m \\
-Respiro a ritmo imposto & 13/15 trial & 1/3 (2/3 a gate fisso) \\
-Due persone & un bersaglio per canale & un bit \\
-Comportamento all'avvio & stabile in decine di riavvii & fondo corrotto da un corpo vicino \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\paragraph{Un riscontro indipendente.}
-\label{sec:ld2420-riscontro}
-Una relazione di progetto svolta a Camerino nello stesso anno accademico arriva a
-conclusioni sovrapponibili, con un altro esemplare di ciascun modulo, un'altra libreria
-e un altro protocollo sperimentale~\cite{dellaquila2026}. Sull'\ldc\ riporta un flag di
-presenza inaffidabile, un primo gate con energie alte anche a stanza vuota ed escluso
-dalla logica, la necessità di tarare le soglie per gate e, anche dopo, la
-sovrapposizione fra stanza vuota e soggetto poco attivo. Sull'\ldb\ non osserva falsi
-positivi con finestre aperte, tende mosse dal vento e in ambiente esterno, e giudica
-stabile la presenza per tutta la permanenza del soggetto. Le differenze sono due. La
-relazione giudica buona l'accuratezza di distanza dell'\ldc, coerente con
-l'attribuzione all'esemplare del nostro limite di portata. Giudica inoltre l'\ldb\
-inadatto al respiro, ma legge la distanza con il modulo sul torace, mentre qui si
-legge l'energia per gate a 2~m.
-
-\paragraph{La lettura per il progetto.} Nello scenario DIPME l'\ldc\ rileva la
-persona immobile sotto il banco, e questo va detto. Ma dice se e non dove, non gradua
-il movimento, richiede una taratura per installazione, che su centinaia di banchi è un costo operativo sostanziale, e conserva 5,4 riaccensioni l'ora. L'\ldb\ funziona a soglie di fabbrica con zero falsi positivi, riporta la
-distanza anche sul bersaglio fermo e fornisce la grandezza continua da cui nasce
-l'indice di vitalità. Un secondo esemplare di \ldc\ permetterebbe di separare i limiti
-del modello da quelli del pezzo.
-
-\section{Sintesi del confronto}
-\label{sec:discussione}
-
-La Tabella~\ref{tab:sintesi} raccoglie in una sola vista i risultati del capitolo. Tutte le
-righe con soggetto in movimento o con micro-movimenti sono acquisite con il PIR nella
-configurazione a lui più favorevole.
-
-\begin{table}[htbp]
-\centering
-\caption{Sintesi della campagna sperimentale. ``Rilev.'' è la frazione di campioni in
-cui il sensore riporta la presenza, con la ground truth indicata. La colonna del radar si riferisce all'\ldb, mentre l'\ldc\ è riassunto nella Tabella~\ref{tab:ld2420-sintesi}.}
-\label{tab:sintesi}
-
-\small
-\begin{tabularx}{\linewidth}{@{}llrrX@{}}
-\toprule
-\textbf{Scenario} & \textbf{Verità} & \textbf{Rilev.\ PIR} & \textbf{Rilev.\ radar} &
-\textbf{Riferimento} \\
-\midrule
-Stanza vuota, 7,03~h & assente & $0$ ev/h & $0$ ev/h & Sezione~\ref{sec:falsi-positivi} \\
-Fermo seduto, 2,3~m & presente & $0{,}22\,\%$ & $\mathbf{100\,\%}$ & Sezione~\ref{sec:persona-ferma} \\
-Fermo in piedi, 1~m & presente & $1{,}52\,\%$ & $\mathbf{100\,\%}$ & Sezione~\ref{sec:dose-risposta} \\
-Micro-movimenti, 1~m & presente & $51{,}60\,\%$ & $\mathbf{100\,\%}$ & Sezione~\ref{sec:dose-risposta} \\
-Cammino sul posto, 1~m & presente & $85{,}20\,\%$ & $\mathbf{100\,\%}$ & Sezione~\ref{sec:dose-risposta} \\
-Cammino sul posto, 2--5~m & presente & $0{,}00\,\%$ & $\mathbf{100\,\%}$ & Sezione~\ref{sec:dose-risposta} \\
-Attraversamento 1--5~m & presente & $99$--$100\,\%$ & $\mathbf{100\,\%}$ & Sezione~\ref{sec:dose-risposta} \\
-Sotto il banco, immobile & presente & $1{,}32\,\%$ & $\mathbf{100\,\%}$ & Sezione~\ref{sec:sotto-banco} \\
-Sotto il banco, micro-mov. & presente & $96{,}52\,\%$ & $\mathbf{100\,\%}$ & Sezione~\ref{sec:sotto-banco} \\
-Due persone, ogni geometria & presenti & --- & $\mathbf{100\,\%}$ & Sezione~\ref{sec:due-persone} \\
-Vicino a 3~m, gate 2 & assente & $0{,}00\,\%$ & $0{,}00\,\%$ & Sezione~\ref{sec:angolare} \\
-Vicino fermo a 90\textdegree, gate 2 & assente & $0{,}00\,\%$ & $0{,}00\,\%$ & Sezione~\ref{sec:angolare} \\
-Vicino a 90\textdegree\ in movimento & assente & $12\,\%$ & $\mathbf{100\,\%}$ & Sezione~\ref{sec:angolare} \\
-Dietro cartongesso, legno, vetro, porta, 3--5~m & presente & $0\,\%$ (1~m) & $\mathbf{100\,\%}$ & Sezione~\ref{sec:ostacoli} \\
-Corridoio 6~m / 7~m, oscillazione & presente & $12$--$51$ / $24$--$33\,\%$ & $\mathbf{100\,\%}$ / $0\,\%$ & Sezione~\ref{sec:portata-massima} \\
-Attraversamento 6~m, PIR al massimo & presente & $\mathbf{100\,\%}$ & $100\,\%$ & Sezione~\ref{sec:portata-massima} \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\subsection{Dove il mmWave vince}
-\label{sec:mmwave-vince}
-\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
-  \item Sulla persona ferma il divario è categorico, non graduale. A 2,3~m seduto,
-        a 1~m in piedi e sotto il banco a 60~cm il PIR ha il 98,5--99,8\,\% di falsi
-        negativi e il radar lo 0,00\,\%, cioè lo stesso esito in tre geometrie.
-  \item Il divario è attribuibile a una sola variabile, l'immobilità del soggetto,
-        perché la dose-risposta la isola a geometria, distanza e configurazione
-        costanti.
-  \item Il radar è più veloce anche dove il PIR dovrebbe essere avvantaggiato,
-        all'ingresso da una porta, in dieci trial su dieci.
-  \item Il radar aggiunge informazione, non solo affidabilità. La distanza è lineare
-        con $R^2 = 0{,}99965$, mentre l'energia e la dispersione della distanza sono
-        indicatori continui della quantità di movimento.
-  \item Sui falsi positivi i due sensori sono equivalenti ($\leq 0{,}43$ eventi/h).
-        Il radar attraversa cartongesso, legno, vetro e una porta chiusa senza perdere
-        portata, mentre il PIR è azzerato da ogni materiale.
-\end{itemize}
-
-\subsection{Dove il mmWave non vince}
-\label{sec:mmwave-non-vince}
-\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
-  \item Il consumo, tre ordini di grandezza in più (80~mA contro 50~\textmu A), è il
-        vincolo che determina l'architettura del Capitolo~\ref{chap:conclusioni} e che il
-        Capitolo~\ref{chap:consumi} quantifica.
-  \item Il rilascio è più lento del PIR di 5,4~s e più lento del parametro
-        dichiarato (coda di circa 9~s contro 5~s configurati).
-  \item A distanza ravvicinata i canali più informativi saturano e i gate stazionari
-        non sono disponibili sotto 1,5~m. Sotto l'arredo la localizzazione è dieci
-        volte più rumorosa, anche se la presenza resta al 100\,\%.
-  \item Riporta un bersaglio per canale, quindi non è un contatore di presenze.
-        Richiede UART, protocollo a frame ed elaborazione numerica contro il piedino
-        digitale del PIR.
-  \item I vantaggi misurati sono dell'\ldb\ e non della categoria mmWave in astratto, come mostra il secondo radar (Sezione~\ref{sec:ld2420-risultati}).
-\end{itemize}
-
-\subsection{Limiti del setup}
-\label{sec:limiti}
-
-Tutti i risultati comparativi sono di un solo soggetto,
-in una stanza domestica e non in un'aula, a una temperatura sfavorevole al PIR
-(Sezione~\ref{sec:registro}). C'è un solo esemplare per modello e nessuna strumentazione di
-misura indipendente per distanze e consumi. Gli scenari di selettività e a due persone
-hanno tre trial soli (Tabella~\ref{tab:scenari}), e su tre trial le affermazioni sono
-formulate come assenza di effetto osservato. La prima parte della campagna è in posizione L del PIR (Sezione~\ref{sec:interpretazione-pir}), e i due gruppi non sono uniti nella regressione della distanza perché separati da un rimontaggio del setup. Nessuno di questi limiti tocca il risultato centrale, perché la cecità del PIR sulla persona ferma è una conseguenza del principio fisico, confermata in tre geometrie.
+La prova serve a valutare un'alternativa all'architettura del progetto, cioè pochi sensori a parete che guardano l'intera stanza al posto di uno sotto ogni banco. Con 6~m di portata l'\ldb\ coprirebbe una stanza come quella di prova, ma un sensore a parete dice solo se nella stanza c'è qualcuno, non sotto quale banco né quante persone, perché chi sta dietro un altro corpo non viene separato (Sezione~\ref{sec:due-persone}). Per lo scenario del progetto resta quindi un sensore per arredo, e la domanda diventa come restringerne il campo (Sezione~\ref{sec:angolare}).

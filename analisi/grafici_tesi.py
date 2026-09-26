@@ -32,6 +32,7 @@ from analizza_test import leggi_csv, analizza_file, impulsi_pir  # noqa: E402
 C_RADAR = "#1b6ca8"
 C_PIR   = "#d1495b"
 C_GRIGIO = "#6c757d"
+C_2420 = "#e08e0b"     # LD2420, stesso colore di grafici_tesi_2.py
 plt.rcParams.update({
     "font.size": 10,
     "axes.titlesize": 11,
@@ -89,7 +90,7 @@ def salva(fig, nome):
 
 
 def serie(path, colonne):
-    """Legge un CSV grezzo e ritorna dict colonna -> np.array, piu' 't' in secondi."""
+    """Legge un CSV grezzo e ritorna dict colonna -> np.array, più 't' in secondi."""
     t, dati = [], {c: [] for c in colonne}
     with open(path, newline="", encoding="utf-8", errors="ignore") as f:
         for r in csv.DictReader(f):
@@ -125,23 +126,49 @@ def fig_doserisposta():
         lab.append(nome); et_pir.append(mp); ed_pir.append(dp)
         et_rad.append(mr); ed_rad.append(dr)
 
-    fig, ax = plt.subplots(figsize=(7.2, 4.0))
-    x = np.arange(len(lab)); w = 0.38
-    ax.bar(x - w/2, et_rad, w, yerr=ed_rad, capsize=4, color=C_RADAR,
+    # LD2420: stessa geometria, sessione separata, soglie tarate. La stanza vuota non e'
+    # riportata: dipende dalla configurazione ed e' discussa a parte (falsi positivi).
+    cond_c = [None,
+              ("fermo2420_1m_T*.csv", 90.0),
+              ("micromovimenti2420_1m_T*.csv", 90.0),
+              ("movimento2420_1m_T*.csv", 20.0)]
+    et_c, ed_c = [], []
+    for c in cond_c:
+        if c is None:
+            et_c.append(None); ed_c.append(None); continue
+        rs = stats_scenario(c[0], skip=c[1], scenario="x")
+        m_, d_ = media_dev([r["radar_rate_%"] for r in rs])
+        et_c.append(m_); ed_c.append(d_)
+
+    fig, ax = plt.subplots(figsize=(7.8, 4.0))
+    x = np.arange(len(lab)); w = 0.27
+    ax.bar(x - w, et_rad, w, yerr=ed_rad, capsize=4, color=C_RADAR,
            label="mmWave LD2410B", edgecolor="white")
-    ax.bar(x + w/2, et_pir, w, yerr=ed_pir, capsize=4, color=C_PIR,
+    xc = [xi for xi, v in zip(x, et_c) if v is not None]
+    ax.bar(xc, [v for v in et_c if v is not None], w, yerr=[d for d in ed_c if d is not None],
+           capsize=4, color=C_2420, label="mmWave LD2420 (sessione separata)", edgecolor="white")
+    ax.bar(x + w, et_pir, w, yerr=ed_pir, capsize=4, color=C_PIR,
            label="PIR HC-SR501 (jumper H)", edgecolor="white")
-    for xi, v, d in zip(x - w/2, et_rad, ed_rad):
-        ax.text(xi, v + 2.5, f"{v:.1f}", ha="center", fontsize=9, color=C_RADAR, fontweight="bold")
-    for xi, v, d in zip(x + w/2, et_pir, ed_pir):
-        ax.text(xi, v + d + 2.5, f"{v:.1f}", ha="center", fontsize=9, color=C_PIR, fontweight="bold")
+    for xi, v, d in zip(x - w, et_rad, ed_rad):
+        ax.text(xi, v + 2.5, f"{v:.0f}" if v in (0, 100) else f"{v:.1f}", ha="center", fontsize=8.5,
+                color=C_RADAR, fontweight="bold")
+    for xi, v in zip(x, et_c):
+        if v is not None:
+            ax.text(xi, v + 2.5, f"{v:.0f}" if v in (0, 100) else f"{v:.1f}", ha="center", fontsize=8.5,
+                    color=C_2420, fontweight="bold")
+    for xi, v, d in zip(x + w, et_pir, ed_pir):
+        ax.text(xi, v + d + 2.5, f"{v:.0f}" if v == 0 else f"{v:.1f}", ha="center", fontsize=8.5,
+                color=C_PIR, fontweight="bold")
+    for xi, v in zip(x, et_c):
+        if v is None:
+            ax.text(xi, 2.5, "n.d.", ha="center", fontsize=8, color=C_GRIGIO)
     ax.set_xticks(x); ax.set_xticklabels(lab)
     ax.set_ylabel("tempo con presenza rilevata [%]")
-    ax.set_ylim(0, 128)
+    ax.set_ylim(0, 112)
     ax.set_yticks(range(0, 101, 20))
     ax.set_title("Rilevamento in funzione della quantità di movimento\n"
-                 "(soggetto a 1 m, stessa postura e stesso setup: cambia solo il movimento)")
-    ax.legend(loc="upper center", ncol=2, frameon=False)
+                 "(soggetto a 1 m, stessa postura e stesso setup: cambia solo il movimento)", pad=26)
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=3, frameon=False, fontsize=8.5)
     salva(fig, "fig01_dose_risposta")
     return list(zip(lab, et_rad, et_pir, ed_pir))
 
@@ -232,7 +259,7 @@ def fig_distanza():
     fig, axes = plt.subplots(2, 1, figsize=(6.6, 5.6), sharex=True,
                              gridspec_kw={"height_ratios": [2.4, 1]})
     xx = np.linspace(80, 520, 50)
-    axes[0].plot(xx, xx, color=C_GRIGIO, ls="--", lw=1, label="identita' (misurata = reale)")
+    axes[0].plot(xx, xx, color=C_GRIGIO, ls="--", lw=1, label="identità (misurata = reale)")
     axes[0].plot(xx, a * xx + b, color=C_RADAR, lw=1.6,
                  label=f"regressione sulle medie:  $y = {a:.4f}\\,x {b:+.2f}$   ($R^2 = {r2:.5f}$)")
     axes[0].scatter(xs, ys, s=16, color=C_RADAR, alpha=0.35, zorder=2,
@@ -305,8 +332,27 @@ def fig_latenza():
             ril_r.append(r["rilascio_radar_s"])
         if isinstance(r.get("rilascio_pir_s"), float):
             ril_p.append(r["rilascio_pir_s"])
+    # LD2420: sessione separata, PIR non cablato, ritardo di scomparsa 5 s all'uscita.
+    # Il rilascio e' la PRIMA caduta dopo l'evento: in 2 trial su 3 seguono brevi
+    # riaccensioni a stanza vuota (falsi positivi residui del modulo).
+    lat_c = []
+    for f in files("ingresso2420_porta2_T0[2-6].csv"):
+        r = analizza_file(str(f), event_time_s=30.0)
+        if r and isinstance(r.get("latenza_radar_s"), float):
+            lat_c.append(r["latenza_radar_s"])
+    ril_c, riacc_c = [], 0
+    for f in files("uscita2420_rit5_T*.csv"):
+        with open(f, encoding="utf-8") as fh:
+            rows = list(csv.DictReader(fh))
+        t0 = float(rows[0]["timestamp_ms"])
+        ev = [((float(x["timestamp_ms"]) - t0) / 1000.0, int(x["radar_presence"])) for x in rows]
+        prima = next(t for t, p_ in ev if t >= 30.0 and p_ == 0)
+        ril_c.append(prima - 30.0)
+        if any(p_ == 1 for t, p_ in ev if t > prima):
+            riacc_c += 1
 
-    fig, axes = plt.subplots(1, 2, figsize=(9.0, 4.0))
+    fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.2))
+    fig.subplots_adjust(wspace=0.32)
     # (a) slopegraph appaiato
     for a_, b_ in zip(lat_r, lat_p):
         axes[0].plot([0, 1], [a_, b_], color=C_GRIGIO, lw=0.9, alpha=0.65, zorder=1)
@@ -318,39 +364,49 @@ def fig_latenza():
     delta = [a_ - b_ for a_, b_ in zip(lat_r, lat_p)]
     md, dd = media_dev(delta)
     axes[0].scatter([0, 1], [mr, mp], marker="_", s=900, color="black", zorder=4, linewidth=2)
-    axes[0].set_xticks([0, 1]); axes[0].set_xticklabels(["LD2410B", "PIR"])
-    axes[0].set_xlim(-0.35, 1.35)
+    mc, dc = media_dev(lat_c)
+    axes[0].scatter([2] * len(lat_c), lat_c, s=46, color=C_2420, marker="^", zorder=3,
+                    edgecolor="white", linewidth=0.7)
+    axes[0].scatter([2], [mc], marker="_", s=900, color="black", zorder=4, linewidth=2)
+    axes[0].text(2, max(lat_c) + 0.25, f"{mc:.2f} ± {dc:.2f} s", ha="center", va="bottom", fontsize=8.5)
+    axes[0].axvline(1.5, color=C_GRIGIO, lw=0.8, ls=":")
+    axes[0].set_xticks([0, 1, 2])
+    axes[0].set_xticklabels(["LD2410B", "PIR", "LD2420\n(sessione separata)"])
+    axes[0].set_xlim(-0.35, 2.45)
     axes[0].set_ylabel("latenza di rilevamento [s]")
-    axes[0].set_title(f"Ingresso — {len(lat_r)} trial appaiati\n"
+    axes[0].set_title(f"Ingresso — {len(lat_r)} trial appaiati ({len(lat_c)} per l'LD2420)\n"
                       f"{mr:.2f} ± {dr:.2f} s  vs  {mp:.2f} ± {dp:.2f} s")
-    axes[0].text(0.5, min(lat_r + lat_p) - 0.35,
-                 f"differenza appaiata radar−PIR: {md:+.2f} ± {dd:.2f} s\n"
-                 f"il radar rileva per primo in {sum(1 for x in delta if x < 0)}/{len(delta)} trial",
-                 ha="center", fontsize=9)
-    axes[0].set_ylim(min(lat_r + lat_p) - 0.9, max(lat_r + lat_p) + 0.35)
+    axes[0].text(0.5, max(lat_r + lat_p) + 1.3,
+                 f"differenza appaiata radar−PIR\n{md:+.2f} ± {dd:.2f} s\n"
+                 f"radar primo in {sum(1 for x in delta if x < 0)}/{len(delta)} trial",
+                 ha="center", va="center", fontsize=8.5)
+    axes[0].set_ylim(min(lat_r + lat_p) - 0.5, max(lat_r + lat_p + lat_c) + 0.9)
 
     # (b) rilascio
-    x = np.arange(2)
-    mrr, drr = media_dev(ril_r); mpp, dpp = media_dev(ril_p)
-    axes[1].bar(x, [mrr, mpp], 0.5, yerr=[drr, dpp], capsize=5,
-                color=[C_RADAR, C_PIR], edgecolor="white")
-    for xi, v, d in zip(x, [mrr, mpp], [drr, dpp]):
+    x = np.arange(3)
+    mrr, drr = media_dev(ril_r); mpp, dpp = media_dev(ril_p); mcc, dcc = media_dev(ril_c)
+    axes[1].bar(x, [mrr, mpp, mcc], 0.5, yerr=[drr, dpp, dcc], capsize=5,
+                color=[C_RADAR, C_PIR, C_2420], edgecolor="white")
+    axes[1].text(2, mcc + dcc + 2.4, f"prima caduta,\nriaccensioni in {riacc_c}/{len(ril_c)}",
+                 ha="center", va="bottom", fontsize=7.5, color=C_GRIGIO)
+    for xi, v, d in zip(x, [mrr, mpp, mcc], [drr, dpp, dcc]):
         axes[1].text(xi, v + d + 0.5, f"{v:.2f} ± {d:.2f} s", ha="center", fontsize=9,
                      fontweight="bold")
     axes[1].axhline(5, color=C_GRIGIO, ls="--", lw=1)
-    axes[1].annotate("timeout\ndel radar\n5 s", xy=(0.5, 5), xytext=(0.5, 8.0),
+    axes[1].annotate("ritardo\n5 s", xy=(0.5, 5), xytext=(0.5, 7.2),
                      ha="center", va="bottom", fontsize=8, color=C_GRIGIO,
                      arrowprops=dict(arrowstyle="->", color=C_GRIGIO, lw=0.8))
-    axes[1].set_xticks(x); axes[1].set_xticklabels(["LD2410B", "PIR"])
+    axes[1].set_xticks(x); axes[1].set_xticklabels(["LD2410B", "PIR", "LD2420\n(sessione separata)"])
     axes[1].set_ylabel("tempo per dichiarare la stanza vuota [s]")
-    axes[1].set_title(f"Uscita — {len(ril_r)} trial\nil radar tiene la presenza più a lungo")
-    axes[1].set_ylim(0, max(mrr + drr, mpp + dpp) * 1.35)
+    axes[1].set_title(f"Uscita — {len(ril_r)} trial ({len(ril_c)} per l'LD2420)\n"
+                      "l'LD2410B tiene la presenza più a lungo")
+    axes[1].set_ylim(0, max(mrr + drr, mpp + dpp) * 1.35); axes[1].set_xlim(-0.65, 2.65)
     salva(fig, "fig06_latenze")
     return mr, dr, mp, dp, md, dd, mrr, drr, mpp, dpp
 
 
 def fig_impulsi_pir():
-    """L'uscita del PIR e' un monostabile: in L durata fissa, in H il ritrigger la allunga."""
+    """L'uscita del PIR è un monostabile: in L durata fissa, in H il ritrigger la allunga."""
     def raccogli(patterns, skip):
         comp, tron = [], []
         for pat in patterns:
@@ -366,7 +422,7 @@ def fig_impulsi_pir():
     fig, axes = plt.subplots(1, 2, figsize=(9.4, 3.9))
     axes[0].hist(L_c, bins=np.arange(2.5, 6.1, 0.1), color=C_PIR, edgecolor="white")
     m, d = media_dev(L_c)
-    axes[0].set_title(f"Modalita' L (non ripetibile)\n"
+    axes[0].set_title(f"Modalità L (non ripetibile)\n"
                       f"{len(L_c)} impulsi - {m:.2f} +/- {d:.2f} s - nessuno oltre 5 s")
     axes[0].set_xlabel("durata dell'impulso [s]")
     axes[0].set_ylabel("conteggio")
@@ -386,8 +442,8 @@ def fig_impulsi_pir():
     axes[1].plot([], [], color=C_GRIGIO, lw=6,
                  label=f"{len(H_t)} troncati dalla fine del trial\n(durata reale >= barra)")
     axes[1].legend(fontsize=8.5, loc="lower right")
-    axes[1].set_title(f"Modalita' H (repeat trigger)\n"
-                      f"{len(dati)} impulsi - il piu' lungo >= {max(v for v, _ in dati):.0f} s")
+    axes[1].set_title(f"Modalità H (repeat trigger)\n"
+                      f"{len(dati)} impulsi - il più lungo >= {max(v for v, _ in dati):.0f} s")
     fig.suptitle("L'uscita del PIR non misura la presenza: conta eventi di movimento", y=1.04)
     salva(fig, "fig07_impulsi_pir")
     return len(L_c), media_dev(L_c), len(H_c), media_dev(H_c), H_t
@@ -415,7 +471,7 @@ def fig_due_persone():
         axes[1].text(1.02, yv, et, transform=axes[1].get_yaxis_transform(), fontsize=8,
                      color=C_GRIGIO, ha="left", va="center")
     axes[0].legend(loc="lower left", fontsize=9, markerscale=4)
-    fig.suptitle("Il LD2410B riporta un bersaglio per canale — chi sta dietro è invisibile", y=1.03)
+    fig.suptitle("L'LD2410B riporta un bersaglio per canale, e chi sta dietro è invisibile", y=1.09)
     salva(fig, "fig08_due_persone")
 
 
@@ -428,23 +484,24 @@ def fig_selettivita():
     fig, ax = plt.subplots(figsize=(7.4, 3.9))
     x = np.arange(len(sc)); w = 0.38
     for i, (nome, pat) in enumerate(sc):
+        c0 = x[i]
         r20 = stats_scenario(pat, skip=20.0)
         r120 = stats_scenario(pat, skip=120.0)
         m20, d20 = media_dev([r["radar_rate_%"] for r in r20])
         m120, d120 = media_dev([r["radar_rate_%"] for r in r120])
-        ax.bar(x[i] - w/2, m20, w, yerr=d20, capsize=4, color="#9fc5dd", edgecolor="white",
+        ax.bar(c0 - w/2, m20, w, yerr=d20, capsize=4, color="#9fc5dd", edgecolor="white",
                label="finestra ordinaria: scarto dei primi 20 s" if i == 0 else None)
-        ax.bar(x[i] + w/2, m120, w, yerr=d120, capsize=4, color=C_RADAR, edgecolor="white",
+        ax.bar(c0 + w/2, m120, w, yerr=d120, capsize=4, color=C_RADAR, edgecolor="white",
                label="a regime: scarto dei primi 120 s" if i == 0 else None)
-        ax.text(x[i] + w/2, m120 + d120 + 3, f"{m120:.1f}", ha="center", fontsize=9,
+        ax.text(c0 + w/2, m120 + d120 + 3, f"{m120:.1f}", ha="center", fontsize=9,
                 color=C_RADAR, fontweight="bold")
-        ax.text(x[i] - w/2, m20 + d20 + 3, f"{m20:.1f}", ha="center", fontsize=9,
+        ax.text(c0 - w/2, m20 + d20 + 3, f"{m20:.1f}", ha="center", fontsize=9,
                 color=C_GRIGIO)
     ax.set_xticks(x); ax.set_xticklabels([s[0] for s in sc])
-    ax.set_ylabel("tempo con presenza rilevata [%]"); ax.set_ylim(0, 132)
+    ax.set_ylabel("tempo con presenza rilevata [%]"); ax.set_ylim(0, 112); ax.set_yticks(range(0, 101, 20))
     ax.set_title("Selettività spaziale con gate massimo 2 (portata tagliata a 150 cm)\n"
-                 "tutti i soggetti fermi · 3 trial per scenario")
-    ax.legend(loc="upper center", fontsize=9, ncol=2)
+                 "tutti i soggetti fermi · 3 trial per scenario", pad=26)
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.0), fontsize=8.5, ncol=2, frameon=False)
     salva(fig, "fig09_selettivita")
 
 
@@ -546,7 +603,7 @@ def fig_gate_heatmap():
 
 
 def fig_saturazione():
-    """Il limite del dato: l'energia e' un uint8 0-100 che satura sul bersaglio vicino."""
+    """Il limite del dato: l'energia è un uint8 0-100 che satura sul bersaglio vicino."""
     f = DATI / "fermo_1m_H_T01.csv"
     t, d = serie(f, ["moving_energy", "stationary_energy", "moving_target", "stationary_target"])
     m = t >= 20.0
@@ -664,7 +721,7 @@ def fig_consumi():
         axes[1].text(h * 1.3, yi, et, va="center", fontsize=9)
     axes[1].set_xlim(5, 1e6)
     axes[1].set_title("Nodo completo su batteria 18650 3000 mAh\n(efficienza regolatore 85 %)")
-    fig.suptitle("Obiettivo 4 - consumo energetico: perche' serve l'architettura ibrida "
+    fig.suptitle("Obiettivo 4 - consumo energetico: perché serve l'architettura ibrida "
                  "PIR + mmWave", y=1.05)
     salva(fig, "fig13_consumi")
 

@@ -944,17 +944,18 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       fino a 2 m" ma "si accende entro 1 m e non si spegne fino a 2"
 - 🚪 **TEST 3.6 LD2410B COMPLETATO (09-10/09/2026): nessun dielettrico accorcia la portata
       entro i 5 m della stanza, nemmeno la porta chiusa.** 42 file `ost36_*`: cartongesso
-      10 mm a 1-5 m, legno e vetro a 4-5 m, **porta interna chiusa** a 3-5 m (sensore dentro
-      a 20-30 cm dal battente), baseline a 3 m in apertura e chiusura (49,7 / 47,5 → 48,6,
+      10 mm a 1-5 m, legno e vetro a 4-5 m, **porta interna chiusa** a ~3,8 m dal sensore, soggetto
+      a 3 (davanti) / 4 / 5 m (dietro) — corretto il 26/09/2026, il registro diceva «sensore a
+      20-30 cm dal battente», baseline a 3 m in apertura e chiusura (49,7 / 47,5 → 48,6,
       ~10 % sotto agosto), negativi puliti in stanza e in corridoio. **Presenza 100 % e
       distanza corretta in tutti i 39 trial con ostacolo.** Cio' che degrada e' il canale
       **moving** (frazione di campioni attivi a 5 m: senza 78 % · cartongesso 45 % · vetro
       26 % · legno 19 % · **porta 3 %**); la presenza la tiene il canale stazionario, saturo,
       con distanza giusta. Cartongesso: energia 97/68/36/25/22 contro 99/85/54/35/28, a 3 m
       **−26 %** (fra cartone e vetro, coerente con 0,7 dB sul LD2420), **PIR 0 % a 1 m**.
-      Porta: **trasparente a 3 m** (49,6 = baseline, moving 96 %) ma moving 20 % a 4 m e 3 %
-      a 5 m, piu' del legno pieno (52 / 19 %): tamburata, attenua poco da vicino e molto
-      da lontano — non spiegato, da dichiarare. **Frase per il professore**: senza ostacolo
+      Porta: a 3 m il soggetto le sta davanti (49,6 = baseline, moving 96 %); appena si
+      interpone, moving 20 % a 4 m e 3 % a 5 m, piu' del legno pieno (52 / 19 %). Il crollo
+      fra 3 e 4 m e' spiegato dalla geometria (26/09/2026). **Frase per il professore**: senza ostacolo
       5 m, con cartongesso/legno/vetro/porta ancora 5 m, con la porta a 5 m sopravvive solo
       il canale stazionario. Plastica/cartone/vetroresina dedotti (−7…−20 %), metallo 0 m.
       Scarti: baseline a stanza vuota per istruzione ambigua (tenuta come negativo) e un
@@ -968,10 +969,8 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       le zone di Fresnel decide il PIR, non la distanza ne' la quantita' di movimento. La
       tendenza 12 → 100 % nella serata segue l'ampiezza (dev 24 → 36 cm). Per il radar il
       cambio di movimento vale solo −10 % di baseline (riferimento della stessa sera).
-      ⚠️ **Il 78-100 % del PIR attraverso la porta chiusa NON e' spiegato** (PIR dentro
-      accanto al radar, porta senza vetro: canale plausibile la fessura sotto il battente
-      con le gambe che oscillano, non verificato) → **non usarlo**, ne' come "vede" ne' come
-      "bloccato". Valida la coppia della stessa sera: 44-97 % senza → **0 % con cartongesso**
+      ✔ **Il 78-100 % del PIR «attraverso la porta» a 3 m e' SPIEGATO (26/09/2026)**: la porta
+      era a ~3,8 m, quindi a 3 m il soggetto non era schermato. Dietro la porta (4-5 m) PIR 0 %. Valida la coppia della stessa sera: 44-97 % senza → **0 % con cartongesso**
       (e 0 % con legno/vetro a 4-5 m). 📌 **Regola di protocollo**: annotare sempre il TIPO
       di movimento, non solo la distanza; "baseline" va scritta con chi c'e' nella scena
 - 🎯 **TEST 1.4-2420 SOTTO IL BANCO (09/09/2026): immobile 98,4 ± 3,6 %, micro-movimenti

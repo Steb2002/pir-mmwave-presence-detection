@@ -103,7 +103,7 @@ Attraversamento a 1--5~m & tipo di movimento & 3 per distanza & 20~s & Sezione~\
 Sotto il banco a 60~cm (immobile, micro-movimenti)* & scenario del progetto & 5 per condizione & 40~s & Sezione~\ref{sec:sotto-banco} \\
 Ingresso e uscita dalla stanza* & latenze & 10 e 5 & evento a 30~s & Sezione~\ref{sec:latenza} \\
 Arco a 1~m, sei azimut* & copertura angolare & 1--3 per azimut & 120~s & Sezione~\ref{sec:angolare} \\
-Selettività con gate massimo 2 & vicino di banco & 3 per scenario & 120~s & Sezione~\ref{sec:angolare} \\
+Selettività con gate massimo 2* & vicino di banco & 3 per scenario & 120~s & Sezione~\ref{sec:angolare} \\
 Due persone, tre geometrie* & separazione dei bersagli & 3 per geometria & 20~s & Sezione~\ref{sec:due-persone} \\
 Pannelli interposti, a 3~m e a 1~m* & attenuazione & 3 per materiale & 20~s & Sezione~\ref{sec:ostacoli} \\
 Corridoio, 5--8~m* & portata massima & 3--5 per distanza & 20~s & Sezione~\ref{sec:portata-massima} \\
@@ -153,7 +153,7 @@ Sezione~\ref{sec:c3-4-5} e poi aggregate per scenario.
     tempo di reazione si cancellano.
   \item \textbf{Accuratezza della distanza:} scostamento fra la distanza riportata dal
     radar e quella reale, tenendo separata la dispersione fra un trial e l'altro da quella
-    entro il singolo trial.
+    entro il singolo trial. La linearità della risposta si valuta con una regressione lineare fra distanza riportata e reale. Il coefficiente di determinazione $R^2$ indica quanta parte della variazione della distanza riportata è spiegata dalla retta, e vale 1 quando i punti vi stanno esattamente sopra.
   \item \textbf{Energia:} valore normalizzato 0--100 che l'\ldb\ riporta per il bersaglio e
     per ogni gate (Sezione~\ref{sec:c3-5-1}). Fa da grandezza graduata del movimento e da
     testimone dello stimolo, perché due prove con la stessa energia hanno riprodotto lo
@@ -214,7 +214,7 @@ Vanno dichiarate quattro deroghe alla parità di configurazione. I dati sono let
 energy mode (Sezione~\ref{sec:c3-2-5}), l'unica modalità che esponga le energie per gate.
 Le soglie sono tarate sul fondo misurato e il gate massimo è fissato a 6, per le ragioni
 della Sezione~\ref{sec:c3-6}. Inoltre, il gate~0 è portato sopra la coda del rumore, nella
-configurazione v2 (Sezione~\ref{sec:ld2420-risultati}). Infine, il PIR non è cablato nei
+configurazione v2 (Sezione~\ref{sec:falsi-positivi}). Infine, il PIR non è cablato nei
 test del solo \ldc, e i suoi valori sono marcati come assenti (Sezione~\ref{sec:c3-4-3}).
 Poiché l'esemplare in dotazione è con ogni probabilità difettoso, i risultati ottenuti descrivono quel singolo modulo e non vanno
 generalizzati al modello \ldc.
