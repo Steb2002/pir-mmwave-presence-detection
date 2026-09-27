@@ -147,12 +147,12 @@ I moduli consumer non espongono il profilo grezzo. Per ciascun gate riportano a 
 \subsection{Come si rileva un corpo immobile}
 \label{subsec:corpo-immobile}
 
-Un radar FMCW puro misura la distanza e non il movimento, quindi un corpo fermo produce comunque un'eco, come del resto pareti e arredi. In pratica, i moduli commerciali separano due contributi:
+Un radar FMCW puro misura la distanza e non il movimento, quindi un corpo fermo produce comunque un'eco, come del resto pareti e arredi. In pratica, i moduli commerciali separano due componenti:
 
 \begin{itemize}
-    \item la componente \textit{moving}, associata a variazioni rapide della fase dell'eco, cioè allo spostamento del bersaglio;
+    \item \textit{moving}, associata a variazioni rapide della fase dell'eco, cioè allo spostamento del bersaglio;
 
-    \item la componente \textit{stationary} (o \textit{motionless}), associata a un'eco stabile in distanza ma con fluttuazioni residue.
+    \item \textit{stationary} (o \textit{motionless}), associata a un'eco stabile in distanza ma con fluttuazioni residue.
 \end{itemize}
 
 Una persona ferma non è mai realmente immobile, perché il torace si muove di alcuni millimetri a ogni atto respiratorio e, a 24~GHz, anche uno spostamento millimetrico produce una variazione di fase misurabile. È questa la ragione fisica per cui il radar può rilevare una persona immobile, a differenza del PIR. Lo stesso segnale, analizzato nel tempo, permette anche di stimare la frequenza respiratoria, come mostrato nel Capitolo~\ref{chap:vitalita}.
