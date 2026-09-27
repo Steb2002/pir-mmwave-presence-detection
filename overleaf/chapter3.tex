@@ -55,7 +55,7 @@ Figura~\ref{fig:geometrie}.
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/fig31_setup}
+\includegraphics[width=\linewidth]{Setup}
 \caption{Il banco di prova. (a) Il PIR \pir\ e l'\ldb\ fissati sul supporto di cartone,
 con l'ESP32 sulla breadboard accanto. (b) Lo stesso supporto con l'\ldc\ della campagna
 ridotta.}
@@ -64,7 +64,7 @@ ridotta.}
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/fig27_geometrie}
+\includegraphics[width=\linewidth]{Geometrie}
 \caption{Le geometrie della campagna, in scala. (a) La stanza, con i sensori sul tavolo e
 le tacche a 1--5~m sull'asse, usata per distanza, dose-risposta, latenze, ostacoli e due
 persone. (b) Lo scenario del progetto, con i sensori fissati sotto il piano e la persona
@@ -96,13 +96,13 @@ risultati. La campagna ridotta sull'\ldc\ ripete entro 2~m gli scenari con l'ast
 \textbf{Scenario} & \textbf{Domanda} & \textbf{Trial} & \textbf{Scarto} & \textbf{Risultati} \\
 \midrule
 Stanza vuota, notte e giorno* & falsi positivi & 7,03~h & 60~s & Sezione~\ref{sec:falsi-positivi} \\
-Persona ferma seduta a 2,3~m & falsi negativi & 5 & 20~s & Sezione~\ref{sec:persona-ferma} \\
+Persona ferma seduta a 2,3~m & falsi negativi & 5 & 30~s & Sezione~\ref{sec:persona-ferma} \\
 Dose-risposta a 1~m (immobile, micro-movimenti, cammino sul posto)* & quantità di movimento & 5 per condizione & 20~s & Sezione~\ref{sec:dose-risposta} \\
 Cammino sul posto a 1--5~m* & accuratezza della distanza, PIR sul posto & 5 per distanza & 20~s & Sezioni~\ref{sec:distanza} e~\ref{sec:dose-risposta} \\
 Attraversamento a 1--5~m & tipo di movimento & 3 per distanza & 20~s & Sezione~\ref{sec:dose-risposta} \\
 Sotto il banco a 60~cm (immobile, micro-movimenti)* & scenario del progetto & 5 per condizione & 40~s & Sezione~\ref{sec:sotto-banco} \\
 Ingresso e uscita dalla stanza* & latenze & 10 e 5 & evento a 30~s & Sezione~\ref{sec:latenza} \\
-Arco a 1~m, sei azimut* & copertura angolare & 1--3 per azimut & 120~s & Sezione~\ref{sec:angolare} \\
+Arco a 1~m, sei azimut* & copertura angolare & 1--3 per azimut & 20~s & Sezione~\ref{sec:angolare} \\
 Selettività con gate massimo 2* & vicino di banco & 3 per scenario & 120~s & Sezione~\ref{sec:angolare} \\
 Due persone, tre geometrie* & separazione dei bersagli & 3 per geometria & 20~s & Sezione~\ref{sec:due-persone} \\
 Pannelli interposti, a 3~m e a 1~m* & attenuazione & 3 per materiale & 20~s & Sezione~\ref{sec:ostacoli} \\
@@ -127,9 +127,7 @@ quell'istante.
 Ogni sessione è annotata in un registro con data, ora, temperatura della stanza,
 soggetto, alimentazione e note. Per ogni scenario, oltre alla distanza, sono annotati
 anche il tipo di movimento e la postura, perché il PIR risponde a questi e non alla
-distanza (Sezione~\ref{subsec:fresnel}). Le sessioni si sono svolte fra 25 e
-29\,\textdegree C, una condizione sfavorevole al rilevamento del PIR
-(Sezione~\ref{subsec:pir-principio}) di cui la discussione tiene conto. Il registro
+distanza (Sezione~\ref{subsec:fresnel}). Le sessioni si sono svolte fra 25 e 29\,\textdegree C. Il registro
 completo è nel repository del lavoro~\cite{repoTesi}.
 
 \section{Metriche e convenzioni}
@@ -183,7 +181,7 @@ scarto sale a 90~s.
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/fig32_transitorio}
+\includegraphics[width=\linewidth]{Transitorio}
 \caption{Il transitorio iniziale nei tre trial con la persona ferma a 1~m a
 90\textdegree\ (gate massimo 2). La presenza riportata è attiva dall'inizio del trial, si
 spegne una sola volta e non si riaccende, perché è la coda del posizionamento e non un
@@ -328,7 +326,7 @@ dalla pagina, perché devono restare fisse per tutta la campagna
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/fig33_dashboard}
+\includegraphics[width=\linewidth]{Dashboard}
 \caption{La dashboard servita dal nodo, con la testata con lo stato di presenza, lo stato
 live dei due sensori (A), l'indice di vitalità calcolato a bordo (B) e i tre grafici degli
 ultimi 60~s (C). I dati sono quelli di una sessione registrata dall'ESP32 con una persona
@@ -339,7 +337,7 @@ tempo, mentre il PIR non rileva nulla.}
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/fig34_dashboard_sessione}
+\includegraphics[width=\linewidth]{Dashboard_sessione}
 \caption{La parte inferiore della dashboard in una sessione dal vivo di 60~s, con una
 persona davanti al sensore. A sinistra il riquadro D con i metadati della sessione e le
 statistiche calcolate nel browser, a destra la diagnostica dell'ESP32 con la build,
@@ -418,7 +416,7 @@ formati compatibili, ma dello stesso dato raggiunto per due vie.
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/fig30_percorsi_dati}
+\includegraphics[width=\linewidth]{Percorsi_dati}
 \caption{I due percorsi dei dati del firmware della web UI. Sopra il percorso seriale, in
 cui lo script di acquisizione aggiunge i metadati sperimentali. Sotto la web UI, servita dal nodo in modalità Access Point, che esporta dal browser lo stesso CSV. I due file coincidono
 campione per campione e sono letti dallo stesso script di analisi.}

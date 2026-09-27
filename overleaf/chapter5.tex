@@ -1,132 +1,21 @@
 \chapter{L'indice di vitalità}
 \label{chap:vitalita}
 
-Questo capitolo presenta l'indice di vitalità, formulato dal relatore come un indice che valuti quanto una persona si muove, oltre alla presenza sì o no. È la dimostrazione costruttiva che i dati del radar abilitano ciò che con un bit non è rappresentabile. L'algoritmo è stato specificato, corretto due volte sulla base dei dati, tarato su un sottoinsieme dei trial del Capitolo~\ref{chap:confronto}, validato su trial mai usati per la taratura, portato a bordo dell'ESP32 e verificato contro il calcolo di riferimento.
+Questo capitolo presenta l'indice di vitalità, un numero da 0 a 100 che indica quanto si muove la persona rilevata dal radar. L'indice è costruito e tarato sui dati del Capitolo~\ref{chap:confronto}, calcolato a bordo dell'ESP32 e verificato contro lo stesso calcolo eseguito al computer.
 
-Il capitolo è organizzato come segue. La Sezione~\ref{sec:vitalita-motivazione} spiega perché la vitalità è una domanda diversa dalla presenza e come l'indice la rende leggibile. La Sezione~\ref{sec:respiro} mostra che il segnale su cui l'indice poggia contiene davvero il micro-movimento respiratorio, con una verifica a ritmo imposto. La Sezione~\ref{sec:vitalita-ingressi} descrive i dati di ingresso e l'algoritmo, insieme alle due versioni precedenti abbandonate, e la Sezione~\ref{sec:vitalita-classi} definisce le tre classi. La Sezione~\ref{sec:vitalita-taratura} riporta la taratura dei parametri e la validazione su trial separati e su una geometria diversa. La Sezione~\ref{sec:vitalita-bordo} descrive il porting sull'ESP32 e la verifica del calcolo a bordo contro quello offline, e la Sezione~\ref{sec:vitalita-limiti} chiude con i limiti, i casi limite e le possibili estensioni.
+Il capitolo è organizzato come segue. La Sezione~\ref{sec:vitalita-motivazione} spiega perché la vitalità è una domanda diversa dalla presenza e come l'indice la rende leggibile. La Sezione~\ref{sec:vitalita-ingressi} descrive i dati di ingresso e l'algoritmo, insieme alle due versioni precedenti abbandonate, e la Sezione~\ref{sec:vitalita-classi} definisce le tre classi. La Sezione~\ref{sec:vitalita-taratura} riporta la taratura dei parametri e la validazione su trial separati e su una geometria diversa. La Sezione~\ref{sec:vitalita-bordo} descrive il porting sull'ESP32 e la verifica del calcolo a bordo contro quello offline, e la Sezione~\ref{sec:vitalita-limiti} ne raccoglie i limiti, i casi limite e le possibili estensioni. La Sezione~\ref{sec:respiro} chiude con la stima del ritmo respiratorio e la sua verifica a ritmo imposto.
 
 \section{Motivazione e presentazione}
 \label{sec:vitalita-motivazione}
 \label{sec:vitalita-presentazione}
 
-Nel contesto del progetto la differenza fra presenza e vitalità è la differenza fra
-due domande dei soccorritori. La prima è se c'è qualcuno sotto il banco, ed è la
-domanda di presenza a cui rispondono gli obbiettivi O1--O3. La seconda è in che
-condizioni si trova la persona. Se si muove attivamente è cosciente, se compie solo
-micro-movimenti è ferita o intrappolata ma viva, oppure può non dare segni di
-movimento rilevabili. Il PIR non può porsi la seconda
-domanda, perché la sua uscita è un bit che non misura nemmeno la durata del movimento
-(Sezione~\ref{sec:interpretazione-pir}). Il radar sì, perché espone l'energia riflessa per
-gate di distanza, una misura continua di quanto si muove ciò che riflette. La
-dose-risposta di Sezione~\ref{sec:dose-risposta} ha mostrato che questa grandezza è monotona
-con la quantità di movimento (68,6, 84,4, 99,3 sui tre livelli a 1~m). L'indice di
-vitalità sintetizza questa informazione in un numero fra 0 e 100, leggibile da un
-operatore non tecnico, con una classificazione a tre livelli.
-
-Una scelta di formulazione, concordata con il relatore, precede l'algoritmo. L'indice
-non è descritto come misura del movimento toracico o rilevamento del respiro, ma come
-indice generico di vitalità calcolato dall'energia radar. È la scelta più difendibile,
-perché il respiro ha una sua verifica separata (Sezione~\ref{sec:respiro}) e l'indice è
-definito per quello che calcola, cioè una funzione delle energie per gate del canale in movimento,
-senza costruirvi sopra una misura fisiologica. Anche i nomi delle classi seguono
-questo principio. Formule come ``poco vivo'' sono evitate, perché la classe descrive
-il segnale e non l'individuo. I nomi adottati (vitalità bassa, moderata, alta)
-qualificano l'indice, non la persona.
-
-\section{Il rilevamento del respiro: una misura a sé}
-\label{sec:respiro}
-
-Prima dell'indice conviene mostrare che il segnale su cui poggia contiene davvero il
-micro-movimento respiratorio. Il metodo segue la Sezione~\ref{subsec:corpo-immobile}. Si campiona
-a 5~Hz un canale di energia per gate in engineering mode, si applica la FFT alla serie
-temporale e si cerca il picco in banda 0,1--0,5~Hz. La frequenza del picco per 60 dà
-gli atti al minuto. L'\ldb\ espone venti serie di energia e non tutte sono
-utilizzabili. Alcune sono sature (Sezione~\ref{sec:c3-5-1}), altre nulle
-(Sezione~\ref{sec:c3-5-2}), altre piatte perché lontane dal bersaglio. Lo script di
-analisi esamina tutti i canali, scarta saturi e piatti con criteri dichiarati, ordina
-i rimanenti per rapporto segnale-rumore e riporta la mediana delle stime concordi
-~\cite{repoTesi}.
-
-\paragraph{Prove senza ground truth.} Su un soggetto fermo a 40~cm sette canali in
-movimento indipendenti concordano su 0,264~Hz, cioè 15,8 atti al minuto, con rapporto
-segnale-rumore fino a 12,8. Sui cinque trial del soggetto seduto a 2,30~m
-(Sezione~\ref{sec:persona-ferma}) i canali in movimento dei gate 2--8 concordano su 18--20
-atti al minuto, e a quella distanza non sono saturi (Figura~\ref{fig:respiro}). Sotto il
-banco (Sezione~\ref{sec:sotto-banco}) il respiro è estraibile in quattro trial su cinque, con
-$21{,}3 \pm 2{,}3$ atti al minuto. Abbassando la soglia di accettazione da SNR 3 a
-2,5 si recuperano cinque su cinque, senza che le stime dei quattro già validi cambino.
-In tutte e tre le geometrie i canali stazionari danno 6--8 atti al minuto, troppo
-pochi per un adulto a riposo, e sono verosimilmente un artefatto del filtraggio
-interno. Queste sono stime concordi fra canali e non misure con un errore, perché il
-ritmo reale non è noto.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\linewidth]{figures/fig12_respiro}
-\caption{Energia per gate di un soggetto immobile a 2,3~m e suo spettro. Il picco
-cade in banda respiratoria e canali indipendenti concordano. La verifica contro un
-ritmo imposto è nella Tabella~\ref{tab:respiro-metronomo}.}
-\label{fig:respiro}
-\end{figure}
-
-\subsection{La verifica a ritmo imposto}
-\label{sec:respiro-metronomo}
-
-La verifica richiede una ground truth, e il modo più semplice è imporre il ritmo.
-Il soggetto è seduto a 2~m rivolto al sensore, perché a 1~m i canali in movimento
-saturano, e respira seguendo un metronomo impostato al doppio della frequenza
-respiratoria. Sono stati provati tre ritmi, con cinque trial ciascuno da 162~s utili,
-più tre trial di stanza vuota come controllo negativo
-(Tabella~\ref{tab:respiro-metronomo}).
-
-\begin{table}[htbp]
-\centering
-\caption{Stima respiratoria contro ritmo imposto, \ldb\ a 2~m. ``Trial concordi''
-conta quelli in cui l'analisi ha restituito la fondamentale. }
-\label{tab:respiro-metronomo}
-\small
-\begin{tabular}{@{}lccc@{}}
-\toprule
-Ritmo imposto & Trial concordi & Stima & Errore \\
-\midrule
-10 atti/min & 4/5 & $10{,}00 \pm 0{,}00$ & $0{,}00$ \\
-15 atti/min & 4/5 & $14{,}95 \pm 0{,}30$ & $-0{,}05$ \\
-20 atti/min & 5/5 & $19{,}64 \pm 0{,}09$ & $-0{,}36$ \\
-\midrule
-Stanza vuota & --- & \multicolumn{2}{c}{\textbf{nessuna stima in 3 trial su 3}} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Dove l'analisi identifica la fondamentale la stima è accurata, con errore assoluto
-medio di 0,22 atti al minuto sui tredici trial concordi e massimo 0,4. Nei due trial non concordi l'analisi ha restituito
-esattamente il doppio del ritmo imposto, mai un valore intermedio, per una ragione
-fisica. L'energia per gate risponde all'entità dello spostamento e non al suo verso.
-Un ciclo completo (inspirazione ed espirazione) produce quindi due escursioni di
-energia e una componente a $2f$ che può superare la fondamentale. La scelta fra $f$ e
-$2f$ non è ricavabile dallo spettro di un canale singolo. Il confronto con la ground
-truth ha anche corretto due regole di selezione, stabilendo che i gruppi misti di
-canali in movimento e stazionari non vanno scartati e che fra due gruppi in rapporto
-armonico vince il più basso. Ha inoltre aggiunto una soglia di plausibilità a 8 atti
-al minuto, un'assunzione dichiarata che rende il metodo cieco a una respirazione molto
-lenta. Le nuove regole non cambiano i risultati precedenti. Restano due limiti. Il
-primo è che il metronomo approfondisce il respiro, quindi la validazione riguarda la
-frequenza e non l'ampiezza in condizioni realistiche. Il secondo è che sull'esemplare
-di \ldc\ lo stesso metodo recupera la frequenza in un trial su tre. Il respiro resta quindi una misura dell'\ldb, ed è la
-ragione fisica per cui il radar rileva la persona immobile su cui è costruito l'indice
-che segue.
+Per i soccorritori contano due domande. La prima è se sotto il banco c'è qualcuno, e a questa risponde la presenza. La seconda è in che condizioni si trova la persona, e a questa risponde la vitalità. Il PIR non può rispondere alla seconda domanda, perché la sua uscita dice solo se c'è stato un movimento (Sezione~\ref{sec:interpretazione-pir}). Il radar invece fornisce l'energia riflessa per gate, che cresce con il movimento. Nella dose-risposta a 1~m vale 68,6 da immobile, 84,4 con i micro-movimenti e 99,3 in cammino (Sezione~\ref{sec:dose-risposta}). L'indice di vitalità riassume questa grandezza in un valore leggibile anche da chi non conosce il radar, con tre classi, vitalità bassa, moderata e alta.
 
 \section{Dati di ingresso e algoritmo}
 \label{sec:vitalita-ingressi}
 \label{sec:vitalita-algoritmo}
 
-L'algoritmo lavora sui campioni a 5~Hz prodotti dal logger e dal firmware della web
-UI (Sezione~\ref{sec:c3-4}). Usa l'energia per gate del canale in movimento, la
-distanza riportata per scegliere il gate, lo stato di presenza come condizione di
-guardia e il rumore di fondo per gate misurato a stanza vuota. Due canali previsti dalla specifica iniziale sono esclusi. Il primo è l'energia stazionaria per gate, nulla sotto 1,5~m (Sezione~\ref{sec:c3-5-2}), e il secondo è l'energia aggregata del bersaglio in movimento. Le ragioni misurate sono ricostruite più avanti, nel paragrafo sulle tre versioni dell'algoritmo.
-
-L'algoritmo ha due componenti, aggiornate a ogni campione $k$, e una fusione. Sia
-$e_i[k]$ l'energia in movimento del gate $i$ e $f_i$ il rumore di fondo del gate $i$.
+L'algoritmo lavora sui campioni a 5~Hz prodotti dal logger e dal firmware della web UI (Sezione~\ref{sec:c3-4}). Sia $e_i[k]$ l'energia del canale in movimento nel gate $i$ al campione $k$, $f_i$ il rumore di fondo dello stesso gate, misurato a stanza vuota, e $d_k$ la distanza riportata, quella del bersaglio stazionario se disponibile, altrimenti quella del bersaglio in movimento. L'algoritmo sceglie il gate dalla distanza, ne calcola l'energia al netto del fondo e la segue con due medie esponenziali, che poi somma nell'indice.
 
 \begin{align}
 g^{*} &= \min\!\left(\left\lfloor d_k / 75~\text{cm} \right\rfloor,\; 8\right)
@@ -137,43 +26,29 @@ M_k &= \alpha_m\, \tilde e_k + (1-\alpha_m)\, M_{k-1}
   && \text{livello di movimento, } \alpha_m = 0{,}05 \label{eq:livello}\\
 R_k &= \alpha_v\, \left|\tilde e_k - \tilde e_{k-1}\right| + (1-\alpha_v)\, R_{k-1}
   && \text{variabilità del ritorno, } \alpha_v = 0{,}01 \label{eq:variabilita}\\
-V_k &= \mathrm{clamp}\!\left(M_k + k\, R_k,\; 0,\; 100\right), \quad k = 0{,}5
+V_k &= \mathrm{clamp}\!\left(M_k + \beta\, R_k,\; 0,\; 100\right), \quad \beta = 0{,}5
   && \text{indice di vitalità} \label{eq:vitalita}
 \end{align}
 
-Se il radar non riporta presenza l'indice è 0 e nessuna classe viene assegnata.
-Nell'Equazione~\ref{eq:gate-attivo} $d_k$ è la distanza del bersaglio stazionario se
-disponibile, altrimenti quella del bersaglio in movimento. In mancanza di entrambe il
-gate attivo è quello di massima energia. Le medie esponenziali sono aggiornate su ogni
-campione, anche a stanza vuota, così che quando qualcuno entra l'indice non parta da
-zero simulando un falso ``nessun segno''.
+Se il radar non riporta presenza l'indice è 0 e nessuna classe viene assegnata. Il gate attivo viene dalla distanza riportata e non dal massimo di energia, perché sotto il banco i cammini multipli portano energia nei gate 2--3 mentre la persona è a 60~cm (Sezione~\ref{sec:sotto-banco}). Il fondo va sottratto perché anche a stanza vuota l'energia non è zero, soprattutto nei gate più vicini al sensore (18 nel gate 0 e 13 nel gate 1, Tabella~\ref{tab:c3-6}), e senza sottrazione questo rumore entrerebbe nell'indice come se fosse movimento. Calcolando l'indice anche quando il radar non riporta presenza, la stanza vuota darebbe 19,1 e la persona immobile a 2,3~m 17,6, cioè il solo rumore varrebbe più della persona. Con la sottrazione i due casi diventano 2,4 e 15,1.
 
-Ognuna di queste scelte ha una motivazione. Le medie esponenziali costano due variabili
-in memoria e girano identiche in Python e in C++, condizione della verifica di
-Sezione~\ref{sec:vitalita-bordo}. Le due costanti di tempo sono diverse perché il livello
-deve reagire in qualche secondo (a 5~Hz, $\alpha_m = 0{,}05$ vale circa 4~s), mentre
-la variabilità è un segnale lento da integrare su circa 20~s. Il fondo va sottratto,
-perché senza l'Equazione~\ref{eq:netta} l'indice non distingue una stanza vuota da una persona
-immobile. Senza correzione vale infatti 19,1 sulle 6,5~ore di stanza vuota e 17,6 sulla persona immobile a 2,3~m, cioè più a stanza vuota che con la persona, a causa del fondo di 18 e 13 dei gate 0 e 1 di
-Tabella~\ref{tab:c3-6}, mentre con la correzione i due casi diventano 2,4 e 15,2. Il gate attivo viene dalla distanza riportata e non
-dal massimo di energia, perché sotto il banco i cammini multipli portano energia nei
-gate 2--3 mentre la persona è a 60~cm (Sezione~\ref{sec:sotto-banco}). Il peso $k$ fissa il
-contributo della variabilità, numericamente piccola, che serve a separare la persona
-immobile dal fondo e non a graduare il movimento.
+Le due medie esponenziali seguono grandezze diverse. Il livello di movimento $M_k$ (Equazione~\ref{eq:livello}) è la media dell'energia netta, e dice quanto segnale torna dalla persona. La variabilità $R_k$ (Equazione~\ref{eq:variabilita}) è la media di quanto l'energia netta cambia da un campione all'altro, e dice quanto il ritorno oscilla. Il livello deve reagire in pochi secondi, e con $\alpha_m = 0{,}05$ a 5~Hz la sua costante di tempo è di circa 4~s. La variabilità è un segnale piccolo e rumoroso, e con $\alpha_v = 0{,}01$ viene mediata su circa 20~s. Si usano medie esponenziali perché ognuna si aggiorna dal proprio valore precedente, senza conservare i campioni passati. Il peso $\beta$ fissa quanto la variabilità conta nell'indice, e con $\beta = 0$ l'indice si ridurrebbe al solo livello. Con $\beta = 0{,}5$ i valori salgono di qualche punto, di più per i micro-movimenti a 1~m (da circa 59 a circa 71) e di meno per la persona immobile e per il cammino, quindi le tre condizioni risultano un po' più distanziate. La classe assegnata invece cambia poco, come mostra la taratura (Sezione~\ref{sec:vitalita-taratura}).
 
-\paragraph{Tre versioni.}
+\subsection{Evoluzione dell'algoritmo}
 \label{sec:vitalita-evoluzione}
-La versione riportata è la terza, e le due precedenti sono state abbandonate per
-ragioni misurate. La prima costruiva la componente lenta sulla variazione
-dell'energia stazionaria, che nei dati è satura con deviazione standard zero in ogni
-scenario occupato, quindi il termine era identicamente nullo. La seconda usava i
-canali in movimento, ma definiva il livello come il massimo fra l'energia aggregata
-del bersaglio e quella del gate attivo. Tarata a 1~m funzionava, ma sotto il banco
-l'energia aggregata satura a 100 e prevale nel massimo qualunque gate si scelga, e con il gate fisso della taratura la persona immobile leggeva 51,1, contro i 28,6 della persona immobile a 1~m. La terza versione usa la sola energia del gate attivo. Gli scenari a 1~m cambiano di pochi punti, mentre quello sotto il banco scende a 25,7 e nei movimenti sotto il banco la saturazione dell'indice si dimezza (Tabella~\ref{tab:vitalita-v2v3}). Con il gate ricavato dalla distanza, adottato dal firmware, la terza versione dà invece 45,4 (la seconda dava 59,2), per la ragione discussa nella Sezione~\ref{sec:vitalita-taratura}.
+L'algoritmo è arrivato alla forma attuale in tre versioni.
+
+\begin{itemize}
+    \item \textbf{v1.} Calcolava la variabilità sull'energia stazionaria, che però nei dati resta ferma a 100 quando c'è qualcuno e vale zero sotto 1,5~m (Sezione~\ref{sec:c3-5-2}). La variabilità era quindi sempre nulla.
+
+    \item \textbf{v2.} Usava i canali in movimento, ma prendeva come livello il massimo fra l'energia del gate attivo e l'energia complessiva del bersaglio riportata dal radar. A 1~m funzionava, ma sotto il banco l'energia complessiva è quasi sempre satura a 100, quindi il massimo sceglieva quasi sempre quella al posto dell'energia del gate, e la persona immobile risultava più attiva di quella a 1~m.
+
+    \item \textbf{v3.} È la versione descritta sopra, che usa solo l'energia del gate attivo. Lo scenario sotto il banco rientra in scala senza che quelli a 1~m cambino in modo sensibile (Tabella~\ref{tab:vitalita-v2v3}).
+\end{itemize}
 
 \begin{table}[htbp]
 \centering
-\caption{Indice medio per scenario nella seconda e nella terza versione, con la configurazione della taratura (gate fisso~2, fondo della stanza vuota di giorno, parametri tarati). La saturazione è la frazione di campioni con indice a 100.}
+\caption{Indice medio per scenario nelle versioni v2 e v3, con la configurazione della taratura (gate fisso~2, fondo della stanza vuota di giorno, parametri tarati). La saturazione è la frazione di campioni con indice a 100.}
 \label{tab:vitalita-v2v3}
 \small
 \begin{tabular}{@{}lrrc@{}}
@@ -192,10 +67,7 @@ Movimento pieno, 1~m & 99,6 & 99,2 & 92 $\to$ 71\,\% \\
 \section{Classificazione}
 \label{sec:vitalita-classi}
 
-Le classi sono tre, non quattro come nella prima specifica, per una ragione
-concordata con il relatore. La presenza o assenza non è una classe di vitalità ma la
-condizione che sta a monte, perché se il radar non rileva nessuno non c'è nessuno da
-classificare. Le classi descrivono quanto si muove chi c'è (Tabella~\ref{tab:vitalita-classi}).
+L'indice di vitalità è diviso in tre classi, con le soglie a 45 e 95 fissate nella taratura (Tabella~\ref{tab:vitalita-classi}). Chi si muove ampiamente è verosimilmente cosciente, chi compie solo micro-movimenti è vivo ma forse ferito o bloccato, e chi non si muove può essere incosciente. La priorità di soccorso va quindi al contrario dell'indice. La vitalità bassa è il caso da raggiungere per primo, mentre chi ha vitalità alta è probabilmente in grado di aspettare. Per questo nella dashboard (Sezione~\ref{sec:webui-progetto}) la classe bassa è rossa e quella alta verde.
 
 \begin{table}[htbp]
 \centering
@@ -208,47 +80,24 @@ classificare. Le classi descrivono quanto si muove chi c'è (Tabella~\ref{tab:vi
 \textbf{Indice} & \textbf{Classe} & \textbf{Significato operativo} & \textbf{Priorità} \\
 \midrule
 --- & (nessuna presenza) & il sensore non rileva nessuno & --- \\
-0--44 & \texttt{vitalita\_bassa} & presenza confermata, movimento minimo, possibile
+0--44 & vitalità bassa & presenza confermata, movimento minimo, possibile
   incoscienza & \textbf{la più alta} \\
-45--94 & \texttt{vitalita\_moderata} & micro-movimenti, persona che si aggiusta & media \\
-95--100 & \texttt{vitalita\_alta} & movimento ampio, persona reattiva & la più bassa \\
+45--94 & vitalità moderata & micro-movimenti, persona che si aggiusta & media \\
+95--100 & vitalità alta & movimento ampio, persona reattiva & la più bassa \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-La priorità è il complemento dell'indice, ed è il punto da cui dipende l'interfaccia.
-Un segnale debole ma presente significa che c'è qualcuno che non si muove,
-possibilmente incosciente, ed è il caso da raggiungere per primo. Un segnale forte
-significa che c'è qualcuno che si muove, probabilmente cosciente e in grado di
-aspettare. Per questo nella dashboard (Sezione~\ref{sec:webui-progetto}) la classe bassa è
-rossa e la classe alta verde. Le classi sono un supporto informativo al triage e non
-una diagnosi medica. Vitalità bassa significa che il sensore rileva una presenza con
-variazioni minime, non che la persona è in pericolo di vita. L'assenza di presenza
-significa che il sensore non rileva nessuno, non che nessuno è vivo, perché la persona
-può essere fuori portata, schermata da metallo o priva di sensi ma viva.
+Le classi sono un supporto al triage e non una diagnosi medica. Vitalità bassa significa che il sensore rileva una presenza con variazioni minime, non che la persona sia in pericolo di vita. Se il radar non rileva nessuno l'indice non viene classificato, e l'assenza di presenza non è una quarta classe. Significa che il sensore non vede nessuno, non che sotto il banco non ci sia nessuno, perché la persona può essere fuori portata o schermata da metallo.
 
 \section{Taratura e validazione}
 \label{sec:vitalita-taratura}
 
-L'algoritmo si sviluppa su PC, sui file CSV, e il porting su ESP32 avviene solo a
-parametri validati. I dati esistono già dalla campagna del Capitolo~\ref{chap:confronto}. La
-dose-risposta di Sezione~\ref{sec:dose-risposta} copre i tre scenari a geometria costante
-(1~m in piedi, cinque trial ciascuno, immobile, micro-movimenti, cammino sul posto).
-Le due serie sotto il banco (Sezione~\ref{sec:sotto-banco}) sono l'insieme di validazione su
-geometria diversa. Il fondo per gate della taratura viene dalla stanza vuota di giorno, quello del firmware dalla notte (Sezione~\ref{sec:vitalita-bordo}). I parametri
-($\alpha_m$, $\alpha_v$, $k$ e le due soglie) sono stati scelti sui trial T01--T03
-dei tre scenari a 1~m, collocando le soglie negli intervalli fra le distribuzioni
-dell'indice per scenario. La prestazione è misurata sui trial T04--T05, mai usati per
-la scelta. La metrica è la recall per classe, cioè la percentuale di campioni di ogni
-scenario che cadono nella classe attesa, mediata sulle classi, e il transitorio è
-scartato come nel Capitolo~\ref{chap:confronto}. Nella taratura il gate attivo era fissato al
-gate~2 anziché ricavato dalla distanza, perché a 1~m la persona sta a cavallo dei
-gate 1 e 2 e il gate~2 ha il fondo più pulito. La conseguenza di questa scelta è
-discussa sotto.
+L'algoritmo è stato tarato al computer sui file CSV e portato sull'ESP32 solo a parametri validati. I dati sono quelli della dose-risposta a 1~m (Sezione~\ref{sec:dose-risposta}), con cinque trial per ciascuno dei tre scenari (immobile, micro-movimenti, cammino sul posto), e delle due serie sotto il banco (Sezione~\ref{sec:sotto-banco}), usate come validazione su geometria diversa. I parametri ($\alpha_m$, $\alpha_v$, $\beta$ e le due soglie) sono stati scelti sui trial T01--T03 dei tre scenari a 1~m. La prima soglia separa la persona immobile dai micro-movimenti, la seconda i micro-movimenti dal cammino. La verifica è fatta sui trial T04--T05, che non sono serviti a scegliere i parametri e misurano quindi come si comporta l'indice su dati nuovi. Per ogni scenario si conta la percentuale di campioni che cadono nella classe attesa, e la media di queste percentuali è la recall media riportata nelle tabelle. Il transitorio iniziale è scartato come nel Capitolo~\ref{chap:confronto}. Nella taratura il gate attivo era fissato al gate~2 anziché ricavato dalla distanza, perché a 1~m la persona sta a cavallo dei gate 1 e 2 e il gate~2 ha il fondo più pulito. Senza la variabilità, e con le soglie rifissate, la recall media su tutti i trial a 1~m passa dal 92,2 al 91,6\,\%.
 
 \begin{table}[htbp]
 \centering
-\caption{Prestazione dell'indice a tre classi con i parametri tarati e gate fisso 2. La recall è media per classe e per campione.}
+\caption{Prestazione dell'indice a tre classi con i parametri tarati e gate fisso 2.}
 \label{tab:vitalita-validazione}
 \small
 \begin{tabular}{@{}lc@{}}
@@ -285,47 +134,22 @@ Movimenti sotto il banco & 98,8 & moderata & $4{,}8\,\%$ \\
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/fig21_vitalita_scenari}
-\vspace{2.6cm}% spazio per la didascalia nel margine
-\caption{Distribuzione dell'indice di vitalità v3 per scenario, con la configurazione
-del firmware (gate dalla distanza riportata, fondo notturno), transitorio scartato.
-Le fasce colorate sono le tre classi. Le tre scatole a 1~m si separano. Sotto il banco
-la persona immobile dà mediana 45, a cavallo della soglia bassa/moderata. La sesta
-scatola ripete lo scenario con il gate fissato a 2, come nella taratura. La mediana
-scende a 24, per la ragione discussa nel testo.}
+\includegraphics[width=\linewidth]{Vitalita_scenari}
+\vspace{1.2cm}% spazio per la didascalia nel margine
+\caption{Distribuzione dell'indice di vitalità per scenario, con la configurazione del firmware (gate dalla distanza riportata, fondo notturno), transitorio scartato. Le fasce colorate sono le tre classi. La sesta scatola ripete la persona immobile sotto il banco con il gate fissato a 2, come nella taratura.}
 \label{fig:vitalita-scenari}
 \end{figure}
 
-\paragraph{Sulla geometria di taratura.} Sui trial di validazione a 1~m l'indice
-classifica correttamente l'88\,\% dei campioni su scenari mai visti in fase di
-taratura (Tabelle~\ref{tab:vitalita-validazione} e~\ref{tab:vitalita-scenari}). Le tre distribuzioni
+\paragraph{Sulla geometria di taratura.} Sui trial di validazione a 1~m la recall media è dell'88\,\% (Tabelle~\ref{tab:vitalita-validazione} e~\ref{tab:vitalita-scenari}). Le tre distribuzioni
 si separano (Figura~\ref{fig:vitalita-scenari}), con mediane 23, 77 e 100. La
 sovrapposizione è concentrata fra la persona immobile e quella che compie piccoli
-movimenti, la stessa zona in cui il PIR era imprevedibile (Sezione~\ref{sec:dose-risposta}).
+movimenti.
 
-\paragraph{Sulla geometria diversa.} Il 51,2\,\% sotto il banco è dominato da un
-solo scenario. Fra i quattro corretti c'è la persona immobile, riconosciuta nel
-97,5\,\% dei campioni. Sarebbe tentante presentarlo come prova che le soglie si
-trasferiscono alla geometria del progetto, ma non lo è. La ragione sta nel gate
-fissato a~2. Sotto il banco la persona è a 60~cm, cioè nel gate~1, e il gate~2
-raccoglie soltanto un'eco indiretta (Tabella~\ref{tab:vitalita-gate}). Il 25,7 nasce da un
-gate in cui la persona non è, e vale quanto l'immobile a 1~m per coincidenza. Letta
-nel suo gate, la stessa persona immobile ha energia 54, quanto i micro-movimenti a
-1~m. Con il criterio a distanza l'indice vale 45,4 ed è in classe bassa nel 49\,\% dei
-campioni. Il dato che si trasferisce davvero è la discriminazione fra immobile e in
-movimento, con il 96,1\,\% di recall su tutti e cinque gli scenari e su entrambe le
-geometrie, netta con qualunque criterio di gate. Ed è la distinzione che conta per il
-triage, perché separa chi è presente e immobile, con la massima priorità, da chi è
-presente e in movimento. Il caso che fallisce sono i movimenti sotto il banco,
-classificati alta anziché moderata, ma l'etichetta attesa era stata assegnata per
-analogia con il caso a 1~m, senza ground truth indipendente. Poiché a 60~cm una
-persona che si aggiusta produce un ritorno molto forte, il dato onesto è che l'indice
-colloca quello scenario in alto, non che sbagli.
+\paragraph{Sulla geometria diversa.} Il 51,2\,\% sotto il banco è la media di due scenari molto diversi, la persona immobile riconosciuta nel 97,5\,\% dei campioni e i movimenti nel 4,8\,\%. Non è però una prova che le soglie si trasferiscano alla geometria del progetto. La ragione sta nel gate fissato a~2. Se a 1~m il gate~2 vede bene la persona, sotto il banco l'energia si concentra nel gate~1 (54 contro 21,7), e il gate~2 ne raccoglie soltanto un'eco indiretta (Tabella~\ref{tab:vitalita-gate}). Il 25,7 viene quindi da un gate che vede la persona solo di riflesso, e coincide con il valore dell'immobile a 1~m per caso. Nel gate~1 la stessa persona immobile ha energia 54, più vicina ai micro-movimenti a 1~m (66,5) che all'immobile (30,9), e con la configurazione del firmware (gate dalla distanza, fondo notturno) l'indice vale 45,4, in classe bassa solo nel 49\,\% dei campioni. Sotto il banco resta invece valida la distinzione fra immobile e in movimento, che è quella che conta per il triage. Su tutti e cinque gli scenari e su entrambe le geometrie ha una recall media del 96,1\,\%, con qualunque criterio di gate. L'unico scenario che fallisce sono i movimenti sotto il banco, classificati alta invece di moderata. Quella classe attesa però era stata assegnata per analogia con il caso a 1~m, e a 60~cm chi si aggiusta produce un ritorno molto forte, quindi non si può dire che l'indice sbagli.
 
 \begin{table}[htbp]
 \centering
-\caption{Energia in movimento media grezza per gate nei cinque scenari. A 60~cm la
-persona sta nel gate~1. Il gate~2 usato dalla taratura ne vede solo l'eco indiretta.}
+\caption{Energia in movimento media grezza per gate nei cinque scenari.}
 \label{tab:vitalita-gate}
 \small
 \begin{tabular}{@{}lrrrr@{}}
@@ -341,64 +165,45 @@ Movimenti sotto il banco & 96,5 & 99,8 & 95,1 & 43,9 \\
 \end{tabular}
 \end{table}
 
-Le soglie restano quindi specifiche della geometria in cui sono state tarate. Il gate
-fisso non è una soluzione, ma un modo di nascondere il problema. Per il progetto è
-gestibile, perché ogni sensore è montato in posizione fissa sotto il proprio arredo e
-può essere tarato una volta in quella posizione, mentre sarebbe un problema per un
-dispositivo portatile.
+Le soglie restano quindi legate alla geometria in cui sono state tarate, e il gate fisso non risolve il problema ma lo nasconde. Per il progetto è un limite gestibile, perché ogni sensore è montato in posizione fissa sotto il proprio arredo e può essere tarato una volta lì. Lo sarebbe molto meno per un dispositivo portatile.
 
 \section{Porting a bordo e verifica}
 \label{sec:vitalita-bordo}
 
-Su richiesta del relatore l'indice è calcolato a bordo del nodo e mostrato nella
-dashboard (Sezione~\ref{sec:webui}). Le
-Equazioni~\ref{eq:gate-attivo}, \ref{eq:netta}, \ref{eq:livello}, \ref{eq:variabilita} e~\ref{eq:vitalita} sono
-implementate in 74 righe di C++ senza dipendenze, con le stesse costanti del prototipo
-in un unico file di configurazione. Il costo è di poche operazioni in virgola mobile
-per campione. Il firmware usa il gate dalla distanza riportata. A 1~m riproduce la taratura (28,4, 73,9 e 99,4 contro 28,6, 71,0 e 99,2 con il gate fisso), e sotto il banco legge il gate in cui il radar colloca davvero la persona (Sezione~\ref{sec:vitalita-taratura}), così che la dipendenza dalla geometria è dichiarata anziché nascosta. Il fondo per gate è quello della stanza vuota notturna di
-6,5~ore, e la scelta del file di fondo sposta l'indice di meno di un punto.
+L'indice è calcolato a bordo del nodo e mostrato nella dashboard (Sezione~\ref{sec:webui}). Le Equazioni~\ref{eq:gate-attivo}--\ref{eq:vitalita} sono implementate in 74 righe di C++ senza dipendenze, con le stesse costanti del prototipo raccolte in un file di configurazione, e costano poche operazioni in virgola mobile per campione. A differenza della taratura, il firmware ricava il gate dalla distanza riportata e usa il fondo della stanza vuota notturna di 6,5~ore. A 1~m i risultati coincidono quasi con quelli della taratura (28,4, 73,9 e 99,4 contro 28,6, 71,0 e 99,2), e cambiare il fondo sposta l'indice di meno di un punto.
 
-Il criterio di accettazione era che l'indice calcolato sull'ESP32 e quello calcolato
-in Python sullo stesso CSV coincidessero entro l'arrotondamento. Il firmware scrive
-indice e classe in due colonne supplementari del CSV esportato dal browser
-(Sezione~\ref{sec:webui-progetto}), e uno script di confronto rilegge il file con il
-prototipo campione per campione. Le sessioni sono sei, da 90~s, con soggetto immobile, con
-micro-movimenti e in movimento, a circa 1,9~m e a 1~m. A regime i due indici
-coincidono entro $\pm 1$ nel 98,7--100\,\% dei campioni (Figura~\ref{fig:vitalita-bordo}).
-Nei primi 60~s circa divergono per una ragione strutturale. Le medie esponenziali del
-firmware partono dall'accensione del nodo e sono già a regime quando la sessione
-inizia, mentre quelle del prototipo partono dal primo campione del file. La divergenza
-iniziale conferma che le due implementazioni sono la stessa funzione applicata a stati
-iniziali diversi.
+Il porting è stato verificato confrontando l'indice calcolato sull'ESP32 con quello ricalcolato in Python sullo stesso CSV, con il criterio che coincidessero entro $\pm 1$. Il firmware scrive indice e classe in due colonne aggiuntive del CSV esportato dal browser (Sezione~\ref{sec:webui-progetto}), e uno script di confronto rilegge il file con il prototipo campione per campione. Le sessioni sono sei, da 90~s, con soggetto immobile, con micro-movimenti e in movimento, a circa 1,9~m e a 1~m. A regime i due indici coincidono entro $\pm 1$ nel 98,7--100\,\% dei campioni (Figura~\ref{fig:vitalita-bordo}). Nei primi 60~s circa divergono, perché le medie esponenziali del firmware sono aggiornate dall'accensione del nodo, mentre quelle del prototipo partono dal primo campione del file. La differenza dipende quindi solo dal punto di partenza, non dal calcolo.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/fig22_vitalita_bordo}
-\caption{Verifica del porting, con l'indice calcolato a bordo dell'ESP32 e il
-ricalcolo offline sullo stesso CSV esportato dalla web UI per una persona immobile a
-1~m. Nei primi
-60~s le medie esponenziali offline devono ancora convergere. Dopo, le due curve
-coincidono entro $\pm 1$ nel 100\,\% dei campioni.}
+\includegraphics[width=\linewidth]{Vitalita_bordo}
+\caption{Verifica del porting, con l'indice calcolato a bordo dell'ESP32 e il ricalcolo offline sullo stesso CSV esportato dalla web UI, persona immobile a 1~m.}
 \label{fig:vitalita-bordo}
 \end{figure}
 
-Le sessioni dal vivo sono una dimostrazione del funzionamento a bordo, non una
-seconda validazione delle soglie. A 1,9~m le tre condizioni hanno dato 19,9 (bassa),
-68,7 (moderata) e 94,0, e l'ultimo valore sta a cavallo della soglia 95 tarata a 1~m,
-un'altra manifestazione della dipendenza dalla geometria. A 1~m gli indici sono stati
-47,7, 99,4 e 99,1, con i micro-movimenti classificati alta. Il gate~1 grezzo (97,9,
-canale in movimento attivo nel 99\,\% dei campioni) mostra però che lo stimolo di
-quella sessione era un movimento pieno, non i micro-movimenti della serie di taratura
-(66--68, canale attivo nel 72\,\%). L'indice ha quindi letto correttamente lo stimolo
-che ha ricevuto, ed è la condizione ``micro-movimenti'' a dipendere dall'operatore e a
-non riprodursi fra sessioni.
+Queste sessioni mostrano il funzionamento a bordo, ma non sono una seconda validazione delle soglie (Tabella~\ref{tab:vitalita-live}). Tre valori cadono fuori dalla classe attesa. A 1,9~m il movimento resta appena sotto la soglia 95 tarata a 1~m, e a 1~m la persona immobile cade appena sopra la soglia 45. Sempre a 1~m i micro-movimenti sono classificati alta, ma in quella sessione l'energia del gate~1 era 97,9, contro 66--68 nei micro-movimenti della taratura. Lo stimolo era quindi un movimento pieno, e l'indice l'ha letto correttamente. È la condizione ``micro-movimenti'' a non riprodursi fra sessioni, perché dipende da quanto si muove la persona.
+
+\begin{table}[htbp]
+\centering
+\caption{Indice medio nelle sessioni dal vivo, con la classe assegnata.}
+\label{tab:vitalita-live}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & Immobile & Micro-movimenti & Movimento \\
+\midrule
+1,9~m & 19,9 (bassa) & 68,7 (moderata) & 94,0 (moderata) \\
+1~m & 47,7 (moderata) & 99,4 (alta) & 99,1 (alta) \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Limiti, casi limite ed estensioni}
 \label{sec:vitalita-limiti}
 
-La stessa costruzione non è applicabile all'\ldc. Sull'esemplare in dotazione l'energia non cresce con il movimento (Sezione~\ref{sec:dose-risposta}), e non esiste la
-grandezza continua da cui l'indice si calcola. L'obbiettivo O6 resta sull'\ldb, come
-limite dell'esemplare e non del modello. I comportamenti dell'indice nei casi limite
+L'indice non si può calcolare con l'\ldc. Sull'esemplare in dotazione l'energia non cresce con il movimento (Sezione~\ref{sec:dose-risposta}), e manca quindi la grandezza continua su cui l'indice si basa. L'indice è definito solo sull'\ldb, e il limite va attribuito all'esemplare, non al modello.
+
+I comportamenti dell'indice nei casi limite
 sono raccolti in Tabella~\ref{tab:vitalita-casilimite}.
 
 \begin{table}[htbp]
@@ -411,33 +216,107 @@ sono raccolti in Tabella~\ref{tab:vitalita-casilimite}.
 \textbf{Situazione} & \textbf{Comportamento} & \textbf{Note} \\
 \midrule
 La persona esce dal campo & indice a 0 e nessuna classe entro la coda di presenza
-  del radar (circa 9--12~s stimati, Sezione~\ref{sec:latenza}) & forzatura sulla condizione di
-  presenza. Le medie continuano ad aggiornarsi \\
-La persona si addormenta & da alta a bassa in qualche decina di secondi & le medie
-  esponenziali decadono con le loro costanti (4 e 20~s) \\
-Ventilatore o tenda in movimento & possibile falsa classe moderata & limite da
-  dichiarare. Mitigazione tramite le soglie per gate del radar \\
+  del radar (circa 9--12~s stimati, Sezione~\ref{sec:latenza}) & l'indice dipende dalla presenza. Le medie continuano ad aggiornarsi \\
+La persona si addormenta & da alta a bassa in pochi secondi & il livello decade con la sua costante di circa 4~s \\
+Ventilatore o tenda in movimento & possibile falsa classe moderata & mitigabile con le soglie per gate del radar \\
 Due persone & indice riferito al gate della distanza riportata & coerente con il
   limite di un bersaglio per canale (Sezione~\ref{sec:due-persone}) \\
 Persona oltre 4--5~m & energia debole, indice sottostimato & la portata utile
   dell'indice non è stata caratterizzata \\
 Persona a meno di 1,5~m & nessun effetto, l'indice usa i soli canali in movimento &
-  scelta imposta da Sezione~\ref{sec:c3-5-2} \\
+  perché i gate stazionari sotto 1,5~m sono nulli (Sezione~\ref{sec:c3-5-2}) \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-I limiti dell'indice, nell'ordine in cui pesano, sono quattro. Il primo è che le
-soglie sono specifiche dell'installazione. Il secondo è che la validazione poggia su
-un solo soggetto e due trial per scenario. Il terzo è la mancanza di una ground truth
-indipendente per la classe intermedia, e il quarto è che la portata utile non è
-caratterizzata. Sono state inoltre individuate tre estensioni, non necessarie
-all'obbiettivo. L'auto-taratura all'installazione, che registri il fondo a stanza vuota e un riferimento di movimento sotto l'arredo, è la prima da fare, perché risolve il limite principale. La seconda è un'isteresi sulle classi, che farebbe cambiare
-un'etichetta solo dopo qualche secondo di stabilità, così che non sfarfalli quando
-l'indice oscilla intorno a una soglia, come nella sessione a 1,9~m. La terza è un
-indicatore di confidenza affiancato all'indice, funzione della stabilità del gate
-attivo, che direbbe quanto fidarsi del valore. La sostituzione della componente lenta
-con una potenza in banda respiratoria, ipotizzata nella prima specifica, non è invece
-più fra le priorità, per la scelta di formulazione della Sezione~\ref{sec:vitalita-motivazione}.
+I limiti dell'indice:
 
-Resta infine un aspetto di trattamento dei dati. Per il monitoraggio in ambienti scolastici il progetto indica le cautele del GDPR, fino a una valutazione d'impatto quando sono coinvolti minori~\cite{callisto2026dipme}. L'indice di vitalità non aggiunge un problema nuovo, perché è una misura generica di quanto si muove chi è presente e non una misura fisiologica (Sezione~\ref{sec:vitalita-motivazione}). Rientra quindi nella stessa valutazione che riguarda già il dato di presenza.
+\begin{itemize}
+    \item le soglie sono specifiche dell'installazione;
+
+    \item la validazione poggia su un solo soggetto e due trial per scenario;
+
+    \item la classe intermedia non ha un riferimento indipendente, perché nessuno strumento ha misurato quanto si muoveva la persona durante i micro-movimenti;
+
+    \item non è stato misurato fino a che distanza l'indice classifica correttamente, perché è tarato a 1~m e provato solo sotto il banco.
+\end{itemize}
+
+Tre estensioni che migliorerebbero l'indice:
+
+\begin{itemize}
+    \item \textbf{Auto-taratura all'installazione.} Registrerebbe il fondo a stanza vuota e un riferimento di movimento sotto l'arredo, e risolverebbe il primo limite.
+
+    \item \textbf{Classi più stabili.} La classe cambierebbe solo dopo qualche secondo oltre la soglia, così che l'etichetta non sfarfalli quando l'indice oscilla intorno a una soglia, come nella sessione a 1,9~m.
+
+    \item \textbf{Indicatore di confidenza.} Affiancato all'indice e calcolato dalla stabilità del gate attivo, direbbe quanto fidarsi del valore.
+\end{itemize}
+
+Resta infine un aspetto di trattamento dei dati. Per il monitoraggio in ambienti scolastici il progetto indica le cautele del GDPR, fino a una valutazione d'impatto quando sono coinvolti minori~\cite{callisto2026dipme}. L'indice di vitalità non aggiunge un problema nuovo, perché non è una misura fisiologica, e rientra nella stessa valutazione che riguarda già il dato di presenza.
+
+\section{Il rilevamento del respiro}
+\label{sec:respiro}
+
+Il respiro è il micro-movimento che permette al radar di rilevare anche la persona immobile, e l'energia per gate permette di stimarne il ritmo. Il metodo è quello descritto nella Sezione~\ref{subsec:corpo-immobile}. Si campiona
+a 5~Hz un canale di energia per gate in engineering mode, si applica la FFT alla serie
+temporale e si cerca il picco in banda 0,1--0,5~Hz. La frequenza del picco per 60 dà
+gli atti al minuto. L'\ldb\ espone venti serie di energia e non tutte sono
+utilizzabili. Alcune sono sature (Sezione~\ref{sec:c3-5-1}), altre nulle
+(Sezione~\ref{sec:c3-5-2}), altre piatte perché lontane dal bersaglio. Lo script di
+analisi esamina tutti i canali, scarta saturi e piatti con criteri dichiarati, ordina
+i rimanenti per rapporto segnale-rumore e riporta la mediana delle stime concordi~\cite{repoTesi}.
+
+\subsection{Prove senza ground truth}
+\label{sec:respiro-senza-gt}
+
+Su un soggetto fermo a 40~cm sette canali in
+movimento indipendenti concordano su 0,264~Hz, cioè 15,8 atti al minuto, con rapporto
+segnale-rumore fino a 12,8. Sui cinque trial del soggetto seduto a 2,30~m
+(Sezione~\ref{sec:persona-ferma}) i canali in movimento dei gate 2--8 concordano su 18--20
+atti al minuto, e a quella distanza non sono saturi (Figura~\ref{fig:respiro}). Sotto il
+banco (Sezione~\ref{sec:sotto-banco}) il respiro è estraibile in quattro trial su cinque, con
+$21{,}3 \pm 2{,}3$ atti al minuto.
+In tutte e tre le geometrie i canali stazionari danno 6--9 atti al minuto, troppo
+pochi per un adulto a riposo, e sono verosimilmente un artefatto del filtraggio
+interno. Queste sono stime concordi fra canali e non misure con un errore, perché il
+ritmo reale non è noto.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{Respiro}
+\caption{Energia per gate di un soggetto immobile a 2,3~m e suo spettro.}
+\label{fig:respiro}
+\end{figure}
+
+\subsection{La verifica a ritmo imposto}
+\label{sec:respiro-metronomo}
+
+Per verificare la stima serve conoscere il ritmo reale, e il modo più semplice è imporlo.
+Il soggetto è seduto a 2~m rivolto al sensore, perché a 1~m i canali in movimento
+saturano, e respira seguendo un metronomo impostato al doppio della frequenza respiratoria, un colpo per l'inspirazione e uno per l'espirazione. Sono stati provati tre ritmi, con cinque trial ciascuno da 162~s utili,
+più tre trial di stanza vuota come controllo negativo
+(Tabella~\ref{tab:respiro-metronomo}).
+
+\begin{table}[htbp]
+\centering
+\caption{Stima respiratoria contro ritmo imposto, \ldb\ a 2~m. ``Trial concordi''
+conta quelli in cui l'analisi ha restituito il ritmo imposto e non il suo doppio. }
+\label{tab:respiro-metronomo}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Ritmo imposto & Trial concordi & Stima & Errore \\
+\midrule
+10 atti/min & 4/5 & $10{,}00 \pm 0{,}00$ & $0{,}00$ \\
+15 atti/min & 4/5 & $14{,}95 \pm 0{,}30$ & $-0{,}05$ \\
+20 atti/min & 5/5 & $19{,}64 \pm 0{,}09$ & $-0{,}36$ \\
+\midrule
+Stanza vuota & --- & \multicolumn{2}{c}{\textbf{nessuna stima in 3 trial su 3}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Quando l'analisi trova il ritmo giusto la stima è accurata, con errore medio di 0,22 atti al minuto sui tredici trial concordi e massimo 0,4. Nei due trial restanti l'analisi ha restituito esattamente il doppio del ritmo imposto, e il motivo è fisico. L'energia per gate misura quanto si sposta il torace, non in che direzione. In ogni respiro il torace si sposta due volte, in inspirazione e in espirazione, quindi l'energia ha due picchi per respiro e nello spettro compare, oltre al ritmo vero, anche il suo doppio. Quando il picco al doppio è più alto, l'analisi sceglie quello. Dallo spettro di un solo canale non si può distinguere un respiro a 30 atti al minuto da uno a 15 con due picchi per ciclo.
+
+Il confronto con il ritmo imposto ha anche permesso di correggere lo script. Prima scartava stime valide quando canali in movimento e stazionari concordavano, e quando trovava sia il ritmo sia il suo doppio poteva scegliere il doppio. Ora sceglie il più basso dei due. È stata inoltre aggiunta una soglia di plausibilità a 8 atti al minuto, che rende il metodo cieco a una respirazione molto lenta.
+
+Restano due limiti. Il metronomo approfondisce il respiro, quindi la validazione riguarda la frequenza e non l'ampiezza del segnale in condizioni realistiche. Inoltre sull'esemplare di \ldc\ lo stesso metodo recupera la frequenza in un trial su tre, e il respiro resta quindi una misura dell'\ldb.

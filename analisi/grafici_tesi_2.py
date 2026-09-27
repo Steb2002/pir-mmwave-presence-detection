@@ -474,7 +474,7 @@ def fig_vitalita_scenari():
     for i, d in enumerate(dati, start=1):
         ax.text(i, 2, f"med {statistics.median(d):.0f}", ha="center", fontsize=7.5, color="#333")
     ax.set_title("Indice di vitalità v3 con la configurazione del firmware (gate dalla distanza, fondo notturno)\n"
-                 r"$\alpha_m$ = 0,05 · $\alpha_v$ = 0,01 · $k$ = 0,5 · soglie 45 e 95 · la sesta scatola usa il gate fisso 2 della taratura",
+                 r"$\alpha_m$ = 0,05 · $\alpha_v$ = 0,01 · $\beta$ = 0,5 · soglie 45 e 95 · la sesta scatola usa il gate fisso 2 della taratura",
                  fontsize=10.5, pad=14)
     salva(fig, "fig21_vitalita_scenari")
     return [(s[0].replace("\n", " "), statistics.median(d)) for s, d in zip(sc, dati)]

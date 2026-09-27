@@ -686,10 +686,10 @@ def fig_consumi():
             ("HLK-LD2420", 50.0, "#4c9f70"),
             ("HLK-LD2410B", 80.0, C_RADAR),
             ("ESP32 (WiFi attivo)", 100.0, C_GRIGIO)]
-    nodi = [("deep-sleep + PIR\n(guardiano)", 0.06),
-            ("PIR sempre attivo\n(modem-sleep)", 25.0),
-            ("mmWave, senza\nWiFi continuo", 130.0),
-            ("mmWave + WiFi\nsempre attivo", 200.0)]
+    nodi = [("ESP32 in deep-sleep\n+ PIR", 0.06),
+            ("ESP32 + PIR,\nWiFi spento", 25.0),
+            ("ESP32 + HLK-LD2410B,\nWiFi spento", 130.0),
+            ("ESP32 + HLK-LD2410B\n+ WiFi (web UI)", 200.0)]
     fig, axes = plt.subplots(1, 2, figsize=(10.4, 3.9))
     fig.subplots_adjust(wspace=0.55)
 
@@ -700,20 +700,21 @@ def fig_consumi():
     axes[0].set_xscale("log")
     axes[0].set_xlabel("corrente media dichiarata [mA, scala log]")
     for yi, c in zip(y, comp):
-        axes[0].text(c[1] * 1.25, yi, f"{c[1]:g} mA", va="center", fontsize=9)
+        axes[0].text(c[1] * 1.25, yi, f"{c[1]:g} mA".replace('.', ','), va="center", fontsize=9)
     axes[0].set_xlim(0.02, 400)
     axes[0].set_title("Singoli componenti\n(valori da datasheet, non misurati)")
 
     aut_h = [3000 * 0.85 / n[1] for n in nodi]
     y2 = np.arange(len(nodi))
-    axes[1].barh(y2, aut_h, color=[C_PIR, "#f0a202", "#4c9f70", C_RADAR], edgecolor="white")
+    # stessi colori del pannello di sinistra: arancio per i nodi con il PIR, blu per quelli con l'HLK-LD2410B
+    axes[1].barh(y2, aut_h, color=["#f0a202", "#f6c86b", "#7fb1dc", C_RADAR], edgecolor="white")
     axes[1].set_yticks(y2)
     axes[1].set_yticklabels([n[0] for n in nodi], fontsize=9)
     axes[1].set_xscale("log")
     axes[1].set_xlabel("autonomia stimata [ore, scala log]")
     for yi, h in zip(y2, aut_h):
         if h > 8760:
-            et = f"{h/8760:.1f} anni"
+            et = f"{h/8760:.1f} anni".replace('.', ',')
         elif h > 48:
             et = f"{h/24:.0f} giorni"
         else:
@@ -721,8 +722,7 @@ def fig_consumi():
         axes[1].text(h * 1.3, yi, et, va="center", fontsize=9)
     axes[1].set_xlim(5, 1e6)
     axes[1].set_title("Nodo completo su batteria 18650 3000 mAh\n(efficienza regolatore 85 %)")
-    fig.suptitle("Obiettivo 4 - consumo energetico: perché serve l'architettura ibrida "
-                 "PIR + mmWave", y=1.05)
+    fig.suptitle("Consumo dei componenti e autonomia del nodo completo", y=1.05)
     salva(fig, "fig13_consumi")
 
 
