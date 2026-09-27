@@ -61,11 +61,11 @@ costo praticamente nullo, con il PIR nel ruolo di guardiano.
 \section{Autonomia a batteria}
 \label{sec:autonomia}
 
-Con una cella litio-ione 18650 da 3000~mAh e un rendimento del regolatore dell'85\,\% restano circa 2550~mAh utili, che divisi per la corrente media danno le autonomie della Tabella~\ref{tab:autonomia}. La Figura~\ref{fig:consumi} le riassume insieme ai consumi dei componenti. Per il nodo in deep-sleep conta anche l'autoscarica della cella, che però non è inclusa nel calcolo.
+Una cella litio-ione 18650 da 3000~mAh, con un regolatore all'85\,\% di rendimento, fornisce circa 2550~mAh utili, che divisi per la corrente media danno le autonomie della Tabella~\ref{tab:autonomia} e della Figura~\ref{fig:consumi}. Il calcolo non include l'autoscarica della cella.
 
 \begin{table}[htbp]
 \centering
-\caption{Autonomia stimata con una cella 18650 da 3000~mAh, per correnti medie tipiche dentro gli intervalli della Tabella~\ref{tab:consumi-nodi}.}
+\caption{Autonomia stimata con una cella 18650 da 3000~mAh.}
 \label{tab:autonomia}
 \small
 \begin{tabular}{@{}lrr@{}}
@@ -82,13 +82,12 @@ ESP32 in deep-sleep + PIR & 0,06~mA & 4,9 anni \\
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{Consumi}
-\caption{Consumi da datasheet dei singoli componenti e autonomia stimata dei nodi
-completi, in scala logaritmica.}
+\includegraphics[width=0.9\linewidth]{Consumi}
+\caption{Consumi dei componenti e autonomia dei nodi, in scala logaritmica.}
 \label{fig:consumi}
 \end{figure}
 
 \section{Cosa indicano i consumi}
 \label{sec:consumi-vincoli}
 
-I numeri di questo capitolo fissano i vincoli per il nodo del progetto. Con il radar sempre acceso la batteria dura meno di un giorno (Tabella~\ref{tab:autonomia}). Un nodo in deep-sleep svegliato dal PIR arriva invece a 4,9 anni, un limite superiore, perché durante le lezioni il PIR sveglia il nodo di continuo. Una via intermedia è accendere il radar un minuto ogni cinque, con l'ESP32 in light-sleep negli altri quattro. La corrente media scende a circa 27~mA e l'autonomia supera i tre giorni, al prezzo di una latenza di rilevamento fino a quattro minuti. Su questi valori si basa l'architettura proposta nelle conclusioni (Capitolo~\ref{chap:conclusioni}), in cui il PIR decide quando accendere il radar.
+Con il radar sempre acceso la batteria dura meno di un giorno (Tabella~\ref{tab:autonomia}), mentre un nodo in deep-sleep svegliato dal PIR arriva a 4,9 anni, un limite superiore perché durante le lezioni il PIR lo sveglia di continuo. Accendendo il radar un minuto ogni cinque, con l'ESP32 in light-sleep negli altri quattro, la corrente media scende a circa 27~mA e l'autonomia supera i tre giorni, con una latenza fino a quattro minuti. Su questi valori si basa l'architettura delle conclusioni (Capitolo~\ref{chap:conclusioni}), in cui il PIR decide quando accendere il radar.
