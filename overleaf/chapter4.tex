@@ -86,8 +86,7 @@ in cui il soggetto si muoveva per cinque minuti (Figura~\ref{fig:impulsi-pir}). 
 percentuale è quindi il numero di eventi moltiplicato per la ritenuta, cioè un
 conteggio di eventi travestito da frazione di tempo. In posizione H gli impulsi si
 concatenano finché il movimento continua, fino a coprire un intero trial di 62~s, e la
-percentuale diventa allora una vera frazione di tempo con movimento rilevato. Il
-significato delle due modalità è descritto nella Sezione~\ref{subsec:pir-principio}.
+percentuale diventa allora una vera frazione di tempo con movimento rilevato. Il significato delle due modalità è descritto nella Sezione~\ref{subsec:pir-dati}.
 
 \begin{figure}[htbp]
 \centering
@@ -154,7 +153,7 @@ Il cammino sul posto è stato ripetuto a 1, 2, 3, 4 e 5~m, con cinque trial per 
 tempo, mentre da 2~m in poi resta a zero. Sono venti
 trial consecutivi al 100\,\% di falsi negativi con un soggetto in movimento continuo
 davanti al sensore, e il crollo fra 1 e 2~m non è graduale. Questo esito è in aperto
-contrasto con la portata di 3--7~m dichiarata dal costruttore, ma da solo non
+contrasto con la portata di 3--7~m dichiarata dal costruttore~\cite{hcsr501}, ma da solo non
 distingue fra due spiegazioni, cioè il tipo di movimento oppure un esemplare guasto o
 tarato male. Per decidere, il soggetto ha ripetuto la prova camminando in modo
 continuo trasversalmente all'asse del sensore, a distanza costante. Il resto è rimasto invariato (trimmer di sensibilità nella stessa posizione), con il ponticello in H e tre trial per distanza. Il risultato è in Figura~\ref{fig:tipo-movimento}.
@@ -374,14 +373,14 @@ ogni posizione, e oscilla lateralmente il busto con ampiezza costante. Il gate m
 vale 2 e i trial sono da uno a tre per angolo (Figura~\ref{fig:angolare-due-radar}). L'\ldb\ rileva al
 100\,\% fino a 90\textdegree\ compresi, con l'energia che cala di due punti soli fra
 l'asse e i 90\textdegree\ (da 96,5 a 94,3), e crolla fra 90 e 120\textdegree. La
-copertura eccede quindi nettamente i $\pm 60$\textdegree\ del manuale. Il PIR collassa prima,
+copertura eccede quindi nettamente i $\pm 60$\textdegree\ del manuale~\cite{hilinkManualV104}. Il PIR collassa prima,
 dal 100\,\% sull'asse al 12\,\% a 90\textdegree\ e a zero a 120\textdegree. Fra 45 e
 75\textdegree\ la dispersione fra trial è però dell'ordine dell'effetto, e a
 45\textdegree\ i tre trial danno 100, 100 e 33\,\%, per cui le sole affermazioni
 sostenibili riguardano i tre estremi. L'irripetibilità è essa stessa un risultato, lo stesso
 comportamento già visto nella zona intermedia della dose-risposta. L'\ldc\ a 1~m ha il fascio utile fino a
 circa 75\textdegree\ ed è al fondo a 90\textdegree, più stretto dell'\ldb\ e più largo
-dei $\pm 45$ o $\pm 60$\textdegree\ del suo manuale. Il confine è coerente anche con
+dei $\pm 45$ o $\pm 60$\textdegree\ del suo manuale~\cite[§1.1 e §5.2]{hilinkManualLD2420}. Il confine è coerente anche con
 il margine ridotto del trasmettitore dell'esemplare (Sezione~\ref{sec:c3-2-6}).
 
 \begin{figure}[htbp]
@@ -442,7 +441,7 @@ Con A ferma e B in movimento i due canali sono attivi insieme nel 79\,\% dei cam
 \section{Penetrazione degli ostacoli}
 \label{sec:ostacoli}
 
-Il pannello è interposto a 20~cm dal sensore, perpendicolare all'asse e in piedi da solo, senza supporti. Il soggetto cammina sul posto, perché da fermo il canale stazionario satura e l'attenuazione non sarebbe misurabile. Le distanze sono due. L'\ldb\ lavora a 3~m, dove la sua energia sta circa a metà scala, lontana sia dalla saturazione sia dal fondo. Il PIR lavora a 1~m, perché a 3~m già senza ostacolo non vede il movimento sul posto. L'\ldc\ ha ripetuto la serie a 1~m, perché oltre l'esemplare non rileva (Sezione~\ref{sec:portata-massima}). Per l'\ldc\ l'attenuazione è in decibel, $10\log_{10}(E_0/E)$ sull'energia del gate della persona, con $E_0$ senza ostacolo ed $E$ con l'ostacolo, la stessa conversione usata dal tool del produttore (Sezione~\ref{sec:c3-2-5}). Il produttore non documenta però che quelle energie siano potenze, quindi il valore in decibel resta un'ipotesi. Il riferimento senza ostacolo è la media di sei trial a inizio e fine sessione, e i risultati sono in Tabella~\ref{tab:ostacoli} e Figura~\ref{fig:attenuazione}.
+Il pannello è interposto a 20~cm dal sensore, perpendicolare all'asse e in piedi da solo, senza supporti. Il soggetto cammina sul posto, perché da fermo il canale stazionario satura e l'attenuazione non sarebbe misurabile. Le distanze sono due. L'\ldb\ lavora a 3~m, dove la sua energia sta circa a metà scala, lontana sia dalla saturazione sia dal fondo. Il PIR lavora a 1~m, perché a 3~m già senza ostacolo non vede il movimento sul posto. L'\ldc\ ha ripetuto la serie a 1~m, perché oltre i 2~m l'esemplare non rileva (Sezione~\ref{sec:portata-massima}). Per l'\ldc\ l'attenuazione è in decibel, $10\log_{10}(E_0/E)$ sull'energia del gate della persona, con $E_0$ senza ostacolo ed $E$ con l'ostacolo, la stessa conversione usata dal tool del produttore (Sezione~\ref{sec:c3-2-5}). Il produttore non documenta però che quelle energie siano potenze, quindi il valore in decibel resta un'ipotesi. Il riferimento senza ostacolo è la media di sei trial a inizio e fine sessione, e i risultati sono in Tabella~\ref{tab:ostacoli} e Figura~\ref{fig:attenuazione}.
 
 \subsection{Attenuazione per materiale}
 \label{sec:ostacoli-materiali}
@@ -517,12 +516,12 @@ rileva al 100\,\% a 5 e 6~m e allo 0\,\% a 7~m in tre trial su tre. A 6~m la dis
 riportata ha massimo esattamente 600~cm in cinque trial su cinque, con dispersione di
 2--5~cm contro i 10--11 di 5~m. Non si tratta di una misura più precisa, ma del tetto
 degli otto gate da 75~cm configurati. La presenza a 6~m è retta dal canale stazionario
-(energia 62--82), mentre a 7~m i gate 7 e 8 restano molto sotto le soglie. Il tetto di 600~cm dichiarato dal manuale risulta così misurato.
+(energia 62--82), mentre a 7~m i gate 7 e 8 restano molto sotto le soglie. Il tetto di 600~cm dichiarato dal manuale~\cite[§5.2]{hilinkManualV104} risulta così misurato.
 
-\paragraph{PIR.} Con il trimmer a metà corsa, la sensibilità usata in tutta la campagna, l'oscillazione trasversale è rilevata al 24--33\,\% anche a 7~m, dove il radar per configurazione non vede più nulla. L'attraversamento a circa 1~m/s, rilevato al 98,7\,\% a 5~m, scende invece a 0, 6 e 0\,\% nei tre trial a 6~m, e sale al 30\,\% se il transito è più veloce. Al limite della portata conta quindi anche la velocità del transito, oltre al tipo e all'ampiezza del movimento. Con il trimmer al massimo, in una serie a parte rispetto al resto della campagna, l'attraversamento è rilevato al 100, 100, $56{,}8 \pm 18{,}0$ e $14{,}7 \pm 10{,}0\,\%$ a 5, 6, 7 e 8~m. Il limite sta quindi fra 7 e 8~m, coerente con i 3--7~m del datasheet, e supera il tetto del radar, ma solo per chi attraversa il campo.
+\paragraph{PIR.} Con il trimmer a metà corsa, la sensibilità usata in tutta la campagna, l'oscillazione trasversale è rilevata al 24--33\,\% anche a 7~m, dove il radar per configurazione non vede più nulla. L'attraversamento a circa 1~m/s, rilevato al 98,7\,\% a 5~m, scende invece a 0, 6 e 0\,\% nei tre trial a 6~m, e sale al 30\,\% se il transito è più veloce. Al limite della portata conta quindi anche la velocità del transito, oltre al tipo e all'ampiezza del movimento. Con il trimmer al massimo, in una serie a parte rispetto al resto della campagna, l'attraversamento è rilevato al 100, 100, $56{,}8 \pm 18{,}0$ e $14{,}7 \pm 10{,}0\,\%$ a 5, 6, 7 e 8~m. Il limite sta quindi fra 7 e 8~m, coerente con i 3--7~m del datasheet~\cite{hcsr501}, e supera il tetto del radar, ma solo per chi attraversa il campo.
 
 \paragraph{\ldc.} Con il gate massimo portato a 12 (840~cm), il valore di fabbrica
-che copre gli 8~m dichiarati, l'esemplare acquisisce a 1~m e mantiene a 2~m. Da 3~m in
+che copre gli 8~m dichiarati~\cite{hilinkManualLD2420}, l'esemplare acquisisce a 1~m e mantiene a 2~m. Da 3~m in
 su le sue energie sono il fondo del corridoio vuoto gate per gate. Il gate massimo non
 ha quindi aggiunto nulla, e il limite è dell'esemplare e non della configurazione né
 della stanza.
