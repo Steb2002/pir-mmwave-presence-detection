@@ -293,20 +293,23 @@ nello stesso trial (10 all'ingresso, 5 all'uscita), con la differenza appaiata
 calcolata trial per trial e nessuna riaccensione dopo il rilascio. L'\ldc\ è misurato
 in una sessione separata (5 trial all'ingresso, 3 all'uscita) con il ritardo di
 scomparsa portato da 30 a 5~s come sull'\ldb. Il PIR non era cablato, quindi manca la
-differenza appaiata.}
+differenza appaiata. Tutti i valori sono in secondi.}
 \label{tab:latenze}
 
 \small
-\begin{tabularx}{\linewidth}{@{}lrrrX@{}}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash\hsize=0.8\hsize}Xrrr>{\raggedright\arraybackslash\hsize=1.2\hsize}X@{}}
 \toprule
-\textbf{Grandezza} & \textbf{\ldb} & \textbf{PIR \pir} & \textbf{\ldc} & \textbf{Nota} \\
+\textbf{Grandezza} & \textbf{\ldb} & \textbf{PIR} & \textbf{\ldc} & \textbf{Nota} \\
 \midrule
-Latenza all'ingresso & $5{,}36 \pm 0{,}30$~s & $5{,}96 \pm 0{,}31$~s & $7{,}28 \pm 1{,}40$~s &
+Latenza all'ingresso & $5{,}36 \pm 0{,}30$ & $5{,}96 \pm 0{,}31$ & $7{,}28 \pm 1{,}40$ &
   latenza operativa, non del solo sensore \\
-Differenza appaiata \ldb\ $-$ PIR & \multicolumn{2}{c}{$\mathbf{-0{,}60 \pm 0{,}35}$~\textbf{s}} & --- &
+\addlinespace
+Differenza appaiata radar $-$ PIR & \multicolumn{2}{c}{$\mathbf{-0{,}60 \pm 0{,}35}$} & --- &
   il radar rileva per primo in 10 trial su 10 \\
-Tempo di rilascio all'uscita & $\mathbf{18{,}36 \pm 0{,}54}$~s & $12{,}96 \pm 1{,}40$~s & $7{,}7 \pm 0{,}5$~s &
-  \ldb\ più lento del PIR di $5{,}40 \pm 1{,}86$~s (appaiata). \ldc\ con ritardo 5~s, prima caduta \\
+\addlinespace
+Tempo di rilascio all'uscita & $\mathbf{18{,}36 \pm 0{,}54}$ & $12{,}96 \pm 1{,}40$ & $7{,}7 \pm 0{,}5$ &
+  \ldb\ più lento del PIR di $5{,}40 \pm 1{,}86$ (appaiata); \ldc\ con ritardo di 5~s, prima caduta \\
 \bottomrule
 \end{tabularx}
 \end{table}
