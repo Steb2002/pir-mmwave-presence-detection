@@ -98,7 +98,7 @@ Entrambi permettono di leggere e modificare i parametri (gate massimi, soglie pe
 
 Il protocollo seriale prevede due tipi di frame per lo scambio di informazioni fra il modulo e l'host \cite{hilinkProtoV107}:
 
-\textbf{Frame di comando} (inviati dall'host al modulo): La struttura è riportata nella Tabella~\ref{tab:c3-3}. Ogni comando va inviato dentro la modalità di configurazione, durante la quale il modulo sospende l'invio dei dati. Il modulo risponde con un frame della stessa struttura, in cui la parola di comando ha il bit più significativo posto a uno ed è seguita da uno stato (zero = successo) e dagli eventuali dati di risposta. Tutti i campi a più byte sono little-endian.
+\textbf{Frame di comando} (inviati dall'host al modulo): la struttura è riportata nella Tabella~\ref{tab:c3-3}. Ogni comando va inviato dentro la modalità di configurazione, durante la quale il modulo sospende l'invio dei dati. Il modulo risponde con un frame della stessa struttura, in cui la parola di comando ha il bit più significativo posto a uno ed è seguita da uno stato (zero = successo) e dagli eventuali dati di risposta. Tutti i campi a più byte sono little-endian.
 
 \begin{table}[!htb]
 \centering
@@ -118,7 +118,7 @@ Chiusura & 4~byte & 04 03 02 01 \\
 \end{tabularx}
 \end{table}
 
-\textbf{Frame di dati} (inviati dal modulo all'host a cadenza fissa): La struttura è riportata nella Tabella~\ref{tab:c3-4}. Il byte di tipo distingue il frame normale (0x02) da quello di engineering mode (0x01), e il byte di stato è una maschera di bit in cui un bersaglio in movimento e uno stazionario possono essere presenti insieme. I campi aggiunti dall'engineering mode sono quelli che fanno la differenza fra un sensore binario e uno strumento di misura (Sezione~\ref{sec:c3-1-5}).
+\textbf{Frame di dati} (inviati dal modulo all'host a cadenza fissa): la struttura è riportata nella Tabella~\ref{tab:c3-4}. Il byte di tipo distingue il frame normale (0x02) da quello di engineering mode (0x01), e il byte di stato è una maschera di bit in cui un bersaglio in movimento e uno stazionario possono essere presenti insieme. I campi aggiunti dall'engineering mode sono quelli che fanno la differenza fra un sensore binario e uno strumento di misura (Sezione~\ref{sec:c3-1-5}).
 
 \begin{table}[!htb]
 \centering
@@ -337,7 +337,7 @@ id 0x20–0x2F & soglie di mantenimento (maintain) dei gate 0–15 \\
 \end{tabularx}
 \end{table}
 
-\textbf{Dati trasmessi dal modulo:} Il documento di protocollo descrive soltanto i comandi che il modulo riceve e non il formato con cui trasmette i risultati del rilevamento. Il manuale indica di aprire un terminale seriale a 115200~baud per leggerli \cite[§4.1]{hilinkManualLD2420}. In modalità di fabbrica il modulo trasmette righe di testo che riportano la presenza rilevata (ON), l'assenza di presenza (OFF) e la distanza del bersaglio (Range NN).
+\textbf{Dati trasmessi dal modulo:} il documento di protocollo descrive soltanto i comandi che il modulo riceve e non il formato con cui trasmette i risultati del rilevamento. Il manuale indica di aprire un terminale seriale a 115200~baud per leggerli \cite[§4.1]{hilinkManualLD2420}. In modalità di fabbrica il modulo trasmette righe di testo che riportano la presenza rilevata (ON), l'assenza di presenza (OFF) e la distanza del bersaglio (Range NN).
 
 L'unità di misura del campo Range non è indicata in nessuno dei due documenti del produttore. Le prove a distanza nota descritte nel Capitolo~\ref{chap:confronto} hanno mostrato che il valore è espresso in centimetri quando un bersaglio è presente, mentre in assenza di bersaglio il campo assume un valore di riposo compreso fra 0 e 6, privo di significato come distanza. Il valore si aggiorna di rado e va quindi letto soltanto quando la presenza è alta.
 
@@ -466,9 +466,9 @@ Il modulo espone tre piedini, riportati nella Tabella~\ref{tab:c3-13} insieme al
 La configurazione del modulo è riassunta nell'elenco seguente, e i suoi effetti sono discussi nel Capitolo~\ref{chap:confronto}.
 
 \begin{enumerate}
-  \item \textbf{Ponticello di trigger}: Le prime acquisizioni sono state svolte in posizione L, poi il ponticello è stato spostato su H ripetendo gli scenari interessati.
-  \item \textbf{Trimmer del tempo di ritenuta al minimo}: La ritenuta misurata è di circa 3,4~s, invariata per tutta la campagna.
-  \item \textbf{Trimmer di sensibilità a metà corsa:} È stato portato al massimo soltanto nelle prove di portata massima, per verificare il valore dichiarato dal datasheet.
+  \item \textbf{Ponticello di trigger:} le prime acquisizioni sono state svolte in posizione L, poi il ponticello è stato spostato su H ripetendo gli scenari interessati.
+  \item \textbf{Trimmer del tempo di ritenuta al minimo:} la ritenuta misurata è di circa 3,4~s, invariata per tutta la campagna.
+  \item \textbf{Trimmer di sensibilità a metà corsa:} è stato portato al massimo soltanto nelle prove di portata massima, per verificare il valore dichiarato dal datasheet.
 \end{enumerate}
 
 \FloatBarrier
@@ -555,7 +555,7 @@ Sul \ldc{} lo sketch ha permesso di verificare che le 32 soglie in flash coincid
 
 \paragraph{Il logger dell'\ldb{}}
 
-Il logger dell'\ldb{} usa la libreria MyLD2410 \cite{myld2410}. Tre scelte condizionano la qualità dei dati.
+Usa la libreria MyLD2410 \cite{myld2410}. Tre scelte condizionano la qualità dei dati.
 
 \begin{itemize}
   \item \textbf{Campionamento a 5~Hz a periodo fisso}: il ciclo principale calcola l'istante del campione successivo anziché attendere un intervallo dopo l'elaborazione. Per questo la cadenza misurata è di 200~ms esatti su tutti gli intervalli (Sezione~\ref{sec:c3-5}).

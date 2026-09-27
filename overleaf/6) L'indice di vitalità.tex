@@ -19,7 +19,7 @@ L'algoritmo lavora sui campioni a 5~Hz prodotti dal logger e dal firmware della 
 
 \begin{align}
 g^{*} &= \min\!\left(\left\lfloor d_k / 75~\text{cm} \right\rfloor,\; 8\right)
-  && \text{gate attivo dalla distanza riportata} \label{eq:gate-attivo}\\
+  && \text{gate attivo} \label{eq:gate-attivo}\\
 \tilde e_k &= \max\!\left(0,\; \frac{e_{g^{*}}[k] - f_{g^{*}}}{100 - f_{g^{*}}} \cdot 100\right)
   && \text{energia netta, riscalata su 0--100} \label{eq:netta}\\
 M_k &= \alpha_m\, \tilde e_k + (1-\alpha_m)\, M_{k-1}
@@ -135,7 +135,6 @@ Movimenti sotto il banco & 98,8 & moderata & $4{,}8\,\%$ \\
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{Vitalita_scenari}
-\vspace{1.2cm}% spazio per la didascalia nel margine
 \caption{Distribuzione dell'indice di vitalità per scenario, con la configurazione del firmware (gate dalla distanza riportata, fondo notturno), transitorio scartato. Le fasce colorate sono le tre classi. La sesta scatola ripete la persona immobile sotto il banco con il gate fissato a 2, come nella taratura.}
 \label{fig:vitalita-scenari}
 \end{figure}

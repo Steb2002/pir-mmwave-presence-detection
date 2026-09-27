@@ -6,6 +6,8 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{enumitem}
+% Elenchi compatti: la classe e' a due facciate e allungherebbe gli spazi fra le voci
+\setlist[itemize,enumerate]{itemsep=2pt, parsep=0pt, topsep=4pt}
 \usepackage{textcomp}
 \usepackage{xurl}
 \addto\captionsitalian{\renewcommand{\lstlistingname}{Listato}}
@@ -19,6 +21,12 @@
 \setcounter{topnumber}{3}
 \setcounter{bottomnumber}{2}
 \setcounter{totalnumber}{4}
+% Pagine di soli float: allineate in alto, con spazio fisso fra un float e l'altro
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{14pt}
+\setlength{\@fpbot}{0pt plus 1fil}
+\makeatother
 
 % Nomi dei tre sensori, usati nei capitoli 4-8
 \newcommand{\ldb}{HLK-LD2410B}
@@ -57,20 +65,20 @@
 
 \maketitle
 
-\input{Abstract}
+\input{0) Abstract}
 
 \tableofcontents
 %\lstlistoflistings
 %\listoffigures
 %\listoftables
-\input{introduction}
-\input{chapter1}
-\input{chapter2}
-\input{chapter3}
-\input{chapter4}
-\input{chapter5}
-\input{chapter6}
-\input{conclusion}
+\input{1) Introduzione}
+\input{2) I sensori di presenza}
+\input{3) Analisi dei componenti hardware e dei dataset prodotti}
+\input{4) Metodologia di confronto}
+\input{5) Confronto sperimentale PIR vs mmWave}
+\input{6) L'indice di vitalità}
+\input{7) Consumo energetico}
+\input{8) Conclusioni e sviluppi futuri}
 
 
 \appendix
@@ -81,6 +89,6 @@
 \printbibliography
 \printindex
 
-\input{Ringraziamenti}
+\input{9) Ringraziamenti}
 
 \end{document}
