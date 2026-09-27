@@ -3,7 +3,7 @@
 
 Questo capitolo introduce i principi fisici alla base delle tecnologie di rilevamento considerate, analizzandone il funzionamento e le caratteristiche principali. L'analisi permette di comprendere come i diversi fenomeni fisici vengano sfruttati per rilevare la presenza di una persona e come questi si riflettano nel comportamento dei sensori.
 
-In particolare, la Sezione~\ref{sec:pir} descrive il sensore PIR, il suo principio di funzionamento e il motivo per cui non rileva un corpo immobile. La Sezione~\ref{sec:mmwave} presenta il radar FMCW a 24 GHz, il concetto di gate di distanza e il modo in cui rileva una persona ferma. La Sezione~\ref{sec:altre} richiama brevemente le altre tecnologie di rilevamento di presenza, non considerate nel confronto sperimentale. Infine, la Sezione~\ref{sec:confronto} mette a confronto PIR e mmWave e indica in quali scenari ciascuno dei due è preferibile.
+In particolare, la Sezione~\ref{sec:pir} descrive il sensore PIR (Passive InfraRed), il suo principio di funzionamento e il motivo per cui non rileva un corpo immobile. La Sezione~\ref{sec:mmwave} presenta il radar FMCW a 24 GHz, il concetto di gate di distanza e il modo in cui rileva una persona ferma. La Sezione~\ref{sec:altre} richiama brevemente le altre tecnologie di rilevamento di presenza, non considerate nel confronto sperimentale. Infine, la Sezione~\ref{sec:confronto} mette a confronto PIR e mmWave e indica in quali scenari ciascuno dei due è preferibile.
 
 
 \section{Il sensore PIR}
@@ -81,15 +81,32 @@ Fa eccezione la modalità di trigger, selezionabile con un ponticello, perché d
 Il PIR è il sensore di presenza più diffuso al mondo e da decenni equipaggia luci automatiche, antifurti, videocitofoni e termostati. La sua diffusione si spiega con diversi fattori:
 
 \begin{itemize}
-    \item \textbf{Consumo.} La corrente di riposo è inferiore a 50~$\mu$A, compatibile con anni di funzionamento a batteria \cite{hcsr501}.
+    \item \textbf{Consumo:} la corrente di riposo è inferiore a 50~$\mu$A, compatibile con anni di funzionamento a batteria \cite{hcsr501}.
 
-    \item \textbf{Costo.} Un modulo completo di lente e circuito di condizionamento costa pochi euro.
+    \item \textbf{Costo:} un modulo completo di lente e circuito di condizionamento costa pochi euro.
 
-    \item \textbf{Semplicità.} Il modulo fornisce direttamente un bit di rilevamento e non richiede alcuna elaborazione a valle.
+    \item \textbf{Semplicità:} il modulo fornisce direttamente un bit di rilevamento e non richiede alcuna elaborazione a valle.
 
-    \item \textbf{Natura passiva.} Il sensore non emette alcuna radiazione, e questo semplifica sia le certificazioni sia la conformità in materia di privacy.
+    \item \textbf{Natura passiva:} il sensore non emette alcuna radiazione, e questo semplifica sia le certificazioni sia la conformità in materia di privacy.
 \end{itemize}
 
+
+\subsection{Limitazioni}
+\label{subsec:pir-limiti}
+
+Gli stessi principi che rendono il PIR semplice ed economico ne fissano anche i limiti.
+
+\begin{itemize}
+    \item \textbf{Persona immobile:} il sensore risponde alla variazione del flusso infrarosso e non al suo valore, quindi una persona ferma non produce alcun segnale (Sezione~\ref{subsec:pir-principio}).
+
+    \item \textbf{Tipo di movimento:} la lente divide la scena in zone separate da zone cieche, e il sensore rileva chi le attraversa. Chi si muove sul posto resta nella stessa zona e viene rilevato poco, se non da vicino (Sezione~\ref{subsec:fresnel}).
+
+    \item \textbf{Contrasto termico:} il segnale dipende dalla differenza di temperatura fra corpo e sfondo, e in un ambiente caldo la portata si riduce (Sezione~\ref{subsec:pir-principio}).
+
+    \item \textbf{Ostacoli:} il sensore deve vedere direttamente la scena, perché vetro e pannelli interposti ne bloccano la radiazione, come mostra il Capitolo~\ref{chap:confronto}.
+
+    \item \textbf{Uscita a un bit:} il modulo dice solo se ha visto un movimento, con un impulso di durata fissa, e non dove si trova la persona né quanto si muove (Sezione~\ref{subsec:pir-dati}).
+\end{itemize}
 
 \section{Il radar mmWave a 24 GHz}
 \label{sec:mmwave}
@@ -146,18 +163,29 @@ Una persona ferma non è mai realmente immobile, perché il torace si muove di a
 I radar mmWave di fascia consumer si sono diffusi negli ultimi anni in diversi ambiti, per esempio nell'illuminazione automatica di uffici e abitazioni, nell'automazione degli edifici per stimare l'occupazione degli ambienti, nel monitoraggio del sonno e nei sistemi di rilevamento delle cadute per l'assistenza agli anziani \cite{mmwaveOccupancy}. In ambito di ricerca gli stessi radar sono impiegati per il monitoraggio senza contatto dei parametri vitali, in particolare della frequenza respiratoria e cardiaca \cite{upm2024vitals,uts2024vitals,mdpi2024mmwaverm}. La loro diffusione si spiega con diversi fattori:
 
 \begin{itemize}
-    \item \textbf{Rilevamento del corpo fermo.} Il modulo conferma la presenza anche di una persona immobile (Sezione~\ref{subsec:corpo-immobile}).
+    \item \textbf{Rilevamento del corpo fermo:} il modulo conferma la presenza anche di una persona immobile (Sezione~\ref{subsec:corpo-immobile}).
 
-    \item \textbf{Informazione graduata.} Oltre alla presenza il modulo riporta la distanza del bersaglio e un'energia riflessa per ogni gate, che permettono di sapere non solo se c'è qualcuno ma dove si trova e quanto si muove.
+    \item \textbf{Informazione graduata:} oltre alla presenza il modulo riporta la distanza del bersaglio e un'energia riflessa per ogni gate, che permettono di sapere non solo se c'è qualcuno ma dove si trova e quanto si muove.
 
-    \item \textbf{Insensibilità alle condizioni ambientali.} La misura non dipende dalla temperatura né dall'illuminazione, e le onde a 24 GHz attraversano vari materiali, per cui il modulo può essere nascosto dietro una copertura.
+    \item \textbf{Insensibilità alle condizioni ambientali:} la misura non dipende dalla temperatura né dall'illuminazione, e le onde a 24 GHz attraversano vari materiali, per cui il modulo può essere nascosto dietro una copertura.
 
-    \item \textbf{Privacy.} Il radar non produce immagini e non permette di riconoscere una persona, e per questo è accettato in ambienti sensibili come scuole o camere da letto. I dati grezzi per gate permettono però di ricavare anche grandezze sullo stato fisico, come il respiro. In questa tesi sono esportati integralmente per l'analisi, mentre in un'installazione reale andrebbero trattati con le cautele del GDPR indicate dal progetto per gli ambienti scolastici~\cite{callisto2026dipme}.
+    \item \textbf{Privacy:} il radar non produce immagini e non permette di riconoscere una persona, e per questo è accettato in ambienti sensibili come scuole o camere da letto. I dati grezzi per gate permettono però di ricavare anche grandezze sullo stato fisico, come il respiro. In questa tesi sono esportati integralmente per l'analisi, mentre in un'installazione reale andrebbero trattati con le cautele del GDPR indicate dal progetto per gli ambienti scolastici~\cite{callisto2026dipme}.
 
-    \item \textbf{Costo.} I moduli integrati, completi di antenne ed elaborazione a bordo, costano nell'ordine della decina di euro.
+    \item \textbf{Costo:} i moduli integrati, completi di antenne ed elaborazione a bordo, costano nell'ordine della decina di euro.
 \end{itemize}
 
-Il lato negativo è il consumo. Un radar è un sensore attivo, che deve alimentare un trasmettitore e un'elaborazione continua del segnale, e la sua corrente di alimentazione è dell'ordine delle decine di milliampere. Questo ne condiziona l'impiego nei dispositivi a batteria.
+\subsection{Limitazioni}
+\label{subsec:mmwave-limiti}
+
+\begin{itemize}
+    \item \textbf{Consumo:} un radar è un sensore attivo, che alimenta un trasmettitore e un'elaborazione continua del segnale, e assorbe decine di milliampere. Questo ne condiziona l'impiego nei dispositivi a batteria.
+
+    \item \textbf{Più persone:} il modulo riporta un solo bersaglio per gate, quindi due persone nello stesso gate non si distinguono e viene riportata la più vicina, mentre l'altra resta nascosta (Sezione~\ref{sec:due-persone}).
+
+    \item \textbf{Ostacoli:} le onde a 24~GHz attraversano legno, vetro e plastica, ma sono riflesse dal metallo, che non può stare davanti al modulo (Capitolo~\ref{chap:confronto}).
+
+    \item \textbf{Riflessioni:} in un ambiente chiuso l'eco arriva anche per percorsi indiretti, da pareti e arredi, e può spostare la distanza riportata o mantenere la presenza per qualche secondo dopo che la persona è uscita (Sezione~\ref{sec:c3-5-3}).
+\end{itemize}
 
 
 \FloatBarrier
@@ -178,7 +206,30 @@ Oltre al PIR e al radar mmWave esistono altre tecnologie in grado di rilevare la
  \section{PIR e mmWave a confronto}
 \label{sec:confronto}
 
- Le caratteristiche elencate nelle Sezioni~\ref{subsec:pir-usi} e~\ref{subsec:mmwave-usi} mostrano che PIR e radar mmWave non sono alternative equivalenti, ma rispondono a esigenze diverse.
+ Le caratteristiche elencate nelle Sezioni~\ref{subsec:pir-usi} e~\ref{subsec:mmwave-usi} mostrano che PIR e radar mmWave non sono alternative equivalenti, ma rispondono a esigenze diverse. Le principali differenze sono riassunte nella Tabella~\ref{tab:pir-mmwave}.
+
+\begin{table}[htbp]
+\centering
+\caption{Confronto fra PIR e radar mmWave.}
+\label{tab:pir-mmwave}
+\small
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\toprule
+ & \textbf{PIR} & \textbf{Radar mmWave a 24~GHz} \\
+\midrule
+Principio & variazione del flusso infrarosso del corpo & eco di un'onda radio modulata (FMCW) \\
+Tipo & passivo & attivo \\
+Persona in movimento & sì, se attraversa le zone della lente & sì \\
+Persona immobile & no & sì, dai micro-movimenti del respiro \\
+Distanza del bersaglio & no & sì \\
+Dati prodotti & un bit, impulso di durata fissa & presenza, distanza, energia per gate \\
+Ostacoli & bloccato da vetro e pannelli & attraversa legno, vetro e plastica, non il metallo \\
+Consumo & decine di \textmu A & decine di mA \\
+Costo & pochi euro & circa una decina di euro \\
+Privacy & nessuna immagine & nessuna immagine, ma dati sul respiro \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 Il PIR è la scelta giusta quando l'obbiettivo è rilevare il passaggio o l'attività di una persona e il dispositivo deve funzionare a batteria per lungo tempo. Il suo limite è strutturale e non dipende dal modello o dalla configurazione. Per il principio descritto nella Sezione~\ref{subsec:pir-principio} non rileva un corpo immobile, e per la geometria della lente descritta nella Sezione~\ref{subsec:fresnel} rileva male anche chi si muove senza spostarsi, se non da vicino.
 
