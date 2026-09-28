@@ -22,7 +22,8 @@ sperimentale, che sono l'unico contenuto non ricostruibile.
   in meno del 2 % del tempo, il radar HLK-LD2410B nel 100 % dei casi in tutti gli scenari di
   confronto. A decidere se il PIR vede è il tipo di movimento, non la distanza.
 - **Ostacoli e falsi positivi.** Il radar attraversa legno, vetro, cartongesso e plastica,
-  che bloccano il PIR, e a stanza vuota non ha dato falsi positivi in oltre 6 ore.
+  che bloccano il PIR. A stanza vuota l'HLK-LD2410B non ha dato falsi positivi in oltre 6 ore
+  con le soglie di fabbrica.
 - **Secondo radar.** L'HLK-LD2420 conferma il comportamento, con limiti attribuiti
   all'esemplare in prova, che vede una persona solo entro circa 2 m.
 - **Indice di vitalità.** Sulle energie per gate del radar è calcolato a bordo dell'ESP32 un
@@ -41,7 +42,7 @@ La campagna conta 444 trial validi. I dettagli sono nei capitoli 5-7 della tesi.
 | `firmware/` | Sketch Arduino per l'ESP32: logger dei due radar, web UI, sketch di configurazione e di diagnostica |
 | `acquisizione/` | `acquire.py` (acquisizione dalla seriale con i metadati del trial) e `serie.py` (serie di trial consecutivi) |
 | `data/` | I CSV della campagna, un file per trial (`<scenario>_Txx.csv`), e `REGISTRO_SESSIONI.md` |
-| `analisi/` | Script di analisi, figure, foglio Excel e catalogo delle figure |
+| `analisi/` | Script di analisi e script che generano le figure della tesi, il foglio Excel e il catalogo delle figure |
 | `analisi/approfondimenti/` | Documenti di analisi e di progetto scritti durante il lavoro (PIR, consumi, vitalità, web UI) |
 | `HLK-LD2410x/` | Il repository di riferimento da cui è partito il lavoro (firmware PlatformIO, README), la documentazione ufficiale del LD2410B e gli script di diagnostica via adattatore USB-seriale |
 | `HLK-LD2420/` | Documentazione ufficiale del LD2420, backup delle configurazioni lette e scritte col tool del produttore, script di diagnostica |
@@ -86,7 +87,7 @@ Arduino IDE 2.x con il supporto *esp32 by Espressif Systems*, scheda **ESP32 Dev
 |---|---|---|
 | `firmware/ld2410b_logger` | CSV a 5 Hz del LD2410B in engineering mode + PIR | libreria MyLD2410 |
 | `firmware/ld2420_logger_bin` | CSV a 5 Hz del LD2420 in energy mode (16 energie per gate) | `PIR_COLLEGATO` a 1 solo se il PIR è cablato (GPIO21), altrimenti la colonna vale -1 |
-| `firmware/ld2410b_web` | Web UI: Access Point, dashboard in tempo reale, export CSV, indice di vitalità a bordo | librerie MyLD2410, *ESP Async WebServer* e *Async TCP* di ESP32Async; *Partition Scheme* = *Huge APP (3MB No OTA/1MB SPIFFS)* |
+| `firmware/ld2410b_web` | Web UI: Access Point, dashboard in tempo reale, export CSV, indice di vitalità a bordo | librerie MyLD2410, ArduinoJson, *ESP Async WebServer* e *Async TCP* di ESP32Async; *Partition Scheme* = *Huge APP (3MB No OTA/1MB SPIFFS)* |
 | `firmware/test*`, `ld2420_monitor` | Configurazione dei parametri via UART e diagnostica | |
 
 Dopo ogni modifica ai file in `firmware/ld2410b_web/web/` va rigenerata la pagina compressa
@@ -126,8 +127,11 @@ python analisi\analizza_respiro.py data\respiro_2m_10_T01.csv --scan --salta-ini
 python analisi\rigenera_tutto.py
 ```
 
-`rigenera_tutto.py` rifà dai CSV le figure della tesi (in `overleaf/Immagini/`), il foglio
-Excel `analisi/dati_tesi.xlsx` e il catalogo delle figure `CATALOGO_FIGURE.html`. A dati
+`rigenera_tutto.py` rifà dai CSV i grafici della tesi (in `overleaf/Immagini/`), il foglio
+Excel `analisi/dati_tesi.xlsx` e il catalogo delle figure `CATALOGO_FIGURE.html`, stampato
+anche in PDF se trova Chrome o Edge. Gli schemi che non derivano dai dati (PIR a due elementi,
+lente di Fresnel, modalità del PIR, FMCW, geometrie di prova, collegamenti, piattaforma, percorsi dei dati) si
+rigenerano con `analisi/grafici_schemi.py` e `analisi/grafici_schemi_cap3.py`. A dati
 invariati le figure escono identiche byte per byte. Il nome con cui ogni figura finisce nella
 tesi è in `analisi/uscita_figure.py`.
 
