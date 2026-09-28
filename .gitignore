@@ -8,40 +8,19 @@ __pycache__/
 *.tmp
 ~$*
 
-# Materiali generati da analisi/rigenera_tutto.py.
-# Sono ricostruibili in ~13 s dai CSV grezzi, e pesano ~8 MB a ogni rigenerazione:
-# versionarli gonfierebbe la storia del repo senza aggiungere nulla che i tre
-# script non sappiano rifare. I CSV di acquisizione restano tracciati: quelli
-# sono l'unico dato che non si puo' ricostruire.
-tesi-unicam/figures/fig*.pdf
-tesi-unicam/figures/fig*.png
+# Materiali generati da analisi/rigenera_tutto.py, ricostruibili in pochi secondi
+# dai CSV grezzi. Le figure della tesi invece sono tracciate: stanno in
+# overleaf/figures/ (PNG) e overleaf/figures/origin/ (PDF) e servono a Overleaf.
+# I CSV di acquisizione restano tracciati: sono l'unico dato non ricostruibile.
 analisi/dati_tesi.xlsx
-RIEPILOGO_INCONTRO.html
-RIEPILOGO_INCONTRO.pdf
-# PDF della tesi compilato in locale (MiKTeX) e catalogo delle figure: si rifanno
-tesi-unicam/main.pdf
-analisi/CATALOGO_FIGURE.pdf
+CATALOGO_FIGURE.html
+CATALOGO_FIGURE.pdf
 
 # Log del tool PC Hi-Link LD2420: rigenerati a ogni avvio, come quelli del LD2410 Tool
 HLK-LD2420/HLK-LD2420_TOOL -English/Log/
 
-# cartella di build LaTeX locale (pdflatex -output-directory=B)
-tesi-unicam/B/
-tesi-unicam/$B/
-tesi-unicam/capitolo4_bozza.pdf
-tesi-unicam/capitolo5_bozza.pdf
-tesi-unicam/capitolo6_bozza.pdf
-tesi-unicam/capitolo7_bozza.pdf
-tesi-unicam/capitolo8_bozza.pdf
-
-# Copie di sicurezza locali: il contenuto e' gia' nella storia git
-/overleaf - Copia/
-tesi-unicam/capitoli/backup/
-
-# Log di compilazione LaTeX e PDF generati nella radice e in tesi-unicam
+# Log di compilazione LaTeX nella radice
 /*.log
-/overleaf_anteprima_locale.pdf
-tesi-unicam/abstract.pdf
 
 # Log del tool PC Hi-Link LD2410: rigenerati a ogni avvio
 HLK-LD2410x/LD2410 Tool/Log/

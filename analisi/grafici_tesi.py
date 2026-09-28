@@ -4,8 +4,8 @@ Genera le figure della tesi dai CSV della campagna sperimentale.
 
     python analisi/grafici_tesi.py
 
-Scrive in tesi-unicam/figures/ una coppia .pdf (vettoriale, per LaTeX) e .png
-(300 dpi, per slide/anteprima) per ogni figura.
+Scrive ogni figura come .png a 300 dpi in overleaf/figures/, con il nome usato nella
+tesi, e come .pdf vettoriale in overleaf/figures/origin/ (vedi uscita_figure.py).
 
 I numeri sono ricalcolati dai CSV riusando le funzioni di analizza_test.py, con le
 stesse convenzioni di scarto del transitorio usate nel capitolo 4:
@@ -22,10 +22,8 @@ import numpy as np
 QUI = Path(__file__).resolve().parent
 RADICE = QUI.parent
 DATI = RADICE / "HLK-LD2410x" / "data"
-OUT = RADICE / "tesi-unicam" / "figures"
-OUT.mkdir(parents=True, exist_ok=True)
-
 sys.path.insert(0, str(QUI))
+from uscita_figure import PNG as OUT, salva  # noqa: E402
 from analizza_test import leggi_csv, analizza_file, impulsi_pir  # noqa: E402
 
 # ---------------------------------------------------------------- stile comune
@@ -79,14 +77,6 @@ def media_dev(vals):
     if not vals:
         return float("nan"), 0.0
     return statistics.mean(vals), (statistics.stdev(vals) if len(vals) > 1 else 0.0)
-
-
-def salva(fig, nome):
-    for ext in ("pdf", "png"):
-        fig.savefig(OUT / f"{nome}.{ext}", bbox_inches="tight",
-                    dpi=300 if ext == "png" else None)
-    plt.close(fig)
-    print(f"  ok  {nome}.pdf / .png")
 
 
 def serie(path, colonne):

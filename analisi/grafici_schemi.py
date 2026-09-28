@@ -22,7 +22,7 @@ Geometria delle zone ispirata alla vista dall'alto del datasheet Panasonic PaPIR
 (serie WL/VZ standard: ventaglio a ±47°, fasci alternati per polarita') e, per
 l'impostazione grafica, al tutorial video "Lesson 12: Interfacing HC-SR501 PIR
 Motion Sensor with Arduino". Stesso stile di grafici_tesi.py; uscita in
-tesi-unicam/figures/ come .pdf (vettoriale) e .png a 300 dpi.
+overleaf/figures/ (.png a 300 dpi) e overleaf/figures/origin/ (.pdf vettoriale).
 
 Uso:  python analisi/grafici_schemi.py
 """
@@ -33,9 +33,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon, Rectangle, Circle, Wedge, FancyArrowPatch, Ellipse, FancyBboxPatch
 
-ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "tesi-unicam" / "figures"
-OUT.mkdir(parents=True, exist_ok=True)
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from uscita_figure import salva  # noqa: E402
 
 plt.rcParams.update({
     "font.size": 10,
@@ -50,14 +50,6 @@ C_TRIM = "#e07b39"
 C_GRIGIO = "#6c757d"
 C_TRASV = "#1b6ca8"
 C_RAD = "#d1495b"
-
-
-def salva(fig, nome):
-    for ext in ("pdf", "png"):
-        fig.savefig(OUT / f"{nome}.{ext}", bbox_inches="tight",
-                    dpi=300 if ext == "png" else None)
-    plt.close(fig)
-    print(f"  ok  {nome}.pdf / .png")
 
 
 def fig23_zone_fresnel():

@@ -5,11 +5,11 @@ Rigenera tutti i materiali derivati dai dati sperimentali, in un colpo solo.
     python analisi/rigenera_tutto.py
 
 Esegue in ordine:
-  1. analisi/grafici_tesi.py    -> tesi-unicam/figures/fig01..13       (fasi 1-2, dati, consumi)
-  2. analisi/grafici_tesi_2.py  -> tesi-unicam/figures/fig14..22       (ostacoli, LD2420, Fase 8, vitalita')
+  1. analisi/grafici_tesi.py    -> overleaf/figures/ (fig. 1-13)      (fasi 1-2, dati, consumi)
+  2. analisi/grafici_tesi_2.py  -> overleaf/figures/ (fig. 14-22)      (ostacoli, LD2420, Fase 8, vitalita')
   3. analisi/esporta_excel.py   -> analisi/dati_tesi.xlsx              (12 fogli)
-  4. analisi/genera_pagina.py   -> RIEPILOGO_INCONTRO.html
-  5. stampa headless            -> RIEPILOGO_INCONTRO.pdf              (A4)
+  4. analisi/genera_pagina.py   -> CATALOGO_FIGURE.html  
+  5. stampa headless            -> CATALOGO_FIGURE.pdf                (A4)
 
 L'ordine e' obbligato: la pagina incorpora i PNG dei passi 1-2 e il PDF stampa la
 pagina del passo 4. Lanciando solo un pezzo si rischia di mescolare figure nuove
@@ -34,8 +34,8 @@ from pathlib import Path
 
 QUI = Path(__file__).resolve().parent
 RADICE = QUI.parent
-HTML = RADICE / "RIEPILOGO_INCONTRO.html"
-PDF = RADICE / "RIEPILOGO_INCONTRO.pdf"
+HTML = RADICE / "CATALOGO_FIGURE.html"
+PDF = RADICE / "CATALOGO_FIGURE.pdf"
 
 MODULI = {
     "matplotlib": "grafici",
@@ -133,9 +133,9 @@ def stampa_pdf():
 
 def main():
     ap = argparse.ArgumentParser(
-        description="Rigenera figure, Excel, pagina di riepilogo e PDF dai CSV.")
+        description="Rigenera figure, Excel, catalogo delle figure e PDF dai CSV.")
     ap.add_argument("--salta-figure", action="store_true",
-                    help="riusa i PNG gia' presenti in tesi-unicam/figures/")
+                    help="riusa i PNG gia' presenti in overleaf/figures/")
     ap.add_argument("--senza-pdf", action="store_true",
                     help="si ferma all'HTML, senza cercare un browser")
     args = ap.parse_args()
@@ -159,16 +159,16 @@ def main():
         passo(2, "Figure 14-22: ostacoli, LD2420, Fase 8, vitalita'", "grafici_tesi_2.py")
 
     passo(3, "Foglio Excel con tutti i trial", "esporta_excel.py")
-    passo(4, "Pagina di riepilogo HTML", "genera_pagina.py")
+    passo(4, "Catalogo delle figure HTML", "genera_pagina.py")
 
     pdf_ok = False if args.senza_pdf else stampa_pdf()
     if args.senza_pdf:
         print("\n[5/5] PDF saltato su richiesta")
 
     print(f"\nFatto in {time.time() - t0:.0f} s. Prodotti:")
-    print(f"  tesi-unicam/figures/   22 figure (.pdf per LaTeX, .png per slide)")
+    print(f"  overleaf/figures/      figure della tesi (.png; i .pdf vettoriali in origin/)")
     print(f"  analisi/dati_tesi.xlsx foglio con tutti i trial + grafici Excel")
-    print(f"  {HTML.name}   pagina di riepilogo")
+    print(f"  {HTML.name}   catalogo delle figure")
     if pdf_ok:
         print(f"  {PDF.name}    la stessa pagina, stampabile")
 

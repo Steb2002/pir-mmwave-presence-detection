@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Costruisce la pagina di riepilogo per l'incontro col professore.
+Costruisce il catalogo delle figure della tesi, ciascuna con la spiegazione di cosa mostra.
 
     python analisi/genera_pagina.py
 
 Legge i PNG prodotti da analisi/grafici_tesi.py e grafici_tesi_2.py, li incorpora nella pagina come
 data URI in formato WebP - nessun file esterno, quindi la pagina si apre offline
-e si puo' mandare per mail cosi' com'e' - e scrive RIEPILOGO_INCONTRO.html nella
+e si puo' mandare per mail cosi' com'e' - e scrive CATALOGO_FIGURE.html nella
 radice del progetto.
 
 Va lanciato DOPO i due script delle figure, altrimenti incorpora le figure vecchie.
@@ -19,8 +19,10 @@ from pathlib import Path
 from PIL import Image
 
 RADICE = Path(__file__).resolve().parent.parent
-FIGURE = RADICE / "tesi-unicam" / "figures"
-OUTFILE = RADICE / "RIEPILOGO_INCONTRO.html"
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from uscita_figure import PNG as FIGURE, nome_file  # noqa: E402
+OUTFILE = RADICE / "CATALOGO_FIGURE.html"
 
 # Le PNG a 300 dpi servono a LaTeX; per la pagina bastano 1200 px di larghezza,
 # che tengono il file incorporato sotto il megabyte.
@@ -28,12 +30,12 @@ LARGHEZZA_MAX = 1200
 
 
 def carica_figure():
-    """Ogni fig*.png diventa un data URI WebP, indicizzato per nome senza estensione."""
+    """Ogni .png della tesi diventa un data URI WebP, indicizzato per nome senza estensione."""
     if not FIGURE.is_dir():
         raise SystemExit(f"Cartella figure assente: {FIGURE}\n"
                          "Lancia prima:  python analisi/grafici_tesi.py")
     out = {}
-    for f in sorted(FIGURE.glob("fig*.png")):
+    for f in sorted(FIGURE.glob("*.png")):
         im = Image.open(f).convert("RGB")
         if im.width > LARGHEZZA_MAX:
             im = im.resize((LARGHEZZA_MAX, int(im.height * LARGHEZZA_MAX / im.width)),
@@ -50,6 +52,7 @@ FIGS = carica_figure()
 
 
 def fig(nome, didascalia, numero):
+    nome = nome_file(nome)
     if nome not in FIGS:
         raise SystemExit(f"Figura mancante: {nome}.png. Rilancia grafici_tesi.py.")
     return f'''<figure class="fig">
@@ -281,36 +284,6 @@ code{
 }
 """
 
-LEDGER = [
-    (1, "Studio dei sensori", "done", "completo",
-     "Principio piroelettrico del PIR e FMCW 24 GHz del radar, dati prodotti, limiti fisici. "
-     "Documentazione ufficiale Hi-Link acquisita per entrambi i moduli."),
-    (2, "Analisi dei dati prodotti", "done", "completo",
-     "mmWave: 18 canali di energia per-gate + 2 distanze a 5 Hz. PIR: 1 bit, monostabile "
-     "da 3,45 s. Misurati anche i limiti del dato (saturazione, gate stazionari 0-1)."),
-    (3, "Comparazione con testing numerico", "done", "fasi 0-8 complete",
-     "444 trial validi, 577 437 campioni, 32,1 h di acquisizione su tre sensori. Accuratezza, "
-     "latenze, falsi positivi, due persone, selettività, ostacoli fino a 5 m, respiro a "
-     "metronomo, portata in corridoio; il LD2420 caratterizzato entro i 2 m dell'esemplare."),
-    (4, "Consumo energetico (informativo)", "done", "completo",
-     "80 mA contro 0,05 mA: tre ordini di grandezza. È l'argomento che regge "
-     "l'architettura ibrida PIR + mmWave."),
-    (5, "Web UI ed export CSV", "done", "completo",
-     "Sito self-hosted sull'ESP32 (Access Point proprio, WebSocket a 5 Hz, JavaScript puro, "
-     "tutto offline) con grafici, sessione di registrazione ed export CSV nello stesso formato "
-     "di acquire.py. Accettazione: CSV del browser = CSV della seriale."),
-    (6, "Indice di vitalità", "done", "completo",
-     "v3 tarata su T01-T03 e validata su T04-T05 (recall 88 %); portata a bordo dell'ESP32 e "
-     "verificata: bordo = offline entro ±1 nel 100 % dei campioni a regime."),
-]
-
-
-def riga(n, cosa, cls, stato, ev):
-    return (f'<tr><td class="n">{n}</td><td class="what">{cosa}</td>'
-            f'<td><span class="chip {cls}">{stato}</span></td>'
-            f'<td class="ev">{ev}</td></tr>')
-
-
 HTML = f"""<title>Sensori di presenza per DIPME</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -320,14 +293,13 @@ HTML = f"""<title>Sensori di presenza per DIPME</title>
 <div class="wrap">
 
 <header class="top">
-  <p class="eyebrow">Tesi triennale · Progetto DIPME · Stato di avanzamento</p>
+  <p class="eyebrow">Tesi triennale · Progetto DIPME · Catalogo delle figure</p>
   <h1>PIR e mmWave a confronto per il rilevamento di persone sotto gli arredi</h1>
   <p class="dek">Il sensore piroelettrico fa bene un lavoro che non è questo. Trentadue ore di
   acquisizioni su tre sensori dicono perché, e quanto.</p>
   <p class="meta">
     <span><b>Relatore</b> Massimo Callisto</span>
     <span><b>Hardware</b> ESP32 · HLK-LD2410B · HLK-LD2420 · HC-SR501</span>
-    <span><b>Aggiornato</b> 13 settembre 2026</span>
   </p>
 </header>
 
@@ -337,22 +309,6 @@ HTML = f"""<title>Sensori di presenza per DIPME</title>
   <div class="stat r"><span class="stat-n">0,00 %</span><span class="stat-l">falsi negativi del radar, in ogni scenario</span></div>
   <div class="stat p"><span class="stat-n">98,7 %</span><span class="stat-l">falsi negativi del PIR sulla persona immobile</span></div>
 </div>
-
-<section id="stato">
-  <h2>Dove siamo</h2>
-  <p class="lead prose">I sei obiettivi concordati sono raggiunti e documentati con dati
-  misurati. La campagna sperimentale è chiusa: fasi 0-8 sui tre sensori, compresi il secondo
-  radar HLK-LD2420, gli ostacoli fino a 5 m e la portata massima in corridoio. Resta la
-  scrittura.</p>
-  <div class="tw">
-  <table class="ledger">
-    <thead><tr><th></th><th>Obiettivo</th><th>Stato</th><th>Evidenza</th></tr></thead>
-    <tbody>
-    {"".join(riga(*r) for r in LEDGER)}
-    </tbody>
-  </table>
-  </div>
-</section>
 
 <section id="risultato">
   <h2><span class="obj">Obiettivo 3</span> Il risultato centrale</h2>
@@ -594,33 +550,6 @@ HTML = f"""<title>Sensori di presenza per DIPME</title>
        "offline devono ancora convergere, quelle del firmware sono già a regime dall'accensione; "
        "dopo, le due curve coincidono entro ±1 nel 100 % dei campioni. L'indice mostrato nella "
        "dashboard è lo stesso della validazione.", 22)}
-</section>
-
-<section id="avanti">
-  <h2>Cosa resta</h2>
-
-  <h3>Scrittura</h3>
-  <p class="prose">La campagna è completa: tutti i test dei due piani sono stati acquisiti, e
-  gli unici non eseguiti sono dichiarati come tali (il Test 0.6 con l'app Bluetooth, facoltativo,
-  e la prova termica del PIR, la cui ipotesi era già smentita il 30/08). I documenti in
-  <code>analisi/</code> sono bozze dei capitoli 2-7; il capitolo 4 è scritto per le fasi 1-2 e va
-  esteso a ostacoli, respiro, angolare, LD2420 e Fase 8 con le figure 14-22.</p>
-
-  <h3>Secondo radar — HLK-LD2420</h3>
-  <p class="prose">Caratterizzato per intero dentro i 2 m in cui l'esemplare funziona, con la
-  campagna ridotta concordata il 05/09. Il confronto è netto: il LD2410B lavora fuori scatola con
-  soglie di fabbrica (nessun falso positivo in 6,6 h), il LD2420 richiede una taratura per
-  installazione e conserva 6 riaccensioni/h; sulla persona ferma dice <i>se</i> c'è ma non
-  <i>dove</i> (§8 del manuale, misurato). Un secondo esemplare permetterebbe di separare i limiti
-  del modello da quelli del pezzo.</p>
-
-  <h3>Decisioni aperte</h3>
-  <ul class="plain prose">
-    <li>Ordine di scrittura dei capitoli e scadenza per la consegna.</li>
-    <li>Quale firmware lasciare sull'ESP32 per la dimostrazione (web UI con LD2410B, oppure il
-    logger del LD2420).</li>
-    <li>Ruolo dell'UWB: previsto nelle slide del DIPME-DEVICE, assente nel dispiegamento documentato dal paper.</li>
-  </ul>
 </section>
 
 <footer>

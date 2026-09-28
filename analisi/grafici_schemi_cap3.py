@@ -10,7 +10,7 @@ Schemi per il capitolo 3 (non derivano dai CSV).
                                 seriale USB -> acquire.py -> CSV -> script -> materiali,
                                 con il formato dati unico al centro e il ramo della web UI.
 
-Stesso stile di grafici_schemi.py; uscita in tesi-unicam/figures/ (.pdf + .png 300 dpi).
+Stesso stile di grafici_schemi.py; uscita in overleaf/figures/ (.png 300 dpi) e origin/ (.pdf).
 Uso:  python analisi/grafici_schemi_cap3.py
 """
 from pathlib import Path
@@ -19,9 +19,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, FancyBboxPatch, FancyArrowPatch
 
-ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "tesi-unicam" / "figures"
-OUT.mkdir(parents=True, exist_ok=True)
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from uscita_figure import salva  # noqa: E402
 
 plt.rcParams.update({"font.size": 9, "figure.dpi": 110})
 
@@ -34,12 +34,6 @@ C_OUT = "#e07b39"
 C_GRIGIO = "#6c757d"
 C_BOX = "#eef3f8"
 
-
-def salva(fig, nome):
-    fig.savefig(OUT / f"{nome}.pdf", bbox_inches="tight")
-    fig.savefig(OUT / f"{nome}.png", dpi=300, bbox_inches="tight")
-    plt.close(fig)
-    print("  ok ", nome)
 
 
 # ----------------------------------------------------------------- fig28

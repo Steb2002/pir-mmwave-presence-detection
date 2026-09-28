@@ -529,8 +529,15 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
   ferma al primo errore senza sovrascrivere i passi successivi. Opzioni `--salta-figure`
   (riusa i PNG esistenti, utile se cambia solo il testo) e `--senza-pdf`.
   Trova Chrome o Edge da solo; se non c'è, dice come stampare a mano invece di piantarsi
-- `analisi/grafici_tesi.py` — le **figure 1-13 della tesi** in `tesi-unicam/figures/`, sia
-  `.pdf` (vettoriale, per `\includegraphics`) sia `.png` 300 dpi (slide/anteprima).
+- 🔑 **`analisi/uscita_figure.py` — dove finiscono le figure (28/09/2026)**. Tutti gli script
+  delle figure salvano da qui: la **PNG a 300 dpi va direttamente in `overleaf/figures/`**
+  con il nome usato nei `\includegraphics` (tabella `NOMI`, es. `fig01_dose_risposta` →
+  `Dose_risposta`), il **PDF vettoriale in `overleaf/figures/origin/`**, fuori dal
+  `\graphicspath`, cosi' LaTeX non lo sceglie al posto della PNG. Le figure che la tesi non
+  usa (fig03, fig16, fig23-26, fig29) tengono il nome `figNN_*`. Metadati senza data: a dati
+  invariati una rigenerazione produce file identici e git non segnala nulla. Verificato: PNG
+  identiche al pixel a quelle generate prima in `tesi-unicam/figures/`, paginazione invariata
+- `analisi/grafici_tesi.py` — le **figure 1-13 della tesi** (vedi `uscita_figure.py`).
   🔑 **Importa le funzioni di `analizza_test.py`** invece di ricalcolare: i numeri nei
   grafici coincidono per costruzione con quelli del capitolo 4. Applica le convenzioni di
   scarto del transitorio (20/40/120 s, più **60 s a stanza vuota**: a 20 s la coda
@@ -560,19 +567,21 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
   scarto aggiunte a `skip_per` (fermo/banco/micromovimenti2420 90 s, sel2420 120 s,
   vuoto/notturna2420 e corridoio_vuoto 60 s), che prima usavano 20 s. Un file nuovo che
   non è un trial va aggiunto alla lista, non lasciato "tanto è nel registro"
-- `analisi/genera_pagina.py` — `RIEPILOGO_INCONTRO.html`, pagina unica di riepilogo per
-  l'incontro col professore: stato dei 6 obiettivi, le 22 figure con didascalie che
-  spiegano cosa dimostrano, domande da porre. Le immagini sono incorporate come data URI
+- `analisi/genera_pagina.py` — `CATALOGO_FIGURE.html` (e il PDF stampato da
+  `rigenera_tutto.py`): le figure della campagna, lette da `overleaf/figures/` con i nomi di
+  `uscita_figure.py`, ciascuna con la didascalia che spiega cosa dimostra. Fino al 28/09/2026
+  era `RIEPILOGO_INCONTRO.html`, con anche lo stato dei 6 obiettivi e le domande per
+  l'incontro col professore, tolte perché superate. Le immagini sono incorporate come data URI
   WebP, quindi **la pagina si apre offline e si manda per mail così com'è**. Ha un foglio
   di stile per la stampa (tema chiaro forzato, figure che non si spezzano fra pagine) →
   il PDF a 10 pagine A4 esce da qui.
   ⚠️ La stampa headless vuole `--virtual-time-budget=20000`: senza, Chrome stampa prima
   che arrivino i font da Google Fonts e l'impaginazione cambia
-- ⚠️ **I materiali generati NON sono versionati** (regola aggiunta al `.gitignore` di
-  radice il 26/08/2026): figure, xlsx, HTML e PDF si rifanno in 13 s dai CSV e pesano ~8 MB
-  a ogni rigenerazione. I **CSV restano tracciati**: sono l'unico dato non ricostruibile.
-  Il filtro è `tesi-unicam/figures/fig*`, quindi `LEGGIMI.txt` e un futuro
-  `logo_unicam.png` continuano a entrare nel repo
+- ⚠️ **Materiali generati e versionamento**: xlsx, HTML e PDF di riepilogo NON sono
+  versionati (`.gitignore`), si rifanno in 13 s dai CSV. Le **figure della tesi invece sì**:
+  stanno in `overleaf/figures/` perché servono a Overleaf (dal 28/09/2026, prima erano in
+  `tesi-unicam/figures/` e ignorate). I **CSV restano tracciati**: sono l'unico dato non
+  ricostruibile
 - `analisi/ANALISI_CONSUMI.md` — obiettivo 4 completato in bozza (consumi da datasheet + stime autonomia + argomentazione architettura ibrida PIR+mmWave)
 - `analisi/ANALISI_WEB_UI.md` — progetto della web UI (obiettivo 5): architettura ESP32 self-hosted (**solo Access Point**, nessuna connessione a reti esistenti — decisione 05/09/2026; fork ESP32Async di ESPAsyncWebServer + WebSocket + pagina in PROGMEM gzip, JavaScript puro con Angular valutato e scartato, tutto offline), formato JSON, layout pagina, struttura codice `firmware/ld2410b_web/`, piano di sviluppo in 5 step. Decisione chiave: il CSV esportato dal browser usa le stesse colonne di acquire.py → un solo formato dati in tutta la tesi. §9: analisi del riferimento UI "LD2410 Configurator" (cosa prendere/cosa no) + opzione D di riserva via Web Serial
 - `analisi/PROGETTO_SITO_DETTAGLIO.md` — progetto di dettaglio implementativo del sito: struct/pseudocodice firmware, protocollo WS con riconnessione, strutture dati JS, config dei 3 grafici, export CSV client-side, gestione errori, criteri di accettazione per step
@@ -2120,4 +2129,12 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       divisa in due, schema della dashboard come `lstlisting`, `biburl*penalty` per gli
       URL. PDF in `tesi-unicam/main.pdf` e catalogo delle 22 figure in
       `analisi/CATALOGO_FIGURE.pdf` (entrambi in `.gitignore`: si rifanno)
-- [ ] Caricare su Overleaf e ricompilare lì (stesso compilatore pdfLaTeX + biber)
+- [x] Caricare su Overleaf e ricompilare lì
+- 📌 **Dal 22/09/2026 la tesi definitiva è `overleaf/`** (classe `unicam_thesis`, file
+      `0) Abstract.tex` … `9) Ringraziamenti.tex`, nessuna appendice). Le voci qui sopra su
+      `tesi-unicam/` descrivono la versione precedente: il vecchio cap. 4 del confronto è
+      oggi `overleaf/5) Confronto sperimentale PIR vs mmWave.tex`, l'indice di vitalità
+      `6) L'indice di vitalità.tex`, i consumi `7) Consumo energetico.tex`. Le bozze Word dei
+      capitoli sono state tolte il 28/09/2026, e il 28/09/2026 è stata rimossa anche
+      `tesi-unicam/` (resta nella storia git): gli script delle figure scrivono ora in
+      `overleaf/figures/` tramite `analisi/uscita_figure.py`
