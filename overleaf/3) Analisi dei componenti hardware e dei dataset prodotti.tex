@@ -306,7 +306,7 @@ Il produttore distribuisce l'\ldc{}\_TOOL per PC \cite{hilinkDriveLD2420}, che d
 \label{fig:c3-tool2420}
 \end{figure}
 
-La funzione più importante è la scansione del rumore di fondo (bottom noise scan, \cite[§4.2.2–4.2.3]{hilinkManualLD2420}). A stanza vuota il tool registra per ogni gate il livello di energia del fondo e ne ricava le due soglie, una di attivazione (trigger, consigliata a circa 5 volte il rumore) e una di mantenimento (maintain, a 2–5 volte), che poi scrive nella memoria non volatile del modulo.
+La funzione più importante è la scansione del rumore di fondo (bottom noise scan, \cite[§4.2.2–4.2.3]{hilinkManualLD2420}). A stanza vuota il tool registra per ogni gate l'energia del fondo e ne ricava due soglie, di attivazione (trigger, consigliata a circa 5 volte il rumore) e di mantenimento (maintain, 2–5 volte), che salva nella memoria non volatile del modulo.
 
 \subsection{Protocollo seriale}
 \label{sec:c3-2-4}
@@ -339,7 +339,7 @@ id 0x20–0x2F & soglie di mantenimento (maintain) dei gate 0–15 \\
 
 \textbf{Dati trasmessi dal modulo:} il documento di protocollo descrive soltanto i comandi che il modulo riceve e non il formato con cui trasmette i risultati del rilevamento. Il manuale indica di aprire un terminale seriale a 115200~baud per leggerli \cite[§4.1]{hilinkManualLD2420}. In modalità di fabbrica il modulo trasmette righe di testo che riportano la presenza rilevata (ON), l'assenza di presenza (OFF) e la distanza del bersaglio (Range NN).
 
-L'unità di misura del campo Range non è indicata in nessuno dei due documenti del produttore. Le prove a distanza nota descritte nel Capitolo~\ref{chap:confronto} hanno mostrato che il valore è espresso in centimetri quando un bersaglio è presente, mentre in assenza di bersaglio il campo assume un valore di riposo compreso fra 0 e 6, privo di significato come distanza. Il valore si aggiorna di rado e va quindi letto soltanto quando la presenza è alta.
+L'unità di misura del campo Range non è indicata in nessuno dei due documenti del produttore. Le prove a distanza nota, descritte nel Capitolo~\ref{chap:confronto}, hanno mostrato che il valore è espresso in centimetri quando un bersaglio è presente, mentre in assenza di bersaglio il campo assume un valore di riposo compreso fra 0 e 6, privo di significato come distanza. Il valore si aggiorna di rado e va quindi letto soltanto quando la presenza è alta.
 
 \textbf{Persistenza dei parametri.} I parametri scritti con il comando 0x0007 sono accettati e riletti correttamente, ma il modulo li perde al ciclo di alimentazione, e il protocollo non prevede un comando di salvataggio. La configurazione di riferimento è quindi quella scritta in memoria non volatile dal tool (Sezione~\ref{sec:c3-2-3}).
 
@@ -374,6 +374,10 @@ Le energie sono interi a 16~bit e, convertite in decibel con la stessa relazione
 
 La Tabella~\ref{tab:c3-11} riporta identità e parametri dell'esemplare effettivamente usato, letti via UART con i comandi della Tabella~\ref{tab:c3-9} e confrontati con il file XML salvato dal tool.
 
+Il modulo era in configurazione di fabbrica \cite{hilinkProtoLD2420}. Il produttore non distribuisce aggiornamenti del firmware, per cui la versione riportata è quella con cui il modulo è stato prodotto.
+
+Il radar in dotazione è con ogni probabilità difettoso, perché nelle prove a distanza nota rileva una persona in movimento fino a circa 1~m e la mantiene fino a 2~m, contro gli 8~m dichiarati. Le energie per gate indicano un trasmettitore molto più debole del previsto, mentre il ricevitore funziona. Soglie, configurazione dei gate, firmware, parser, orientamento e cablaggio sono stati esclusi con prove dedicate. Le conseguenze sul protocollo della campagna sono dichiarate nella Sezione~\ref{sec:protocollo-ld2420}. Una relazione di progetto svolta a Camerino nello stesso anno accademico, con altri esemplari degli stessi moduli~\cite{dellaquila2026}, aiuta a separare i limiti del pezzo da quelli del modello. Sull'\ldc{} vi si ritrovano la presenza inaffidabile e la necessità di tarare le soglie per gate, che sono quindi proprie del modello, mentre l'accuratezza di distanza vi è giudicata buona, coerente con un limite di portata proprio del nostro esemplare.
+
 \begin{table}[!htb]
 \centering
 \caption{Identità e parametri dell'esemplare di \ldc{} in prova, letti via UART.}
@@ -392,10 +396,6 @@ Soglie maintain, gate 9–15 & 100 (20~dB) \\
 \bottomrule
 \end{tabularx}
 \end{table}
-
-Il modulo era in configurazione di fabbrica \cite{hilinkProtoLD2420}. Il produttore non distribuisce aggiornamenti del firmware, per cui la versione riportata è quella con cui il modulo è stato prodotto.
-
-Il radar in dotazione è con ogni probabilità difettoso, perché nelle prove a distanza nota rileva una persona in movimento fino a circa 1~m e la mantiene fino a 2~m, contro gli 8~m dichiarati. Le energie per gate indicano un trasmettitore molto più debole del previsto, mentre il ricevitore funziona. Soglie, configurazione dei gate, firmware, parser, orientamento e cablaggio sono stati esclusi con prove dedicate. Le conseguenze sul protocollo della campagna sono dichiarate nella Sezione~\ref{sec:protocollo-ld2420}. Una relazione di progetto svolta a Camerino nello stesso anno accademico, con altri esemplari degli stessi moduli~\cite{dellaquila2026}, aiuta a separare i limiti del pezzo da quelli del modello. Sull'\ldc{} vi si ritrovano la presenza inaffidabile e la necessità di tarare le soglie per gate, che sono quindi proprie del modello, mentre l'accuratezza di distanza vi è giudicata buona, coerente con un limite di portata proprio del nostro esemplare.
 
 \FloatBarrier
 \section{Il sensore PIR in dotazione: \pir{}}
@@ -505,6 +505,17 @@ firmware/test01\_\allowbreak{}ld2410\_\allowbreak{}base,\allowbreak{} test03\_\a
 \end{tabularx}
 \end{table}
 
+\subsection{Il repository di riferimento}
+\label{sec:c3-4-1}
+
+Il lavoro parte dal repository HLK-LD2410x \cite{repoCallisto}, che contiene un firmware PlatformIO per ESP32 basato sulla libreria ncmreynolds/ld2410 e uno script Python di acquisizione. Il firmware legge il radar via UART, gestisce opzionalmente un display OLED e un PIR e stampa righe CSV sulla seriale. Lo script acquire.py le salva su file e aggiunge i metadati sperimentali passati da riga di comando. Lo studio del codice ha evidenziato tre limiti per gli scopi di questa tesi:
+
+\begin{enumerate}
+  \item \textbf{Campionamento a 1~Hz}, troppo lento per misurare le latenze e insufficiente per l'analisi del respiro, perché il limite di Nyquist a 0,5~Hz coincide con il bordo superiore della banda respiratoria (Sezione~\ref{sec:respiro}).
+  \item \textbf{Assenza dell'engineering mode}, quindi viene registrata la sola energia del bersaglio e non i diciotto valori per gate della Sezione~\ref{sec:c3-1-5}.
+  \item \textbf{Piedinatura diversa} (radar TX su GPIO17 e RX su GPIO16), quindi i due firmware non sono interscambiabili senza ricablare.
+\end{enumerate}
+
 \begin{table}[!htb]
 \centering
 \caption{Il software realizzato per il PC: acquisizione, analisi e materiali derivati. I percorsi sono relativi alla radice del repository.}
@@ -524,17 +535,6 @@ analisi/rigenera\_\allowbreak{}tutto.py e script collegati & figure, foglio Exce
 \bottomrule
 \end{tabularx}
 \end{table}
-
-\subsection{Il repository di riferimento}
-\label{sec:c3-4-1}
-
-Il lavoro parte dal repository HLK-LD2410x \cite{repoCallisto}, che contiene un firmware PlatformIO per ESP32 basato sulla libreria ncmreynolds/ld2410 e uno script Python di acquisizione. Il firmware legge il radar via UART, gestisce opzionalmente un display OLED e un PIR e stampa righe CSV sulla seriale. Lo script acquire.py le salva su file e aggiunge i metadati sperimentali passati da riga di comando. Lo studio del codice ha evidenziato tre limiti per gli scopi di questa tesi:
-
-\begin{enumerate}
-  \item \textbf{Campionamento a 1~Hz}, troppo lento per misurare le latenze e insufficiente per l'analisi del respiro, perché il limite di Nyquist a 0,5~Hz coincide con il bordo superiore della banda respiratoria (Sezione~\ref{sec:respiro}).
-  \item \textbf{Assenza dell'engineering mode}, quindi viene registrata la sola energia del bersaglio e non i diciotto valori per gate della Sezione~\ref{sec:c3-1-5}.
-  \item \textbf{Piedinatura diversa} (radar TX su GPIO17 e RX su GPIO16), quindi i due firmware non sono interscambiabili senza ricablare.
-\end{enumerate}
 
 \subsection{I firmware}
 \label{sec:c3-4-2}
@@ -628,7 +628,7 @@ L'analisi è svolta da cinque script Python basati sulla sola libreria standard,
 
 \paragraph{verifica\_engineering.py}
 
-È il controllo di qualità di un CSV prima dell'uso. Verifica la cadenza reale e il jitter, presenza delle colonne per gate, percentuale di saturazione a 100 per canale, coerenza fra gate di picco e distanza riportata, rumore di fondo per gate a stanza vuota e transizioni di presenza. Va eseguito a ogni sessione ed è ciò che ha permesso di individuare i comportamenti descritti nella Sezione~\ref{sec:c3-5}.
+È il controllo di qualità di un CSV prima dell'uso. Verifica la cadenza reale e il jitter (variazione del tempo di ritardo), presenza delle colonne per gate, percentuale di saturazione a 100 per canale, coerenza fra gate di picco e distanza riportata, rumore di fondo per gate a stanza vuota e transizioni di presenza. Va eseguito a ogni sessione ed è ciò che ha permesso di individuare i comportamenti descritti nella Sezione~\ref{sec:c3-5}.
 
 \paragraph{analizza\_test.py}
 

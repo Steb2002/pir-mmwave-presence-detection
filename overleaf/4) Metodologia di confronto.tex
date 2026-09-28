@@ -324,6 +324,17 @@ sperimentali della catena seriale. Le soglie, deliberatamente, non si possono mo
 dalla pagina, perché devono restare fisse per tutta la campagna
 (Sezione~\ref{sec:protocollo-configurazione}).
 
+\paragraph{Protocollo dati} Il nodo trasmette i dati ai browser collegati attraverso il
+canale WebSocket, con un messaggio per ogni campione, cioè cinque volte al secondo. Ogni
+messaggio è un oggetto JSON che contiene tutte le grandezze del CSV del logger più le due
+calcolate a bordo (Tabella~\ref{tab:webui-messaggio}). Il nodo conserva inoltre uno storico
+di 60~s e lo invia a ogni client che si collega, così il grafico è già pieno anche dopo un
+aggiornamento della pagina. Le statistiche sono calcolate nel browser una volta al secondo.
+Il CSV esportato riporta, nello stesso ordine, le colonne del logger e i metadati dello
+script di acquisizione, più due colonne in coda con l'indice e la classe calcolati dal
+firmware (Sezione~\ref{sec:c3-4-3}). Sono proprio questi i dati usati per verificare il
+porting (Sezione~\ref{sec:vitalita-bordo}).
+
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\linewidth]{Dashboard}
@@ -344,17 +355,6 @@ statistiche calcolate nel browser, a destra la diagnostica dell'ESP32 con la bui
 l'indirizzo, la memoria libera, i parametri letti dal radar e l'impronta della pagina.}
 \label{fig:dashboard-sessione}
 \end{figure}
-
-\paragraph{Protocollo dati} Il nodo trasmette i dati ai browser collegati attraverso il
-canale WebSocket, con un messaggio per ogni campione, cioè cinque volte al secondo. Ogni
-messaggio è un oggetto JSON che contiene tutte le grandezze del CSV del logger più le due
-calcolate a bordo (Tabella~\ref{tab:webui-messaggio}). Il nodo conserva inoltre uno storico
-di 60~s e lo invia a ogni client che si collega, così il grafico è già pieno anche dopo un
-aggiornamento della pagina. Le statistiche sono calcolate nel browser una volta al secondo.
-Il CSV esportato riporta, nello stesso ordine, le colonne del logger e i metadati dello
-script di acquisizione, più due colonne in coda con l'indice e la classe calcolati dal
-firmware (Sezione~\ref{sec:c3-4-3}). Sono proprio questi i dati usati per verificare il
-porting (Sezione~\ref{sec:vitalita-bordo}).
 
 \begin{table}[!htbp]
 \centering

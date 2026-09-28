@@ -295,6 +295,8 @@ saturano, e respira seguendo un metronomo impostato al doppio della frequenza re
 più tre trial di stanza vuota come controllo negativo
 (Tabella~\ref{tab:respiro-metronomo}).
 
+Quando l'analisi trova il ritmo giusto la stima è accurata, con errore medio di 0,22 atti al minuto sui tredici trial concordi e massimo 0,4. Nei due trial restanti l'analisi ha restituito esattamente il doppio del ritmo imposto, e il motivo è fisico. L'energia per gate misura quanto si sposta il torace, non in che direzione. In ogni respiro il torace si sposta due volte, in inspirazione e in espirazione, quindi l'energia ha due picchi per respiro e nello spettro compare, oltre al ritmo vero, anche il suo doppio. Quando il picco al doppio è più alto, l'analisi sceglie quello. Dallo spettro di un solo canale non si può distinguere un respiro a 30 atti al minuto da uno a 15 con due picchi per ciclo.
+
 \begin{table}[htbp]
 \centering
 \caption{Stima respiratoria contro ritmo imposto, \ldb\ a 2~m. ``Trial concordi''
@@ -313,8 +315,6 @@ Stanza vuota & --- & \multicolumn{2}{c}{\textbf{nessuna stima in 3 trial su 3}} 
 \bottomrule
 \end{tabular}
 \end{table}
-
-Quando l'analisi trova il ritmo giusto la stima è accurata, con errore medio di 0,22 atti al minuto sui tredici trial concordi e massimo 0,4. Nei due trial restanti l'analisi ha restituito esattamente il doppio del ritmo imposto, e il motivo è fisico. L'energia per gate misura quanto si sposta il torace, non in che direzione. In ogni respiro il torace si sposta due volte, in inspirazione e in espirazione, quindi l'energia ha due picchi per respiro e nello spettro compare, oltre al ritmo vero, anche il suo doppio. Quando il picco al doppio è più alto, l'analisi sceglie quello. Dallo spettro di un solo canale non si può distinguere un respiro a 30 atti al minuto da uno a 15 con due picchi per ciclo.
 
 Il confronto con il ritmo imposto ha anche permesso di correggere lo script. Prima scartava stime valide quando canali in movimento e stazionari concordavano, e quando trovava sia il ritmo sia il suo doppio poteva scegliere il doppio. Ora sceglie il più basso dei due. È stata inoltre aggiunta una soglia di plausibilità a 8 atti al minuto, che rende il metodo cieco a una respirazione molto lenta.
 
