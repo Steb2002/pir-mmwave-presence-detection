@@ -21,9 +21,9 @@ sperimentale, che sono l'unico contenuto non ricostruibile.
 - **Persona immobile.** Con la persona ferma, anche sotto il banco, il PIR l'ha rilevata
   in meno del 2 % del tempo, il radar HLK-LD2410B nel 100 % dei casi in tutti gli scenari di
   confronto. A decidere se il PIR vede è il tipo di movimento, non la distanza.
-- **Ostacoli e falsi positivi.** Il radar attraversa legno, vetro, cartongesso e plastica,
-  che bloccano il PIR. A stanza vuota l'HLK-LD2410B non ha dato falsi positivi in oltre 6 ore
-  con le soglie di fabbrica.
+- **Ostacoli e falsi positivi.** L'HLK-LD2410B rileva la persona attraverso legno, vetro,
+  cartongesso e plastica, che bloccano il PIR, e a stanza vuota non ha dato falsi positivi in
+  oltre 6 ore con le soglie di fabbrica.
 - **Secondo radar.** L'HLK-LD2420 conferma il comportamento, con limiti attribuiti
   all'esemplare in prova, che vede una persona solo entro circa 2 m.
 - **Indice di vitalità.** Sulle energie per gate del radar è calcolato a bordo dell'ESP32 un
@@ -129,9 +129,9 @@ python analisi\rigenera_tutto.py
 
 `rigenera_tutto.py` rifà dai CSV i grafici della tesi (in `overleaf/Immagini/`), il foglio
 Excel `analisi/dati_tesi.xlsx` e il catalogo delle figure `CATALOGO_FIGURE.html`, stampato
-anche in PDF se trova Chrome o Edge. Gli schemi che non derivano dai dati (PIR a due elementi,
-lente di Fresnel, modalità del PIR, FMCW, geometrie di prova, collegamenti, piattaforma, percorsi dei dati) si
-rigenerano con `analisi/grafici_schemi.py` e `analisi/grafici_schemi_cap3.py`. A dati
+anche in PDF se trova Chrome o Edge. Gli schemi che non derivano dai dati (PIR a due
+elementi, lente di Fresnel, modalità del PIR, FMCW, geometrie di prova, collegamenti,
+piattaforma, percorsi dei dati) si rigenerano con `analisi/grafici_schemi.py` e `analisi/grafici_schemi_cap3.py`. A dati
 invariati le figure escono identiche byte per byte. Il nome con cui ogni figura finisce nella
 tesi è in `analisi/uscita_figure.py`.
 
