@@ -12,16 +12,16 @@ La v2 usa i canali MOVING per entrambe le componenti (vedi ANALISI_VITALITA.md Â
 
 Uso tipico:
   # panoramica su tutti gli scenari della fase 6
-  python vitalita_proto.py ..\\HLK-LD2410x\\data\\*.csv
+  python vitalita_proto.py ..\\data\\*.csv
 
   # taratura: solo i trial T01-T03, con i parametri da provare
-  python vitalita_proto.py ..\\HLK-LD2410x\\data\\*.csv --trials T01,T02,T03 --k 0.5
+  python vitalita_proto.py ..\\data\\*.csv --trials T01,T02,T03 --k 0.5
 
   # validazione: i trial mai visti in taratura
-  python vitalita_proto.py ..\\HLK-LD2410x\\data\\*.csv --trials T04,T05 --soglie 10,40,70
+  python vitalita_proto.py ..\\data\\*.csv --trials T04,T05 --soglie 10,40,70
 
   # serie temporale di un trial, per il grafico in Excel o in tesi
-  python vitalita_proto.py ..\\HLK-LD2410x\\data\\fermo_1m_H_T01.csv --serie-out serie.csv
+  python vitalita_proto.py ..\\data\\fermo_1m_H_T01.csv --serie-out serie.csv
 
 Requisiti: nessuno oltre la libreria standard.
 """

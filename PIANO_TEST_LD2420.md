@@ -2,7 +2,7 @@
 
 Documento gemello di [PIANO_TEST.md](PIANO_TEST.md), dedicato al secondo radar.
 Stesse convenzioni: `data/<scenario>_T<numero>.csv`, 5 trial per scenario dove non
-indicato diversamente, sessioni annotate in `HLK-LD2410x/data/REGISTRO_SESSIONI.md`.
+indicato diversamente, sessioni annotate in `data/REGISTRO_SESSIONI.md`.
 
 Scritto il 26/08/2026 dopo la lettura della documentazione ufficiale
 (`HLK-LD2420/Documentazione/`: manuale V1.2 + Protocol Document).

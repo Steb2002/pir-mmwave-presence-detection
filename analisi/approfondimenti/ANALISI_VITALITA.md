@@ -262,9 +262,9 @@ comando originale non era stato annotato; da qui in avanti ogni numero della
 specifica porta con sé il comando):
 
 ```
-python analisi/vitalita_proto.py HLK-LD2410x/data/{fermo_1m_H,micromovimenti_1m_H,movimento_1m_H,sotto_banco_immobile_H,sotto_banco_movimenti_H}_T0*.csv \
+python analisi/vitalita_proto.py data/{fermo_1m_H,micromovimenti_1m_H,movimento_1m_H,sotto_banco_immobile_H,sotto_banco_movimenti_H}_T0*.csv \
     --alpha-mov 0.05 --alpha-var 0.01 --k 0.5 --soglie 45,95 --gate 2 \
-    --fondo-da HLK-LD2410x/data/stanza_vuota_T01.csv
+    --fondo-da data/stanza_vuota_T01.csv
 ```
 
 Con il fondo notturno (`stanza_vuota_notte_T01`, quello usato dal firmware) i valori
@@ -363,7 +363,7 @@ Il porting su ESP32 (`vitality.h`) avviene solo a soglie validate.
 
 📌 **Il porting è ora RICHIESTO, non opzionale** (incontro del 29/08/2026): il
 professore vuole che l'indice sia calcolato **a bordo**, dentro il sito
-self-hosted, accanto ai grafici di presenza. Vedi `analisi/ANALISI_WEB_UI.md`.
+self-hosted, accanto ai grafici di presenza. Vedi `analisi/approfondimenti/ANALISI_WEB_UI.md`.
 
 ✔ **Buona notizia: costa quasi nulla.** La v2 dell'algoritmo è interamente basata
 su **EWMA** (medie mobili esponenziali) e su differenze fra campioni consecutivi:

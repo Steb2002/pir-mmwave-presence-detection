@@ -54,7 +54,7 @@ media e deviazione standard — è questo che rende il confronto "numerico" (obi
   verde/giallo invertiti
 - **Esito atteso**: versione firmware letta + righe CSV con `radar_presence=1` quando ti
   muovi davanti al sensore
-- **Annotare in `HLK-LD2410x/data/REGISTRO_SESSIONI.md`**: versione firmware del radar
+- **Annotare in `data/REGISTRO_SESSIONI.md`**: versione firmware del radar
   (serve nella tesi) e baud confermato
 
 ### Test 0.2 — Verifica engineering mode
@@ -66,7 +66,7 @@ media e deviazione standard — è questo che rende il confronto "numerico" (obi
 ### Test 0.3 — Configurazione del PIR HC-SR501
 - **Serve per**: obiettivi 1, 2, 3, 4
 - ✔ Modello già identificato dalle foto: **HC-SR501** (BISS0001 + HT7133, uscita 3.3V
-  sicura per ESP32) — specifiche e fonti in `analisi/ANALISI_PIR.md` §6
+  sicura per ESP32) — specifiche e fonti in `analisi/approfondimenti/ANALISI_PIR.md` §6
 - Configurare: **jumper su H (repeat trigger)**, trimmer del tempo di ritenuta al
   **MINIMO** (~3 s, antiorario a fondo corsa), trimmer di sensibilita' a **meta' corsa**
   -> fotografare la posizione di jumper e trimmer, va tenuta identica per tutta la campagna
@@ -152,7 +152,7 @@ python acquire.py --port COM3 --duration 1800 --output data/stanza_vuota_T01.csv
 - ⚠️ **Questo movimento è il caso peggiore per il PIR** ed è la ragione dello 0% di
   rilevamento a 2-5 m. NON è la condizione con cui si misurano i 3-7 m del datasheet →
   il **Test 1.5** aggiunge il controllo per attraversamento; meccanismo in
-  `analisi/ANALISI_PIR.md` §2.1
+  `analisi/approfondimenti/ANALISI_PIR.md` §2.1
 - ⚠️ **Riferimento**: qui il soggetto e' **in piedi**, quindi il torace sta sulla verticale
   dei piedi e il segno a terra va bene. (L'offset di ~30 cm visto nel Test 1.3 riguardava
   il soggetto **seduto**, con il busto arretrato rispetto al segno.) Non sporgersi avanti
@@ -298,7 +298,7 @@ python acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv 
   l'obiezione più probabile della commissione. Questo test dimostra che il PIR **alle
   stesse distanze rileva benissimo un attraversamento**, e che il fallimento dipende dal
   **tipo di movimento**, non dalla distanza né dalla taratura (meccanismo in
-  `analisi/ANALISI_PIR.md` §2.1)
+  `analisi/approfondimenti/ANALISI_PIR.md` §2.1)
 - **Metrica**: fronti di salita del PIR e `pir_rate_%`, confrontati con il cammino sul
   posto alla stessa distanza (Test 1.2)
 - ⚠️ **NON toccare il trimmer di sensibilità**: deve restare nella posizione usata in
@@ -829,7 +829,7 @@ noi. L'altra risoluzione disponibile (0,2 m/gate) **peggiora** il tetto, portand
 🚨 **Il movimento deve essere di ATTRAVERSAMENTO, non sul posto.** Con il cammino sul
 posto abbiamo gia' misurato **0 % a 2 m**: rifarlo a sensibilita' massima misurerebbe di
 nuovo zero e non direbbe nulla. I 3-7 m del datasheet sono dichiarati per un bersaglio
-che **attraversa** il campo — vedi Test 1.5 e `analisi/ANALISI_PIR.md` §2.1
+che **attraversa** il campo — vedi Test 1.5 e `analisi/approfondimenti/ANALISI_PIR.md` §2.1
 - Distanze: 2, 4, 6, 8 m finche' il corridoio lo consente, 3 trial ciascuna
 - ⚠️ **Serie dichiaratamente separata**: sensibilita' al massimo rompe la comparabilita'
   con tutta la campagna, fatta a meta' corsa. Nome scenario con suffisso `_smax`

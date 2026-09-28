@@ -20,7 +20,7 @@ Opzioni:
                    della pagina: i passi 1-2 sono i piu' lenti, ~20 s)
   --senza-pdf      si ferma all'HTML, senza cercare un browser
 
-Tutte le cifre vengono ricalcolate dai CSV grezzi in HLK-LD2410x/data/ a ogni
+Tutte le cifre vengono ricalcolate dai CSV grezzi in data/ a ogni
 esecuzione: non esistono numeri copiati a mano in nessuno dei tre script.
 """
 import argparse

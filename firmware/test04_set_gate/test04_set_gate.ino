@@ -42,7 +42,7 @@
 #define SERIAL_BAUD_RATE 115200
 
 // Configurazione di fabbrica del NOSTRO esemplare (firmware 2.44.25070917), letta col
-// comando 0x0061 il 18/08/2026 e registrata in HLK-LD2410x/data/REGISTRO_SESSIONI.md.
+// comando 0x0061 il 18/08/2026 e registrata in data/REGISTRO_SESSIONI.md.
 // E' lo stato a cui riporta il comando 'd': non sono valori copiati dal datasheet, sono
 // quelli misurati su questo pezzo.
 const byte SOGLIE_MOV_FABBRICA[9]  = {50, 50, 40, 30, 20, 15, 15, 15, 15};

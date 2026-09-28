@@ -27,7 +27,7 @@ from openpyxl.utils import get_column_letter
 
 QUI = Path(__file__).resolve().parent
 RADICE = QUI.parent
-DATI = RADICE / "HLK-LD2410x" / "data"
+DATI = RADICE / "data"
 OUT = QUI / "dati_tesi.xlsx"
 
 sys.path.insert(0, str(QUI))

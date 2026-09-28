@@ -92,7 +92,7 @@ Obiettivo di contorno: valutare anche altri tipi di sensori.
 | HLK-LD2410B | 1 | ✅ **FUNZIONANTE (09/08/2026)**. Il "guasto" del 19/07/2026 era un errore di cablaggio: i colori dei cavi erano mappati al contrario. Mappatura corretta (datasheet Tabella 1): rosso=VCC, nero=GND, giallo=UART_Rx, verde=UART_Tx, blu=OUT |
 | HLK-LD2420 | 1 | Scheda arancione/verde, portata 8 m dichiarata (manuale V1.2) |
 | HLK-CH340E-V1.0 | 1 | Adattatore USB→Seriale, utile per connettere LD2420 direttamente al PC |
-| PIR **HC-SR501** | 1 | Identificato dalle foto (`PIR HC-SR501/`): BISS0001 + regolatore HT7133, uscita 3.3V ok per ESP32, 2 trimmer + jumper H/L — dettagli in `analisi/ANALISI_PIR.md` §6 |
+| PIR **HC-SR501** | 1 | Identificato dalle foto (`PIR HC-SR501/`): BISS0001 + regolatore HT7133, uscita 3.3V ok per ESP32, 2 trimmer + jumper H/L — dettagli in `analisi/approfondimenti/ANALISI_PIR.md` §6 |
 | Breadboard grande | 1 | |
 | Cavo USB A-C | 1 | Per programmazione ESP32 |
 | Cavi jumper M-F | vari | |
@@ -582,12 +582,12 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
   stanno in `overleaf/figures/` perché servono a Overleaf (dal 28/09/2026, prima erano in
   `tesi-unicam/figures/` e ignorate). I **CSV restano tracciati**: sono l'unico dato non
   ricostruibile
-- `analisi/ANALISI_CONSUMI.md` — obiettivo 4 completato in bozza (consumi da datasheet + stime autonomia + argomentazione architettura ibrida PIR+mmWave)
-- `analisi/ANALISI_WEB_UI.md` — progetto della web UI (obiettivo 5): architettura ESP32 self-hosted (**solo Access Point**, nessuna connessione a reti esistenti — decisione 05/09/2026; fork ESP32Async di ESPAsyncWebServer + WebSocket + pagina in PROGMEM gzip, JavaScript puro con Angular valutato e scartato, tutto offline), formato JSON, layout pagina, struttura codice `firmware/ld2410b_web/`, piano di sviluppo in 5 step. Decisione chiave: il CSV esportato dal browser usa le stesse colonne di acquire.py → un solo formato dati in tutta la tesi. §9: analisi del riferimento UI "LD2410 Configurator" (cosa prendere/cosa no) + opzione D di riserva via Web Serial
-- `analisi/PROGETTO_SITO_DETTAGLIO.md` — progetto di dettaglio implementativo del sito: struct/pseudocodice firmware, protocollo WS con riconnessione, strutture dati JS, config dei 3 grafici, export CSV client-side, gestione errori, criteri di accettazione per step
-- `analisi/ANALISI_SITO_SERVER.md` — piano B dell'obiettivo 5 (19/07/2026): progetto completo del sito "vero" su server esterno nel caso il professore intenda una piattaforma e non il sito self-hosted. Architettura ESP32→MQTT (Mosquitto)→FastAPI+SQLite→browser, codice firmware/backend di riferimento, export CSV compatibile acquire.py, confronto A vs B e domanda di decisione per l'incontro (aggiunta a INCONTRO_PROFESSORE.md, domanda 7). Frontend condiviso ~85% con l'opzione A → cambiare rotta costa ~2-3 giorni. Default resta l'opzione A
-- `analisi/ANALISI_VITALITA.md` — specifica dell'indice di vitalità (obiettivo 6, documento autonomo): algoritmo v1 (doppia EWMA movimento+respiro), classificazione a 4 classi per il triage, percorso di taratura Python-prima sui CSV della Fase 6 con validazione su trial separati, casi limite, collocazione nella tesi
-- `analisi/ANALISI_PIR.md` — analisi teorica del PIR (obiettivo 1-2): principio piroelettrico differenziale, lente di Fresnel, perché è fisicamente cieco alla persona ferma, dati prodotti (1 bit + ritenuta/trigger), sensibilità alla temperatura, sezione 6 DA COMPLETARE col modello reale (Test 0.3)
+- `analisi/approfondimenti/ANALISI_CONSUMI.md` — obiettivo 4 completato in bozza (consumi da datasheet + stime autonomia + argomentazione architettura ibrida PIR+mmWave)
+- `analisi/approfondimenti/ANALISI_WEB_UI.md` — progetto della web UI (obiettivo 5): architettura ESP32 self-hosted (**solo Access Point**, nessuna connessione a reti esistenti — decisione 05/09/2026; fork ESP32Async di ESPAsyncWebServer + WebSocket + pagina in PROGMEM gzip, JavaScript puro con Angular valutato e scartato, tutto offline), formato JSON, layout pagina, struttura codice `firmware/ld2410b_web/`, piano di sviluppo in 5 step. Decisione chiave: il CSV esportato dal browser usa le stesse colonne di acquire.py → un solo formato dati in tutta la tesi. §9: analisi del riferimento UI "LD2410 Configurator" (cosa prendere/cosa no) + opzione D di riserva via Web Serial
+- `analisi/approfondimenti/PROGETTO_SITO_DETTAGLIO.md` — progetto di dettaglio implementativo del sito: struct/pseudocodice firmware, protocollo WS con riconnessione, strutture dati JS, config dei 3 grafici, export CSV client-side, gestione errori, criteri di accettazione per step
+- `analisi/approfondimenti/ANALISI_SITO_SERVER.md` — piano B dell'obiettivo 5 (19/07/2026): progetto completo del sito "vero" su server esterno nel caso il professore intenda una piattaforma e non il sito self-hosted. Architettura ESP32→MQTT (Mosquitto)→FastAPI+SQLite→browser, codice firmware/backend di riferimento, export CSV compatibile acquire.py, confronto A vs B e domanda di decisione per l'incontro (aggiunta a INCONTRO_PROFESSORE.md, domanda 7). Frontend condiviso ~85% con l'opzione A → cambiare rotta costa ~2-3 giorni. Default resta l'opzione A
+- `analisi/approfondimenti/ANALISI_VITALITA.md` — specifica dell'indice di vitalità (obiettivo 6, documento autonomo): algoritmo v1 (doppia EWMA movimento+respiro), classificazione a 4 classi per il triage, percorso di taratura Python-prima sui CSV della Fase 6 con validazione su trial separati, casi limite, collocazione nella tesi
+- `analisi/approfondimenti/ANALISI_PIR.md` — analisi teorica del PIR (obiettivo 1-2): principio piroelettrico differenziale, lente di Fresnel, perché è fisicamente cieco alla persona ferma, dati prodotti (1 bit + ritenuta/trigger), sensibilità alla temperatura, sezione 6 DA COMPLETARE col modello reale (Test 0.3)
 - `SCALETTA_TESI.md` — scaletta Overleaf in 8 capitoli con mappa obiettivi→capitoli, materiale già pronto per ciascuno e ordine di scrittura consigliato (cap. 5 e 2 scrivibili subito)
 - `INCONTRO_PROFESSORE.md` — agenda per l'incontro: cosa mostrare (PIANO_TEST, scaletta, consumi) e domande consolidate (validazione protocollo, montaggio sensore/lamiera, scadenza, DIPME vs SAFE, ruolo UWB)
 - `PIANO_TEST.md` — piano di test completo in ordine di esecuzione (fasi 0-7)
@@ -658,7 +658,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       detection* e *sensitivity automatic configuration*, cioè l'auto-calibrazione del
       firmware V2.44: i due documenti si datano a vicenda coerentemente
   - `LD2410B V2.44 (24073110)- introduction of new features.pdf` — novità del firmware V2.44: **rilevamento automatico del rumore di fondo** (auto-calibrazione delle soglie movimento+stazionario). Procedura: pulsante "Auto" nell'app, 10 s per uscire dal campo + 60 s di misura = 70 s totali, restando fuori dal range. Richiede app Android ≥ V1.5.12 / iOS ≥ V1.5.4. Da non confondere con il "Detect noise floor" della schermata parametri, che è **solo** una funzione dell'app (mostra i valori, non li applica). Il documento NON descrive alcuna procedura di aggiornamento del firmware
-- Tool PC ufficiale `LD2410 Tool (v1.0.0.0)` — copia locale in `HLK-LD2410x/LD2410 Tool/LD2410 Tool.exe`. ⚠️ Non mostra la versione firmware e **non** ha funzione di flash/update
+- Tool PC ufficiale `LD2410 Tool (v1.0.0.0)` — copia locale in `tools/LD2410 Tool/LD2410 Tool.exe`. ⚠️ Non mostra la versione firmware e **non** ha funzione di flash/update
 - App mobile Bluetooth `HLKRadarTool` (Android/iOS, password `HiLink`): cercare "HLKRadarTool" negli app store, oppure download ufficiale https://www.hlktech.com/Mobile/App/12.html (link dal documento V2.44)
 - Datasheet HC-SR501 (PIR in dotazione): https://www.electronicoscaldas.com/datasheet/HC-SR501.pdf (mirror; altra copia su mpja.com/download/31227sc.pdf)
 - Datasheet BISS0001 (chip del PIR): https://cdn-shop.adafruit.com/datasheets/BISS0001.pdf
@@ -666,7 +666,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - ESP32-WROOM-32 datasheet (consumi): https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf
 - Manuale HLK-LD2410 V1.03 (consumi/specifiche verificate): https://seengreat.com/upload/file/86/HLK+LD2410+Life+Presence+Sensor+Module+Manual+V1.03(220629).pdf
 - Datasheet LD2410B (pin definition Tabella 1, protocollo seriale): https://assets.super.so/79c0d2a8-d37a-438f-8fbe-c44778f3b0dd/files/7c3607bd-f703-43f5-9f22-f369f00c37bd.pdf
-- LD2410 Configurator (Albert Nisbet) — configuratore web open source via Web Serial/Web Bluetooth, riferimento UI per l'obiettivo 5: https://ld2410.albert.nz/ · sorgenti https://github.com/albertnis/ld2410-configurator · ⚠️ progetto di comunità, non ufficiale Hi-Link: vale come riferimento UI/implementativo, non come fonte di dati tecnici (analisi in `analisi/ANALISI_WEB_UI.md` §9)
+- LD2410 Configurator (Albert Nisbet) — configuratore web open source via Web Serial/Web Bluetooth, riferimento UI per l'obiettivo 5: https://ld2410.albert.nz/ · sorgenti https://github.com/albertnis/ld2410-configurator · ⚠️ progetto di comunità, non ufficiale Hi-Link: vale come riferimento UI/implementativo, non come fonte di dati tecnici (analisi in `analisi/approfondimenti/ANALISI_WEB_UI.md` §9)
 
 ### Articoli e confronti
 - mmWave Occupancy Sensors - Smart Buildings: https://mmwave-radar.dev/applications/occupancy-sensing
@@ -715,7 +715,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
   (`Steb2002/Tesi-Presence-Sensing`), verificati 116 su 116 nel remoto. **Pushare dopo
   ogni sessione di acquisizione**: un commit locale non è un backup
 - **Confronto con UWB da preparare a livello argomentativo** (il DIPME-DEVICE ha già un sensore UWB): la commissione può chiedere "perché mmWave e non UWB?" — rispondere da letteratura/datasheet (costo, maturità moduli consumer, dati per-gate), partendo dalla tabella comparativa qui sopra
-- Ogni sessione di test va annotata in `HLK-LD2410x/data/REGISTRO_SESSIONI.md` (temperatura stanza, soggetto, alimentazione)
+- Ogni sessione di test va annotata in `data/REGISTRO_SESSIONI.md` (temperatura stanza, soggetto, alimentazione)
 
 ## Stato avanzamento progetto
 
@@ -760,7 +760,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       MAC Bluetooth **5E:E4:93:22:B9:3F**, risoluzione 75 cm/gate, range 675 cm,
       timeout presenza **5 s**, soglie movimento **50 50 40 30 20 15 15 15 15** e
       stazionario **0 0 40 40 30 30 20 20 20**. Tabella completa con confronto
-      soglia↔rumore in `HLK-LD2410x/data/REGISTRO_SESSIONI.md`
+      soglia↔rumore in `data/REGISTRO_SESSIONI.md`
 - [x] **Decisione: NON ricalibrare adesso.** Confrontando le soglie di fabbrica col
       rumore di fondo misurato, il margine più stretto è il gate 6 in movimento
       (soglia 15 vs rumore max 11) e i falsi positivi osservati sono zero: la taratura
@@ -771,10 +771,10 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       prerequisito
 - [x] Versione firmware letta: **2.44.25070917** — è l'ultima Hi-Link, quindi il nostro
       esemplare **ha l'auto-calibrazione delle soglie** del V2.44 (esempio
-      `MyLD2410 > auto_thresholds`). Annotata in `HLK-LD2410x/data/REGISTRO_SESSIONI.md`.
+      `MyLD2410 > auto_thresholds`). Annotata in `data/REGISTRO_SESSIONI.md`.
       Resta da leggere il MAC Bluetooth
 - [x] **Test 0.1 passo B + Test 0.2 SUPERATI (18/08/2026)** — logger `ld2410b_logger`
-      validato su 673 campioni / 134 s (`HLK-LD2410x/data/20260818_test01B_ld2410b_engineering.csv`,
+      validato su 673 campioni / 134 s (`data/20260818_test01B_ld2410b_engineering.csv`,
       analizzato con `analisi/verifica_engineering.py`):
       - cadenza **5.00 Hz esatti**, dt = 200 ms su tutti i 672 intervalli (jitter zero) →
         serie temporale uniforme, adatta alla FFT del respiro
@@ -1163,7 +1163,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       LD2410B per il respiro, perché non satura. Decisione da prendere: tentarla come
       esperimento dichiaratamente non ufficiale, o lasciarla fuori perimetro. Nel
       frattempo respiro e vitalità restano sul LD2410B
-- [x] Identificazione PIR: HC-SR501 (foto + datasheet, `analisi/ANALISI_PIR.md` §6 completata)
+- [x] Identificazione PIR: HC-SR501 (foto + datasheet, `analisi/approfondimenti/ANALISI_PIR.md` §6 completata)
 - [x] Configurazione e test PIR HC-SR501 (Test 0.3, 19/07/2026) — pinout verificato
       GND|OUT|+Power (visto dal lato trimmer), **OUT→D34** (18/08/2026: D25 è ora RX2 del
       radar e D23 sta sul lato opposto della scheda; D34 è solo-input senza pull-up, ok
@@ -1176,7 +1176,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - [x] **PIR cablato su GPIO34** (18/08/2026) — non D23: sta sul lato opposto della scheda.
       GPIO34 è solo-input e senza pull-up, ma va bene perché l'HC-SR501 pilota
       attivamente l'uscita a 3.3V/0V
-- [x] **PILOTA PIR vs mmWave riuscito (18/08/2026)** — `HLK-LD2410x/data/pir_vs_radar_T01.csv`,
+- [x] **PILOTA PIR vs mmWave riuscito (18/08/2026)** — `data/pir_vs_radar_T01.csv`,
       1699 campioni / 339.6 s. **È il risultato centrale della tesi, già misurato**:
       - **PIR: 80.4% di falsi negativi** sulla presenza reale (attivo in 254/1298 campioni);
         radar: 0%
@@ -1856,7 +1856,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **frequenza**, non l'ampiezza del segnale in condizioni realistiche
 
 ### Web UI e dati (obiettivo 5)
-- [x] Progetto architetturale della web UI (`analisi/ANALISI_WEB_UI.md`)
+- [x] Progetto architetturale della web UI (`analisi/approfondimenti/ANALISI_WEB_UI.md`)
 - [x] **Revisione dei due documenti prima dell'implementazione (05/09/2026)**: rete solo
       AP con DNS catch-all; JS puro; PROGMEM gzip al posto di LittleFS (il plugin di upload
       non esiste per l'IDE 2.x); librerie **ESP32Async** (il core 3.3.11 non compila
@@ -1951,7 +1951,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       ma senza ground truth resta un'ipotesi: lo decide il test a metronomo della fase 6
 - [x] **Buona notizia per la fase 6**: a 2.3 m i canali moving non saturano, quindi il test
       del respiro si può fare a distanza realistica senza accorgimenti geometrici
-- [x] Specifica dell'algoritmo (`analisi/ANALISI_VITALITA.md` — v1 da tarare sui dati)
+- [x] Specifica dell'algoritmo (`analisi/approfondimenti/ANALISI_VITALITA.md` — v1 da tarare sui dati)
 - [~] **Prototipo Python `analisi/vitalita_proto.py` SCRITTO (26/08/2026)** — implementa
       la v2 della specifica, calcola vitality(t), distribuzioni per scenario e matrice di
       confusione. Resta da fare la **taratura** (α, k, soglie) e la validazione
@@ -2014,7 +2014,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 ### Processo
 - [x] Scaletta della tesi (`SCALETTA_TESI.md` — da trasporre in Overleaf)
 - [x] Agenda incontro professore (`INCONTRO_PROFESSORE.md`)
-- [x] Analisi teorica PIR (`analisi/ANALISI_PIR.md` — sezione 6 da completare col modello reale)
+- [x] Analisi teorica PIR (`analisi/approfondimenti/ANALISI_PIR.md` — sezione 6 da completare col modello reale)
 - [x] **INCONTRO COL PROFESSORE FATTO (29/08/2026) — tre decisioni**:
       1. **Test di portata massima su tutti e tre i sensori**, da fare **per ultimi**
          perche' richiedono di spostare PC e sensori in corridoio: LD2410B oltre i 5 m,
@@ -2030,14 +2030,14 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
          (per fortuna la v2 e' tutta EWMA, niente FFT: e' portabile a costo quasi zero)
 - 📌 **Come il professore vuole che si parli dell'indice di vitalita'**: NON dire "misura
       il movimento toracico", ma presentarlo come **indice generico** con **3 classi**
-      (erano 4 nella specifica). Vedi `analisi/ANALISI_VITALITA.md` §4 per i nomi
+      (erano 4 nella specifica). Vedi `analisi/approfondimenti/ANALISI_VITALITA.md` §4 per i nomi
       proposti e per la ragione **metodologica** per cui questa scelta e' anche la piu'
       difendibile: senza ground truth non possiamo validare una frequenza respiratoria,
       quindi definire l'indice per quello che **calcola** evita di sovradichiarare
 - [x] **Setup backup dati COMPLETATO (26/08/2026)** — repo GitHub
       `Steb2002/Tesi-Presence-Sensing`, allineato al remoto. Verificato per conteggio:
       **116 CSV sperimentali su disco, 116 tracciati, 116 presenti in `origin/main`**,
-      più `REGISTRO_SESSIONI.md`; 28 MB in `HLK-LD2410x/data/`. Nessun file non
+      più `REGISTRO_SESSIONI.md`; 28 MB in `data/`. Nessun file non
       tracciato in quella cartella
 - 🚨 **CORREZIONE (26/08/2026): la frase «nessuna regola ignora i CSV» era SBAGLIATA.**
       `HLK-LD2410x/.gitignore` riga 66 contiene `*.csv` (eredità del repo del professore) e
@@ -2052,10 +2052,15 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       sottocartella di `data/` sparisce dal repo **senza un avviso**. Vale la pena saperlo
       prima della campagna LD2420, non dopo. Se si vogliono organizzare i dati in
       sottocartelle, cambiare la riga 72 in `!data/**/*.csv` **prima** di acquisire
+      ✔ **Superato il 28/09/2026**: la cartella dei dati è stata spostata da
+      `HLK-LD2410x/data/` a **`data/` nella radice**, dove nessun `.gitignore` esclude i CSV
+      (anche nelle sottocartelle). Il `*.csv` di `HLK-LD2410x/.gitignore` vale ormai solo dentro
+      `HLK-LD2410x/`. Nello stesso riordino i tool Hi-Link per PC sono passati in `tools/` e i
+      documenti `analisi/*.md` in `analisi/approfondimenti/`
 - ⚠️ Fuori da `HLK-LD2410x/` non c'è alcuna regola sui CSV, quindi i dati del LD2420
       entrano nel repo per default. Rovescio della medaglia: con `git add -A` entra
       **tutto**. Tenere gli eventuali CSV intermedi o di scarto **fuori** da
-      `HLK-LD2410x/data/`, altrimenti si mescolano ai trial buoni nella storia
+      `data/`, altrimenti si mescolano ai trial buoni nella storia
 - ⚠️ Un `find . -name "*.csv"` grezzo ne conta 146, non 116: i 30 in più sono fixture di
       test di numpy dentro `HLK-LD2410x/.venv/`, ignorate correttamente. Non sono dati
       sperimentali
@@ -2103,7 +2108,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - [ ] Cronoprogramma (dopo aver saputo la scadenza)
 
 ### Chiusura
-- [x] Consumo energetico da datasheet (obiettivo 4 — bozza in `analisi/ANALISI_CONSUMI.md`; da completare col modello PIR reale dopo Test 0.3)
+- [x] Consumo energetico da datasheet (obiettivo 4 — bozza in `analisi/approfondimenti/ANALISI_CONSUMI.md`; da completare col modello PIR reale dopo Test 0.3)
 - [x] **Capitoli scritti (13/09/2026)** — tutti gli otto capitoli e le due appendici sono
       completi sui dati della campagna: cap. 4 esteso a ostacoli/3.6, respiro, angolare,
       Fase 8 (`sec:portata-massima`) e campagna ridotta LD2420 (`sec:ld2420-risultati`,

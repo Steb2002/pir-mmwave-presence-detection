@@ -1,0 +1,7 @@
+# Statistiche dei linguaggi su GitHub
+# Gli header del firmware sono C++ (Arduino), non C
+*.h linguist-language=C++
+# Pagina web compressa come array di byte da tools/embed_web.py: file generato
+firmware/ld2410b_web/web_assets.h linguist-generated
+# Chart.js, libreria esterna servita dall'ESP32
+firmware/ld2410b_web/web/chart.umd.min.js linguist-vendored

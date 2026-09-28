@@ -180,7 +180,7 @@ def main():
         return
 
     qui = Path(__file__).parent
-    dati = qui / "data"
+    dati = qui.parent / "data"   # data/ nella radice del progetto
     dati.mkdir(exist_ok=True)
 
     # Controllo PRIMA di iniziare: meglio fermarsi ora che a metà serie

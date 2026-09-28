@@ -148,7 +148,7 @@ def fig_piattaforma():
     box(0.5, 22, 13.5, 17, "Sensori", ["HLK-LD2410B (5 Hz)", "HLK-LD2420 (10 Hz)", "HC-SR501 (1 bit)"])
     box(19, 22, 16, 17, "ESP32", ["ld2410b_logger", "ld2420_logger_bin", "ld2410b_web", "sketch di configurazione"])
     box(43, 22, 17.5, 17, "PC: acquire.py", ["ricostruisce l'intestazione", "+ 6 colonne di metadati", "beep / annunci vocali"])
-    box(66, 22, 13.5, 17, "CSV", ["HLK-LD2410x/data/", "un file per trial", "+ registro sessioni"])
+    box(66, 22, 13.5, 17, "CSV", ["data/", "un file per trial", "+ registro sessioni"])
     box(85, 22, 14, 17, "Analisi", ["verifica_engineering", "analizza_test", "analizza_respiro", "vitalita_proto"])
 
     freccia(14, 30, 19, 30); ax.text(16.5, 31.4, "UART", ha="center", fontsize=6.6, color=C_BOARD)

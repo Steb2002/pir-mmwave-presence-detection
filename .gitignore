@@ -4,6 +4,9 @@ venv/
 __pycache__/
 *.pyc
 
+# Impostazioni locali di Claude Code
+.claude/
+
 # File temporanei
 *.tmp
 ~$*
@@ -17,10 +20,10 @@ CATALOGO_FIGURE.html
 CATALOGO_FIGURE.pdf
 
 # Log del tool PC Hi-Link LD2420: rigenerati a ogni avvio, come quelli del LD2410 Tool
-HLK-LD2420/HLK-LD2420_TOOL -English/Log/
+tools/HLK-LD2420_TOOL -English/Log/
 
 # Log di compilazione LaTeX nella radice
 /*.log
 
 # Log del tool PC Hi-Link LD2410: rigenerati a ogni avvio
-HLK-LD2410x/LD2410 Tool/Log/
+tools/LD2410 Tool/Log/

@@ -15,7 +15,7 @@ Cosa controlla:
   8. coerenza tra il pin OUT del radar e la presenza letta via UART
 
 Uso:
-    python verifica_engineering.py ..\HLK-LD2410x\data\20260818_test01B_ld2410b_engineering.csv
+    python verifica_engineering.py ..\data\20260818_test01B_ld2410b_engineering.csv
 
 Requisiti: solo libreria standard.
 """

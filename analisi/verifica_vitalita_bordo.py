@@ -9,10 +9,10 @@ Il prototipo viene eseguito con le STESSE costanti di firmware/ld2410b_web/confi
 (alpha_m 0,05 · alpha_v 0,01 · k 0,5 · soglie 45/95 · gate dalla distanza · fondo per gate
 da stanza_vuota_notte_T01). Se bordo e offline coincidono entro ±1 (l'ESP32 arrotonda a
 intero), il porting e' verificato: e' il criterio di accettazione dello step 5
-(analisi/PROGETTO_SITO_DETTAGLIO.md §5).
+(analisi/approfondimenti/PROGETTO_SITO_DETTAGLIO.md §5).
 
 Uso:
-    python analisi/verifica_vitalita_bordo.py HLK-LD2410x/data/vit_*.csv
+    python analisi/verifica_vitalita_bordo.py data/vit_*.csv
     python analisi/verifica_vitalita_bordo.py file.csv --gate energia   # se il firmware usa argmax
 
 Nota: le EWMA del prototipo partono dal primo campione del FILE, quelle del firmware dal

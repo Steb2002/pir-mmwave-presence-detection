@@ -131,7 +131,7 @@ void setup() {
   }
 
   printInfo();
-  Serial.println("\nFatto. Annotare questi valori in HLK-LD2410x/data/REGISTRO_SESSIONI.md");
+  Serial.println("\nFatto. Annotare questi valori in data/REGISTRO_SESSIONI.md");
 }
 
 void loop() {

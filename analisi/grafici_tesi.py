@@ -21,7 +21,7 @@ import numpy as np
 
 QUI = Path(__file__).resolve().parent
 RADICE = QUI.parent
-DATI = RADICE / "HLK-LD2410x" / "data"
+DATI = RADICE / "data"
 sys.path.insert(0, str(QUI))
 from uscita_figure import PNG as OUT, salva  # noqa: E402
 from analizza_test import leggi_csv, analizza_file, impulsi_pir  # noqa: E402
