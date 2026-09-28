@@ -14,7 +14,7 @@
 | **PIR HC-SR501** (modello in dotazione ✔) | 4.5–20 V | **< 0.05 mA** (50 µA quiescente) | ~0.3 mW | Datasheet HC-SR501 (mirror electronicoscaldas.com) |
 
 Modello identificato dalle foto il 15/07/2026 (chip BISS0001 + regolatore HT7133,
-vedi `analisi/ANALISI_PIR.md` §6): uscita a 3.3 V, compatibile ESP32.
+vedi `analisi/approfondimenti/ANALISI_PIR.md` §6): uscita a 3.3 V, compatibile ESP32.
 
 ### Microcontrollore ESP32-WROOM-32 (datasheet Espressif)
 

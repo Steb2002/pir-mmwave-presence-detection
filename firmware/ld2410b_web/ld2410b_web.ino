@@ -5,7 +5,7 @@
  * a reti esistenti), serve la pagina web dalla flash e spinge i dati del radar LD2410B
  * e del PIR al browser via WebSocket a 5 Hz. Il browser disegna i grafici, calcola le
  * statistiche e genera il CSV con le stesse colonne di acquire.py.
- * Progetto: analisi/ANALISI_WEB_UI.md e analisi/PROGETTO_SITO_DETTAGLIO.md.
+ * Progetto: analisi/approfondimenti/ANALISI_WEB_UI.md e analisi/approfondimenti/PROGETTO_SITO_DETTAGLIO.md.
  *
  * File:
  *   config.h        SSID/password dell'AP, pin, costanti

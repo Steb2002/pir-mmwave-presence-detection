@@ -831,7 +831,8 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       - **firmware v1.6.1** (Test 0.5 chiuso); `GateMax=12`, ritardo 30 s; **32 soglie lette
         via UART** con `firmware/test06_ld2420_set_gate/` e coincidenti tutte con l'XML di
         fabbrica → conversione `grezzo = 10^(dB/10)` validata su ogni parametro
-      - logger `firmware/ld2420_logger/` scritto: stesse 9 colonne del LD2410B, 5 Hz,
+      - logger `firmware/ld2420_logger/` (superato da `ld2420_logger_bin`, tolto dal repo il
+        28/09/2026, resta nella storia git) scritto: stesse 9 colonne del LD2410B, 5 Hz,
         **presenza da OT2 (GPIO19)**, PIR su GPIO21 (non su 34: irraggiungibile sulla
         breadboard attuale). ⚠️ OT2 NON su GPIO15: e' di strapping e blocca l'upload
       - ❌ **la presenza ASCII e' inutilizzabile**: dump grezzo (`test05_ld2420_raw`) = 2528

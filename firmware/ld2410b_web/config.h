@@ -26,7 +26,7 @@
 #define PERIODO_CAMPIONE_MS 200         // 5 Hz, come il logger e i CSV della tesi
 
 // ---------------------------------------------------------------- Indice di vitalita' (step 5)
-// Algoritmo v3 di analisi/ANALISI_VITALITA.md (§3.1 + §4.5), parametri tarati il
+// Algoritmo v3 di analisi/approfondimenti/ANALISI_VITALITA.md (§3.1 + §4.5), parametri tarati il
 // 31/08/2026 (§4.6) su vitalita_proto.py. Le stesse costanti del prototipo: se cambiano
 // qui devono cambiare anche la' (e viceversa), altrimenti bordo e offline divergono.
 #define VIT_ALPHA_M     0.05f           // EWMA del livello di movimento (~4 s a 5 Hz)

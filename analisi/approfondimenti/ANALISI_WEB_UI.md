@@ -34,13 +34,13 @@ coincide con la nostra prima: il sito self-hosted **è un'ottima casistica di
 scenario senza connessione**, cioè esattamente lo scenario DIPME.
 
 📌 **Conseguenze operative della conferma**:
-- `analisi/ANALISI_SITO_SERVER.md` (piano B, architettura MQTT + FastAPI) esce dal
+- `analisi/approfondimenti/ANALISI_SITO_SERVER.md` (piano B, architettura MQTT + FastAPI) esce dal
   percorso realizzativo ma **non si butta**: diventa l'*alternativa valutata e
   scartata con motivazione*, che è materiale buono per il capitolo sulle scelte
   progettuali. Documentare un'alternativa scartata è più forte che non averla
   considerata
 - l'**indice di vitalità va calcolato a bordo**, accanto ai grafici (richiesta
-  esplicita del professore). Vedi `analisi/ANALISI_VITALITA.md` §5: la v2 è tutta
+  esplicita del professore). Vedi `analisi/approfondimenti/ANALISI_VITALITA.md` §5: la v2 è tutta
   EWMA, quindi il costo computazionale sull'ESP32 è trascurabile e non serve
   ripensare l'architettura. La FFT del respiro resta invece **offline**, in
   `analizza_respiro.py`
