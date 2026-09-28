@@ -205,29 +205,6 @@ L'indice non si può calcolare con l'\ldc. Sull'esemplare in dotazione l'energia
 I comportamenti dell'indice nei casi limite
 sono raccolti in Tabella~\ref{tab:vitalita-casilimite}.
 
-\begin{table}[htbp]
-\centering
-\caption{Casi limite dell'indice di vitalità e comportamento previsto o osservato.}
-\label{tab:vitalita-casilimite}
-\small
-\begin{tabularx}{\linewidth}{@{}XXX@{}}
-\toprule
-\textbf{Situazione} & \textbf{Comportamento} & \textbf{Note} \\
-\midrule
-La persona esce dal campo & indice a 0 e nessuna classe entro la coda di presenza
-  del radar (circa 9--12~s stimati, Sezione~\ref{sec:latenza}) & l'indice dipende dalla presenza. Le medie continuano ad aggiornarsi \\
-La persona si addormenta & da alta a bassa in pochi secondi & il livello decade con la sua costante di circa 4~s \\
-Ventilatore o tenda in movimento & possibile falsa classe moderata & mitigabile con le soglie per gate del radar \\
-Due persone & indice riferito al gate della distanza riportata & coerente con il
-  limite di un bersaglio per canale (Sezione~\ref{sec:due-persone}) \\
-Persona oltre 4--5~m & energia debole, indice sottostimato & la portata utile
-  dell'indice non è stata caratterizzata \\
-Persona a meno di 1,5~m & nessun effetto, l'indice usa i soli canali in movimento &
-  perché i gate stazionari sotto 1,5~m sono nulli (Sezione~\ref{sec:c3-5-2}) \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
 I limiti dell'indice:
 
 \begin{itemize}
@@ -251,6 +228,29 @@ Tre estensioni che migliorerebbero l'indice:
 \end{itemize}
 
 Resta infine un aspetto di trattamento dei dati. Per il monitoraggio in ambienti scolastici il progetto indica le cautele del GDPR, fino a una valutazione d'impatto quando sono coinvolti minori~\cite{callisto2026dipme}. L'indice di vitalità non aggiunge un problema nuovo, perché non è una misura fisiologica, e rientra nella stessa valutazione che riguarda già il dato di presenza.
+
+\begin{table}[htbp]
+\centering
+\caption{Casi limite dell'indice di vitalità e comportamento previsto o osservato.}
+\label{tab:vitalita-casilimite}
+\small
+\begin{tabularx}{\linewidth}{@{}XXX@{}}
+\toprule
+\textbf{Situazione} & \textbf{Comportamento} & \textbf{Note} \\
+\midrule
+La persona esce dal campo & indice a 0 e nessuna classe entro la coda di presenza
+  del radar (circa 9--12~s stimati, Sezione~\ref{sec:latenza}) & l'indice dipende dalla presenza. Le medie continuano ad aggiornarsi \\
+La persona si addormenta & da alta a bassa in pochi secondi & il livello decade con la sua costante di circa 4~s \\
+Ventilatore o tenda in movimento & possibile falsa classe moderata & mitigabile con le soglie per gate del radar \\
+Due persone & indice riferito al gate della distanza riportata & coerente con il
+  limite di un bersaglio per canale (Sezione~\ref{sec:due-persone}) \\
+Persona oltre 4--5~m & energia debole, indice sottostimato & la portata utile
+  dell'indice non è stata caratterizzata \\
+Persona a meno di 1,5~m & nessun effetto, l'indice usa i soli canali in movimento &
+  perché i gate stazionari sotto 1,5~m sono nulli (Sezione~\ref{sec:c3-5-2}) \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \section{Il rilevamento del respiro}
 \label{sec:respiro}

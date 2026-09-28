@@ -83,34 +83,6 @@ condizioni da coprire sono molte. Ogni scenario ha un nome, che è anche il nome
 file. Il respiro a ritmo imposto usa lo stesso setup e lo stesso formato dei file ed è trattato
 nel Capitolo~\ref{chap:vitalita}.
 
-\begin{table}[!htbp]
-\centering
-\caption{Gli scenari della campagna, con i trial per condizione, lo scarto iniziale
-applicato da tutti gli script (Sezione~\ref{sec:metriche-transitorio}) e la sezione dei
-risultati. La campagna ridotta sull'\ldc\ ripete entro 2~m gli scenari con l'asterisco
-(Sezione~\ref{sec:protocollo-ld2420}), con uno scarto di 90~s nei trial da fermo.}
-\label{tab:scenari}
-\small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.13\linewidth}c>{\raggedright\arraybackslash}p{0.13\linewidth}@{}}
-\toprule
-\textbf{Scenario} & \textbf{Domanda} & \textbf{Trial} & \textbf{Scarto} & \textbf{Risultati} \\
-\midrule
-Stanza vuota, notte e giorno* & falsi positivi & 7,03~h & 60~s & Sezione~\ref{sec:falsi-positivi} \\
-Persona ferma seduta a 2,3~m & falsi negativi & 5 & 30~s & Sezione~\ref{sec:persona-ferma} \\
-Dose-risposta a 1~m (immobile, micro-movimenti, cammino sul posto)* & quantità di movimento & 5 per condizione & 20~s & Sezione~\ref{sec:dose-risposta} \\
-Cammino sul posto a 1--5~m* & accuratezza della distanza, PIR sul posto & 5 per distanza & 20~s & Sezioni~\ref{sec:distanza} e~\ref{sec:dose-risposta} \\
-Attraversamento a 1--5~m & tipo di movimento & 3 per distanza & 20~s & Sezione~\ref{sec:attraversamento} \\
-Sotto il banco a 60~cm (immobile, micro-movimenti)* & scenario del progetto & 5 per condizione & 40~s & Sezione~\ref{sec:sotto-banco} \\
-Ingresso e uscita dalla stanza* & latenze & 10 e 5 & evento a 30~s & Sezione~\ref{sec:latenza} \\
-Arco a 1~m, sei azimut* & copertura angolare & 1--3 per azimut & 20~s & Sezione~\ref{sec:angolare} \\
-Selettività con gate massimo 2* & vicino di banco & 3 per scenario & 120~s & Sezione~\ref{sec:angolare} \\
-Due persone, tre geometrie* & separazione dei bersagli & 3 per geometria & 20~s & Sezione~\ref{sec:due-persone} \\
-Pannelli interposti, a 3~m e a 1~m* & attenuazione & 3 per materiale & 20~s & Sezione~\ref{sec:ostacoli} \\
-Corridoio, 5--8~m* & portata massima & 3--5 per distanza & 20~s & Sezione~\ref{sec:portata-massima} \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
 \subsection{Ground truth}
 \label{sec:protocollo-ripetizioni}
 \label{sec:protocollo-groundtruth}
@@ -157,6 +129,34 @@ Sezione~\ref{sec:c3-4-5} e poi aggregate per scenario.
     testimone dello stimolo, perché due prove con la stessa energia hanno riprodotto lo
     stesso movimento.
 \end{itemize}
+
+\begin{table}[!htbp]
+\centering
+\caption{Gli scenari della campagna, con i trial per condizione, lo scarto iniziale
+applicato da tutti gli script (Sezione~\ref{sec:metriche-transitorio}) e la sezione dei
+risultati. La campagna ridotta sull'\ldc\ ripete entro 2~m gli scenari con l'asterisco
+(Sezione~\ref{sec:protocollo-ld2420}), con uno scarto di 90~s nei trial da fermo.}
+\label{tab:scenari}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.13\linewidth}c>{\raggedright\arraybackslash}p{0.13\linewidth}@{}}
+\toprule
+\textbf{Scenario} & \textbf{Domanda} & \textbf{Trial} & \textbf{Scarto} & \textbf{Risultati} \\
+\midrule
+Stanza vuota, notte e giorno* & falsi positivi & 7,03~h & 60~s & Sezione~\ref{sec:falsi-positivi} \\
+Persona ferma seduta a 2,3~m & falsi negativi & 5 & 30~s & Sezione~\ref{sec:persona-ferma} \\
+Dose-risposta a 1~m (immobile, micro-movimenti, cammino sul posto)* & quantità di movimento & 5 per condizione & 20~s & Sezione~\ref{sec:dose-risposta} \\
+Cammino sul posto a 1--5~m* & accuratezza della distanza, PIR sul posto & 5 per distanza & 20~s & Sezioni~\ref{sec:distanza} e~\ref{sec:dose-risposta} \\
+Attraversamento a 1--5~m & tipo di movimento & 3 per distanza & 20~s & Sezione~\ref{sec:attraversamento} \\
+Sotto il banco a 60~cm (immobile, micro-movimenti)* & scenario del progetto & 5 per condizione & 40~s & Sezione~\ref{sec:sotto-banco} \\
+Ingresso e uscita dalla stanza* & latenze & 10 e 5 & evento a 30~s & Sezione~\ref{sec:latenza} \\
+Arco a 1~m, sei azimut* & copertura angolare & 1--3 per azimut & 20~s & Sezione~\ref{sec:angolare} \\
+Selettività con gate massimo 2* & vicino di banco & 3 per scenario & 120~s & Sezione~\ref{sec:angolare} \\
+Due persone, tre geometrie* & separazione dei bersagli & 3 per geometria & 20~s & Sezione~\ref{sec:due-persone} \\
+Pannelli interposti, a 3~m e a 1~m* & attenuazione & 3 per materiale & 20~s & Sezione~\ref{sec:ostacoli} \\
+Corridoio, 5--8~m* & portata massima & 3--5 per distanza & 20~s & Sezione~\ref{sec:portata-massima} \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \subsection{Zero eventi}
 \label{sec:metriche-zero}
@@ -356,6 +356,21 @@ l'indirizzo, la memoria libera, i parametri letti dal radar e l'impronta della p
 \label{fig:dashboard-sessione}
 \end{figure}
 
+\paragraph{Realizzazione} Lo sviluppo è stato organizzato in cinque passi, ciascuno con un
+criterio di accettazione da verificare prima di passare al successivo.
+\begin{enumerate}
+  \item \textbf{Rete e pagina statica:} il passo era superato quando la pagina si apriva da
+    telefono e da portatile.
+  \item \textbf{Lettura dei sensori e WebSocket:} i valori in pagina dovevano seguire il
+    sensore senza accumulare latenza.
+  \item \textbf{Grafici e storico:} spostando il soggetto di 0,75~m, le barre per gate
+    dovevano indicare il gate corretto.
+  \item \textbf{Sessione ed esportazione:} il CSV del browser è stato verificato come
+    descritto nella Sezione~\ref{sec:webui-verifica}.
+  \item \textbf{Indice di vitalità a bordo:} a regime l'indice doveva coincidere entro
+    $\pm 1$ con quello calcolato in Python (Sezione~\ref{sec:vitalita-bordo}).
+\end{enumerate}
+
 \begin{table}[!htbp]
 \centering
 \caption{Campi del messaggio WebSocket inviato a ogni client collegato, uno per campione
@@ -381,20 +396,6 @@ l'indirizzo, la memoria libera, i parametri letti dal radar e l'impronta della p
 \end{tabularx}
 \end{table}
 
-\paragraph{Realizzazione} Lo sviluppo è stato organizzato in cinque passi, ciascuno con un
-criterio di accettazione da verificare prima di passare al successivo.
-\begin{enumerate}
-  \item \textbf{Rete e pagina statica:} il passo era superato quando la pagina si apriva da
-    telefono e da portatile.
-  \item \textbf{Lettura dei sensori e WebSocket:} i valori in pagina dovevano seguire il
-    sensore senza accumulare latenza.
-  \item \textbf{Grafici e storico:} spostando il soggetto di 0,75~m, le barre per gate
-    dovevano indicare il gate corretto.
-  \item \textbf{Sessione ed esportazione:} il CSV del browser è stato verificato come
-    descritto nella Sezione~\ref{sec:webui-verifica}.
-  \item \textbf{Indice di vitalità a bordo:} a regime l'indice doveva coincidere entro
-    $\pm 1$ con quello calcolato in Python (Sezione~\ref{sec:vitalita-bordo}).
-\end{enumerate}
 Un problema incontrato lungo la strada merita di essere segnalato a chi ripete il lavoro.
 I callback del server asincrono girano su un task diverso dal ciclo principale, e una
 stampa di log alla connessione di un client ha corrotto una riga CSV mentre veniva
