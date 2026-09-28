@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "Se usi questo materiale, citalo come indicato qui sotto."
+type: software
+title: "Analisi sperimentale di sensori radar mmWave e PIR per il rilevamento di persone in scenari post-sisma"
+abstract: >-
+  Firmware per ESP32, script di acquisizione e di analisi, dati della campagna sperimentale
+  e sorgenti LaTeX della tesi di laurea triennale che confronta il sensore PIR HC-SR501 con i
+  radar mmWave a 24 GHz HLK-LD2410B e HLK-LD2420 per il rilevamento di persone in scenari
+  post-sisma.
+authors:
+  - family-names: "De Bernardinis"
+    given-names: "Stefano"
+    affiliation: "Università degli Studi di Camerino"
+  - family-names: "Callisto De Donato"
+    given-names: "Massimo"
+    affiliation: "Università degli Studi di Camerino"
+repository-code: "https://github.com/Steb2002/pir-mmwave-presence-detection"
+keywords:
+  - PIR
+  - mmWave
+  - radar FMCW
+  - HLK-LD2410B
+  - HLK-LD2420
+  - ESP32
+  - rilevamento di presenza

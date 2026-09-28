@@ -2,18 +2,18 @@
 
 ## Contesto — Progetto DIPME
 
-La tesi si inserisce nel **progetto DIPME** (chiamato UPRISE fino al 22/09/2026: il nome è stato cambiato su indicazione del relatore e la parola UPRISE non deve più comparire, né in tesi né nel firmware), nato dopo il terremoto del 2016 nella zona di Camerino, con l'obiettivo di mitigare il rischio sismico. L'idea generale del progetto:
+La tesi si inserisce nel **progetto DIPME** (nome precedente UPRISE, da non usare più né in tesi né nel firmware), nato dopo il terremoto del 2016 nella zona di Camerino, con l'obiettivo di mitigare il rischio sismico. L'idea generale del progetto:
 
 - Sensori IoT integrati negli **arredi** (es. banchi scolastici), che si attivano solo in "modalità terremoto" (trigger: accelerometro sul gateway, blackout, ecc.)
 - Durante l'emergenza il sensore rileva se **c'è qualcuno rifugiato sotto l'arredo** e lo comunica all'esterno
 - Comunicazione via **protocollo LoRa** (lunga portata); **droni** raccolgono i messaggi e costruiscono una **mappa di calore geolocalizzata offline** consultabile dal tablet dei soccorritori
 
-**La tesi copre solo la parte di sensing**: caratterizzazione e confronto dei sensori di presenza (PIR vs mmWave). Slide del progetto generale: https://docs.google.com/presentation/d/11Q_Zet3aEtPZo2vcoM7_cvcTCbvLY-FBznCqPK37k3E/edit?usp=sharing
+**La tesi copre solo la parte di sensing**: caratterizzazione e confronto dei sensori di presenza (PIR vs mmWave). Slide del progetto: voce `slideDipme` della bibliografia.
 
-### Dettagli dell'ecosistema progetto (dalle slide "Sharper" del professore, 26/09/2025)
+### Dettagli dell'ecosistema progetto (dalle slide del progetto)
 
-- **Professore**: Massimo Callisto — ricercatore RTD-A in Computer Science a UNICAM, membro del PROcess and Service lab e del progetto di ricerca VITALITY. Nel paper di riferimento il progetto è chiamato **SAFE**
-- **Arredi salva-vita** (progettati dalla Scuola di Architettura e Design UNICAM — Gioiella, Galloppo, Micozzi):
+- **Relatore**: Prof. Massimo Callisto De Donato (UNICAM). Nel paper di riferimento la piattaforma di partenza è chiamata **SAFE**
+- **Arredi salva-vita** (progettati dalla Scuola di Architettura e Design UNICAM):
   - Banco: telaio doppio spaziale, piano rinforzato con lamiera forata antisfondamento, elemento di base dissipativo, connessione strutturale tra banchi
   - Parete attrezzata autoportante anti-ribaltamento; pareti divisorie alluminio-vetro con dissipazione/isolamento sismico
 - **Elettronica esistente** (partner: AM Microsystems, Piediripa MC):
@@ -21,21 +21,21 @@ La tesi si inserisce nel **progetto DIPME** (chiamato UPRISE fino al 22/09/2026:
   - **DIPME-DEVICE**: modulo LoRa + **sensore PIR** + CO2, temperatura, umidità, pressione, accelerometro, Bluetooth, **sensore UWB**
   - ⚠️ Rilevante per la tesi: il DIPME-DEVICE attuale usa **PIR + UWB** per la presenza → la tesi valuta il mmWave come alternativa/complemento del PIR in questo dispositivo
 - **Rete LoRa**: bande sub-GHz libere (433/868 MHz in Europa), portata 10-15 km rurale / 3-5 km urbano; architettura: DIPME DEVICE → DIPME COORDINATOR → gateway IoT Linux/Raspberry (DIPME DRIVER)
-- **Dimostratori reali**: Polo Lodovici di Informatica (Ascoli Piceno) e IIS Fermi Sacconi Ceci (Ascoli Piceno, 2 aule + sala professori)
+- **Dimostratori reali**: in scuole delle Marche (dettagli nel paper, voce `callisto2026dipme`)
 - **Digital Twin**: piattaforma https://pros.unicam.it/dtplatform/ per modellare, simulare e validare il sistema IoT prima dell'installazione (anche con VR) — Callisto et al., *"Design and Development of a Digital Twin Prototype for the SAFE Project"*, EDOC 2023
 - **Piattaforma di monitoraggio** con due modalità: "tempo di pace" (monitoraggio ordinario) e "tempo di guerra" (emergenza sismica)
 
-### Paper DIPME del professore (ricevuto il 13/09/2026, `paper_dipme.pdf`, 14 pagine)
+### Paper DIPME (voce `callisto2026dipme`)
 
 Callisto De Donato, Corradini, Re, *"A Case Study on a Distributed IoT System for Indoor
-Disaster Preparedness in Operational Environments"*, manoscritto 2026 — in `bib/tesi.bib`
+Disaster Preparedness in Operational Environments"*, Future Generation Computer Systems 186 (2027) — in `overleaf/biblio.bib`
 come `callisto2026dipme`, citato nei cap. 1, 2, 5, 8. **È la fonte primaria più recente
 sul nodo reale** e corregge le slide del 2025 su un punto:
 - il nodo dispiegato ("Monitoring and Safety IoT device", Tabella 1) è **STM32WLE + LoRa +
   PIR Panasonic EKMB139 + BME280 + SCD40**, a batteria. **Niente UWB nella configurazione
   dispiegata**: la presenza è affidata al solo PIR. L'UWB resta nelle slide → in tesi
   scrivere "previsto nelle slide, non nel dispiegamento documentato"
-- dimostratore: **42 nodi nei banchi salva-vita** di 2 aule (Aula 203 e 204) di una scuola
+- dimostratore: **42 nodi nei banchi salva-vita** di 2 aule di una scuola
   secondaria delle Marche, ottobre 2025 → marzo 2026, 706 358 record; gateway Lenovo
   ThinkEdge + EdgeX Foundry + Mosquitto, cloud ThingsBoard su AWS
 - regimi *peace/war*: in emergenza **il bit di presenza decide la cadenza LoRa** (1 min con
@@ -49,24 +49,15 @@ sul nodo reale** e corregge le slide del 2025 su un punto:
   Romagnoli), `callisto2024safe` (Internet of Things 27, 2024, 101273 — la piattaforma SAFE),
   `pietroni2021furniture` (AGATHÓN 10, 2021 — gli arredi salva-vita)
 
-### Altri materiali ricevuti il 13/09/2026
-- **Tesi Scattolini** (`Tesi_Scattolini_firmata.pdf`, 74 pagine, relatore Callisto, a.a.
-  2022/23, L-31): indicata dal professore come **esempio di testo**. 7 capitoli (Introduzione,
-  Background, AWS, Progettazione, Implementazione, Caso d'uso, Conclusioni), abstract, dedica,
-  frontespizio "Laureanda / Relatore / Correlatore / A.A.". Il nostro frontespizio coincide
-  nella struttura; la nostra tesi è più lunga (135 pagine) per la parte sperimentale
-- **Relazione Dell'Aquila** (`REBECCA DELL'AQUILA (1).zip`: report 53 pagine + codici
-  PlatformIO/Raspberry/PyTorch, corso Embedded Systems Lab, a.a. 2025/26): stessi due radar +
-  PIR, approccio diverso (Raspberry + rete GRU, 1 Hz, ~3700 campioni, accuratezza 90,8 %).
-  **Riscontro indipendente** dei nostri risultati sul LD2420 (flag di presenza inaffidabile,
-  gate 0 alto a vuoto ed escluso, soglie da tarare, sovrapposizione vuoto/poco attivo) e sul
-  LD2410B (nessun falso positivo con finestre aperte, tende, esterno, gatto rilevato). In
-  `bib/tesi.bib` come `dellaquila2026`, discussa in cap. 4 `sec:ld2420-riscontro`. Il
-  professore: "usalo solo per eventuali descrizioni che ti tornano utili"
+### Riscontro indipendente sui due radar
+- Relazione di progetto di un corso UNICAM (voce `dellaquila2026`), con gli stessi due radar
+  e il PIR ma un approccio diverso (Raspberry + rete GRU): conferma i risultati sul LD2420
+  (presenza inaffidabile, gate 0 alto a vuoto, soglie da tarare) e sul LD2410B (nessun falso
+  positivo). Discussa nel cap. 5
 
 ---
 
-## Obiettivi della tesi (6 punti, definiti con il professore — call del 06/07/2026)
+## Obiettivi della tesi (6 punti)
 
 1. **Studio dei sensori** — chi li usa, come vengono usati, che dati producono (PIR e mmWave)
 2. **Analisi dei dati forniti** — capire nel dettaglio che dati forniscono i sensori (PIR: solo movimento sì/no; mmWave: micromovimenti, distanza, potenzialmente battito/respiro)
@@ -576,8 +567,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - `analisi/genera_pagina.py` — `CATALOGO_FIGURE.html` (e il PDF stampato da
   `rigenera_tutto.py`): le figure della campagna, lette da `overleaf/Immagini/` con i nomi di
   `uscita_figure.py`, ciascuna con la didascalia che spiega cosa dimostra. Fino al 28/09/2026
-  era `RIEPILOGO_INCONTRO.html`, con anche lo stato dei 6 obiettivi e le domande per
-  l'incontro col professore, tolte perché superate. Le immagini sono incorporate come data URI
+  era `RIEPILOGO_INCONTRO.html`, con anche lo stato dei 6 obiettivi, tolto perché superato. Le immagini sono incorporate come data URI
   WebP, quindi **la pagina si apre offline e si manda per mail così com'è**. Ha un foglio
   di stile per la stampa (tema chiaro forzato, figure che non si spezzano fra pagine) →
   il PDF a 10 pagine A4 esce da qui.
@@ -591,11 +581,9 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - `analisi/approfondimenti/ANALISI_CONSUMI.md` — obiettivo 4 completato in bozza (consumi da datasheet + stime autonomia + argomentazione architettura ibrida PIR+mmWave)
 - `analisi/approfondimenti/ANALISI_WEB_UI.md` — progetto della web UI (obiettivo 5): architettura ESP32 self-hosted (**solo Access Point**, nessuna connessione a reti esistenti — decisione 05/09/2026; fork ESP32Async di ESPAsyncWebServer + WebSocket + pagina in PROGMEM gzip, JavaScript puro con Angular valutato e scartato, tutto offline), formato JSON, layout pagina, struttura codice `firmware/ld2410b_web/`, piano di sviluppo in 5 step. Decisione chiave: il CSV esportato dal browser usa le stesse colonne di acquire.py → un solo formato dati in tutta la tesi. §9: analisi del riferimento UI "LD2410 Configurator" (cosa prendere/cosa no) + opzione D di riserva via Web Serial
 - `analisi/approfondimenti/PROGETTO_SITO_DETTAGLIO.md` — progetto di dettaglio implementativo del sito: struct/pseudocodice firmware, protocollo WS con riconnessione, strutture dati JS, config dei 3 grafici, export CSV client-side, gestione errori, criteri di accettazione per step
-- `analisi/approfondimenti/ANALISI_SITO_SERVER.md` — piano B dell'obiettivo 5 (19/07/2026): progetto completo del sito "vero" su server esterno nel caso il professore intenda una piattaforma e non il sito self-hosted. Architettura ESP32→MQTT (Mosquitto)→FastAPI+SQLite→browser, codice firmware/backend di riferimento, export CSV compatibile acquire.py, confronto A vs B e domanda di decisione per l'incontro (aggiunta a INCONTRO_PROFESSORE.md, domanda 7). Frontend condiviso ~85% con l'opzione A → cambiare rotta costa ~2-3 giorni. Default resta l'opzione A
+- `analisi/approfondimenti/ANALISI_SITO_SERVER.md` — piano B dell'obiettivo 5 (19/07/2026): progetto completo del sito "vero" su server esterno nel caso servisse una piattaforma invece del sito self-hosted. Architettura ESP32→MQTT (Mosquitto)→FastAPI+SQLite→browser, codice firmware/backend di riferimento, export CSV compatibile acquire.py, confronto A vs B. Frontend condiviso ~85% con l'opzione A → cambiare rotta costa ~2-3 giorni. Default resta l'opzione A
 - `analisi/approfondimenti/ANALISI_VITALITA.md` — specifica dell'indice di vitalità (obiettivo 6, documento autonomo): algoritmo v1 (doppia EWMA movimento+respiro), classificazione a 4 classi per il triage, percorso di taratura Python-prima sui CSV della Fase 6 con validazione su trial separati, casi limite, collocazione nella tesi
 - `analisi/approfondimenti/ANALISI_PIR.md` — analisi teorica del PIR (obiettivo 1-2): principio piroelettrico differenziale, lente di Fresnel, perché è fisicamente cieco alla persona ferma, dati prodotti (1 bit + ritenuta/trigger), sensibilità alla temperatura, sezione 6 DA COMPLETARE col modello reale (Test 0.3)
-- `SCALETTA_TESI.md` — scaletta Overleaf in 8 capitoli con mappa obiettivi→capitoli, materiale già pronto per ciascuno e ordine di scrittura consigliato (cap. 5 e 2 scrivibili subito)
-- `INCONTRO_PROFESSORE.md` — agenda per l'incontro: cosa mostrare (PIANO_TEST, scaletta, consumi) e domande consolidate (validazione protocollo, montaggio sensore/lamiera, scadenza, DIPME vs SAFE, ruolo UWB)
 - `PIANO_TEST.md` — piano di test completo in ordine di esecuzione (fasi 0-7)
 - `PIANO_TEST_LD2420.md` — piano di test dedicato al secondo radar (26/08/2026), scritto
   dopo l'acquisizione della documentazione ufficiale. Distingue i **10 test radar da
@@ -611,9 +599,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 ## Fonti consultate
 
 ### Documentazione tecnica
-- Repo professore HLK-LD2410x (firmware ESP32 + script Python CSV): https://github.com/massimocallisto/HLK-LD2410x
-- Slide progetto DIPME (terremoto): https://docs.google.com/presentation/d/11Q_Zet3aEtPZo2vcoM7_cvcTCbvLY-FBznCqPK37k3E/edit?usp=sharing
-- Slide "Sharper - Informatica 26 settembre 2025.pptx" (file locale, 76 slide): contesto completo — arredi salva-vita, DIPME, LoRa, Digital Twin
+- Repository di riferimento HLK-LD2410x (firmware ESP32 + script Python CSV): https://github.com/massimocallisto/HLK-LD2410x
 - Paper Digital Twin del progetto: Callisto et al., "Design and Development of a Digital Twin Prototype for the SAFE Project", EDOC 2023 (Springer)
 - Piattaforma Digital Twin UNICAM: https://pros.unicam.it/dtplatform/
 - ESPHome LD2410: https://esphome.io/components/sensor/ld2410.html
@@ -688,7 +674,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - mmWave Multi-Object Tracking (UTS): https://opus.lib.uts.edu.au/handle/10453/192530
   - mmCLAE per tracking multi-target; applicazioni automotive e robotica
 - mmWave-RM Respiration Monitoring (MDPI): https://www.mdpi.com/1424-8220/24/13/4315
-  - **Non accessibile (paywall)** — recuperare via accesso universitario o Sci-Hub
+  - **Non accessibile (paywall)** — recuperare via accesso universitario
 
 ### Video
 - YouTube - Human presence detection LD2410+ESP32: https://www.youtube.com/watch?v=oJZS8c9oyjg
@@ -715,10 +701,10 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 
 - **REGOLA FONTI (richiesta esplicita, 15/07/2026)**: ogni dato tecnico inserito nei documenti deve avere la fonte citata, preferibilmente certificata o autorevole (datasheet del produttore > manuale ufficiale > guide riconosciute tipo Adafruit/ESPHome > blog). Ogni documento di analisi ha la sua sezione "Fonti"; le fonti confluiranno in `bib/tesi.bib` su Overleaf. Se una fonte riporta valori sospetti (es. refusi mA/µA), annotarlo e far fede al datasheet
 - **La tesi si scrive in Overleaf (LaTeX)** — impostare lo scheletro dei capitoli presto e scrivere durante i test, non dopo: i documenti in `analisi/` sono già bozze di capitoli
-- **Validare PIANO_TEST.md col professore PRIMA della campagna di test** (~10 h di acquisizioni: se il protocollo non va bene si rifà tutto)
+- **Validare PIANO_TEST.md PRIMA della campagna di test** (~10 h di acquisizioni: se il protocollo non va bene si rifà tutto)
 - ✔ **Backup dei dati: fatto (26/08/2026)** — i CSV sono l'asset insostituibile della
   tesi ed è la ragione per cui il repo esiste. Sono su GitHub
-  (`Steb2002/Tesi-Presence-Sensing`), verificati 116 su 116 nel remoto. **Pushare dopo
+  (`Steb2002/pir-mmwave-presence-detection`, fino al 28/09/2026 `Tesi-Presence-Sensing`), verificati 116 su 116 nel remoto. **Pushare dopo
   ogni sessione di acquisizione**: un commit locale non è un backup
 - **Confronto con UWB da preparare a livello argomentativo** (il DIPME-DEVICE ha già un sensore UWB): la commissione può chiedere "perché mmWave e non UWB?" — rispondere da letteratura/datasheet (costo, maturità moduli consumer, dati per-gate), partendo dalla tabella comparativa qui sopra
 - Ogni sessione di test va annotata in `data/REGISTRO_SESSIONI.md` (temperatura stanza, soggetto, alimentazione)
@@ -731,8 +717,8 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - [x] Librerie installate: MyLD2410, ArduinoJson 7.4.3
 - [x] ESP32 testato e funzionante su COM3
 - [x] Cavi LD2410B identificati e mappati
-- [x] Call col professore: obiettivi definiti in 6 punti, contesto DIPME, repo di riferimento
-- [x] Studiare il repo del professore (clonato in `HLK-LD2410x/`, codice analizzato — vedi sezione dedicata)
+- [x] Obiettivi definiti in 6 punti, contesto DIPME, repo di riferimento
+- [x] Studiare il repo di riferimento (clonato in `HLK-LD2410x/`, codice analizzato — vedi sezione dedicata)
 - [x] Piano di test completo scritto (`PIANO_TEST.md`)
 - [x] Script di analisi pronti (`analisi/analizza_test.py`, `analisi/analizza_respiro.py`)
 - [x] Firmware logger esteso scritto (`firmware/ld2410b_logger/` — da compilare e verificare su hardware)
@@ -896,12 +882,10 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
         stessa tacca e' un dato di tesi (variabilita' fra esemplari). Nuovi strumenti:
         `acquire.py --tappe` (annunci vocali a istanti prefissati) e `analisi/portata2420.py`
         (analisi per finestre temporali)
-- 🔑 **RISPOSTA DEL PROFESSORE (05/09/2026) E DECISIONE CONSEGUENTE**: il modulo non era
-      mai stato provato prima, quindi nessuno sa se il difetto sia noto. Indicazione:
-      *"Nella tesi riporterei esattamente quello che scrivi qui, descrivi i test, riporti i
-      risultati. Se hai riscontrato problemi o limitazioni e hai fatto differenti prove su
-      pc/esp32 allora va bene."* → il limite dell'esemplare **è materiale di tesi, non un
-      buco da tappare prima di scrivere**.
+- 🔑 **DECISIONE (05/09/2026)**: il modulo non era mai stato provato prima, quindi nessuno
+      sa se il difetto sia noto. Il limite dell'esemplare **è materiale di tesi, non un
+      buco da tappare prima di scrivere**: si descrivono i test, i risultati e le prove
+      fatte su PC ed ESP32.
       📌 **La Fase 4 non resta sospesa: si esegue una CAMPAGNA RIDOTTA ENTRO 2 m**, cioè
       dentro la zona in cui l'esemplare funziona (piano dettagliato in
       `PIANO_TEST_LD2420.md` §0-bis). Restano fuori solo i test che *richiedono* più di
@@ -971,7 +955,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       **−26 %** (fra cartone e vetro, coerente con 0,7 dB sul LD2420), **PIR 0 % a 1 m**.
       Porta: a 3 m il soggetto le sta davanti (49,6 = baseline, moving 96 %); appena si
       interpone, moving 20 % a 4 m e 3 % a 5 m, piu' del legno pieno (52 / 19 %). Il crollo
-      fra 3 e 4 m e' spiegato dalla geometria (26/09/2026). **Frase per il professore**: senza ostacolo
+      fra 3 e 4 m e' spiegato dalla geometria (26/09/2026). **In sintesi**: senza ostacolo
       5 m, con cartongesso/legno/vetro/porta ancora 5 m, con la porta a 5 m sopravvive solo
       il canale stazionario. Plastica/cartone/vetroresina dedotti (−7…−20 %), metallo 0 m.
       Scarti: baseline a stanza vuota per istruzione ambigua (tenuta come negativo) e un
@@ -1029,7 +1013,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       Netta col fondo sottratto: 0,6 / 1,1 / 1,6 / 1,6 / 4,4 / > 9 / > 9. 🔑 **Graduatoria
       identica a quella del 30/08 sul LD2410B** (plastica < cartone ≈ vetroresina < vetro
       < legno < metallo): due moduli, due distanze, due unita', stesso ordine. 🔑 **Il
-      cartongesso — lacuna del 30/08 e seconda richiesta del professore — attenua come
+      cartongesso — lacuna del 30/08 — attenua come
       plastica e cartone**, ben sotto vetro e legno: la parete d'aula non e' un ostacolo.
       ⚠️ Legno e metallo sono limiti inferiori (dinamica dell'esemplare 4,8 dB). ⚠️ La
       presenza (100 % con tutto, metallo compreso) qui non e' una metrica: ritardo 30 s +
@@ -1142,15 +1126,14 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       risentono (gate 0 contribuiva 2-8 superamenti per trial contro 177-441 del gate 2).
       ⚠️ Il gate minimo NON e' la strada: con gate min 1 le riaccensioni non calavano e la
       distanza si spostava di 30 cm → verosimilmente agisce sulla misura, non sulla decisione
-- 🚪 **Seconda richiesta del professore, stessa mail: quantificare l'attenuazione**
-      *("se prima arrivava a 5 mt, con una porta di mezzo quanto si attenua il segnale?")*.
-      Non è una rilettura dei dati della Fase 3: quelli sono in punti percentuali di
+- 🚪 **Quantificare l'attenuazione** (quanto accorcia la portata, per esempio, una porta
+      chiusa). Non è una rilettura dei dati della Fase 3: quelli sono in punti percentuali di
       `menergy`, che **non è una potenza** e non si converte in dB. Due misure nuove,
       complementari:
       1. **Portata residua in metri** sul LD2410B — `PIANO_TEST.md` **Test 3.6**: stessa
          geometria della Fase 3 ma percorrendo 1-5 m, per ogni materiale. Risposta in
          un'unità fisica e senza ipotesi sullo strumento. Priorità: **porta interna chiusa**
-         (l'esempio del professore, e copre tutto il campo → cade l'avvertenza "attenuazioni
+         (copre tutto il campo → cade l'avvertenza "attenuazioni
          come limiti inferiori"), poi legno, vetro, **cartongesso** (richiesto di nuovo:
          procurare uno sfrido, costa pochi euro)
       2. **Attenuazione in dB** sul LD2420 — `PIANO_TEST_LD2420.md` §0-ter: è l'unica cosa
@@ -2019,30 +2002,28 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
 - [x] Porting su ESP32 (`vitality.h`, BUILD 6 di `ld2410b_web`, 10-11/09/2026 — vedi obiettivo 5, step 5)
 
 ### Processo
-- [x] Scaletta della tesi (`SCALETTA_TESI.md` — da trasporre in Overleaf)
-- [x] Agenda incontro professore (`INCONTRO_PROFESSORE.md`)
 - [x] Analisi teorica PIR (`analisi/approfondimenti/ANALISI_PIR.md` — sezione 6 da completare col modello reale)
-- [x] **INCONTRO COL PROFESSORE FATTO (29/08/2026) — tre decisioni**:
+- [x] **DECISIONI DEL 29/08/2026**:
       1. **Test di portata massima su tutti e tre i sensori**, da fare **per ultimi**
          perche' richiedono di spostare PC e sensori in corridoio: LD2410B oltre i 5 m,
          PIR con **sensibilita' al massimo** per ottenere il range dichiarato, LD2420
          fino agli 8 m di documentazione. Piano in `PIANO_TEST.md`, **Fase 8**
       2. **Il sito si fa self-hosted sull'ESP32** (opzione A di `ANALISI_WEB_UI.md`,
-         confermata). Motivazione del professore: e' un'ottima casistica di **scenario
+         confermata). Motivazione: e' un'ottima casistica di **scenario
          senza connessione**, che e' esattamente lo scenario DIPME. `ANALISI_SITO_SERVER.md`
          (piano B) resta come **alternativa valutata e scartata**, con la motivazione —
          e' materiale buono per la tesi, non lavoro sprecato
       3. **L'indice di vitalita' va calcolato a bordo**, dentro il sito, accanto ai
          grafici. Il porting su ESP32 passa quindi da opzionale a **richiesto**
          (per fortuna la v2 e' tutta EWMA, niente FFT: e' portabile a costo quasi zero)
-- 📌 **Come il professore vuole che si parli dell'indice di vitalita'**: NON dire "misura
+- 📌 **Come presentare l'indice di vitalita'**: NON dire "misura
       il movimento toracico", ma presentarlo come **indice generico** con **3 classi**
       (erano 4 nella specifica). Vedi `analisi/approfondimenti/ANALISI_VITALITA.md` §4 per i nomi
       proposti e per la ragione **metodologica** per cui questa scelta e' anche la piu'
       difendibile: senza ground truth non possiamo validare una frequenza respiratoria,
       quindi definire l'indice per quello che **calcola** evita di sovradichiarare
 - [x] **Setup backup dati COMPLETATO (26/08/2026)** — repo GitHub
-      `Steb2002/Tesi-Presence-Sensing`, allineato al remoto. Verificato per conteggio:
+      `Steb2002/pir-mmwave-presence-detection`, allineato al remoto. Verificato per conteggio:
       **116 CSV sperimentali su disco, 116 tracciati, 116 presenti in `origin/main`**,
       più `REGISTRO_SESSIONI.md`; 28 MB in `data/`. Nessun file non
       tracciato in quella cartella
@@ -2112,10 +2093,9 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       le nove figure). `tesi-unicam/figures/LEGGIMI.txt` riscritto: elenca le 22 figure
       generate e le 4 da produrre a mano (logo, schema del sistema, foto del setup,
       screenshot della dashboard)
-- [x] **Materiali per l'incontro pronti**: `RIEPILOGO_INCONTRO.pdf` (10 pagine A4, stato
-      dei 6 obiettivi + tutte le figure con didascalie + domande da porre) e
-      `analisi/dati_tesi.xlsx` (una riga per trial, per le pivot in Excel). Entrambi
-      rigenerabili in 13 s, entrambi fuori dal repo per scelta (vedi `.gitignore`)
+- [x] **Materiali di riepilogo pronti**: catalogo delle figure (oggi `CATALOGO_FIGURE.html`)
+      e `analisi/dati_tesi.xlsx` (una riga per trial, per le pivot in Excel), rigenerabili
+      dai CSV e fuori dal repo per scelta (vedi `.gitignore`)
 - [ ] Cronoprogramma (dopo aver saputo la scadenza)
 
 ### Chiusura
