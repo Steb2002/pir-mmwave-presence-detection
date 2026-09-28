@@ -3,8 +3,8 @@ Esegue una serie di trial consecutivi chiamando acquire.py, per non lanciare a m
 decine di comandi (il Test 1.2 sono 30 acquisizioni: sbagliare l'etichetta del trial
 o sovrascrivere un file e' facilissimo).
 
-Esempio: 5 trial da 80 s a 2 m, persona che cammina sul posto:
-    .venv\Scripts\python.exe serie.py --scenario movimento_2m --gt-state moving
+Esempio: 5 trial da 80 s a 2 m, persona che cammina sul posto (dalla radice del progetto):
+    .venv\Scripts\python.exe acquisizione\serie.py --scenario movimento_2m --gt-state moving
 
 Di default RIFIUTA di sovrascrivere file esistenti: serve --force.
 Richiede solo la libreria standard (acquire.py ci pensa lui a pyserial).
@@ -180,7 +180,7 @@ def main():
         return
 
     qui = Path(__file__).parent
-    dati = qui.parent / "data"   # data/ nella radice del progetto
+    dati = qui.parent / "data"   # data/ nella radice del progetto, accanto ad acquisizione/
     dati.mkdir(exist_ok=True)
 
     # Controllo PRIMA di iniziare: meglio fermarsi ora che a metà serie
@@ -251,8 +251,8 @@ def main():
 
     segnale("completa")                          # serie completata
     print(f"Serie completata. Analisi:")
-    print(rf"  .venv\Scripts\python.exe ..\analisi\analizza_test.py "
-          f"data\{args.scenario}_*.csv --salta-inizio {args.transitorio}")
+    print(rf"  .venv\Scripts\python.exe analisi\analizza_test.py "
+          rf"data\{args.scenario}_*.csv --salta-inizio {args.transitorio}")
 
 
 if __name__ == "__main__":

@@ -92,7 +92,7 @@ Obiettivo di contorno: valutare anche altri tipi di sensori.
 | HLK-LD2410B | 1 | ✅ **FUNZIONANTE (09/08/2026)**. Il "guasto" del 19/07/2026 era un errore di cablaggio: i colori dei cavi erano mappati al contrario. Mappatura corretta (datasheet Tabella 1): rosso=VCC, nero=GND, giallo=UART_Rx, verde=UART_Tx, blu=OUT |
 | HLK-LD2420 | 1 | Scheda arancione/verde, portata 8 m dichiarata (manuale V1.2) |
 | HLK-CH340E-V1.0 | 1 | Adattatore USB→Seriale, utile per connettere LD2420 direttamente al PC |
-| PIR **HC-SR501** | 1 | Identificato dalle foto (`PIR HC-SR501/`): BISS0001 + regolatore HT7133, uscita 3.3V ok per ESP32, 2 trimmer + jumper H/L — dettagli in `analisi/approfondimenti/ANALISI_PIR.md` §6 |
+| PIR **HC-SR501** | 1 | Identificato dalle foto del modulo (15/07/2026, ora solo nella storia git): BISS0001 + regolatore HT7133, uscita 3.3V ok per ESP32, 2 trimmer + jumper H/L — dettagli in `analisi/approfondimenti/ANALISI_PIR.md` §6 |
 | Breadboard grande | 1 | |
 | Cavo USB A-C | 1 | Per programmazione ESP32 |
 | Cavi jumper M-F | vari | |
@@ -2055,8 +2055,12 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       ✔ **Superato il 28/09/2026**: la cartella dei dati è stata spostata da
       `HLK-LD2410x/data/` a **`data/` nella radice**, dove nessun `.gitignore` esclude i CSV
       (anche nelle sottocartelle). Il `*.csv` di `HLK-LD2410x/.gitignore` vale ormai solo dentro
-      `HLK-LD2410x/`. Nello stesso riordino i tool Hi-Link per PC sono passati in `tools/` e i
-      documenti `analisi/*.md` in `analisi/approfondimenti/`
+      `HLK-LD2410x/`. Nello stesso riordino i tool Hi-Link per PC sono passati in `tools/`, i
+      documenti `analisi/*.md` in `analisi/approfondimenti/`, e **`acquire.py` e `serie.py` in
+      `acquisizione/`** (valgono per tutti e tre i sensori). L'ambiente Python è ora `.venv/`
+      nella radice (numpy, pillow, pymupdf, pypdf, pyserial): i comandi dei piani di test si
+      lanciano dalla radice, es. `.venv\Scripts\python.exe acquisizione\serie.py …`. In
+      `HLK-LD2410x/` resta il repository del professore (firmware PlatformIO, README, immagini)
 - ⚠️ Fuori da `HLK-LD2410x/` non c'è alcuna regola sui CSV, quindi i dati del LD2420
       entrano nel repo per default. Rovescio della medaglia: con `git add -A` entra
       **tutto**. Tenere gli eventuali CSV intermedi o di scarto **fuori** da

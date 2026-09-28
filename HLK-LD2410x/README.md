@@ -1,3 +1,6 @@
+> **Nota (tesi, 28/09/2026)**: in questa copia `acquire.py` (modificato) e `serie.py` sono in
+> `../acquisizione/` e i CSV in `../data/`, nella radice del progetto.
+
 # HLK-LD2410B Radar Data Acquisition with ESP32 and Python
 
 This project acquires human-presence data from an **HLK-LD2410B 24 GHz radar sensor** connected to an **ESP32 WROOM-32 development board**.

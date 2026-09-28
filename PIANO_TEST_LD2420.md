@@ -317,9 +317,9 @@ sperimentale nel cap. 4 — non va riaperto qui.
   (20 di transitorio + 60 utili), camminata sul posto, soggetto in piedi
 - Comando:
   ```powershell
-  .venv\Scripts\python.exe serie.py --scenario mov2420_2m --gt-state moving
+  .venv\Scripts\python.exe acquisizione\serie.py --scenario mov2420_2m --gt-state moving
   ```
-- **Analisi**: `python ..\analisi\analizza_test.py data\mov2420_*.csv --salta-inizio 20`
+- **Analisi**: `python analisi\analizza_test.py data\mov2420_*.csv --salta-inizio 20`
 - **Da produrre**: la stessa regressione del LD2410B, sovrapposta nello stesso grafico.
   Due rette sullo stesso piano valgono più di due tabelle
 
@@ -422,18 +422,18 @@ posizione + 30 di ritardo + margine). Con `--duration 262 --transitorio 60` rest
 #### Sequenza di acquisizione (~35 min)
 
 ```powershell
-cd HLK-LD2410x
+# dalla radice del progetto
 # 1. CONTROLLO NEGATIVO — stanza vuota, si esce e si chiude la porta
-.venv\Scripts\python.exe serie.py --scenario vuoto2420_1m --trials 1 --duration 150 --transitorio 30 --gt-presence 0 --gt-state empty
+.venv\Scripts\python.exe acquisizione\serie.py --scenario vuoto2420_1m --trials 1 --duration 150 --transitorio 30 --gt-presence 0 --gt-state empty
 
 # 2. CONTROLLO POSITIVO — cammino sul posto a 1 m
-.venv\Scripts\python.exe serie.py --scenario mov2420_1m --trials 1 --duration 80 --gt-state moving
+.venv\Scripts\python.exe acquisizione\serie.py --scenario mov2420_1m --trials 1 --duration 80 --gt-state moving
 
 # 3. IL TEST — in piedi, IMMOBILE a 1 m, 5 trial da 262 s
-.venv\Scripts\python.exe serie.py --scenario fermo2420_1m --trials 5 --duration 262 --transitorio 60 --gt-state static
+.venv\Scripts\python.exe acquisizione\serie.py --scenario fermo2420_1m --trials 5 --duration 262 --transitorio 60 --gt-state static
 
 # 4. CONTROLLO POSITIVO DI CHIUSURA — identico al 2, prova che nulla è derivato
-.venv\Scripts\python.exe serie.py --scenario mov2420_1m_fine --trials 1 --duration 80 --gt-state moving
+.venv\Scripts\python.exe acquisizione\serie.py --scenario mov2420_1m_fine --trials 1 --duration 80 --gt-state moving
 ```
 
 ⚠️ **Fermarsi dopo il primo trial del punto 3 e guardare il CSV** prima di lanciare gli
@@ -444,8 +444,8 @@ schema nuovo. Controllare `frames_ok = 1` e che le energie non siano tutte ugual
 #### Analisi
 
 ```powershell
-python ..\analisi\analizza_test.py data\fermo2420_1m_*.csv --salta-inizio 60
-python ..\analisi\portata2420.py data\fermo2420_1m_T01.csv --finestre 0-60:transitorio 60-262:fermo_100 --gate-max 6
+python analisi\analizza_test.py data\fermo2420_1m_*.csv --salta-inizio 60
+python analisi\portata2420.py data\fermo2420_1m_T01.csv --finestre 0-60:transitorio 60-262:fermo_100 --gate-max 6
 ```
 ⚠️ Di `analizza_test.py` qui hanno senso **solo** `radar_rate_%`, `fn_radar_%` e le
 colonne del PIR. `senergy_*`, `sdist_*` e `menergy_*` sono 0 per costruzione: il LD2420

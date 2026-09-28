@@ -299,7 +299,7 @@ complessità)?
 
 ## 6. Modello in dotazione: HC-SR501 ✔ (identificato dalle foto, 15/07/2026)
 
-Foto in `PIR HC-SR501/`. Elementi verificati visivamente sul modulo:
+Foto scattate il 15/07/2026, tolte dal repository il 28/09/2026 (restano nella storia git). Elementi verificati visivamente sul modulo:
 - chip di condizionamento **BISS0001** (serigrafia leggibile) — conferma l'analisi §3
 - regolatore lineare **7133** (HT7133, LDO 3.3V): il modulo accetta tensioni alte in
   ingresso ma internamente lavora a 3.3V → **uscita OUT a 3.3V, sicura per i GPIO ESP32**
@@ -367,4 +367,4 @@ dentro il campo di ENTRAMBI.
   ⚠ riporta "65 mA" di corrente di riposo: refuso per µA — fa fede il datasheet (<50 µA)
 - **Adafruit — PIR Motion Sensor guide** (principio piroelettrico e lente di Fresnel,
   riferimento autorevole per §1-2): https://learn.adafruit.com/pir-passive-infrared-proximity-motion-sensor
-- Identificazione del modulo: foto del modulo fisico in `PIR HC-SR501/` (15/07/2026)
+- Identificazione del modulo: foto del modulo fisico (15/07/2026, nella storia git)

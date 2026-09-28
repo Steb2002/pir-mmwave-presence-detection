@@ -86,7 +86,7 @@ media e deviazione standard — è questo che rende il confronto "numerico" (obi
 
 ### Test 0.4 — Setup ambiente Python di acquisizione
 ```powershell
-cd HLK-LD2410x
+# dalla radice del progetto
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install pyserial numpy pypdf
@@ -100,7 +100,7 @@ mkdir data
   CID — quindi `strings` e i parser artigianali non funzionano, `pypdf` si
 - Prova rapida (30 s, tu presente in movimento):
 ```powershell
-python acquire.py --port COM3 --duration 30 --output data/prova_T01.csv --scenario prova --trial T01 --ground_truth_presence 1 --ground_truth_state moving
+python acquisizione\acquire.py --port COM3 --duration 30 --output data/prova_T01.csv --scenario prova --trial T01 --ground_truth_presence 1 --ground_truth_state moving
 ```
 - **Esito atteso**: file CSV creato, righe visibili a schermo
 
@@ -133,10 +133,10 @@ altezza ~1 m, puntati verso l'area di test, nessun oggetto in movimento nella st
 - **Metrica**: falsi positivi/ora di entrambi i sensori
 - Avviare l'acquisizione e **uscire dalla stanza**; durata: 30 min (meglio 60)
 ```powershell
-python acquire.py --port COM3 --duration 1800 --output data/stanza_vuota_T01.csv --scenario stanza_vuota --trial T01 --ground_truth_presence 0 --ground_truth_state absent
+python acquisizione\acquire.py --port COM3 --duration 1800 --output data/stanza_vuota_T01.csv --scenario stanza_vuota --trial T01 --ground_truth_presence 0 --ground_truth_state absent
 ```
 - Ripetere 3 volte (anche in momenti diversi della giornata)
-- **Analisi**: `python ..\analisi\analizza_test.py data\stanza_vuota_*.csv`
+- **Analisi**: `python analisi\analizza_test.py data\stanza_vuota_*.csv`
   → guardare `fp_radar_eventi_h` e `fp_pir_eventi_h`
 
 ### Test 1.2 — Persona in movimento a distanze note
@@ -167,10 +167,10 @@ python acquire.py --port COM3 --duration 1800 --output data/stanza_vuota_T01.csv
   tutto il range: falserebbero media e deviazione. 80 s − 20 scartati = 60 s utili
 - Comando (una serie di 5 trial per volta, `serie.py` li lancia in sequenza):
 ```powershell
-.venv\Scripts\python.exe serie.py --scenario movimento_2m --gt-state moving
+.venv\Scripts\python.exe acquisizione\serie.py --scenario movimento_2m --gt-state moving
 ```
   (ripetere cambiando `--scenario` in movimento_1m, movimento_3m … movimento_6m)
-- **Analisi**: `python ..nalisinalizza_test.py data\movimento_*.csv --salta-inizio 20`
+- **Analisi**: `python analisi\analizza_test.py data\movimento_*.csv --salta-inizio 20`
   → colonne `mdist_media_cm`, `mdist_dev_cm`, `dist_nominale_cm`, `errore_cm`
   (la distanza nominale viene letta dal nome dello scenario)
   → grafico Excel: distanza reale vs misurata, con la retta ideale a 45°
@@ -184,12 +184,12 @@ python acquire.py --port COM3 --duration 1800 --output data/stanza_vuota_T01.csv
   negativi del PIR risulta più basso del vero. 330 s acquisiti − 30 s scartati = **300 s
   di immobilità pulita**
 ```powershell
-python acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv --scenario fermo_seduto --trial T01 --ground_truth_presence 1 --ground_truth_state static
+python acquisizione\acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv --scenario fermo_seduto --trial T01 --ground_truth_presence 1 --ground_truth_state static
 ```
 - Procedura per ogni trial: lancia il comando → raggiungi la sedia e siediti **entro 20 s**
   → immobile fino alla fine → tra un trial e l'altro alzati e muoviti qualche secondo
 - 5 trial; poi ripetere anche a 4 m (`fermo_seduto_4m`)
-- **Analisi**: `python ..nalisinalizza_test.py dataermo_seduto_*.csv --salta-inizio 30`
+- **Analisi**: `python analisi\analizza_test.py data\fermo_seduto_*.csv --salta-inizio 30`
   → `fn_radar_%` vs `fn_pir_%`. Risultato atteso: PIR ~100% FN dopo il timeout di
   ritenuta, radar < 5%. **Questo è il numero centrale del capitolo di confronto**
 - Annotare la **temperatura**: sopra ~28 °C il contrasto termico corpo/ambiente cala e il
@@ -223,8 +223,8 @@ python acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv 
 - **B - piccoli movimenti**: come A ma con micro-aggiustamenti ogni tanto (e' il caso
   realistico di una persona intrappolata: si agita, non sta perfettamente ferma)
 ```powershell
-.venv\Scripts\python.exe serie.py --scenario sotto_banco_immobile --duration 340 --transitorio 40 --gt-state static
-.venv\Scripts\python.exe serie.py --scenario sotto_banco_movimenti --duration 340 --transitorio 40 --gt-state static
+.venv\Scripts\python.exe acquisizione\serie.py --scenario sotto_banco_immobile --duration 340 --transitorio 40 --gt-state static
+.venv\Scripts\python.exe acquisizione\serie.py --scenario sotto_banco_movimenti --duration 340 --transitorio 40 --gt-state static
 ```
 - 340 s con 40 scartati = **300 s utili**: infilarsi sotto il banco e sistemarsi richiede
   piu' tempo che sedersi su una sedia, meglio abbondare
@@ -237,8 +237,8 @@ python acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv 
   lasciare dentro i movimenti dell'ingresso, che gonfiano il rilevamento del PIR
 - **Analisi**:
 ```powershell
-.venv\Scripts\python.exe ..\analisi\analizza_test.py data\sotto_banco_*.csv --salta-inizio 40
-.venv\Scripts\python.exe ..\analisi\analizza_respiro.py data\sotto_banco_immobile_T01.csv --scan
+.venv\Scripts\python.exe analisi\analizza_test.py data\sotto_banco_*.csv --salta-inizio 40
+.venv\Scripts\python.exe analisi\analizza_respiro.py data\sotto_banco_immobile_T01.csv --scan
 ```
 - **Esito atteso**: radar ~0% di falsi negativi, PIR vicino al 100%. Sul respiro: canali
   moving utilizzabili, stazionari saturi o piatti
@@ -260,8 +260,8 @@ python acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv 
   retro del modulo**, poi con ~2 cm di distanziale, e confrontare con lo scenario A libero.
   Ground truth invariata (`presence=1`): se il rilevamento peggiora, `fn_radar_%` lo misura.
 ```powershell
-.venv\Scripts\python.exe serie.py --scenario sotto_banco_metallo_0mm --duration 340 --transitorio 40 --gt-state static
-.venv\Scripts\python.exe serie.py --scenario sotto_banco_metallo_20mm --duration 340 --transitorio 40 --gt-state static
+.venv\Scripts\python.exe acquisizione\serie.py --scenario sotto_banco_metallo_0mm --duration 340 --transitorio 40 --gt-state static
+.venv\Scripts\python.exe acquisizione\serie.py --scenario sotto_banco_metallo_20mm --duration 340 --transitorio 40 --gt-state static
 ```
 - Cosa guardare: non solo `fn_radar_%` (che potrebbe restare 0) ma **`menergy_media`,
   `mdist_media_cm` e la stabilita' della distanza** rispetto allo scenario A. Un'antenna
@@ -312,12 +312,12 @@ python acquire.py --port COM3 --duration 330 --output data/fermo_seduto_T01.csv 
 - **3 trial per distanza**, 80 s (20 di transitorio + 60 utili)
 - Comando:
 ```powershell
-.venv\Scripts\python.exe serie.py --scenario attraversamento_2m --gt-state moving --trials 3
+.venv\Scripts\python.exe acquisizione\serie.py --scenario attraversamento_2m --gt-state moving --trials 3
 ```
   (ripetere con `attraversamento_3m` e `attraversamento_5m`)
 - **Analisi**:
 ```powershell
-python ..\analisi\analizza_test.py data\attraversamento_*.csv --salta-inizio 20
+python analisi\analizza_test.py data\attraversamento_*.csv --salta-inizio 20
 ```
   Confrontare `pir_rate_%` e i fronti con `data\movimento_{2,3,5}m*.csv` alla stessa
   distanza. ⚠️ Il transitorio da scartare qui **non** è il posizionamento: il soggetto è
@@ -367,12 +367,12 @@ python ..\analisi\analizza_test.py data\attraversamento_*.csv --salta-inizio 20
   che conta e' uscire dal cono del sensore e allontanarsi di qualche metro. Lascia
   pure la porta aperta, cosi' senti gli annunci
 ```powershell
-.venv\Scripts\python.exe serie.py --scenario ingresso --duration 60 --trials 10 --pausa 25 --beep-at 30 --evento entra --gt-state moving
+.venv\Scripts\python.exe acquisizione\serie.py --scenario ingresso --duration 60 --trials 10 --pausa 25 --beep-at 30 --evento entra --gt-state moving
 ```
 - **10 trial** (la latenza varia molto, servono più ripetizioni). ~14 min in tutto
 - **Analisi**:
 ```powershell
-.venv\Scripts\python.exe ..\analisi\analizza_test.py data\ingresso_*.csv --event-time 30
+.venv\Scripts\python.exe analisi\analizza_test.py data\ingresso_*.csv --event-time 30
 ```
   → `latenza_radar_s` vs `latenza_pir_s`, e soprattutto **`latenza_delta_s`** (differenza
   appaiata radar−PIR sullo stesso trial: negativa = radar prima)
@@ -395,7 +395,7 @@ python ..\analisi\analizza_test.py data\attraversamento_*.csv --salta-inizio 20
 - Procedura per ogni trial: lancia → senti **"entra"** = entra nel campo a ~2 m e
   muoviti → senti **"esci"** (a 30 s) = esci di scatto e resta fuori fino alla fine
 ```powershell
-.venv\Scripts\python.exe serie.py --scenario uscita --duration 100 --trials 5 --pausa 15 --beep-at 30 --evento esci --gt-presence 0 --gt-state absent
+.venv\Scripts\python.exe acquisizione\serie.py --scenario uscita --duration 100 --trials 5 --pausa 15 --beep-at 30 --evento esci --gt-presence 0 --gt-state absent
 ```
 - 70 s dopo l'uscita: la coda del radar è ~10 s, il margine serve perché un trial che
   finisce con il sensore ancora attivo esce come `MAI` e va rifatto
@@ -404,7 +404,7 @@ python ..\analisi\analizza_test.py data\attraversamento_*.csv --salta-inizio 20
   (lo script li salta da sé quando gli passi `--release-time`)
 - **Analisi**:
 ```powershell
-.venv\Scripts\python.exe ..\analisi\analizza_test.py data\uscita_*.csv --release-time 30
+.venv\Scripts\python.exe analisi\analizza_test.py data\uscita_*.csv --release-time 30
 ```
   → `rilascio_radar_s` vs `rilascio_pir_s`, più `riaccensioni_*` (quante volte il sensore
   è tornato a 1 dopo essere andato a 0: nel Test 0.2 il radar ha tenuto un target
@@ -437,12 +437,12 @@ python ..\analisi\analizza_test.py data\attraversamento_*.csv --salta-inizio 20
   jumper su H. Micro-movimenti: scrivere al telefono, girare pagine, grattarsi. Niente
   gesti ampi, ma nemmeno immobilita'
 ```powershell
-.venv\Scripts\python.exe serie.py --scenario micromovimenti_1m_H --duration 220 --transitorio 20 --gt-state micro_movement
+.venv\Scripts\python.exe acquisizione\serie.py --scenario micromovimenti_1m_H --duration 220 --transitorio 20 --gt-state micro_movement
 ```
 - Durata allineata a `fermo_1m_H` (220 s con 20 scartati = 200 s utili x 5 trial)
 - **Analisi**:
 ```powershell
-.venv\Scripts\python.exe ..\analisi\analizza_test.py "data/*_1m_H_*.csv" --salta-inizio 20
+.venv\Scripts\python.exe analisi\analizza_test.py "data/*_1m_H_*.csv" --salta-inizio 20
 ```
   mette in fila le tre condizioni. Atteso: radar ~100% in tutte e tre, PIR in mezzo fra
   1.5% e 85%
@@ -507,8 +507,8 @@ python ..\analisi\analizza_test.py data\attraversamento_*.csv --salta-inizio 20
 - **Cosa manca davvero**: non la portata, ma la **selettivita'** con gate 1. Ripetere due
   scenari `sel_*` con `g 1 1`, 3 trial ciascuno, soggetti **fermi**:
 ```powershell
-.venv\Scripts\python.exe serie.py --scenario sel_g1_dentro_60cm --duration 260 --transitorio 120 --trials 3 --gt-state static
-.venv\Scripts\python.exe serie.py --scenario sel_g1_laterale_1m --duration 260 --transitorio 120 --trials 3 --gt-presence 0 --gt-state absent
+.venv\Scripts\python.exe acquisizione\serie.py --scenario sel_g1_dentro_60cm --duration 260 --transitorio 120 --trials 3 --gt-state static
+.venv\Scripts\python.exe acquisizione\serie.py --scenario sel_g1_laterale_1m --duration 260 --transitorio 120 --trials 3 --gt-presence 0 --gt-state absent
 ```
   (`sel_g1_dentro_60cm`: occupante rannicchiato sotto il banco. `sel_g1_laterale_1m`:
   **solo** il vicino a 1 m di lato, nessuno sotto il banco -> `radar_rate_%` e' il tasso
@@ -549,7 +549,7 @@ python ..\analisi\analizza_test.py data\attraversamento_*.csv --salta-inizio 20
   sensore deve dichiarare vuoto nonostante B sia ancora lì
 - 3 trial × 3 min con nomi `selettivita_A_presente` (gt=1) e `selettivita_solo_B` (gt=0)
 ```powershell
-python acquire.py --port COM3 --duration 180 --output data/selettivita_solo_B_T01.csv --scenario selettivita_solo_B --trial T01 --ground_truth_presence 0 --ground_truth_state absent
+python acquisizione\acquire.py --port COM3 --duration 180 --output data/selettivita_solo_B_T01.csv --scenario selettivita_solo_B --trial T01 --ground_truth_presence 0 --ground_truth_state absent
 ```
 - **Analisi**: `radar_rate_%` in `selettivita_solo_B` è il tasso di "falso vicino" —
   numero chiave per l'applicabilità DIPME multi-banco. Annotare nel registro che questi
@@ -560,7 +560,7 @@ python acquire.py --port COM3 --duration 180 --output data/selettivita_solo_B_T0
 - **Metrica**: qualitativa — il LD2410B riporta un solo target
 - Due persone: una ferma a 2 m, una che cammina a 4 m, 2 min × 3 trial
 ```powershell
-python acquire.py --port COM3 --duration 120 --output data/due_persone_T01.csv --scenario due_persone --trial T01 --ground_truth_presence 1 --ground_truth_state moving
+python acquisizione\acquire.py --port COM3 --duration 120 --output data/due_persone_T01.csv --scenario due_persone --trial T01 --ground_truth_presence 1 --ground_truth_state moving
 ```
 - **Analisi**: osservare quale target "vince" nelle distanze riportate → paragrafo
   della tesi sui limiti (no conteggio persone senza array di antenne)
@@ -595,7 +595,7 @@ a ~20 cm davanti al sensore. Prima una baseline senza ostacolo, stesso giorno.
 
 ### Test 3.1 — Baseline senza ostacolo — ✅ FATTO 30/08/2026
 ```powershell
-python acquire.py --port COM3 --duration 180 --output data/ostacolo_nessuno_T01.csv --scenario ostacolo_nessuno --trial T01 --ground_truth_presence 1 --ground_truth_state static
+python acquisizione\acquire.py --port COM3 --duration 180 --output data/ostacolo_nessuno_T01.csv --scenario ostacolo_nessuno --trial T01 --ground_truth_presence 1 --ground_truth_state static
 ```
 
 ### Test 3.2 — Cartongesso → 3.3 legno → 3.4 vetro → 3.5 plastica
@@ -603,7 +603,7 @@ python acquire.py --port COM3 --duration 180 --output data/ostacolo_nessuno_T01.
   `ostacolo_legno`, `ostacolo_vetro`, `ostacolo_plastica`
 - Fare lo stesso test anche con il PIR attivo: per il PIR ogni ostacolo è bloccante
   (risultato atteso: `pir_rate_% = 0` con qualunque materiale — altro numero chiave)
-- **Analisi**: `python ..\analisi\analizza_test.py data\ostacolo_*.csv`
+- **Analisi**: `python analisi\analizza_test.py data\ostacolo_*.csv`
   → confrontare `senergy_media` e `radar_rate_%` per materiale rispetto alla baseline
   → grafico Excel: degradazione % dell'energia per materiale
 
@@ -744,9 +744,9 @@ Prerequisito: engineering mode funzionante (Test 0.2), campionamento a 5 Hz.
 - Persona seduta immobile a 1 m, respiro normale, **120 s**; contare manualmente
   gli atti respiratori durante la prova (o respirare a ritmo con un metronomo: 15/min)
 ```powershell
-python acquire.py --port COM3 --duration 120 --output data/respiro_1m_T01.csv --scenario respiro_1m --trial T01 --ground_truth_presence 1 --ground_truth_state static
+python acquisizione\acquire.py --port COM3 --duration 120 --output data/respiro_1m_T01.csv --scenario respiro_1m --trial T01 --ground_truth_presence 1 --ground_truth_state static
 ```
-- **Analisi**: `python ..\analisi\analizza_respiro.py data\respiro_1m_T01.csv --colonna senergy_gate1`
+- **Analisi**: `python analisi\analizza_respiro.py data\respiro_1m_T01.csv --colonna senergy_gate1`
   (gate = distanza/0.75 arrotondata: 1 m → gate 1; a 2 m usare gate 3 (~2.25m) o 2)
 - **Esito atteso**: picco FFT vicino agli atti/min contati; annotare il confronto
 - 5 trial; poi ripetere a 2 m (`respiro_2m`)
@@ -806,8 +806,8 @@ dove in stanza non c'era nulla. Senza baseline non si distingue "rilevamento a 7
   la dichiarazione sui falsi positivi riguarda lo **scenario d'impiego** (aula/stanza),
   non il banco di prova della portata. Non rifarla in corridoio
 ```powershell
-python acquire.py --port COM3 --duration 1200 --output data/corridoio_vuoto_T01.csv --scenario corridoio_vuoto --trial T01 --ground_truth_presence 0 --ground_truth_state absent
-python ..\analisi\verifica_engineering.py data\corridoio_vuoto_T01.csv
+python acquisizione\acquire.py --port COM3 --duration 1200 --output data/corridoio_vuoto_T01.csv --scenario corridoio_vuoto --trial T01 --ground_truth_presence 0 --ground_truth_state absent
+python analisi\verifica_engineering.py data\corridoio_vuoto_T01.csv
 ```
 
 ### 8.1 — LD2410B: 6 m e' il tetto, non "oltre i 5 m"
@@ -819,7 +819,7 @@ noi. L'altra risoluzione disponibile (0,2 m/gate) **peggiora** il tetto, portand
   contro soglia 15, quindi il rilevamento e' atteso funzionante fino al tetto
 - 5 trial, stesso protocollo del Test 1.2 (cammino sul posto, 80 s, 20 di transitorio)
 ```powershell
-.venv\Scripts\python.exe serie.py --scenario movimento_6m_corridoio --gt-state moving
+.venv\Scripts\python.exe acquisizione\serie.py --scenario movimento_6m_corridoio --gt-state moving
 ```
 - ⚠️ **NON mescolare con la regressione dei 25 trial in stanza**: geometria diversa,
   setup rimontato. Stessa lezione delle serie `_H` (scarto di ~4 cm dal rimontaggio).
