@@ -28,8 +28,11 @@ sperimentale, che sono l'unico contenuto non ricostruibile.
   all'esemplare in prova, che vede una persona solo entro circa 2 m.
 - **Indice di vitalità.** Sulle energie per gate del radar è calcolato a bordo dell'ESP32 un
   indice a tre classi che, oltre alla presenza, stima quanto la persona si muove.
-- **Consumi.** Il radar consuma circa mille volte più del PIR: la conclusione è che deve
-  affiancarlo e non sostituirlo, con il PIR che decide quando accenderlo.
+- **Consumi.** Il radar consuma circa mille volte più del PIR, quindi deve affiancarlo e non
+  sostituirlo, restando spento nel funzionamento ordinario. Non conviene farlo accendere dal
+  PIR, che una persona immobile non attiverebbe: può accenderlo il passaggio al regime di
+  emergenza di DIPME, comandato dal gateway o deciso dal nodo quando il gateway non
+  conferma le trasmissioni.
 
 La campagna conta 444 trial validi. I dettagli sono nei capitoli 5-7 della tesi.
 

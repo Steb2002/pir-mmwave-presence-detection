@@ -56,7 +56,7 @@ ESP32 in deep-sleep + PIR, sveglia su interrupt & $\mathbf{0{,}06}$~\textbf{mA} 
 
 L'ultima riga è il punto chiave, perché l'uscita digitale del PIR può risvegliare
 l'ESP32 dal deep-sleep con un interrupt su GPIO. Il nodo può quindi restare in attesa a
-costo praticamente nullo, con il PIR nel ruolo di guardiano.
+costo praticamente nullo.
 
 \section{Autonomia a batteria}
 \label{sec:autonomia}
@@ -90,4 +90,4 @@ ESP32 in deep-sleep + PIR & 0,06~mA & 4,9 anni \\
 \section{Cosa indicano i consumi}
 \label{sec:consumi-vincoli}
 
-Con il radar sempre acceso la batteria dura meno di un giorno (Tabella~\ref{tab:autonomia}), mentre un nodo in deep-sleep svegliato dal PIR arriva a 4,9 anni, un limite superiore perché durante le lezioni il PIR lo sveglia di continuo. Accendendo il radar un minuto ogni cinque, con l'ESP32 in light-sleep negli altri quattro, la corrente media scende a circa 27~mA e l'autonomia supera i tre giorni, con una latenza fino a quattro minuti. Su questi valori si basa l'architettura delle conclusioni (Capitolo~\ref{chap:conclusioni}), in cui il PIR decide quando accendere il radar.
+Con il radar sempre acceso la batteria dura meno di un giorno (Tabella~\ref{tab:autonomia}), mentre un nodo in deep-sleep svegliato dal PIR arriva a 4,9 anni, un limite superiore perché durante le lezioni il PIR lo sveglia di continuo. Accendendo il radar un minuto ogni cinque, con l'ESP32 in light-sleep negli altri quattro, la corrente media scende a circa 27~mA e l'autonomia supera i tre giorni, con una latenza fino a quattro minuti. Su questi valori si basa la proposta delle conclusioni (Capitolo~\ref{chap:conclusioni}), in cui il radar si accende solo nel regime di emergenza.

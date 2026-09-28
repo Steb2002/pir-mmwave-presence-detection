@@ -64,8 +64,11 @@ il blackout post-sisma. I numeri sopra suggeriscono l'architettura ibrida:
    o duty-cycling del radar, es. 1 min ON / 4 min OFF → ~5× autonomia)
 
 Questa argomentazione collega l'obiettivo 4 al contesto DIPME e giustifica la coesistenza
-PIR + mmWave invece della sostituzione secca: il PIR non è un concorrente ma il
-"guardiano a basso costo" che decide quando accendere il radar.
+PIR + mmWave invece della sostituzione secca. ⚠️ Il radar però **non va acceso dal PIR**:
+una persona immobile, o che si muove appena, non genera il trigger, cioè proprio il caso in
+cui il radar serve (Capitolo 5 della tesi). Lo accende il passaggio al regime di emergenza
+(punto 2), che in DIPME è comandato dal gateway oppure deciso dal nodo quando il gateway non
+conferma le trasmissioni per tre ore.
 
 ## Fonti
 

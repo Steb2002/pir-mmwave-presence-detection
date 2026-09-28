@@ -2134,3 +2134,9 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       capitoli sono state tolte il 28/09/2026, e il 28/09/2026 è stata rimossa anche
       `tesi-unicam/` (resta nella storia git): gli script delle figure scrivono ora in
       `overleaf/Immagini/` tramite `analisi/uscita_figure.py`
+- 📌 **Chi accende il radar (28/09/2026)**: **non il PIR**. Una persona immobile, o che si
+      muove appena, non genera il trigger, ed è proprio il caso per cui il radar serve. La
+      proposta della tesi è riprendere il meccanismo di DIPME: il radar si accende col
+      passaggio al regime di emergenza, comandato dal gateway oppure deciso dal nodo quando il
+      gateway non conferma le trasmissioni per tre ore (`callisto2026dipme`). Allineati
+      abstract, cap. 7 (§7.2 e §7.4), cap. 8, README e `ANALISI_CONSUMI.md`
