@@ -356,6 +356,37 @@ cui il radar colloca la persona: è la misura fisicamente sensata per una dashbo
 distanza libera, e la sua dipendenza dalla geometria va dichiarata, non nascosta con un
 gate fisso. Il gate fisso resta disponibile nel prototipo per i confronti controllati.
 
+## 4.8 Ritaratura sotto il banco (28/09/2026)
+
+Le soglie del §4.6 sono tarate a 1 m e sotto il banco non si trasferiscono: con la
+configurazione del firmware (gate dalla distanza, fondo notturno) la persona immobile vale
+45,4 e sta in classe bassa solo nel 49 % dei campioni. Stesso metodo del §4.6, rifatto
+nella geometria del progetto: soglie scelte su T01-T03, verificate su T04-T05.
+
+```
+python analisi/vitalita_proto.py data/sotto_banco_immobile_H_T0*.csv data/sotto_banco_movimenti_H_T0*.csv \
+    --trials T04,T05 --alpha-mov 0.05 --alpha-var 0.01 --k 0.5 --soglie 70,95 \
+    --gate distanza --fondo-da data/stanza_vuota_notte_T01.csv --salta-inizio 40
+```
+
+| soglia 1 | immobile in bassa, T01-T03 | immobile in bassa, T04-T05 | movimenti in bassa |
+|---|---|---|---|
+| 45 (tarata a 1 m) | 31,2 % | 75,1 % | 0 % |
+| 60 | 83,9 % | 93,2 % | 0 % |
+| **70** | **96,0 %** | **96,9 %** | **0 %** |
+| 80 | 99,2 % | 97,4 % | 0 % |
+
+- **Soglia 1 → 70**: circa a metà fra immobile (media 45, trial massimo 51,5) e movimenti
+  (99,2 ± 0,1). Oltre 70 il guadagno in verifica è minimo
+- **Soglia 2 resta 95**: `sotto_banco_movimenti_H` sono i **micro-aggiustamenti** sotto il
+  banco (registro 22/08), non movimenti ampi, e a 60 cm danno comunque indice ~99 (gate 1
+  a 99,8, Tabella 6.5 della tesi). Sotto il banco le classi raggiunte sono due: bassa per
+  l'immobile, alta per chi si muove
+- Il 49 % e il 75,1 % non sono in contraddizione: il primo è su tutti e cinque i trial, il
+  secondo sui soli T04-T05
+- Il firmware resta a 45 (tarato a 1 m, geometria delle sessioni web); `config.h` indica 70
+  per il montaggio sotto il banco
+
 ## 5. Sviluppo e taratura — Python prima, C++ poi
 
 Regola: **l'algoritmo si sviluppa su PC, sui CSV, dove si può iterare in secondi.**

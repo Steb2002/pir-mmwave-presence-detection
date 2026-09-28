@@ -2000,6 +2000,15 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       ma sarebbe un problema su un dispositivo portatile. Via naturale: **auto-taratura
       all'installazione** (fondo a stanza vuota + un riferimento di movimento)
 - [x] Porting su ESP32 (`vitality.h`, BUILD 6 di `ld2410b_web`, 10-11/09/2026 — vedi obiettivo 5, step 5)
+- [x] **Soglie ritarate sotto il banco (28/09/2026)**: stesso metodo della taratura a 1 m
+      (T01-T03 per scegliere, T04-T05 per verificare), configurazione del firmware. Soglia
+      bassa/moderata **45 → 70**: persona immobile in classe bassa nel **96,9 %** dei campioni
+      di verifica (75,1 % con 45 sugli stessi trial), nessun campione con movimento in bassa.
+      Soglia 2 resta 95: i micro-aggiustamenti sotto il banco valgono gia' ~99, quindi in
+      quella geometria le classi raggiunte sono due. Tesi §6.3, §6.4 (paragrafo *Taratura
+      nella geometria d'uso*, al posto del vecchio paragrafo finale), §6.6; comando e tabella
+      in `analisi/approfondimenti/ANALISI_VITALITA.md` §4.8; `config.h` resta a 45 con il
+      commento per il montaggio sotto il banco
 
 ### Processo
 - [x] Analisi teorica PIR (`analisi/approfondimenti/ANALISI_PIR.md` — sezione 6 da completare col modello reale)

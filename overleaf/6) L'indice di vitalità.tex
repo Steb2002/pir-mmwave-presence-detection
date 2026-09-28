@@ -67,7 +67,7 @@ Movimento pieno, 1~m & 99,6 & 99,2 & 92 $\to$ 71\,\% \\
 \section{Classificazione}
 \label{sec:vitalita-classi}
 
-L'indice di vitalità è diviso in tre classi, con le soglie a 45 e 95 fissate nella taratura (Tabella~\ref{tab:vitalita-classi}). Chi si muove ampiamente è verosimilmente cosciente, chi compie solo micro-movimenti è vivo ma forse ferito o bloccato, e chi non si muove può essere incosciente. La priorità di soccorso va quindi al contrario dell'indice. La vitalità bassa è il caso da raggiungere per primo, mentre chi ha vitalità alta è probabilmente in grado di aspettare. Per questo nella dashboard (Sezione~\ref{sec:webui-progetto}) la classe bassa è rossa e quella alta verde.
+L'indice di vitalità è diviso in tre classi, con le soglie a 45 e 95 fissate nella taratura a 1~m (Tabella~\ref{tab:vitalita-classi}). Sotto il banco la prima soglia sale a 70 (Sezione~\ref{sec:vitalita-taratura}). Chi si muove ampiamente è verosimilmente cosciente, chi compie solo micro-movimenti è vivo ma forse ferito o bloccato, e chi non si muove può essere incosciente. La priorità di soccorso va quindi al contrario dell'indice. La vitalità bassa è il caso da raggiungere per primo, mentre chi ha vitalità alta è probabilmente in grado di aspettare. Per questo nella dashboard (Sezione~\ref{sec:webui-progetto}) la classe bassa è rossa e quella alta verde.
 
 \begin{table}[htbp]
 \centering
@@ -164,7 +164,7 @@ Movimenti sotto il banco & 96,5 & 99,8 & 95,1 & 43,9 \\
 \end{tabular}
 \end{table}
 
-Le soglie restano quindi legate alla geometria in cui sono state tarate, e il gate fisso non risolve il problema ma lo nasconde. Per il progetto è un limite gestibile, perché ogni sensore è montato in posizione fissa sotto il proprio arredo e può essere tarato una volta lì. Lo sarebbe molto meno per un dispositivo portatile.
+\paragraph{Taratura nella geometria d'uso.} Le soglie tarate a 1~m non vanno quindi bene sotto il banco. Con la configurazione del firmware la persona immobile sta a cavallo della prima soglia (Figura~\ref{fig:vitalita-scenari}), e il gate fisso non risolve il problema ma lo nasconde. La taratura è stata perciò ripetuta con lo stesso metodo sui dati sotto il banco, scegliendo la soglia sui trial T01--T03 e verificandola sui T04--T05. La prima soglia sale da 45 a 70. Sui trial di verifica la persona immobile cade così in classe bassa nel 96,9\,\% dei campioni, contro il 75,1\,\% con la soglia tarata a 1~m, e nessun campione con movimento finisce in quella classe. La seconda soglia resta a 95, perché a 60~cm anche i micro-movimenti portano l'indice oltre quel valore, e sotto il banco le classi raggiunte sono quindi due, bassa e alta. Le soglie vanno dunque tarate nella geometria in cui il sensore è montato. Per il progetto è un'operazione semplice, perché ogni sensore resta fisso sotto il proprio arredo e la taratura si esegue una volta sola, mentre lo sarebbe molto meno per un dispositivo portatile. La Sezione~\ref{sec:vitalita-limiti} propone di renderla automatica.
 
 \section{Porting a bordo e verifica}
 \label{sec:vitalita-bordo}
@@ -205,30 +205,6 @@ L'indice non si può calcolare con l'\ldc. Sull'esemplare in dotazione l'energia
 I comportamenti dell'indice nei casi limite
 sono raccolti in Tabella~\ref{tab:vitalita-casilimite}.
 
-I limiti dell'indice:
-
-\begin{itemize}
-    \item le soglie sono specifiche dell'installazione;
-
-    \item la validazione poggia su un solo soggetto e due trial per scenario;
-
-    \item la classe intermedia non ha un riferimento indipendente, perché nessuno strumento ha misurato quanto si muoveva la persona durante i micro-movimenti;
-
-    \item non è stato misurato fino a che distanza l'indice classifica correttamente, perché è tarato a 1~m e provato solo sotto il banco.
-\end{itemize}
-
-Tre estensioni che migliorerebbero l'indice:
-
-\begin{itemize}
-    \item \textbf{Auto-taratura all'installazione.} Registrerebbe il fondo a stanza vuota e un riferimento di movimento sotto l'arredo, e risolverebbe il primo limite.
-
-    \item \textbf{Classi più stabili.} La classe cambierebbe solo dopo qualche secondo oltre la soglia, così che l'etichetta non sfarfalli quando l'indice oscilla intorno a una soglia, come nella sessione a 1,9~m.
-
-    \item \textbf{Indicatore di confidenza.} Affiancato all'indice e calcolato dalla stabilità del gate attivo, direbbe quanto fidarsi del valore.
-\end{itemize}
-
-Resta infine un aspetto di trattamento dei dati. Per il monitoraggio in ambienti scolastici il progetto indica le cautele del GDPR, fino a una valutazione d'impatto quando sono coinvolti minori~\cite{callisto2026dipme}. L'indice di vitalità non aggiunge un problema nuovo, perché non è una misura fisiologica, e rientra nella stessa valutazione che riguarda già il dato di presenza.
-
 \begin{table}[htbp]
 \centering
 \caption{Casi limite dell'indice di vitalità e comportamento previsto o osservato.}
@@ -251,6 +227,30 @@ Persona a meno di 1,5~m & nessun effetto, l'indice usa i soli canali in moviment
 \bottomrule
 \end{tabularx}
 \end{table}
+
+I limiti dell'indice:
+
+\begin{itemize}
+    \item le soglie sono specifiche dell'installazione;
+
+    \item la validazione poggia su un solo soggetto e due trial per scenario;
+
+    \item la classe intermedia non ha un riferimento indipendente, perché nessuno strumento ha misurato quanto si muoveva la persona durante i micro-movimenti;
+
+    \item non è stato misurato fino a che distanza l'indice classifica correttamente, perché è tarato a 1~m e sotto il banco.
+\end{itemize}
+
+Tre estensioni che migliorerebbero l'indice:
+
+\begin{itemize}
+    \item \textbf{Auto-taratura all'installazione.} Registrerebbe il fondo a banco vuoto, la persona immobile e la persona in movimento sotto l'arredo, e ne ricaverebbe le soglie come fatto a mano nella Sezione~\ref{sec:vitalita-taratura}.
+
+    \item \textbf{Classi più stabili.} La classe cambierebbe solo dopo qualche secondo oltre la soglia, così che l'etichetta non sfarfalli quando l'indice oscilla intorno a una soglia, come nella sessione a 1,9~m.
+
+    \item \textbf{Indicatore di confidenza.} Affiancato all'indice e calcolato dalla stabilità del gate attivo, direbbe quanto fidarsi del valore.
+\end{itemize}
+
+Resta infine un aspetto di trattamento dei dati. Per il monitoraggio in ambienti scolastici il progetto indica le cautele del GDPR, fino a una valutazione d'impatto quando sono coinvolti minori~\cite{callisto2026dipme}. L'indice di vitalità non aggiunge un problema nuovo, perché non è una misura fisiologica, e rientra nella stessa valutazione che riguarda già il dato di presenza.
 
 \section{Il rilevamento del respiro}
 \label{sec:respiro}

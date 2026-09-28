@@ -33,6 +33,8 @@
 #define VIT_ALPHA_V     0.01f           // EWMA della variabilita' (~20 s)
 #define VIT_K           0.5f            // peso della componente di variabilita'
 #define VIT_SOGLIA_1    45.0f           // < 45  -> vitalita_bassa (la piu' urgente per il soccorso)
+                                        // tarata a 1 m; con il sensore sotto il banco (~60 cm) usare 70
+                                        // (ritaratura sui trial sotto_banco_*_H, tesi Sezione 6.4)
 #define VIT_SOGLIA_2    95.0f           // < 95  -> vitalita_moderata, altrimenti vitalita_alta
 // Gate attivo: 1 = dalla distanza riportata dal radar (gate = dist / 75 cm; se non c'e'
 // bersaglio si ripiega sull'energia), 0 = argmax dell'energia moving per gate.
