@@ -1,17 +1,17 @@
 """
 Dove e con che nome finiscono le figure generate dagli script di analisi.
 
-Le PNG a 300 dpi vanno direttamente in overleaf/figures/, con il nome usato nei
+Le PNG a 300 dpi vanno direttamente in overleaf/Immagini/, con il nome usato nei
 \\includegraphics dei capitoli, cosi' la tesi usa subito la versione rigenerata.
-I PDF vettoriali vanno in overleaf/figures/origin/: fuori dal \\graphicspath, quindi
+I PDF vettoriali vanno in overleaf/Immagini/origin/: fuori dal \\graphicspath, quindi
 LaTeX non li sceglie al posto delle PNG, ma restano disponibili come sorgente.
 
-Le figure che la tesi non usa mantengono il nome figNN_* dello script.
+Tutte le figure generate sono usate nella tesi; un nome assente da NOMI resta figNN_*.
 """
 from pathlib import Path
 
 RADICE = Path(__file__).resolve().parent.parent
-PNG = RADICE / "overleaf" / "figures"
+PNG = RADICE / "overleaf" / "Immagini"
 PDF = PNG / "origin"
 
 # nome nello script -> nome nel tex
@@ -36,9 +36,14 @@ NOMI = {
     "fig20_angolare": "Angolare",
     "fig21_vitalita_scenari": "Vitalita_scenari",
     "fig22_vitalita_bordo": "Vitalita_bordo",
+    "fig23_zone_fresnel": "Zone_lente_fresnel",
+    "fig24_trigger_lh": "Pir_L_H",
+    "fig25_fmcw": "Rilevamento_segnale_radar",
+    "fig26_pir_due_elementi": "Pir_detection",
     "fig27_geometrie": "Geometrie",
     "fig28_collegamenti": "Collegamenti",
     "fig28_tipo_movimento": "Tipo_movimento",
+    "fig29_piattaforma": "Piattaforma",
     "fig30_percorsi_dati": "Percorsi_dati",
     "fig32_transitorio": "Transitorio",
 }
@@ -50,7 +55,7 @@ def nome_file(nome):
 
 
 def salva(fig, nome):
-    """PNG a 300 dpi in overleaf/figures/, PDF vettoriale in overleaf/figures/origin/.
+    """PNG a 300 dpi in overleaf/Immagini/, PDF vettoriale in overleaf/Immagini/origin/.
 
     Senza data di creazione nei metadati: rigenerando una figura con gli stessi dati
     si ottengono file identici, e git non segnala modifiche che non ci sono.

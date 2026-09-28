@@ -166,13 +166,13 @@ firmware/ld2410b_web/
 ├── vitality.h               # indice di vitalità v3: fondo per gate sottratto, doppia
 │                            #   EWMA sull'energia del gate attivo, 3 classi
 ├── web_server.h             # ESPAsyncWebServer: statiche da PROGMEM (gzip) + WebSocket /ws
-├── web_assets.h             # GENERATO da tools/embed_web.py: i file di web/ in gzip
+├── web_assets.h             # GENERATO da embed_web.py: i file di web/ in gzip
 └── web/                     # sorgenti della pagina (tutto locale, ZERO CDN)
     ├── index.html           # struttura pagina (aree A-D)
     ├── style.css            # dark theme (dashboard di monitoraggio)
     ├── app.js               # WebSocket client, statistiche, buffer, export CSV
     └── chart.umd.min.js     # Chart.js v4 (~200 KB in chiaro, ~70 KB in gzip)
-tools/embed_web.py           # comprime web/* e scrive web_assets.h (rev. 05/09)
+firmware/ld2410b_web/embed_web.py # comprime web/* e scrive web_assets.h (rev. 05/09)
 ```
 
 **Perché PROGMEM e non LittleFS (rev. 05/09/2026)**: il plugin «ESP32 Sketch Data

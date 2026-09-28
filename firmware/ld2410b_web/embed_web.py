@@ -11,8 +11,8 @@ Perché così e non LittleFS: il plugin di upload del file system non esiste per
 l'Arduino IDE 2.x. Con questo script basta un upload solo, nessuno strumento in più
 (decisione del 05/09/2026, ANALISI_WEB_UI.md §4).
 
-Uso (dalla radice del repo, con qualunque Python 3.8+, solo libreria standard):
-    python tools/embed_web.py
+Uso (da qualunque cartella, con qualunque Python 3.8+, solo libreria standard):
+    python firmware/ld2410b_web/embed_web.py
 
 ⚠️ Da rilanciare a OGNI modifica di un file in web/, prima di compilare. Se te ne
 dimentichi l'ESP32 serve la pagina vecchia: l'hash stampato qui compare anche in
@@ -24,9 +24,10 @@ import hashlib
 import pathlib
 import sys
 
-RADICE = pathlib.Path(__file__).resolve().parents[1]
-CARTELLA_WEB = RADICE / "firmware" / "ld2410b_web" / "web"
-USCITA = RADICE / "firmware" / "ld2410b_web" / "web_assets.h"
+QUI = pathlib.Path(__file__).resolve().parent      # firmware/ld2410b_web/
+RADICE = QUI.parents[1]                              # radice del repository
+CARTELLA_WEB = QUI / "web"
+USCITA = QUI / "web_assets.h"
 
 MIME = {
     ".html": "text/html; charset=utf-8",
@@ -58,7 +59,7 @@ def main() -> int:
     sha = hashlib.sha1()
     tot_chiaro = tot_gzip = 0
 
-    righe.append("// GENERATO da tools/embed_web.py — NON modificare a mano, modificare i file in web/")
+    righe.append("// GENERATO da embed_web.py — NON modificare a mano, modificare i file in web/")
     righe.append(f"// {datetime.datetime.now():%Y-%m-%d %H:%M:%S}")
     righe.append("#pragma once")
     righe.append("#include <Arduino.h>")

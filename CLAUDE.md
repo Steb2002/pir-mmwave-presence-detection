@@ -530,11 +530,17 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
   (riusa i PNG esistenti, utile se cambia solo il testo) e `--senza-pdf`.
   Trova Chrome o Edge da solo; se non c'è, dice come stampare a mano invece di piantarsi
 - 🔑 **`analisi/uscita_figure.py` — dove finiscono le figure (28/09/2026)**. Tutti gli script
-  delle figure salvano da qui: la **PNG a 300 dpi va direttamente in `overleaf/figures/`**
+  delle figure salvano da qui: la **PNG a 300 dpi va direttamente in `overleaf/Immagini/`**
   con il nome usato nei `\includegraphics` (tabella `NOMI`, es. `fig01_dose_risposta` →
-  `Dose_risposta`), il **PDF vettoriale in `overleaf/figures/origin/`**, fuori dal
-  `\graphicspath`, cosi' LaTeX non lo sceglie al posto della PNG. Le figure che la tesi non
-  usa (fig03, fig16, fig23-26, fig29) tengono il nome `figNN_*`. Metadati senza data: a dati
+  `Dose_risposta`), il **PDF vettoriale in `overleaf/Immagini/origin/`**, fuori dal
+  `\graphicspath`, cosi' LaTeX non lo sceglie al posto della PNG. Tutte le figure generate sono nella
+  tesi: fig03 (sottoinsieme di `Dipme_tre_sensori`) e il grafico della fig16 non si generano
+  piu'; il calcolo del LD2420 in corridoio che serviva alla fig16 resta in
+  `dati_2420_corridoio()` perche' alimenta `Portata_tre_sensori` (Figura 5.15). Dal 28/09/2026 anche gli schemi del cap. 2 (fig23-26) e la
+  piattaforma (fig29, Figura 3.6) escono da qui; tutte le immagini della tesi stanno in
+  `overleaf/Immagini/`, come nel progetto Overleaf (cartella rinominata da `figures/` il
+  28/09/2026), stemma del frontespizio compreso; `\graphicspath{{Immagini/}}` permette di
+  richiamarle col solo nome. Metadati senza data: a dati
   invariati una rigenerazione produce file identici e git non segnala nulla. Verificato: PNG
   identiche al pixel a quelle generate prima in `tesi-unicam/figures/`, paginazione invariata
 - `analisi/grafici_tesi.py` — le **figure 1-13 della tesi** (vedi `uscita_figure.py`).
@@ -568,7 +574,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
   vuoto/notturna2420 e corridoio_vuoto 60 s), che prima usavano 20 s. Un file nuovo che
   non è un trial va aggiunto alla lista, non lasciato "tanto è nel registro"
 - `analisi/genera_pagina.py` — `CATALOGO_FIGURE.html` (e il PDF stampato da
-  `rigenera_tutto.py`): le figure della campagna, lette da `overleaf/figures/` con i nomi di
+  `rigenera_tutto.py`): le figure della campagna, lette da `overleaf/Immagini/` con i nomi di
   `uscita_figure.py`, ciascuna con la didascalia che spiega cosa dimostra. Fino al 28/09/2026
   era `RIEPILOGO_INCONTRO.html`, con anche lo stato dei 6 obiettivi e le domande per
   l'incontro col professore, tolte perché superate. Le immagini sono incorporate come data URI
@@ -579,7 +585,7 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
   che arrivino i font da Google Fonts e l'impaginazione cambia
 - ⚠️ **Materiali generati e versionamento**: xlsx, HTML e PDF di riepilogo NON sono
   versionati (`.gitignore`), si rifanno in 13 s dai CSV. Le **figure della tesi invece sì**:
-  stanno in `overleaf/figures/` perché servono a Overleaf (dal 28/09/2026, prima erano in
+  stanno in `overleaf/Immagini/` perché servono a Overleaf (dal 28/09/2026, prima erano in
   `tesi-unicam/figures/` e ignorate). I **CSV restano tracciati**: sono l'unico dato non
   ricostruibile
 - `analisi/approfondimenti/ANALISI_CONSUMI.md` — obiettivo 4 completato in bozza (consumi da datasheet + stime autonomia + argomentazione architettura ibrida PIR+mmWave)
@@ -1867,11 +1873,11 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       Access Point + DNS catch-all + pagina statica + `/info`; lettura radar e PIR, CSV
       sulla seriale con le stesse 29 colonne del logger (quindi `acquire.py` gira in
       parallelo alla web UI) e spinta WebSocket a 5 Hz. La pagina sta in `web/`
-      (index.html, style.css, app.js) e `tools/embed_web.py` la comprime in gzip dentro
+      (index.html, style.css, app.js) e `firmware/ld2410b_web/embed_web.py` la comprime in gzip dentro
       `web_assets.h`. ⚠️ **`web_assets.h` e' GENERATO ma versionato di proposito**: l'IDE
       Arduino non esegue passi di build, quindi senza il file committato lo sketch non
       compila su un'altra macchina. Rigenerarlo dopo ogni modifica in `web/` con
-      `python tools/embed_web.py`
+      `python firmware/ld2410b_web/embed_web.py`
 - [x] ESP32 pubblica i dati (Access Point proprio, WebSocket)
 - [x] **Step 3 (10/09/2026, BUILD 3)**: Chart.js 4.4.7 in flash (70 KB gzip), C1 energia
       60 s, C2 barre per gate con le **soglie lette dal modulo** (`requestParameters()`,
@@ -2146,4 +2152,4 @@ Nota: supporta solo il **LD2410B**, non il LD2420. Il formato CSV del repo è un
       `6) L'indice di vitalità.tex`, i consumi `7) Consumo energetico.tex`. Le bozze Word dei
       capitoli sono state tolte il 28/09/2026, e il 28/09/2026 è stata rimossa anche
       `tesi-unicam/` (resta nella storia git): gli script delle figure scrivono ora in
-      `overleaf/figures/` tramite `analisi/uscita_figure.py`
+      `overleaf/Immagini/` tramite `analisi/uscita_figure.py`

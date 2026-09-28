@@ -4,8 +4,8 @@ Genera le figure della tesi dai CSV della campagna sperimentale.
 
     python analisi/grafici_tesi.py
 
-Scrive ogni figura come .png a 300 dpi in overleaf/figures/, con il nome usato nella
-tesi, e come .pdf vettoriale in overleaf/figures/origin/ (vedi uscita_figure.py).
+Scrive ogni figura come .png a 300 dpi in overleaf/Immagini/, con il nome usato nella
+tesi, e come .pdf vettoriale in overleaf/Immagini/origin/ (vedi uscita_figure.py).
 
 I numeri sono ricalcolati dai CSV riusando le funzioni di analizza_test.py, con le
 stesse convenzioni di scarto del transitorio usate nel capitolo 4:
@@ -194,32 +194,6 @@ def fig_timeline_dipme():
         a2.set_ylim(0, max(140, float(np.nanmax(d["stationary_distance_cm"])) * 1.15))
     fig.subplots_adjust(wspace=0.12)
     salva(fig, "fig02_timeline_sotto_banco")
-
-
-def fig_dipme_barre():
-    """Sotto il banco: con micro-movimenti il PIR va bene, da fermo no. Il radar sempre 100%."""
-    gruppi = [("con micro-movimenti", "sotto_banco_movimenti_H_T*.csv"),
-              ("immobile",            "sotto_banco_immobile_H_T*.csv")]
-    fig, ax = plt.subplots(figsize=(5.6, 3.9))
-    x = np.arange(len(gruppi)); w = 0.38
-    for i, (nome, pat) in enumerate(gruppi):
-        rs = stats_scenario(pat, skip=40.0)
-        mr, dr = media_dev([r["radar_rate_%"] for r in rs])
-        mp, dp = media_dev([r["pir_rate_%"] for r in rs])
-        ax.bar(x[i] - w/2, mr, w, yerr=dr, capsize=4, color=C_RADAR, edgecolor="white",
-               label="mmWave LD2410B" if i == 0 else None)
-        ax.bar(x[i] + w/2, mp, w, yerr=dp, capsize=4, color=C_PIR, edgecolor="white",
-               label="PIR HC-SR501" if i == 0 else None)
-        ax.text(x[i] - w/2, mr + 3, f"{mr:.2f}", ha="center", fontsize=9,
-                color=C_RADAR, fontweight="bold")
-        ax.text(x[i] + w/2, mp + dp + 3, f"{mp:.2f}", ha="center", fontsize=9,
-                color=C_PIR, fontweight="bold")
-    ax.set_xticks(x); ax.set_xticklabels([g[0] for g in gruppi])
-    ax.set_ylabel("tempo con presenza rilevata [%]"); ax.set_ylim(0, 118)
-    ax.set_title("Scenario del progetto: persona sotto il banco (~60 cm)\n"
-                 "5 trial per condizione, jumper H")
-    ax.legend(loc="center right")
-    salva(fig, "fig03_dipme_sotto_banco")
 
 
 def fig_distanza():
@@ -720,7 +694,6 @@ def main():
     print(f"Figure -> {OUT}")
     dose = fig_doserisposta()
     fig_timeline_dipme()
-    fig_dipme_barre()
     a, b, r2, _ = fig_distanza()
     fig_energia_distanza()
     lat = fig_latenza()

@@ -10,7 +10,7 @@ Schemi per il capitolo 3 (non derivano dai CSV).
                                 seriale USB -> acquire.py -> CSV -> script -> materiali,
                                 con il formato dati unico al centro e il ramo della web UI.
 
-Stesso stile di grafici_schemi.py; uscita in overleaf/figures/ (.png 300 dpi) e origin/ (.pdf).
+Stesso stile di grafici_schemi.py; uscita in overleaf/Immagini/ (.png 300 dpi) e origin/ (.pdf).
 Uso:  python analisi/grafici_schemi_cap3.py
 """
 from pathlib import Path
@@ -145,13 +145,14 @@ def fig_piattaforma():
             ax.text((x0 + x1) / 2, (y0 + y1) / 2 + dy, lab, ha="center", va="bottom", fontsize=6.8, color=col)
 
     # riga principale
-    box(0.5, 22, 13.5, 17, "Sensori", ["HLK-LD2410B (5 Hz)", "HLK-LD2420 (10 Hz)", "HC-SR501 (1 bit)"])
+    box(0.5, 22, 13.5, 17, "Sensori", ["HLK-LD2410B", "HLK-LD2420", "HC-SR501 (1 bit)"])
     box(19, 22, 16, 17, "ESP32", ["ld2410b_logger", "ld2420_logger_bin", "ld2410b_web", "sketch di configurazione"])
     box(43, 22, 17.5, 17, "PC: acquire.py", ["ricostruisce l'intestazione", "+ 6 colonne di metadati", "beep / annunci vocali"])
-    box(66, 22, 13.5, 17, "CSV", ["data/", "un file per trial", "+ registro sessioni"])
+    box(66, 22, 13.5, 17, "CSV", ["data/", "un file per trial", "a 5 Hz", "+ registro sessioni"])
     box(85, 22, 14, 17, "Analisi", ["verifica_engineering", "analizza_test", "analizza_respiro", "vitalita_proto"])
 
     freccia(14, 30, 19, 30); ax.text(16.5, 31.4, "UART", ha="center", fontsize=6.6, color=C_BOARD)
+    ax.text(16.5, 28.8, "GPIO", ha="center", va="top", fontsize=6.6, color=C_BOARD)
     freccia(35, 30, 43, 30); ax.text(39, 31.4, "seriale USB", ha="center", fontsize=6.6, color=C_BOARD)
     ax.text(39, 28.8, "righe CSV", ha="center", va="top", fontsize=6.6, color=C_BOARD)
     freccia(60.5, 30, 66, 30)
@@ -159,7 +160,7 @@ def fig_piattaforma():
 
     # formato dati unico
     ax.add_patch(FancyBboxPatch((13, 4), 74, 9.5, boxstyle="round,pad=0.4", fc="#fff6e0", ec=C_OUT, lw=1.2, zorder=2))
-    ax.text(50, 10.6, "Un solo formato dati (Tabella 3.15)", ha="center", fontsize=8.5, fontweight="bold", color=C_OUT)
+    ax.text(50, 10.6, "Un solo formato dati (Tabella 3.16)", ha="center", fontsize=8.5, fontweight="bold", color=C_OUT)
     ax.text(50, 6.9, "9 colonne comuni  +  colonne del radar (20 per il LD2410B, 18 per il LD2420)  +  6 metadati  [+ 2 indice a bordo]",
             ha="center", fontsize=6.5, color="#222")
     for x in (27, 51.75, 72.75):
@@ -167,11 +168,11 @@ def fig_piattaforma():
 
     # ramo web UI
     freccia(27, 39.5, 27, 42.3, col=C_TX)
-    ax.text(28.5, 42.0, "ld2410b_web: Wi-Fi (Access Point) + WebSocket → browser con dashboard, indice di vitalità\ned export CSV con le stesse colonne (Capitolo 6)",
+    ax.text(28.5, 42.0, "ld2410b_web: Wi-Fi (Access Point) + WebSocket → browser con dashboard e indice di vitalità;\nexport CSV con le stesse colonne più le 2 dell'indice (Sezione 4.5)",
             ha="left", va="center", fontsize=7.2, color=C_TX)
 
     # uscita
-    ax.text(92, 18.6, "figure · foglio Excel\npagina di riepilogo", ha="center", va="top", fontsize=7.2, color=C_GRIGIO)
+    ax.text(92, 18.6, "figure · foglio Excel", ha="center", va="top", fontsize=7.2, color=C_GRIGIO)
     freccia(92, 22, 92, 19.4, col=C_GRIGIO)
     salva(fig, "fig29_piattaforma")
 

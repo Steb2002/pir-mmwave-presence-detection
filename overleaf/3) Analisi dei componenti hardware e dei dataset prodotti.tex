@@ -475,9 +475,16 @@ La configurazione del modulo è riassunta nell'elenco seguente, e i suoi effetti
 \section{La piattaforma di acquisizione}
 \label{sec:c3-4}
 
-I tre sensori sono letti da un'unica piattaforma, costruita perché ogni misura dei capitoli successivi sia riproducibile. La Tabella~\ref{tab:c3-14} elenca i firmware per l'ESP32 e la Tabella~\ref{tab:c3-14b} il software per il PC, diviso in acquisizione, analisi e materiali derivati.
+I tre sensori sono letti da un'unica piattaforma, costruita perché ogni misura dei capitoli successivi sia riproducibile. La Figura~\ref{fig:piattaforma} ne mostra la catena completa, dai sensori ai materiali della tesi. La Tabella~\ref{tab:c3-14} elenca i firmware per l'ESP32 e la Tabella~\ref{tab:c3-14b} il software per il PC, diviso in acquisizione, analisi e materiali derivati.
 
 Le sezioni che seguono descrivono il punto di partenza (Sezione~\ref{sec:c3-4-1}), i firmware (Sezione~\ref{sec:c3-4-2}), il formato dei dati che li accomuna (Sezione~\ref{sec:c3-4-3}), lo script di acquisizione (Sezione~\ref{sec:c3-4-4}) e la catena di analisi (Sezione~\ref{sec:c3-4-5}). Tutto il software è nel repository della tesi insieme ai file CSV della campagna, che sono l'unico contenuto non ricostruibile.
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\linewidth]{Piattaforma}
+\caption{La piattaforma di acquisizione e analisi. I firmware dell'ESP32 leggono i tre sensori, lo script di acquisizione salva un file CSV per trial e gli script di analisi ne ricavano metriche, figure e foglio Excel. Tutti i file condividono lo stesso formato (Tabella~\ref{tab:c3-15}).}
+\label{fig:piattaforma}
+\end{figure}
 
 \begin{table}[!htb]
 \centering
@@ -507,13 +514,13 @@ firmware/test01\_\allowbreak{}ld2410\_\allowbreak{}base,\allowbreak{} test03\_\a
 \toprule
 \textbf{Componente} & \textbf{Contenuto} \\
 \midrule
-acquisizione/acquire.py & acquisizione dalla seriale con metadati sperimentali, adattato dal repository di riferimento \\
+acquisizione/acquire.py, serie.py & acquisizione dalla seriale con metadati sperimentali (acquire.py, adattato dal repository di riferimento) e serie di trial consecutivi (serie.py) \\
 data & i CSV della campagna e il registro delle sessioni \\
 analisi/verifica\_\allowbreak{}engineering.py & controllo di qualità di un CSV prima dell'uso \\
 analisi/analizza\_\allowbreak{}test.py & metriche di confronto e aggregazione per scenario \\
 analisi/analizza\_\allowbreak{}respiro.py & analisi in frequenza e ricerca del canale migliore \\
 analisi/vitalita\_\allowbreak{}proto.py,\allowbreak{} verifica\_\allowbreak{}vitalita\_\allowbreak{}bordo.py & prototipo dell'indice di vitalità e verifica del porting (Capitolo~\ref{chap:vitalita}) \\
-analisi/rigenera\_\allowbreak{}tutto.py e script collegati & figure, foglio Excel e pagina di riepilogo, rigenerabili dai CSV con un comando \\
+analisi/rigenera\_\allowbreak{}tutto.py e script collegati & figure, foglio Excel e catalogo delle figure, rigenerabili dai CSV con un comando \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -521,7 +528,7 @@ analisi/rigenera\_\allowbreak{}tutto.py e script collegati & figure, foglio Exce
 \subsection{Il repository di riferimento}
 \label{sec:c3-4-1}
 
-Il lavoro parte dal repository del relatore \cite{repoCallisto}, che contiene un firmware PlatformIO per ESP32 basato sulla libreria ncmreynolds/ld2410 e uno script Python di acquisizione. Il firmware legge il radar via UART, gestisce opzionalmente un display OLED e un PIR e stampa righe CSV sulla seriale. Lo script acquire.py le salva su file e aggiunge i metadati sperimentali passati da riga di comando. Lo studio del codice ha evidenziato tre limiti per gli scopi di questa tesi:
+Il lavoro parte dal repository HLK-LD2410x \cite{repoCallisto}, che contiene un firmware PlatformIO per ESP32 basato sulla libreria ncmreynolds/ld2410 e uno script Python di acquisizione. Il firmware legge il radar via UART, gestisce opzionalmente un display OLED e un PIR e stampa righe CSV sulla seriale. Lo script acquire.py le salva su file e aggiunge i metadati sperimentali passati da riga di comando. Lo studio del codice ha evidenziato tre limiti per gli scopi di questa tesi:
 
 \begin{enumerate}
   \item \textbf{Campionamento a 1~Hz}, troppo lento per misurare le latenze e insufficiente per l'analisi del respiro, perché il limite di Nyquist a 0,5~Hz coincide con il bordo superiore della banda respiratoria (Sezione~\ref{sec:respiro}).
@@ -601,9 +608,9 @@ L'intestazione è stampata dal firmware una sola volta all'avvio. Le righe che i
 \subsection{Lo script di acquisizione}
 \label{sec:c3-4-4}
 
-Lo script acquire.py legge la seriale e aggiunge a ogni riga le sei colonne di metadati sperimentali della Tabella~\ref{tab:c3-15}, dichiarati dall'operatore da riga di comando. Il file prende il nome dello scenario e del trial, e lo script richiede la sola libreria pyserial.
+Lo script acquire.py legge la seriale e aggiunge a ogni riga le sei colonne di metadati sperimentali della Tabella~\ref{tab:c3-15}, dichiarati dall'operatore da riga di comando, e richiede la sola libreria pyserial. Il file è quello indicato da riga di comando. Per le serie di trial lo script serie.py lancia acquire.py più volte di seguito e dà a ogni file il nome dello scenario e del trial.
 
-Lo script ricostruisce l'intestazione dal numero di colonne della prima riga di dati (9 per la modalità base, 29 per l'engineering mode completo), invece di attendere quella stampata dall'ESP32 all'avvio. Altrimenti, quando il reset all'apertura della porta seriale non scatta, il CSV resterebbe vuoto senza alcun avviso.
+Se l'intestazione che l'ESP32 stampa all'avvio non arriva, lo script la ricostruisce dal numero di colonne della prima riga di dati (9 per la modalità base, 27 o 29 per l'engineering mode). Altrimenti, quando il reset all'apertura della porta seriale non scatta, il CSV resterebbe vuoto senza alcun avviso.
 
 Per facilitare i test sono stati introdotti:
 
@@ -637,7 +644,7 @@ Esegue l'analisi in frequenza (Sezione~\ref{sec:respiro}) e richiede NumPy. Appl
 
 \paragraph{Materiali derivati}
 
-Un ultimo gruppo di script produce i materiali derivati, cioè rifà dai CSV, con un solo comando, le figure di questa tesi, il foglio Excel con una riga per trial valido e la pagina di riepilogo. Le figure importano le funzioni di analizza\_test.py anziché ricalcolare, così ogni numero nei grafici coincide per costruzione con quello nel testo. Il foglio Excel ha una lista separata con i file esclusi e la ragione dell'esclusione, perché nessun file di prova o di controllo entri nelle statistiche per una svista.
+Un ultimo gruppo di script produce i materiali derivati, cioè rifà dai CSV, con un solo comando, le figure di questa tesi, il foglio Excel con una riga per trial valido e il catalogo delle figure. Le figure importano le funzioni di analizza\_test.py anziché ricalcolare, così ogni numero nei grafici coincide per costruzione con quello nel testo. Il foglio Excel ha una lista separata con i file esclusi e la ragione dell'esclusione, perché nessun file di prova o di controllo entri nelle statistiche per una svista.
 
 \FloatBarrier
 \section{Verifica dei dati e comportamenti del modulo da conoscere}

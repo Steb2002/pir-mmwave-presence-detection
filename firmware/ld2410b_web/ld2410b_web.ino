@@ -12,14 +12,14 @@
  *   radar_task.h    lettura LD2410B (MyLD2410, engineering mode) + PIR, CSV su seriale
  *   vitality.h      indice di vitalita' v3 (EWMA sull'energia netta del gate attivo, 3 classi)
  *   web_server.h    AP + DNS catch-all + HTTP statico + /info + WebSocket /ws
- *   web_assets.h    GENERATO da tools/embed_web.py: i file di web/ compressi in gzip
+ *   web_assets.h    GENERATO da embed_web.py: i file di web/ compressi in gzip
  *   web/            sorgenti della pagina (index.html, style.css, app.js)
  *
  * Prerequisiti Arduino IDE:
  *   - librerie "ESP Async WebServer" e "Async TCP" di ESP32Async (Library Manager)
  *   - Strumenti -> Partition Scheme -> "Huge APP (3MB No OTA/1MB SPIFFS)":
  *     con lo schema di default (1,2 MB) WiFi + server asincrono non ci stanno
- *   - prima di compilare, dopo ogni modifica in web/:  python tools/embed_web.py
+ *   - prima di compilare, dopo ogni modifica in web/:  python firmware/ld2410b_web/embed_web.py
  *
  * Cablaggio: identico a firmware/ld2410b_logger (vedi config.h).
  *

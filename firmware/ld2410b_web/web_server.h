@@ -4,7 +4,7 @@
  * Librerie: ESP Async WebServer + Async TCP, entrambe di ESP32Async (i fork che
  * compilano sul core ESP32 3.x). DNSServer e WiFi sono nel core.
  *
- * I file della pagina stanno in web_assets.h, generato da tools/embed_web.py: ogni
+ * I file della pagina stanno in web_assets.h, generato da embed_web.py: ogni
  * file e' un array gzip in flash e viene servito con Content-Encoding: gzip.
  *
  * WebSocket /ws:

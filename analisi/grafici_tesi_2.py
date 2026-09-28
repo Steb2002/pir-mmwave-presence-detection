@@ -11,7 +11,6 @@ dall'XML in flash (`ld2420_config_fondo120s_max_6_g0alto.xml`), non ricopiate a 
 
   fig14  Test 3.6      portata residua del LD2410B per materiale (1-5 m)
   fig15  Fase 3 / 3-2420 attenuazione per materiale: LD2410B in % e LD2420 in dB
-  fig16  Fase 8        energia radar vs distanza: LD2410B fino al tetto, LD2420 fino al fondo
   fig17  Fase 8        portata dei tre sensori nella stessa geometria (corridoio)
   fig18  Test 1.1      falsi positivi a stanza vuota: LD2410B vs LD2420 (due configurazioni)
   fig19  DIPME         riga a tre sensori: immobile / micro-movimenti a 1 m e sotto il banco
@@ -215,32 +214,12 @@ def fig_attenuazione_materiali():
     return att10, att36, db20
 
 
-# =========================================================== fig16 — energia vs distanza, due radar
-def fig_energia_distanza_radar():
+# ============================================ LD2420 in corridoio (dati per la fig17)
+def dati_2420_corridoio():
+    """Per ogni distanza 1-8 m: rapporto energia/fondo del gate del bersaglio e % di campioni
+    sopra il trigger. Fino al 28/09/2026 era anche disegnato come fig16 (energia vs distanza),
+    tolta perche' ripeteva la Figura 5.8 e il testo della Sezione 5.10."""
     trig, hold = soglie_2420()
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10.5, 4.0))
-    # A: LD2410B
-    xs, ms, ds = [], [], []
-    for d in (1, 2, 3, 4, 5):
-        m, s = media_dev([r["menergy_media"] for r in stats_scenario(f"movimento_{d}m_T*.csv", skip=20.0)])
-        xs.append(d); ms.append(m); ds.append(s)
-    ax1.errorbar(xs, ms, yerr=ds, fmt="o-", color=C_RADAR, capsize=3, lw=1.6, ms=6, label="stanza (20/08), 5 trial")
-    xc, mc, dc = [], [], []
-    for d in (5, 6):
-        m, s = media_dev([r["menergy_media"] for r in stats_scenario(f"movimento_{d}m_corridoio_T*.csv", skip=20.0)])
-        xc.append(d); mc.append(m); dc.append(s)
-    ax1.errorbar(xc, mc, yerr=dc, fmt="s--", color="#0d3b5e", capsize=3, lw=1.4, ms=7, label="corridoio (11/09)")
-    p7 = media_dev([r["radar_rate_%"] for r in stats_scenario("movimento_7m_corridoio_T*.csv", skip=20.0)])[0]
-    ax1.plot([7], [0], "x", color=C_PIR, ms=10, mew=2)
-    ax1.annotate(f"7 m: presenza {p7:.0f} %\n(oltre il gate 8)", (7, 0), (5.2, 40), fontsize=8.5,
-                 arrowprops=dict(arrowstyle="->", color=C_GRIGIO), color=C_PIR)
-    ax1.axvspan(6.0, 6.75, color=C_GRIGIO, alpha=0.12)
-    ax1.text(6.37, 60, "gate 8\n600-675 cm", fontsize=7.5, color=C_GRIGIO, ha="center")
-    ax1.set_xlabel("distanza [m]"); ax1.set_ylabel("energia moving media [0-100]")
-    ax1.set_xlim(0.5, 7.5); ax1.set_ylim(0, 105); ax1.set_xticks(range(1, 8))
-    ax1.set_title("A · LD2410B: tetto configurabile 8 × 75 cm = 600 cm", fontsize=10)
-    ax1.legend(fontsize=8.5, loc="upper right")
-    # B: LD2420 in corridoio, SNR del gate del bersaglio rispetto al fondo del negativo
     fondo = energie_2420("vuoto2420_corr_T01.csv", salta=120.0)
     xs, snr, over = [], [], []
     for d in (1, 2, 3, 4, 5, 6, 7, 8):
@@ -255,20 +234,6 @@ def fig_energia_distanza_radar():
             for row in righe_grezze(f, 20.0):
                 tot += 1; n += int(row[f"energy2420_gate{g}"]) > trig[g]
         over.append(100.0 * n / tot)
-    ax2.plot(xs, snr, "o-", color=C_2420, lw=1.8, ms=7, label="energia del gate del bersaglio / fondo")
-    ax2.axhline(1.0, color=C_GRIGIO, ls="--", lw=1)
-    ax2.text(4.5, 0.55, "rapporto 1 = fondo del corridoio vuoto (negativo di 240 s)", ha="center", fontsize=8, color=C_GRIGIO)
-    for x_, s_, o_ in zip(xs, snr, over):
-        ax2.text(x_, s_ + 0.15, f"{o_:.0f} %", ha="center", fontsize=8, color=C_2420)
-    ax2.set_xlabel("distanza [m]"); ax2.set_ylabel("energia del gate del bersaglio / fondo")
-    ax2.set_xlim(0.5, 8.5); ax2.set_ylim(0, max(snr) * 1.25); ax2.set_xticks(range(1, 9))
-    ax2.set_title("B · LD2420 (esemplare) in corridoio, gate max 12 = 840 cm", fontsize=10)
-    ax2.legend([ax2.lines[0]], ["energia del gate del bersaglio / fondo\n(etichette: % di campioni sopra il trigger)"],
-               fontsize=8.5, loc="upper right")
-    fig.suptitle("Energia radar in funzione della distanza: il LD2410B arriva al tetto configurato, "
-                 "l'esemplare LD2420 è al fondo da 3 m\nA: a 6 m la distanza è satura a 600 cm, a 7 m il bersaglio non c'è",
-                 fontsize=10, y=1.03)
-    salva(fig, "fig16_energia_distanza_radar")
     return list(zip(xs, snr, over))
 
 
@@ -508,7 +473,7 @@ def main():
     print(f"Figure 14-22 -> {OUT}")
     fig_portata_ostacoli()
     att10, att36, db20 = fig_attenuazione_materiali()
-    snr = fig_energia_distanza_radar()
+    snr = dati_2420_corridoio()
     fig_portata_tre_sensori(snr)
     fp = fig_falsi_positivi()
     fig_dipme_tre_sensori()

@@ -343,10 +343,6 @@ HTML = f"""<title>Sensori di presenza per DIPME</title>
   più netto. A quella distanza il PIR è un rilevatore di movimento quasi perfetto, e resta
   completamente cieco alla persona ferma.</p>
 
-  {fig("fig03_dipme_sotto_banco",
-       "Scenario DIPME, 5 trial per condizione, entrambe le serie in modalità H: il confronto è "
-       "perfettamente appaiato, senza asterischi da mettere in tesi.", 3)}
-
   {fig("fig02_timeline_sotto_banco",
        "Un singolo trial da 5 minuti, per vedere la cosa nel tempo invece che in media. Il radar "
        "tiene la presenza senza un buco; il PIR non emette un solo impulso in tutta l'acquisizione.",
@@ -492,14 +488,6 @@ HTML = f"""<title>Sensori di presenza per DIPME</title>
        "come plastica e cartone, ben sotto vetro e legno; legno e metallo sono limiti inferiori "
        "perché la dinamica dell'esemplare è di 5 dB. Stessa graduatoria su due moduli, due distanze "
        "e due unità di misura.", 15)}
-
-  {fig("fig16_energia_distanza_radar",
-       "Fase 8 in corridoio (120 cm di larghezza, muro a 9 m). A: il LD2410B segue la curva della "
-       "stanza fino a 6 m, dove la distanza riportata è satura a 600 cm, e a 7 m non riporta "
-       "nulla: il limite è il tetto configurato di 8 gate × 75 cm, non la sensibilità. B: "
-       "l'esemplare LD2420 con gate massimo 12 (840 cm) sta sopra il fondo del corridoio vuoto "
-       "solo a 1-2 m (4,2× e 1,7×, trigger superato nel 14 % e 4 % dei campioni) e da 3 m in su "
-       "le sue energie sono indistinguibili dal corridoio vuoto.", 16)}
 
   {fig("fig17_portata_tre_sensori",
        "Portata dei tre sensori sulla stessa scala, stanza (agosto) e corridoio (settembre). "

@@ -1,5 +1,5 @@
-// GENERATO da tools/embed_web.py — NON modificare a mano, modificare i file in web/
-// 2026-09-23 23:29:22
+// GENERATO da embed_web.py — NON modificare a mano, modificare i file in web/
+// 2026-09-28 03:27:30
 #pragma once
 #include <Arduino.h>
 

@@ -5,8 +5,8 @@ Rigenera tutti i materiali derivati dai dati sperimentali, in un colpo solo.
     python analisi/rigenera_tutto.py
 
 Esegue in ordine:
-  1. analisi/grafici_tesi.py    -> overleaf/figures/ (fig. 1-13)      (fasi 1-2, dati, consumi)
-  2. analisi/grafici_tesi_2.py  -> overleaf/figures/ (fig. 14-22)      (ostacoli, LD2420, Fase 8, vitalita')
+  1. analisi/grafici_tesi.py    -> overleaf/Immagini/ (fig. 1-13)      (fasi 1-2, dati, consumi)
+  2. analisi/grafici_tesi_2.py  -> overleaf/Immagini/ (fig. 14-22)      (ostacoli, LD2420, Fase 8, vitalita')
   3. analisi/esporta_excel.py   -> analisi/dati_tesi.xlsx              (12 fogli)
   4. analisi/genera_pagina.py   -> CATALOGO_FIGURE.html  
   5. stampa headless            -> CATALOGO_FIGURE.pdf                (A4)
@@ -135,7 +135,7 @@ def main():
     ap = argparse.ArgumentParser(
         description="Rigenera figure, Excel, catalogo delle figure e PDF dai CSV.")
     ap.add_argument("--salta-figure", action="store_true",
-                    help="riusa i PNG gia' presenti in overleaf/figures/")
+                    help="riusa i PNG gia' presenti in overleaf/Immagini/")
     ap.add_argument("--senza-pdf", action="store_true",
                     help="si ferma all'HTML, senza cercare un browser")
     args = ap.parse_args()
@@ -166,7 +166,7 @@ def main():
         print("\n[5/5] PDF saltato su richiesta")
 
     print(f"\nFatto in {time.time() - t0:.0f} s. Prodotti:")
-    print(f"  overleaf/figures/      figure della tesi (.png; i .pdf vettoriali in origin/)")
+    print(f"  overleaf/Immagini/      figure della tesi (.png; i .pdf vettoriali in origin/)")
     print(f"  analisi/dati_tesi.xlsx foglio con tutti i trial + grafici Excel")
     print(f"  {HTML.name}   catalogo delle figure")
     if pdf_ok:

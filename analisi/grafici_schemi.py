@@ -22,7 +22,7 @@ Geometria delle zone ispirata alla vista dall'alto del datasheet Panasonic PaPIR
 (serie WL/VZ standard: ventaglio a ±47°, fasci alternati per polarita') e, per
 l'impostazione grafica, al tutorial video "Lesson 12: Interfacing HC-SR501 PIR
 Motion Sensor with Arduino". Stesso stile di grafici_tesi.py; uscita in
-overleaf/figures/ (.png a 300 dpi) e overleaf/figures/origin/ (.pdf vettoriale).
+overleaf/Immagini/ (.png a 300 dpi) e overleaf/Immagini/origin/ (.pdf vettoriale).
 
 Uso:  python analisi/grafici_schemi.py
 """

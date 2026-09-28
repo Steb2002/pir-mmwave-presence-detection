@@ -13,7 +13,7 @@ __pycache__/
 
 # Materiali generati da analisi/rigenera_tutto.py, ricostruibili in pochi secondi
 # dai CSV grezzi. Le figure della tesi invece sono tracciate: stanno in
-# overleaf/figures/ (PNG) e overleaf/figures/origin/ (PDF) e servono a Overleaf.
+# overleaf/Immagini/ (PNG) e overleaf/Immagini/origin/ (PDF) e servono a Overleaf.
 # I CSV di acquisizione restano tracciati: sono l'unico dato non ricostruibile.
 analisi/dati_tesi.xlsx
 CATALOGO_FIGURE.html

@@ -28,7 +28,7 @@ firmware/ld2410b_web/
     ├── style.css       # tema scuro, layout grid, classi di stato
     ├── app.js          # TUTTA la logica client (WS, stats, buffer, CSV, grafici)
     └── chart.umd.min.js# Chart.js v4 locale (~200 KB, ~70 KB gzip) — NIENTE CDN
-tools/embed_web.py      # gzip di web/* → web_assets.h (da rilanciare a ogni modifica della pagina)
+firmware/ld2410b_web/embed_web.py # gzip di web/* → web_assets.h (da rilanciare a ogni modifica della pagina)
 ```
 
 Prerequisiti Arduino IDE (rev. 05/09): librerie **ESP32Async/ESPAsyncWebServer** e
@@ -296,7 +296,7 @@ ultima rilevazione X s fa, distanza min/med/max, vitalità min/max
 | Heap ESP32 basso (<20 KB) | `/info` lo espone; il firmware chiude il client WS più vecchio |
 | Valori mancanti nel frame radar (engineering off) | gates a 0 nel JSON; C2 mostra barre vuote, il resto vive |
 | Telefono collegato all'AP «senza internet» che torna ai dati mobili (rev. 05/09) | il DNS catch-all fa riconoscere l'AP come portale; se il telefono insiste, disattivare i dati mobili per la demo. Da PC il problema non esiste |
-| Pagina modificata ma l'ESP32 serve quella vecchia (rev. 05/09) | `web_assets.h` non rigenerato: rilanciare `tools/embed_web.py` prima di compilare. Lo script stampa l'hash dei file, che il firmware espone in `/info` |
+| Pagina modificata ma l'ESP32 serve quella vecchia (rev. 05/09) | `web_assets.h` non rigenerato: rilanciare `firmware/ld2410b_web/embed_web.py` prima di compilare. Lo script stampa l'hash dei file, che il firmware espone in `/info` |
 
 Il refresh che perde la sessione è accettato in v1 (i test "ufficiali" hanno comunque
 il canale seriale in parallelo); l'alternativa (persistenza in localStorage/IndexedDB)
