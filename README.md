@@ -131,8 +131,8 @@ python analisi\rigenera_tutto.py
 Excel `analisi/dati_tesi.xlsx` e il catalogo delle figure `CATALOGO_FIGURE.html`, stampato
 anche in PDF se trova Chrome o Edge. Gli schemi che non derivano dai dati (PIR a due
 elementi, lente di Fresnel, modalità del PIR, FMCW, geometrie di prova, collegamenti,
-piattaforma, percorsi dei dati) si rigenerano con `analisi/grafici_schemi.py` e `analisi/grafici_schemi_cap3.py`. A dati
-invariati le figure escono identiche byte per byte. Il nome con cui ogni figura finisce nella
+piattaforma, percorsi dei dati) si rigenerano con `analisi/grafici_schemi.py` e
+`analisi/grafici_schemi_cap3.py`. A dati invariati le figure escono identiche byte per byte. Il nome con cui ogni figura finisce nella
 tesi è in `analisi/uscita_figure.py`.
 
 ### Tesi
