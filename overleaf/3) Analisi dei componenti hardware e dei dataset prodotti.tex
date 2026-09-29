@@ -541,13 +541,6 @@ analisi/rigenera\_\allowbreak{}tutto.py e script collegati & figure, foglio Exce
 
 Per ciascun radar sono stati scritti due programmi per l'ESP32, uno sketch di configurazione che legge e scrive i parametri del modulo e un logger che acquisisce i dati. I due si caricano in momenti diversi. Prima si carica lo sketch, per portare il radar nella configurazione voluta, poi il logger, che resta a bordo per tutta la sessione. Il logger legge il radar e il PIR e stampa sulla porta seriale USB una riga di testo per campione, nel formato della Sezione~\ref{sec:c3-4-3}. L'ESP32 non salva nulla, perché il file viene scritto dallo script di acquisizione sul PC (Sezione~\ref{sec:c3-4-4}). Tutti i programmi stampano all'avvio una riga con il numero di build, così l'esito di una prova non può essere attribuito a un binario diverso da quello caricato. Il collegamento dei tre sensori all'ESP32 è riassunto nella Figura~\ref{fig:c3-collegamenti}.
 
-\begin{figure}[!htb]
-\centering
-\includegraphics[width=\linewidth]{Collegamenti}
-\caption{Collegamento dei tre sensori all'ESP32. L'\ldb{} è alimentato a 5~V da VIN e dialoga sulla seconda UART hardware (GPIO25 e 26); l'\ldc{} è alimentato a 3,3~V e usa una terza UART sui GPIO16 e 17, mentre la sua uscita di presenza OT2 non è collegata perché la presenza arriva dal frame seriale; il PIR è alimentato a 5~V e la sua uscita a 3,3~V va a GPIO34. I due fili della seriale sono incrociati. Le Tabelle~\ref{tab:c3-2}, \ref{tab:c3-8} e \ref{tab:c3-13} riportano il dettaglio dei piedini.}
-\label{fig:c3-collegamenti}
-\end{figure}
-
 \paragraph{Gli sketch di configurazione}
 
 I due sketch, uno per modulo, hanno tre accorgimenti importanti:
@@ -559,6 +552,13 @@ I due sketch, uno per modulo, hanno tre accorgimenti importanti:
 \end{itemize}
 
 Sul \ldc{} lo sketch ha permesso di verificare che le 32 soglie in flash coincidessero con quelle mostrate in decibel dallo strumento del produttore (Sezione~\ref{sec:c3-2-3}).
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.9\linewidth]{Collegamenti}
+\caption{Collegamento dei tre sensori all'ESP32. L'\ldb{} è alimentato a 5~V da VIN e dialoga sulla seconda UART hardware (GPIO25 e 26); l'\ldc{} è alimentato a 3,3~V e usa una terza UART sui GPIO16 e 17, mentre la sua uscita di presenza OT2 non è collegata perché la presenza arriva dal frame seriale; il PIR è alimentato a 5~V e la sua uscita a 3,3~V va a GPIO34. I due fili della seriale sono incrociati. Le Tabelle~\ref{tab:c3-2}, \ref{tab:c3-8} e \ref{tab:c3-13} riportano il dettaglio dei piedini.}
+\label{fig:c3-collegamenti}
+\end{figure}
 
 \paragraph{Il logger dell'\ldb{}}
 

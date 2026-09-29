@@ -322,7 +322,7 @@ che il radar agganci il soggetto ancora in avvicinamento grazie ai 6~m di portat
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{Latenze}
+\includegraphics[width=0.9\linewidth]{Latenze}
 \caption{A sinistra le latenze all'ingresso, appaiate per \ldb\ e PIR e da una sessione separata per l'\ldc. A destra il tempo di rilascio all'uscita, dove l'\ldb\ impiega 18~s a dichiarare la stanza vuota con un ritardo di scomparsa di 5~s.}
 \label{fig:latenze}
 
@@ -358,16 +358,6 @@ soggetti sempre fermi, con tre trial da 182~s ciascuno (Figura~\ref{fig:selettiv
 L'occupante a 1~m sull'asse è rilevato al 100\,\%, mentre una persona a 3~m sull'asse,
 oltre il taglio, è rilevata allo 0,00\,\%. Anche una persona a 1~m a 90\textdegree\ è rilevata allo 0,00\,\% a regime, e il $24{,}8 \pm 19{,}6\,\%$ che si ottiene con lo scarto ordinario di 20~s è la coda del posizionamento della Figura~\ref{fig:transitorio}. L'\ldc\ nella stessa posizione dà lo stesso esito (0\,\% in tre trial), coerente con la sua copertura angolare (Sezione~\ref{sec:angolare-copertura}). Con il vicino accanto, l'occupante resta rilevato al 100\,\%, e distanza ed energia cambiano di circa 4~cm e 4 punti, entro la variabilità fra trial.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\linewidth]{Selettivita}
-\caption{Selettività spaziale con gate massimo 2 (150~cm), tre trial per scenario.
-Le barre chiare usano lo scarto ordinario dei primi 20~s, quelle scure lo scarto di
-120~s (a regime).}
-\label{fig:selettivita}
-
-\end{figure}
-
 \subsection{Copertura angolare}
 \label{sec:angolare-copertura}
 
@@ -387,19 +377,29 @@ circa 75\textdegree\ ed è al fondo a 90\textdegree, più stretto dell'\ldb\ e p
 dei $\pm 45$ o $\pm 60$\textdegree\ del suo manuale~\cite[§1.1 e §5.2]{hilinkManualLD2420}. Il confine è coerente anche con
 il margine ridotto del trasmettitore dell'esemplare (Sezione~\ref{sec:c3-2-6}).
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\linewidth]{Angolare}
-\caption{Copertura angolare a 1~m, busto laterale da seduto, gate massimo 2. A: \ldb\ e PIR. B: esemplare di \ldc.}
-\label{fig:angolare-due-radar}
-
-\end{figure}
-
 \subsection{Selettività per configurazione}
 \label{sec:selettivita-configurazione}
 
 Il vicino a 1~m a 90\textdegree\ compare in entrambe le prove, con lo stesso gate. Fermo (Sezione~\ref{sec:selettivita}) è rilevato allo 0\,\%, mentre in movimento (Sezione~\ref{sec:angolare-copertura}) è rilevato al 100\,\%. Quella che nella prima prova sembrava selettività era quindi la debolezza dell'eco di un corpo immobile. A 90\textdegree\ il diagramma di irradiazione non attenua abbastanza da escludere chi si muove, e un banco vuoto accanto a una persona in movimento può risultare occupato. La separazione fra arredi adiacenti va cercata nel montaggio fisico (orientamento verso
 il basso, schermatura del lobo laterale) e non nei parametri del modulo. L'esemplare di \ldc, al fondo a 90\textdegree, non vedrebbe il vicino, ma il merito è del suo trasmettitore debole più che dell'antenna (Sezione~\ref{sec:c3-2-6}).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\linewidth]{Selettivita}
+\caption{Selettività spaziale con gate massimo 2 (150~cm), tre trial per scenario.
+Le barre chiare usano lo scarto ordinario dei primi 20~s, quelle scure lo scarto di
+120~s (a regime).}
+\label{fig:selettivita}
+
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{Angolare}
+\caption{Copertura angolare a 1~m, busto laterale da seduto, gate massimo 2. A: \ldb\ e PIR. B: esemplare di \ldc.}
+\label{fig:angolare-due-radar}
+
+\end{figure}
 
 \section{Due persone davanti al radar}
 \label{sec:due-persone}
@@ -441,6 +441,7 @@ Con A ferma e B in movimento i due canali sono attivi insieme nel 79\,\% dei cam
 
 \end{figure}
 
+\FloatBarrier
 \section{Penetrazione degli ostacoli}
 \label{sec:ostacoli}
 
@@ -483,7 +484,7 @@ L'\ldb\ ha ripetuto la geometria allontanando il soggetto da 1 a 5~m dietro il c
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{Portata_ostacoli}
+\includegraphics[width=0.9\linewidth]{Portata_ostacoli}
 \caption{\ldb, portata residua con i pannelli a 20~cm dal sensore e la porta a circa 3,8~m, tre trial per punto. A: energia in movimento. B: frazione di campioni con il canale in movimento attivo.}
 \label{fig:portata-ostacoli}
 
@@ -495,12 +496,13 @@ reale la lamiera di rinforzo sta dietro al modulo e non davanti.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{Attenuazione_materiali}
+\includegraphics[width=0.9\linewidth]{Attenuazione_materiali}
 \caption{Attenuazione per materiale sui due radar, con i valori della Tabella~\ref{tab:ostacoli}. A: \ldb\ a 3~m, in unità dello strumento. B: \ldc\ a 1~m, in decibel.}
 \label{fig:attenuazione}
 
 \end{figure}
 
+\FloatBarrier
 \section{Portata massima in corridoio}
 \label{sec:portata-massima}
 
@@ -515,8 +517,8 @@ degli otto gate da 75~cm configurati. La presenza a 6~m è retta dal canale staz
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{Portata_tre_sensori}
-\caption{Portata dei tre sensori sulla stessa scala, con un punto per metro. L'\ldb\ e il PIR sono misurati in stanza fino a 5~m e in corridoio oltre, l'\ldc\ tutto in corridoio. Il PIR ha due serie, a metà corsa (la sensibilità della campagna) e al massimo. Per l'\ldc\ i triangoli pieni indicano l'acquisizione della presenza, quelli vuoti il solo mantenimento.}
+\includegraphics[width=0.8\linewidth]{Portata_tre_sensori}
+\caption{Portata dei tre sensori sulla stessa scala, con un punto per metro. L'\ldb\ e il PIR sono misurati in stanza fino a 5~m e in corridoio oltre, l'\ldc\ tutto in corridoio. Il PIR ha due serie, a metà corsa (la sensibilità della campagna) e al massimo.}
 \label{fig:portata-tre-sensori}
 
 \end{figure}
@@ -525,8 +527,7 @@ degli otto gate da 75~cm configurati. La presenza a 6~m è retta dal canale staz
 
 \paragraph{\ldc.} Con il gate massimo portato a 12 (840~cm), il valore di fabbrica
 che copre gli 8~m dichiarati~\cite{hilinkManualLD2420}, l'esemplare acquisisce a 1~m e mantiene a 2~m. Da 3~m in
-su le sue energie sono il fondo del corridoio vuoto gate per gate. Il gate massimo non
-ha quindi aggiunto nulla, e il limite è dell'esemplare e non della configurazione né
-della stanza.
+su le sue energie sono il fondo del corridoio vuoto gate per gate. Il limite è quindi
+dell'esemplare, non della configurazione né della stanza.
 
 La prova serve a valutare un'alternativa all'architettura del progetto, cioè pochi sensori a parete che guardano l'intera stanza al posto di uno sotto ogni banco. Con 6~m di portata l'\ldb\ coprirebbe una stanza come quella di prova, ma un sensore a parete dice solo se nella stanza c'è qualcuno, non sotto quale banco né quante persone, perché chi sta dietro un altro corpo non viene separato (Sezione~\ref{sec:due-persone}). Per lo scenario del progetto resta quindi un sensore per arredo.
